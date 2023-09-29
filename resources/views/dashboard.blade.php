@@ -44,19 +44,19 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="row text-center">
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MEN</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MACHINE</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">METHOD</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3">
+                                <div class="col">
                                     <div class="mb-2">MATERIAL</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
@@ -82,19 +82,19 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="row text-center">
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MEN</div>
                                     <i class="ti ti-triangle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MACHINE</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">METHOD</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3">
+                                <div class="col">
                                     <div class="mb-2">MATERIAL</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
@@ -120,19 +120,19 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="row text-center">
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MEN</div>
                                     <i class="ti ti-triangle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MACHINE</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">METHOD</div>
                                     <i class="ti ti-x fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3">
+                                <div class="col">
                                     <div class="mb-2">MATERIAL</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
@@ -158,19 +158,19 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="row text-center">
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MEN</div>
                                     <i class="ti ti-triangle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MACHINE</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">METHOD</div>
                                     <i class="ti ti-x fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3">
+                                <div class="col">
                                     <div class="mb-2">MATERIAL</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
@@ -196,19 +196,19 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="row text-center">
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MEN</div>
                                     <i class="ti ti-triangle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MACHINE</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">METHOD</div>
                                     <i class="ti ti-triangle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3">
+                                <div class="col">
                                     <div class="mb-2">MATERIAL</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
@@ -234,19 +234,19 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="row text-center">
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MEN</div>
                                     <i class="ti ti-triangle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MACHINE</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">METHOD</div>
                                     <i class="ti ti-x fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3">
+                                <div class="col">
                                     <div class="mb-2">MATERIAL</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
@@ -272,19 +272,19 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="row text-center">
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MEN</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MACHINE</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">METHOD</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3">
+                                <div class="col">
                                     <div class="mb-2">MATERIAL</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
@@ -310,19 +310,19 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="row text-center">
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MEN</div>
                                     <i class="ti ti-x fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">MACHINE</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3 border-end">
+                                <div class="col border-end">
                                     <div class="mb-2">METHOD</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>
-                                <div class="col-6 col-md-3">
+                                <div class="col">
                                     <div class="mb-2">MATERIAL</div>
                                     <i class="ti ti-circle fs-7 mb-2"></i>
                                 </div>

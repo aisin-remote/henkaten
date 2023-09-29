@@ -26,7 +26,7 @@
     <style>
         .vertical-carousel {
             overflow: hidden;
-            height: 300px;
+            height: 500px;
             /* Sesuaikan tinggi carousel dengan kebutuhan Anda */
             position: relative;
         }
@@ -40,13 +40,14 @@
         }
 
         .carousel-item {
-            width: 100%;
+            /* width: 100%; */
+            max-width: 100%;
             flex: 1;
             /* Mengisi tinggi yang tersedia dalam carousel */
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 12px;
         }
     </style>
 </head>
