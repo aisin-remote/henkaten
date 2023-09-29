@@ -29,9 +29,14 @@
             height: 300px;
             /* Sesuaikan tinggi carousel dengan kebutuhan Anda */
             position: relative;
+        }
+
+        .carousel-inner {
             display: flex;
             flex-direction: column;
-            /* Carousel vertikal */
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+            /* Menyesuaikan tinggi carousel inner dengan tinggi carousel */
         }
 
         .carousel-item {
@@ -42,7 +47,6 @@
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            transition: transform 0.5s ease-in-out;
         }
     </style>
 </head>
@@ -185,7 +189,7 @@
 
     <script>
         const carousel = document.querySelector('.vertical-carousel');
-        const items = carousel.querySelectorAll('.carousel-item');
+        const items = carousel.querySelectorAll('.col-md-12');
         let currentIndex = 0;
 
         function nextItem() {
@@ -209,7 +213,7 @@
         carousel.addEventListener('click', nextItem);
 
         // Optional: Auto-rotate the carousel
-         setInterval(nextItem, 3000); // Uncomment this line to auto-rotate every 3 seconds
+        setInterval(nextItem, 3000); // Uncomment this line to auto-rotate every 3 seconds
     </script>
 </body>
 

@@ -42,12 +42,12 @@
     <div class="page-wrapper mini-sidebar" id="main-wrapper" data-layout="horizontal" data-navbarbg="skin6"
         data-sidebartype="mini-sidebar" data-sidebar-position="fixed" data-header-position="fixed">
         <!-- Sidebar Start -->
-        @include('layouts.partials.sidenav')
+        @include('layouts.partials.header')
         <!--  Sidebar End -->
         <!--  Main wrapper -->
         <div class="body-wrapper">
             <!--  Header Start -->
-            @include('layouts.partials.topnav')
+            @include('layouts.partials.nav')
             <!--  Header End -->
             <div class="container-fluid mw-100">
                 <!--  Owl carousel -->
