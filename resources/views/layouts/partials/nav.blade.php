@@ -68,7 +68,7 @@
                 <!-- Tabler Icon -->
                 <!-- =================== -->
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link" href="icon-tabler.html" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link" href="/employees" aria-expanded="false">
                         <span class="rounded-3">
                             <i class="ti ti-archive"></i>
                         </span>

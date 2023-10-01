@@ -23,8 +23,8 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 });
 
-Route::get('/lineSelection', function () {
-    return view('lineSelection');
+Route::get('/employees', function () {
+    return view('employees');
 });
 
 
