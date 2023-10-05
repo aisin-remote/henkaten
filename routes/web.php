@@ -16,6 +16,10 @@ use App\Http\Controllers\RegisterController;
 */
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/', function () {
+        return view('dashboard');
+    });
+    
     Route::get('/mappingAllLine', function () {
         return view('welcome');
     });
@@ -23,18 +27,24 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     });
+    
+    Route::get('/line', function () {
+        return view('line');
+    });
 
     Route::get('/lineSelection', function () {
         return view('lineSelection');
     });
+    
+    Route::get('/employees', function () {
+        return view('employees');
+    });
+
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout.auth');
 });
 
-Route::get('/login', [LoginController::class, 'index'])->name('login');
-Route::post('/login', [LoginController::class, 'login'])->name('login.login');
-
-Route::get('/employees', function () {
-    return view('employees');
-});
+Route::get('/login', [LoginController::class, 'index'])->name('login.index');
+Route::post('/login', [LoginController::class, 'authenticate'])->name('login.authenticate');
 
 
 Route::get('/register', [RegisterController::class, 'index'])->name('register.index');

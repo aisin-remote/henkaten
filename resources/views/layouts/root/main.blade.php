@@ -16,7 +16,8 @@
     <meta name="keywords" content="Mordenize" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/png" href="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/favicon.ico" />
+    <link rel="shortcut icon" type="image/png"
+        href="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/favicon.ico" />
     <!-- Owl Carousel -->
     <link rel="stylesheet" href={{ asset('dist/libs/owl.carousel/dist/assets/owl.carousel.min.css') }}>
     <link rel="stylesheet" href={{ asset('dist/libs/select2/dist/css/select2.min.css') }}>
@@ -26,7 +27,7 @@
     <style>
         .vertical-carousel {
             overflow: hidden;
-            height: 500px;
+            height: 750px;
             /* Sesuaikan tinggi carousel dengan kebutuhan Anda */
             position: relative;
         }
@@ -36,12 +37,14 @@
             flex-direction: column;
             transition: transform 0.5s ease-in-out;
             height: 100%;
+            width: 100%;
             /* Menyesuaikan tinggi carousel inner dengan tinggi carousel */
         }
 
         .carousel-item {
-            /* width: 100%; */
-            max-width: 100%;
+            width: 100% !important;
+            /* max-width: 100% !important; */
+            left: 0;
             flex: 1;
             /* Mengisi tinggi yang tersedia dalam carousel */
             display: flex;
@@ -55,10 +58,12 @@
 <body>
     <!-- Preloader -->
     <div class="preloader">
-        <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/favicon.ico" alt="loader" class="lds-ripple img-fluid" />
+        <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/favicon.ico"
+            alt="loader" class="lds-ripple img-fluid" />
     </div>
     <!-- Body Wrapper -->
-    <div class="page-wrapper" id="main-wrapper" data-layout="horizontal" data-navbarbg="skin6" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+    <div class="page-wrapper" id="main-wrapper" data-layout="horizontal" data-navbarbg="skin6" data-sidebartype="full"
+        data-sidebar-position="fixed" data-header-position="fixed">
         <!-- Header Start -->
         @include('layouts.partials.header')
 
@@ -119,7 +124,8 @@
                         <li class="p-1 mb-1 bg-hover-light-black">
                             <a href="#">
                                 <span class="fs-3 text-black fw-normal d-block">Detail</span>
-                                <span class="fs-3 text-muted d-block">/apps/blog/detail/streaming-video-way-before-it-was-cool-go-dark-tomorrow</span>
+                                <span
+                                    class="fs-3 text-muted d-block">/apps/blog/detail/streaming-video-way-before-it-was-cool-go-dark-tomorrow</span>
                             </a>
                         </li>
                         <li class="p-1 mb-1 bg-hover-light-black">
@@ -155,7 +161,8 @@
                         <li class="p-1 mb-1 bg-hover-light-black">
                             <a href="#">
                                 <span class="fs-3 text-black fw-normal d-block">Detail</span>
-                                <span class="fs-3 text-muted d-block">/apps/blog/detail/streaming-video-way-before-it-was-cool-go-dark-tomorrow</span>
+                                <span
+                                    class="fs-3 text-muted d-block">/apps/blog/detail/streaming-video-way-before-it-was-cool-go-dark-tomorrow</span>
                             </a>
                         </li>
                         <li class="p-1 mb-1 bg-hover-light-black">

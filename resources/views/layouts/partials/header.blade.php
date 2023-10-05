@@ -1,5 +1,5 @@
 <header class="app-header">
-    <nav class="navbar navbar-expand-xl navbar-light container-fluid px-0 ">
+    <nav class="navbar navbar-expand-xl navbar-light container-fluid px-5 mw-100">
         <ul class="navbar-nav">
             <li class="nav-item d-block d-xl-none">
                 <a class="nav-link sidebartoggler ms-n3" id="sidebarCollapse" href="javascript:void(0)">
@@ -129,7 +129,7 @@
                             aria-expanded="false">
                             <div class="d-flex align-items-center">
                                 <div class="user-profile-img">
-                                    <img src="../../dist/images/profile/user-1.jpg" class="rounded-circle"
+                                    <img src="../../dist/images/profile/saiful.png" class="rounded-circle"
                                         width="35" height="35" alt="" />
                                 </div>
                             </div>
@@ -141,13 +141,13 @@
                                     <h5 class="mb-0 fs-5 fw-semibold">User Profile</h5>
                                 </div>
                                 <div class="d-flex align-items-center py-9 mx-7 border-bottom">
-                                    <img src="../../dist/images/profile/user-1.jpg" class="rounded-circle"
+                                    <img src="../../dist/images/profile/saiful.png" class="rounded-circle"
                                         width="80" height="80" alt="" />
                                     <div class="ms-3">
-                                        <h5 class="mb-1 fs-3">Pragos Setiawan</h5>
-                                        <span class="mb-2 mt-2 d-block badge bg-light-info text-info">Operator</span>
+                                        <h5 class="mb-1 fs-3">{{ auth()->user()->name }}</h5>
+                                        <span class="mb-2 mt-2 d-block badge bg-light-info text-info">Leader</span>
                                         <p class="mb-0 d-flex text-dark align-items-center gap-2">
-                                            <i class="ti ti-mail fs-4"></i> Pragos@aiia.co.id
+                                            <i class="ti ti-mail fs-4"></i> {{ auth()->user()->npk }}
                                         </p>
                                     </div>
                                 </div>
@@ -174,7 +174,7 @@
                                             <span class="d-block text-dark">Messages & Emails</span>
                                         </div>
                                     </a>
-                                    <a href="app-notes.html" class="py-8 px-7 d-flex align-items-center">
+                                    {{-- <a href="app-notes.html" class="py-8 px-7 d-flex align-items-center">
                                         <span
                                             class="d-flex align-items-center justify-content-center bg-light rounded-1 p-6">
                                             <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-tasks.svg"
@@ -184,12 +184,16 @@
                                             <h6 class="mb-1 bg-hover-primary fw-semibold">My Task</h6>
                                             <span class="d-block text-dark">To-do and Daily Tasks</span>
                                         </div>
-                                    </a>
+                                    </a> --}}
                                 </div>
-                                <div class="d-grid py-4 px-7 pt-8">
-                                    <a href="authentication-login.html" class="btn btn-outline-primary">Log
-                                        Out</a>
-                                </div>
+                                <form action="{{ route('logout.auth') }}" method="post">
+                                    @csrf
+                                    @method('POST')
+                                    <div class="d-grid py-4 px-7 pt-8">
+                                        <button type="submit" class="btn btn-outline-primary">Log
+                                            Out</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </li>

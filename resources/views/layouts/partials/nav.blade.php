@@ -2,7 +2,7 @@
     <!-- Sidebar scroll-->
     <div>
         <!-- Sidebar navigation-->
-        <nav class="sidebar-nav scroll-sidebar container-fluid">
+        <nav class="sidebar-nav scroll-sidebar container-fluid mw-100" style="padding-left: 80px">
             <ul id="sidebarnav">
                 <!-- ============================= -->
                 <!-- Home -->
@@ -15,6 +15,14 @@
                 <!-- Dashboard -->
                 <!-- =================== -->
                 <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link" href="/dashboard" aria-expanded="false">
+                        <span class="rounded-3">
+                            <i class="ti ti-home"></i>
+                        </span>
+                        <span class="hide-menu">Dashboard</span>
+                    </a>
+                </li>
+                {{-- <li class="sidebar-item">
                     <a class="sidebar-link has-arrow" href="index.html" aria-expanded="false">
                         <span>
                             <i class="ti ti-home-2"></i>
@@ -59,7 +67,7 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> --}}
                 <li class="nav-small-cap">
                     <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
                     <span class="hide-menu">Icons</span>
