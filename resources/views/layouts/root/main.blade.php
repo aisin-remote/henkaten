@@ -5,7 +5,7 @@
 
 <head>
     <!-- Title -->
-    <title>Mordenize</title>
+    <title>Digital Henkaten</title>
     <!-- Required Meta Tag -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -27,7 +27,7 @@
     <style>
         .vertical-carousel {
             overflow: hidden;
-            height: 750px;
+            height: 795px;
             /* Sesuaikan tinggi carousel dengan kebutuhan Anda */
             position: relative;
         }
@@ -179,10 +179,12 @@
     <!-- Import Js Files -->
     <script src={{ asset('dist/libs/jquery/dist/jquery.min.js') }}></script>
     <script src={{ asset('dist/libs/jquery-ui/dist/jquery-ui.min.js') }}></script>
+    <script src={{ asset('dist/libs/jquery-repeater/jquery.repeater.min.js') }}></script>
     <script src={{ asset('dist/libs/simplebar/dist/simplebar.min.js') }}></script>
     <script src={{ asset('dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}></script>
     <!--  core files -->
     <script src={{ asset('dist/js/app.min.js') }}></script>
+    <script src={{ asset('dist/js/repeater-init.js') }}></script>
     <script src={{ asset('dist/js/app.horizontal.init.js') }}></script>
     <script src={{ asset('dist/js/app-style-switcher.js') }}></script>
     <script src={{ asset('dist/js/sidebarmenu.js') }}></script>
@@ -191,6 +193,7 @@
     <script src={{ asset('dist/libs/owl.carousel/dist/owl.carousel.min.js') }}></script>
     <script src={{ asset('dist/libs/apexcharts/dist/apexcharts.min.js') }}></script>
     <script src={{ asset('dist/js/dashboard.js') }}></script>
+    <script src={{ asset('dist/js/plugins/toastr-init.js') }}></script>
     <script src={{ asset('dist/libs/select2/dist/js/select2.full.min.js') }}></script>
     {{-- <script src={{ asset('dist/libs/select2/dist/js/select2.min.js') }}></script> --}}
     <script src={{ asset('dist/js/forms/select2.init.js') }}></script>

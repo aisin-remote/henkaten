@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use App\Models\User;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -19,6 +19,7 @@ class RegisterController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'npk' => 'required|string|max:255|unique:users', // Pastikan npk adalah unik dalam tabel users
+            'role' => 'required|string|max:255',
             'password' => 'required|string|min:6|confirmed', // 'confirmed' memastikan cocok dengan konfirmasi password
             'password_confirmation' => 'required|string|min:6|same:password',
         ]);
@@ -27,6 +28,7 @@ class RegisterController extends Controller
         $user = new User();
         $user->id = Str::uuid(); // Generate UUID sebagai ID
         $user->name = $request->input('name');
+        $user->role = $request->input('role');
         $user->npk = $request->input('npk');
         $user->password = bcrypt($request->input('password')); // Mengenkripsi password
         $user->save();

@@ -8,8 +8,8 @@
                     {{ session('error') }}
                 </div>
             @endif
-            <h2 class="mb-3 fs-7 fw-bolder">Digital Henkaten</h2>
-            <p class="mb-9">Your Admin Dashboard</p>
+            <h2 class="mb-3 fs-7 fw-bolder mt-3">Digital Henkaten</h2>
+            <p class="mb-9">Your Henkaten Dashboard</p>
             <form method="POST" action="{{ route('login.authenticate') }}">
                 @csrf
                 <div class="mb-3">

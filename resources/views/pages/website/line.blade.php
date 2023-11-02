@@ -28,12 +28,22 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-6">
-            <img src="{{ asset('assets/images/mapping-per-line.png') }}" alt="" srcset="" width="1000"
-                height="700">
+        <div class="col-lg-6 col-md-12">
+            <img src="{{ asset('assets/images/mapping-per-line.png') }}" alt="" class="mw-100" usemap="#roomMap"
+                width="980vh">
+
+            <div style="position: absolute; top: 60vh; left: 28vh;">
+                <img src="../../dist/images/profile/tri.png" alt="Employee 1" style="width: 80px; height: 80px;"
+                    class="rounded-1" />
+            </div>
+
+            <div style="position: absolute; top: 71vh; left: 44vh;">
+                <img src="../../dist/images/profile/syarief.png" alt="Employee 2" style="width: 80px; height: 80px;"
+                    class="rounded-1" />
+            </div>
         </div>
         <div class="col-lg-6">
-            <div class="row">
+            <div class="row text-center">
                 <div class="col-lg-12">
                     <div class="card overflow-hidden card-hover">
                         <div class="d-flex flex-row">

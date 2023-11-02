@@ -24,8 +24,8 @@
         </ul>
         <div class="d-block d-xl-none">
             <a href="index.html" class="text-nowrap nav-link">
-                <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/dark-logo.svg"
-                    width="180" alt="" />
+                <img src="{{ asset('assets/images/henkaten-logo.svg') }}" class="dark-logo" width="180"
+                    alt="" />
             </a>
         </div>
         <button class="navbar-toggler p-0 border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
