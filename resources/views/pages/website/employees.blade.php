@@ -21,9 +21,9 @@
                                 <div class="card border-0 zoom-in bg-light-primary shadow-none">
                                     <div class="card-body">
                                         <div class="text-center">
-                                            <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                width="50" height="50" class="mb-3" alt="" />
-                                            <p class="fw-semibold fs-3 text-primary mb-1"> Employee 1</p>
+                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                alt="" class="rounded" width="100" height="100">
+                                            <p class="fw-semibold fs-3 text-primary mb-1 mt-3"> Employee 1</p>
                                             <h5 class="fw-semibold text-primary mb-0">002484</h5>
                                         </div>
                                     </div>
@@ -33,9 +33,9 @@
                                 <div class="card border-0 zoom-in bg-light-warning shadow-none">
                                     <div class="card-body">
                                         <div class="text-center">
-                                            <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                width="50" height="50" class="mb-3" alt="" />
-                                            <p class="fw-semibold fs-3 text-warning mb-1">Employee 2</p>
+                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                alt="" class="rounded" width="100" height="100">
+                                            <p class="fw-semibold fs-3 text-warning mb-1 mt-3">Employee 2</p>
                                             <h5 class="fw-semibold text-warning mb-0">002484</h5>
                                         </div>
                                     </div>
@@ -45,9 +45,9 @@
                                 <div class="card border-0 zoom-in bg-light-info shadow-none">
                                     <div class="card-body">
                                         <div class="text-center">
-                                            <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                width="50" height="50" class="mb-3" alt="" />
-                                            <p class="fw-semibold fs-3 text-info mb-1">Employee 3</p>
+                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                alt="" class="rounded" width="100" height="100">
+                                            <p class="fw-semibold fs-3 text-info mb-1 mt-3">Employee 3</p>
                                             <h5 class="fw-semibold text-info mb-0">002484</h5>
                                         </div>
                                     </div>
@@ -57,9 +57,9 @@
                                 <div class="card border-0 zoom-in bg-light-danger shadow-none">
                                     <div class="card-body">
                                         <div class="text-center">
-                                            <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                width="50" height="50" class="mb-3" alt="" />
-                                            <p class="fw-semibold fs-3 text-danger mb-1">Employee 4</p>
+                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                alt="" class="rounded" width="100" height="100">
+                                            <p class="fw-semibold fs-3 text-danger mb-1 mt-3">Employee 4</p>
                                             <h5 class="fw-semibold text-danger mb-0">002484</h5>
                                         </div>
                                     </div>
@@ -69,9 +69,9 @@
                                 <div class="card border-0 zoom-in bg-light-success shadow-none">
                                     <div class="card-body">
                                         <div class="text-center">
-                                            <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                width="50" height="50" class="mb-3" alt="" />
-                                            <p class="fw-semibold fs-3 text-success mb-1">Employee 5</p>
+                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                alt="" class="rounded" width="100" height="100">
+                                            <p class="fw-semibold fs-3 text-success mb-1 mt-3">Employee 5</p>
                                             <h5 class="fw-semibold text-success mb-0">002484</h5>
                                         </div>
                                     </div>
@@ -81,9 +81,9 @@
                                 <div class="card border-0 zoom-in bg-light-info shadow-none">
                                     <div class="card-body">
                                         <div class="text-center">
-                                            <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                width="50" height="50" class="mb-3" alt="" />
-                                            <p class="fw-semibold fs-3 text-info mb-1">Employee 6</p>
+                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                alt="" class="rounded" width="100" height="100">
+                                            <p class="fw-semibold fs-3 text-info mb-1 mt-3">Employee 6</p>
                                             <h5 class="fw-semibold text-info mb-0">002484</h5>
                                         </div>
                                     </div>
@@ -138,9 +138,9 @@
                                 <div class="card border-0 zoom-in bg-light-primary shadow-none">
                                     <div class="card-body">
                                         <div class="text-center">
-                                            <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                width="50" height="50" class="mb-3" alt="" />
-                                            <p class="fw-semibold fs-3 text-primary mb-1"> Employee 1</p>
+                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                alt="" class="rounded" width="100" height="100">
+                                            <p class="fw-semibold fs-3 text-primary mb-1 mt-3"> Employee 1</p>
                                             <h5 class="fw-semibold text-primary mb-0">002484</h5>
                                         </div>
                                     </div>
@@ -150,9 +150,9 @@
                                 <div class="card border-0 zoom-in bg-light-warning shadow-none">
                                     <div class="card-body">
                                         <div class="text-center">
-                                            <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                width="50" height="50" class="mb-3" alt="" />
-                                            <p class="fw-semibold fs-3 text-warning mb-1">Employee 2</p>
+                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                alt="" class="rounded" width="100" height="100">
+                                            <p class="fw-semibold fs-3 text-warning mb-1 mt-3">Employee 2</p>
                                             <h5 class="fw-semibold text-warning mb-0">002484</h5>
                                         </div>
                                     </div>
@@ -162,9 +162,9 @@
                                 <div class="card border-0 zoom-in bg-light-info shadow-none">
                                     <div class="card-body">
                                         <div class="text-center">
-                                            <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                width="50" height="50" class="mb-3" alt="" />
-                                            <p class="fw-semibold fs-3 text-info mb-1">Employee 3</p>
+                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                alt="" class="rounded" width="100" height="100">
+                                            <p class="fw-semibold fs-3 text-info mb-1 mt-3">Employee 3</p>
                                             <h5 class="fw-semibold text-info mb-0">002484</h5>
                                         </div>
                                     </div>
@@ -174,9 +174,9 @@
                                 <div class="card border-0 zoom-in bg-light-danger shadow-none">
                                     <div class="card-body">
                                         <div class="text-center">
-                                            <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                width="50" height="50" class="mb-3" alt="" />
-                                            <p class="fw-semibold fs-3 text-danger mb-1">Employee 4</p>
+                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                alt="" class="rounded" width="100" height="100">
+                                            <p class="fw-semibold fs-3 text-danger mb-1 mt-3">Employee 4</p>
                                             <h5 class="fw-semibold text-danger mb-0">002484</h5>
                                         </div>
                                     </div>
@@ -186,9 +186,9 @@
                                 <div class="card border-0 zoom-in bg-light-success shadow-none">
                                     <div class="card-body">
                                         <div class="text-center">
-                                            <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                width="50" height="50" class="mb-3" alt="" />
-                                            <p class="fw-semibold fs-3 text-success mb-1">Employee 5</p>
+                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                alt="" class="rounded" width="100" height="100">
+                                            <p class="fw-semibold fs-3 text-success mb-1 mt-3">Employee 5</p>
                                             <h5 class="fw-semibold text-success mb-0">002484</h5>
                                         </div>
                                     </div>
@@ -198,9 +198,9 @@
                                 <div class="card border-0 zoom-in bg-light-info shadow-none">
                                     <div class="card-body">
                                         <div class="text-center">
-                                            <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                width="50" height="50" class="mb-3" alt="" />
-                                            <p class="fw-semibold fs-3 text-info mb-1">Employee 6</p>
+                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                alt="" class="rounded" width="100" height="100">
+                                            <p class="fw-semibold fs-3 text-info mb-1 mt-3">Employee 6</p>
                                             <h5 class="fw-semibold text-info mb-0">002484</h5>
                                         </div>
                                     </div>
@@ -254,9 +254,9 @@
                                     <div class="card border-0 zoom-in bg-light-primary shadow-none">
                                         <div class="card-body">
                                             <div class="text-center">
-                                                <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                    width="50" height="50" class="mb-3" alt="" />
-                                                <p class="fw-semibold fs-3 text-primary mb-1"> Employee 1</p>
+                                                <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                    alt="" class="rounded" width="100" height="100">
+                                                <p class="fw-semibold fs-3 text-primary mb-1 mt-3"> Employee 1</p>
                                                 <h5 class="fw-semibold text-primary mb-0">002484</h5>
                                             </div>
                                         </div>
@@ -266,9 +266,9 @@
                                     <div class="card border-0 zoom-in bg-light-warning shadow-none">
                                         <div class="card-body">
                                             <div class="text-center">
-                                                <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                    width="50" height="50" class="mb-3" alt="" />
-                                                <p class="fw-semibold fs-3 text-warning mb-1">Employee 2</p>
+                                                <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                    alt="" class="rounded" width="100" height="100">
+                                                <p class="fw-semibold fs-3 text-warning mb-1 mt-3">Employee 2</p>
                                                 <h5 class="fw-semibold text-warning mb-0">002484</h5>
                                             </div>
                                         </div>
@@ -278,9 +278,9 @@
                                     <div class="card border-0 zoom-in bg-light-info shadow-none">
                                         <div class="card-body">
                                             <div class="text-center">
-                                                <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                    width="50" height="50" class="mb-3" alt="" />
-                                                <p class="fw-semibold fs-3 text-info mb-1">Employee 3</p>
+                                                <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                    alt="" class="rounded" width="100" height="100">
+                                                <p class="fw-semibold fs-3 text-info mb-1 mt-3">Employee 3</p>
                                                 <h5 class="fw-semibold text-info mb-0">002484</h5>
                                             </div>
                                         </div>
@@ -290,9 +290,9 @@
                                     <div class="card border-0 zoom-in bg-light-danger shadow-none">
                                         <div class="card-body">
                                             <div class="text-center">
-                                                <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                    width="50" height="50" class="mb-3" alt="" />
-                                                <p class="fw-semibold fs-3 text-danger mb-1">Employee 4</p>
+                                                <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                    alt="" class="rounded" width="100" height="100">
+                                                <p class="fw-semibold fs-3 text-danger mb-1 mt-3">Employee 4</p>
                                                 <h5 class="fw-semibold text-danger mb-0">002484</h5>
                                             </div>
                                         </div>
@@ -302,9 +302,9 @@
                                     <div class="card border-0 zoom-in bg-light-success shadow-none">
                                         <div class="card-body">
                                             <div class="text-center">
-                                                <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                    width="50" height="50" class="mb-3" alt="" />
-                                                <p class="fw-semibold fs-3 text-success mb-1">Employee 5</p>
+                                                <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                    alt="" class="rounded" width="100" height="100">
+                                                <p class="fw-semibold fs-3 text-success mb-1 mt-3">Employee 5</p>
                                                 <h5 class="fw-semibold text-success mb-0">002484</h5>
                                             </div>
                                         </div>
@@ -314,9 +314,9 @@
                                     <div class="card border-0 zoom-in bg-light-info shadow-none">
                                         <div class="card-body">
                                             <div class="text-center">
-                                                <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-user-male.svg"
-                                                    width="50" height="50" class="mb-3" alt="" />
-                                                <p class="fw-semibold fs-3 text-info mb-1">Employee 6</p>
+                                                <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
+                                                    alt="" class="rounded" width="100" height="100">
+                                                <p class="fw-semibold fs-3 text-info mb-1 mt-3">Employee 6</p>
                                                 <h5 class="fw-semibold text-info mb-0">002484</h5>
                                             </div>
                                         </div>
