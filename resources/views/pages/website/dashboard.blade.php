@@ -683,12 +683,9 @@ $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
             let pic = $('#firstPicSelect').val();
             $.ajax({
                 type: 'get',
-                url: "{{ url('dashboard/selectFirstPic') }}",
+                url: `{{ url('dashboard/selectFirstPic/${pic}') }}`,
                 _token: "{{ csrf_token() }}",
                 dataType: 'json',
-                data: {
-                    pic: pic
-                },
                 success: function(data) {
                     if (data.status == 'success') {
                         // set local storage
@@ -737,12 +734,9 @@ $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
             let pic = $('#secondPicSelect').val();
             $.ajax({
                 type: 'get',
-                url: "{{ url('dashboard/selectSecondPic') }}",
+                url: `{{ url('dashboard/selectSecondPic/${pic}') }}`,
                 _token: "{{ csrf_token() }}",
                 dataType: 'json',
-                data: {
-                    pic: pic
-                },
                 success: function(data) {
                     if (data.status == 'success') {
                         // set local storage
