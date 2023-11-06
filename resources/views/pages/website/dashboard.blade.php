@@ -200,7 +200,7 @@ $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
     @endphp
 
     <div class="col-lg-3 col-sm-12" id="secondPicContainer">
-        <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="" id="secondPic">
+        <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#secondPicModal" id="secondPic">
             @if ($secondPic)
             <div class="card-body p-3 d-flex align-items-center gap-3">
                 <img src="{{ $secondPic->photo ? asset('uploads/doc/' . $secondPic->photo) : asset('path_to_default_image') }}" alt="" class="rounded-circle" width="60" height="60">
@@ -697,14 +697,15 @@ $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
                             notif('success', data.message);
                         }, 500);
 
-                        let color = data.role == 'leader' ? 'danger' : 'warning';
+                        let color = data.role == 'Leader' ? 'danger' : 'warning';
                         let photo = data.photo;
+                        console.log(data.photo);
 
                         $('#firstPicContainer').html('');
                         $('#firstPicContainer').html(`
-                        <div class="card shadow-md card-hover">
+                        <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#firstPicModal" id="firstPic">
                             <div class="card-body p-3 d-flex align-items-center gap-3">
-                                <img src="{{ asset('uploads/doc') }}"
+                                <img src="{{ asset('uploads/doc/${photo}') }}"
                                     alt="" class="rounded-circle" width="60" height="60">
                                 <div>
                                     <h6 class="fw-semibold mb-0">${data.name}</h6>
@@ -748,14 +749,14 @@ $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
                             notif('success', data.message);
                         }, 500);
 
-                        let color = data.role == 'leader' ? 'danger' : 'warning';
+                        let color = data.role == 'Leader' ? 'danger' : 'warning';
                         let photo = data.photo;
 
                         $('#secondPicContainer').html('');
                         $('#secondPicContainer').html(`
-                        <div class="card shadow-md card-hover">
+                        <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#secondPicModal" id="secondPic">
                             <div class="card-body p-3 d-flex align-items-center gap-3">
-                                <img src="../../public/uploads/doc/ . ${photo}"
+                                <img src="{{ asset('uploads/doc/${photo}') }}"
                                     alt="" class="rounded-circle" width="60" height="60">
                                 <div>
                                     <h6 class="fw-semibold mb-0">${data.name}</h6>
