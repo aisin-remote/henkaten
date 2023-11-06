@@ -562,21 +562,21 @@
 
         // on submit
         $('#methodModalSubmit').on('click', function() {
+            let table = 'method';
+            let status = labelText.toLowerCase().trim();
+            let lineId = getLineId();
+            let pic = $('#methodModalPicSelect').val();
+            let description = $('#methodModalDescription').val();
+
             $.ajax({
                 type: 'get',
-                url: "{{ url('dashboard/storeHenkaten') }}",
+                url: `{{ url('dashboard/storeHenkaten/${table}/${status}/${lineId}/${pic}/${description}') }}`,
                 _token: "{{ csrf_token() }}",
                 dataType: 'json',
-                data: {
-                    table: 'method',
-                    status: toLowerCase(labelText),
-                    lineId: getLineId(),
-                    pic: $('#methodModalPicSelect').val(),
-                    description: $('#methodModalDescription').val(),
-                },
                 success: function(data) {
                     if (data.status == 'success') {
-
+                        
+                        notif('success', data.message)
                     } else {
                         notif('error', data.message);
                     }

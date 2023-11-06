@@ -47,14 +47,14 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function storeHenkaten(Request $request)
+    public function storeHenkaten($table , $status , $lineId , $pic , $description)
     {
         // get all data from FE
-        $lineId = $request->lineId ? $request->lineId : null;
-        $status = $request->status ? $request->status : null;
-        $pic = $request->pic ? $request->pic : null;
-        $description = $request->description ? $request->description : null;
-        $table = $request->table ? $request->table : null;
+        $lineId = $lineId ? $lineId : null;
+        $status = $status ? $status : null;
+        $pic = $pic ? $pic : null;
+        $description = $description ? $description : null;
+        $table = $table ? $table : null;
 
         // initiate model
         $methodModel = new HenkatenMethod();

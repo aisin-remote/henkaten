@@ -39,18 +39,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [DashboardController::class, 'index']);
     
     // dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::prefix('dashboard')->group(function(){
-        Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::get('{lineId}', [DashboardController::class, 'dashboardLine'])->name('dashboard.line');
-        Route::get('storeHenkaten', [DashboardController::class, 'storeHenkaten'])->name('dashboard.storeHenkaten');
+        Route::get('storeHenkaten/{table}/{status}/{lineId}/{pic}/{description}', [DashboardController::class, 'storeHenkaten'])->name('dashboard.storeHenkaten');
         Route::get('selectTheme/{theme}', [DashboardController::class, 'selectTheme'])->name('dashboard.theme');
         Route::get('selectFirstPic', [DashboardController::class, 'selectFirstPic'])->name('dashboard.firstPic');
         Route::get('selectSecondPic', [DashboardController::class, 'selectSecondPic'])->name('dashboard.SecondPic');
     });
 
     // employees 
+    Route::get('/employee', [EmployeeController::class, 'index'])->name('employee.index');
     Route::prefix('/employee')->group(function(){
-        Route::get('/', [EmployeeController::class, 'index'])->name('employee.index');
         // regist employees
         Route::get('/register', [EmployeeController::class, 'employeeRegister'])->name('employeeRegister.index');  
         Route::post('/store', [EmployeeController::class, 'employeeStore'])->name('employee.store');  
@@ -66,8 +66,8 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // regist employee skill
+    Route::get('/skill', [skillController::class, 'index'])->name('skill.index');
     Route::prefix('/skill')->group(function () {
-        Route::get('/', [skillController::class, 'index'])->name('skill.index');
         Route::post('/regist', [skillController::class, 'regist'])->name('skill.regist');
         Route::get('/minimum', [skillController::class, 'minimumIndex'])->name('skill.minimum.index');
         Route::post('/minimumRegist', [skillController::class, 'minimumRegist'])->name('skill.minimum.regist');
