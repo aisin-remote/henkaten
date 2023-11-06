@@ -147,7 +147,7 @@
                     <div>
                         <h5 class="fw-semibold mb-0">Tema Safety</h5>
                         <span
-                            class="fs-2 d-flex align-items-center py-1 d-inline">{{ Carbon\Carbon::now()->isoFormat('ll') }}
+                            class="fs-2 d-flex align-items-center py-1 d-inline">{{ Carbon\Carbon::now()->format('l, j F Y') }}
                             <span id="time" class="fs-2 px-2"></span></span>
                     </div>
                     @php
@@ -212,8 +212,7 @@
         @endphp
 
         <div class="col-lg-3 col-sm-12" id="secondPicContainer">
-            <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#secondPicModal"
-                id="secondPic">
+            <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="" id="secondPic">
                 @if ($secondPic)
                     <div class="card-body p-3 d-flex align-items-center gap-3">
                         <img src="{{ $secondPic->photo ? asset('uploads/doc/' . $secondPic->photo) : asset('path_to_default_image') }}"
@@ -233,6 +232,42 @@
             </div>
         </div>
 
+        @php
+            $statusMappings = [
+                'running' => ['priority' => 1, 'overall' => 'RUNNING', 'shape' => 'circle', 'color' => 'success'],
+                'henkaten' => ['priority' => 2, 'overall' => 'HENKATEN', 'shape' => 'triangle', 'color' => 'warning'],
+                'stop' => ['priority' => 3, 'overall' => 'STOP', 'shape' => 'x', 'color' => 'danger'],
+            ];
+
+            $items = ['man', 'method', 'machine', 'material'];
+            $summaryResultsItem = [];
+
+            // function to get summary each item
+            if (!function_exists('getOverallItem')) {
+                function getOverallItem($lines, $item, $statusMappings)
+                {
+                    $worstPriorityItem = 0;
+                    $overallStatusItem = '';
+
+                    foreach ($lines as $line) {
+                        $statusItem = $line->{"status_$item"};
+                        if (isset($statusMappings[$statusItem])) {
+                            $priorityItem = $statusMappings[$statusItem]['priority'];
+                            if ($priorityItem > $worstPriorityItem) {
+                                $worstPriorityItem = $priorityItem;
+                                $overallStatusItem = $statusMappings[$statusItem]['overall'];
+                            }
+                        }
+                    }
+
+                    return $overallStatusItem;
+                }
+            }
+
+            foreach ($items as $item) {
+                $summaryResultsItem[$item] = getOverallItem($lines, $item, $statusMappings);
+            }
+        @endphp
     </div>
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-8">
@@ -247,13 +282,12 @@
                                             <div class="col-lg-9">
                                                 <h1 class="fw-bolder text-center pt-3"
                                                     style="font-size: 1em; display:block; font-weight:900 !important; font-size:80px !important">
-                                                    ALL
-                                                    LINE
+                                                    OVERALL
                                                     <br> DIE
                                                     CASTING
                                                 </h1>
                                             </div>
-                                            <div class="col-lg-3 text-center">
+                                            <div class="col-lg-3 text-center" id="overallShape">
                                                 <img src="{{ asset('assets/images/running.svg') }}" class="dark-logo"
                                                     width="240" alt="" />
                                             </div>
@@ -263,82 +297,64 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-3 col-sm-12">
-                                <div class="card overflow-hidden card-hover">
-                                    <div class="card-body bg-white text-center text-muted p-10">
-                                        <div class="p-30">
-                                            <img src="{{ asset('assets/images/running-medium.svg') }}" class="dark-logo"
-                                                width="180" alt="" />
+                            @foreach ($items as $item)
+                                @php
+                                    $overallStatus = $summaryResultsItem[$item];
+
+                                    if (!function_exists('overallMapStatusToShape')) {
+                                        function overallMapStatusToShape($status)
+                                        {
+                                            switch ($status) {
+                                                case 'RUNNING':
+                                                    return 'circle';
+                                                case 'HENKATEN':
+                                                    return 'triangle';
+                                                case 'STOP':
+                                                    return 'x';
+                                                default:
+                                                    return '';
+                                            }
+                                        }
+                                    }
+
+                                    if (!function_exists('overallMapStatusToColor')) {
+                                        function overallMapStatusToColor($status)
+                                        {
+                                            switch ($status) {
+                                                case 'RUNNING':
+                                                    return 'success';
+                                                case 'HENKATEN':
+                                                    return 'warning';
+                                                case 'STOP':
+                                                    return 'danger';
+                                                default:
+                                                    return 'dark';
+                                            }
+                                        }
+                                    }
+
+                                    $shape = overallMapStatusToShape($overallStatus);
+                                    $color = overallMapStatusToColor($overallStatus);
+                                @endphp
+                                <div class="col-md-3 col-sm-12">
+                                    <div class="card overflow-hidden card-hover">
+                                        <div class="card-body bg-white text-center text-muted p-10">
+                                            <div class="p-30">
+                                                <i class="ti ti-{{ $shape }} fs-7 mb-2"></i>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="card-footer text-white bg-success p-30">
-                                        <div class=" no-block align-items-center">
-                                            <div class="text-center">
-                                                <h3 class="font-weight-medium text-white fs-6">
-                                                    MAN
-                                                </h3>
+                                        <div class="card-footer text-white bg-{{ $color }} p-30">
+                                            <div class=" no-block align-items-center">
+                                                <div class="text-center">
+                                                    <h3 class="font-weight-medium text-white fs-6">
+                                                        {{ strtoupper($item) }}
+                                                    </h3>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-3 col-sm-12">
-                                <div class="card overflow-hidden card-hover">
-                                    <div class="card-body bg-white text-center text-muted p-10">
-                                        <div class="p-30">
-                                            <img src="{{ asset('assets/images/running-medium.svg') }}" class="dark-logo"
-                                                width="180" alt="" />
-                                        </div>
-                                    </div>
-                                    <div class="card-footer text-white bg-success p-30">
-                                        <div class=" no-block align-items-center">
-                                            <div class="text-center">
-                                                <h3 class="font-weight-medium text-white fs-6">
-                                                    METHOD
-                                                </h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-12">
-                                <div class="card overflow-hidden card-hover">
-                                    <div class="card-body bg-white text-center text-muted p-10">
-                                        <div class="p-30">
-                                            <img src="{{ asset('assets/images/running-medium.svg') }}" class="dark-logo"
-                                                width="180" alt="" />
-                                        </div>
-                                    </div>
-                                    <div class="card-footer text-white bg-success p-30">
-                                        <div class=" no-block align-items-center">
-                                            <div class="text-center">
-                                                <h3 class="font-weight-medium text-white fs-6">
-                                                    MACHINE
-                                                </h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-12">
-                                <div class="card overflow-hidden card-hover">
-                                    <div class="card-body bg-white text-center text-muted p-10">
-                                        <div class="p-30">
-                                            <img src="{{ asset('assets/images/running-medium.svg') }}" class="dark-logo"
-                                                width="180" alt="" />
-                                        </div>
-                                    </div>
-                                    <div class="card-footer text-white bg-success p-30">
-                                        <div class=" no-block align-items-center">
-                                            <div class="text-center">
-                                                <h3 class="font-weight-medium text-white fs-6">
-                                                    MATERIAL
-                                                </h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            @endforeach
                         </div>
                         <div class="row">
                             <div class="col-12">
@@ -359,316 +375,163 @@
         <div class="col-md-12 col-lg-4">
             <div class="row vertical-carousel">
                 <div class="carousel-inner">
-                    <div class="col-md-12 col-lg-4 carousel-item" id="dc1">
-                        <div class="card overflow-hidden shadow card-hover" style="width:100%">
-                            <div class="card-body bg-info text-white text-center p-10">
-                                <div class="d-inline-block">
-                                    <h3 class="text-light fw-bolder">DCAA01</h3>
+                    @foreach ($lines as $line)
+                        <div class="col-md-12 col-lg-4 carousel-item dc-card" id="{{ $line->id }}">
+                            <div class="card overflow-hidden shadow card-hover" style="width:100%">
+                                <div class="card-body bg-info text-white text-center p-10">
+                                    <div class="d-inline-block">
+                                        <h3 class="text-light fw-bolder">{{ $line->name }}</h3>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="card-body bg-success text-white text-center p-1 pt-2">
-                                <div class="d-inline-block">
-                                    <h4 class="text-light fw-bold">RUNNING</h4>
+                                @php
+                                    $statusMappings = [
+                                        'running' => ['priority' => 1, 'overall' => 'RUNNING', 'shape' => 'circle', 'color' => 'success'],
+                                        'henkaten' => ['priority' => 2, 'overall' => 'HENKATEN', 'shape' => 'triangle', 'color' => 'warning'],
+                                        'stop' => ['priority' => 3, 'overall' => 'STOP', 'shape' => 'x', 'color' => 'danger'],
+                                    ];
+
+                                    // summaery all line
+                                    $worstPriority = 0;
+                                    $overall_status = $shape_status = $color_status = '';
+
+                                    // summary of all line
+                                    foreach (['man', 'machine', 'method', 'material'] as $property) {
+                                        $status = $line->{"status_$property"};
+
+                                        if (isset($statusMappings[$status])) {
+                                            $priority = $statusMappings[$status]['priority'];
+                                            if ($priority > $worstPriority) {
+                                                $worstPriority = $priority;
+                                                $overall_status = $statusMappings[$status]['overall'];
+                                                $shape_status = $statusMappings[$status]['shape'];
+                                                $color_status = $statusMappings[$status]['color'];
+                                            }
+                                        }
+                                    }
+
+                                    $overallStatuses[] = $overall_status;
+
+                                    // Check if the function exists before declaring it
+                                    if (!function_exists('mapStatus')) {
+                                        function mapStatus($status)
+                                        {
+                                            switch ($status) {
+                                                case 'running':
+                                                    return 'NO HENKATEN';
+                                                case 'henkaten':
+                                                    return 'HENKATEN';
+                                                case 'stop':
+                                                    return 'STOP';
+                                                default:
+                                                    return 'OFF';
+                                            }
+                                        }
+                                    }
+
+                                    if (!function_exists('mapStatusToShape')) {
+                                        function mapStatusToShape($status)
+                                        {
+                                            switch ($status) {
+                                                case 'running':
+                                                    return 'circle';
+                                                case 'henkaten':
+                                                    return 'triangle';
+                                                case 'stop':
+                                                    return 'x';
+                                                default:
+                                                    return '';
+                                            }
+                                        }
+                                    }
+
+                                    if (!function_exists('mapStatusToColor')) {
+                                        function mapStatusToColor($status)
+                                        {
+                                            switch ($status) {
+                                                case 'running':
+                                                    return 'success';
+                                                case 'henkaten':
+                                                    return 'warning';
+                                                case 'stop':
+                                                    return 'danger';
+                                                default:
+                                                    return 'dark';
+                                            }
+                                        }
+                                    }
+
+                                    // Assign status for each status property
+                                    $status_man = mapStatus($line->status_man);
+                                    $status_method = mapStatus($line->status_method);
+                                    $status_material = mapStatus($line->status_material);
+                                    $status_machine = mapStatus($line->status_machine);
+
+                                    // Assign shapes for each status property
+                                    $shape_man = mapStatusToShape($line->status_man);
+                                    $shape_method = mapStatusToShape($line->status_method);
+                                    $shape_material = mapStatusToShape($line->status_material);
+                                    $shape_machine = mapStatusToShape($line->status_machine);
+
+                                    // Assign color for each status property
+                                    $color_man = mapStatusToColor($line->status_man);
+                                    $color_method = mapStatusToColor($line->status_method);
+                                    $color_material = mapStatusToColor($line->status_material);
+                                    $color_machine = mapStatusToColor($line->status_machine);
+                                @endphp
+                                <div class="card-body bg-{{ $color_status }} text-white text-center p-1 pt-2">
+                                    <div class="d-inline-block">
+                                        <h4 class="text-light fw-bold">{{ $overall_status }}</h4>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="card-footer bg-white">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="row text-center">
-                                            <div class="col border-end">
-                                                <div class="mb-2">MEN</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">MACHINE</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">METHOD</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col">
-                                                <div class="mb-2">MATERIAL</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
+                                <div class="card-footer bg-white">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="row text-center">
+                                                <div class="col border-end">
+                                                    <div class="mb-2">MEN</div>
+                                                    <i class="ti ti-{{ $shape_man }} fs-7 mb-2"></i>
+                                                </div>
+                                                <div class="col border-end">
+                                                    <div class="mb-2">MACHINE</div>
+                                                    <i class="ti ti-{{ $shape_machine }} fs-7 mb-2"></i>
+                                                </div>
+                                                <div class="col border-end">
+                                                    <div class="mb-2">METHOD</div>
+                                                    <i class="ti ti-{{ $shape_method }} fs-7 mb-2"></i>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="mb-2">MATERIAL</div>
+                                                    <i class="ti ti-{{ $shape_material }} fs-7 mb-2"></i>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-12 col-lg-4 carousel-item" id="dc2">
-                        <div class="card overflow-hidden shadow card-hover" style="width:100%">
-                            <div class="card-body bg-info text-white text-center p-10">
-                                <div class="d-inline-block">
-                                    <h3 class="text-light fw-bolder">DCAA02</h3>
-                                </div>
-                            </div>
-                            <div class="card-body bg-success text-white text-center p-1 pt-2">
-                                <div class="d-inline-block">
-                                    <h4 class="text-light fw-bold">RUNNING</h4>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-white">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="row text-center">
-                                            <div class="col border-end">
-                                                <div class="mb-2">MEN</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">MACHINE</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">METHOD</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col">
-                                                <div class="mb-2">MATERIAL</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12 col-lg-4 carousel-item" id="dc3">
-                        <div class="card overflow-hidden shadow card-hover" style="width:100%">
-                            <div class="card-body bg-info text-white text-center p-10">
-                                <div class="d-inline-block">
-                                    <h3 class="text-light fw-bolder">DCAA03</h3>
-                                </div>
-                            </div>
-                            <div class="card-body bg-success text-white text-center p-1 pt-2">
-                                <div class="d-inline-block">
-                                    <h4 class="text-light fw-bold">RUNNING</h4>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-white">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="row text-center">
-                                            <div class="col border-end">
-                                                <div class="mb-2">MEN</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">MACHINE</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">METHOD</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col">
-                                                <div class="mb-2">MATERIAL</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12 col-lg-4 carousel-item" id="dc4">
-                        <div class="card overflow-hidden shadow card-hover" style="width:100%">
-                            <div class="card-body bg-info text-white text-center p-10">
-                                <div class="d-inline-block">
-                                    <h3 class="text-light fw-bolder">DCAA04</h3>
-                                </div>
-                            </div>
-                            <div class="card-body bg-success text-white text-center p-1 pt-2">
-                                <div class="d-inline-block">
-                                    <h4 class="text-light fw-bold">RUNNING</h4>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-white">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="row text-center">
-                                            <div class="col border-end">
-                                                <div class="mb-2">MEN</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">MACHINE</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">METHOD</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col">
-                                                <div class="mb-2">MATERIAL</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12 col-lg-4 carousel-item" id="dc5">
-                        <div class="card overflow-hidden shadow card-hover" style="width:100%">
-                            <div class="card-body bg-info text-white text-center p-10">
-                                <div class="d-inline-block">
-                                    <h3 class="text-light fw-bolder">DCAA05</h3>
-                                </div>
-                            </div>
-                            <div class="card-body bg-success text-white text-center p-1 pt-2">
-                                <div class="d-inline-block">
-                                    <h4 class="text-light fw-bold">RUNNING</h4>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-white">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="row text-center">
-                                            <div class="col border-end">
-                                                <div class="mb-2">MEN</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">MACHINE</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">METHOD</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col">
-                                                <div class="mb-2">MATERIAL</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12 col-lg-4 carousel-item" id="dc6">
-                        <div class="card overflow-hidden shadow card-hover" style="width:100%">
-                            <div class="card-body bg-info text-white text-center p-10">
-                                <div class="d-inline-block">
-                                    <h3 class="text-light fw-bolder">DCAA06</h3>
-                                </div>
-                            </div>
-                            <div class="card-body bg-success text-white text-center p-1 pt-2">
-                                <div class="d-inline-block">
-                                    <h4 class="text-light fw-bold">RUNNING</h4>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-white">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="row text-center">
-                                            <div class="col border-end">
-                                                <div class="mb-2">MEN</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">MACHINE</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">METHOD</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col">
-                                                <div class="mb-2">MATERIAL</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12 col-lg-4 carousel-item" id="dc7">
-                        <div class="card overflow-hidden shadow card-hover" style="width:100%">
-                            <div class="card-body bg-info text-white text-center p-10">
-                                <div class="d-inline-block">
-                                    <h3 class="text-light fw-bolder">DCAA07</h3>
-                                </div>
-                            </div>
-                            <div class="card-body bg-success text-white text-center p-1 pt-2">
-                                <div class="d-inline-block">
-                                    <h4 class="text-light fw-bold">RUNNING</h4>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-white">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="row text-center">
-                                            <div class="col border-end">
-                                                <div class="mb-2">MEN</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">MACHINE</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">METHOD</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col">
-                                                <div class="mb-2">MATERIAL</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12 col-lg-4 carousel-item" id="dc8">
-                        <div class="card overflow-hidden shadow card-hover" style="width:100%">
-                            <div class="card-body bg-info text-white text-center p-10">
-                                <div class="d-inline-block">
-                                    <h3 class="text-light fw-bolder">DCAA08</h3>
-                                </div>
-                            </div>
-                            <div class="card-body bg-success text-white text-center p-1 pt-2">
-                                <div class="d-inline-block">
-                                    <h4 class="text-light fw-bold">RUNNING</h4>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-white">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="row text-center">
-                                            <div class="col border-end">
-                                                <div class="mb-2">MEN</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">MACHINE</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col border-end">
-                                                <div class="mb-2">METHOD</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                            <div class="col">
-                                                <div class="mb-2">MATERIAL</div>
-                                                <i class="ti ti-circle fs-7 mb-2"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    @endforeach
+
+                    @php
+                        // Determine the overall status for all lines
+                        $worstOverallPriority = 0;
+                        $overall_status_all_lines = ''; // Different variable name for overall status for all lines
+
+                        foreach ($overallStatuses as $status) {
+                            $priority = array_search($status, array_column($statusMappings, 'overall'));
+                            if ($priority >= $worstOverallPriority) {
+                                $worstOverallPriority = $priority;
+                                $overall_status_all_lines = $status;
+                            }
+                        }
+
+                    @endphp
                 </div>
             </div>
         </div>
     </div>
 
-
+    {{-- hidden for  --}}
+    <input type="hidden" value="{{ $overall_status_all_lines }}" id="overall_line_status"></input>
 
     <!-- pic modal 1-->
     <div class="modal fade" id="firstPicModal" tabindex="-1" aria-labelledby="themeModalLabel" aria-hidden="true">
@@ -785,6 +648,27 @@
 
     $(document).ready(function() {
         initApp();
+
+        // overall line status dashboard
+        let overallStatus = $('#overall_line_status').val();
+
+        function getShape(status) {
+            switch (overallStatus) {
+                case 'RUNNING':
+                    return `<img src="{{ asset('assets/images/running.svg') }}" class="dark-logo"
+                                                    width="240" alt="" />`;
+                case 'HENKATEN':
+                    return `<img src="{{ asset('assets/images/henkaten.svg') }}" class="dark-logo"
+                                                    width="240" alt="" />`;
+                case 'STOP':
+                    return `<img src="{{ asset('assets/images/stop.svg') }}" class="dark-logo"
+                                                    width="240" alt="" />`;
+                default:
+                    return 'dark';
+            }
+        }
+
+        $('#overallShape').html(getShape(overallStatus));
 
         // Update the time every second
         setInterval(updateTime, 1000);
@@ -917,7 +801,7 @@
             let theme = $('#themeSelect').val();
             $.ajax({
                 type: 'get',
-                url: "{{ url('dashboard/selectTheme') }}",
+                url: `{{ url('dashboard/selectTheme/${theme}') }}`,
                 _token: "{{ csrf_token() }}",
                 dataType: 'json',
                 data: {
@@ -969,8 +853,9 @@
             $('#secondPic').attr('data-bs-target', '#secondPicModal');
         });
 
-        $('#dc6, #dc7, #dc8, #dc1, #dc2, #dc3, #dc4, #dc5').on('click', function() {
-            window.location.replace("{{ url('/line') }}");
+        $('.dc-card').on('click', function() {
+            let idCard = $(this).attr('id');
+            window.location.replace(`{{ url('/dashboard/${idCard}') }}`);
         });
     });
 </script>

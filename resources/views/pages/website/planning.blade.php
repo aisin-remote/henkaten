@@ -106,8 +106,8 @@
                         </button>
                         <div class="mt-3 mb-3">
                             <label for="" class="pb-1 text-muted">Active from</label>
-                            <input type="date" class="form-control" placeholder="Designation" name="active_from"
-                                required>
+                            <input type="date" class="form-control" placeholder="Designation" name="active_from" required
+                                min="{{ date('Y-m-d') }}">
                         </div>
                         <div class="mb-3">
                             <button
@@ -277,11 +277,14 @@
                     if (data.status == 'success') {
                         let minimumSkills = data.data;
                         minimumSkillCount = minimumSkills.length
+                        console.log(minimumSkills);
                         if (minimumSkillCount == 0) {
+                            console.log('test1')
                             flag++;
                         }
 
                         if (minimumSkillCount !== skillCount) {
+                            console.log('test2')
                             flag++;
                         }
 
@@ -293,6 +296,7 @@
                                     let employeeSkill = localStorage.getItem(key);
                                     let minimumSkills = item.skill.level;
                                     if (employeeSkill < minimumSkills) {
+                                        console.log('test3')
                                         flag++;
                                     }
                                 }

@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Line;
 use App\Models\Pivot;
+use App\Models\Shift;
 use App\Models\Theme;
 use App\Models\Employee;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\HenkatenMethod;
+use App\Models\HenkatenMachine;
+use App\Models\HenkatenMaterial;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
@@ -30,13 +35,106 @@ class DashboardController extends Controller
             'employees' => Employee::select('id','name')
                             ->whereIn('role',['Leader','JP'])
                             ->get(),
+            'lines' => Line::all()
         ]);
     }
 
-    public function selectTheme(Request $request)
+    public function dashboardLine(Line $lineId) 
     {
-        $theme = $request->theme;
-        if($theme == 0){
+        return view('pages.website.line',[
+            'line' => Line::findOrFail($lineId->id),
+            'employees' => Employee::all()
+        ]);
+    }
+
+    public function storeHenkaten(Request $request)
+    {
+        // get all data from FE
+        $lineId = $request->lineId ? $request->lineId : null;
+        $status = $request->status ? $request->status : null;
+        $pic = $request->pic ? $request->pic : null;
+        $description = $request->description ? $request->description : null;
+        $table = $request->table ? $request->table : null;
+
+        // initiate model
+        $methodModel = new HenkatenMethod();
+        $machineModel = new HenkatenMachine();
+        $materialModel = new HenkatenMaterial();
+
+        $currentTime = Carbon::now();
+        $shifts = Shift::all();
+        $shiftId = null;
+
+        foreach ($shifts as $shift) {
+            if($currentTime->between($shift->time_start, $shift->time_end)){
+                $shiftId = $shift->id;
+                break;
+            }
+        }
+
+        function insertHenkaten($model, $shiftId, $lineId, $pic, $description){
+            $result = $model->create([
+                'shift_id' => $shiftId,
+                'line_id' => $lineId,
+                'pic' => $pic,
+                'henkaten_description' => $description,
+                'type' => 'unplan',
+                'date' => Carbon::now()->format('Y-m-d H:i:s'),
+            ]);
+
+            return $result;
+        }
+
+        try {
+            DB::beginTransaction();
+
+            if($table == 'method'){
+                // insert into henkaten table
+                insertHenkaten($methodModel, $shiftId, $lineId, $pic, $description);
+
+                // insert into line table
+                Line::where('id', $lineId)->update([
+                    'status_method' => $status
+                ]);
+                
+            }else if($table == 'machine'){
+                // insert into henkaten table
+                insertHenkaten($machineModel, $shiftId, $lineId, $pic, $description);
+
+                // insert into line table
+                Line::where('id', $lineId)->update([
+                    'status_machine' => $status
+                ]);
+                
+            }else if($table == 'material'){
+                // insert into henkaten table
+                insertHenkaten($materialModel, $shiftId, $lineId, $pic, $description);
+
+                // insert into line table
+                Line::where('id', $lineId)->update([
+                    'status_material' => $status
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Henkaten berhasil tersimpan!'
+            ]);
+            
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ]);
+        }
+    }
+
+    public function selectTheme(Theme $theme)
+    {
+        if(!$theme){
             return response()->json([
                 'status' => 'error',
                 'message' => 'Pilih tema yang tersedia!'
@@ -44,7 +142,7 @@ class DashboardController extends Controller
         }
 
         // get theme name
-        $theme_name = Theme::select('name')->where('id',$theme)->first();
+        $theme_name = Theme::select('name')->where('id',$theme->id)->first();
 
         // get current pivot
         $current_date = Carbon::now()->toDateString();
@@ -55,7 +153,7 @@ class DashboardController extends Controller
                 
                 // insert new data if pivot table is empty
                 Pivot::create([
-                    'theme_id' => $theme,
+                    'theme_id' => $theme->id,
                     'active_date' => $current_date
                 ]);
 
@@ -72,7 +170,7 @@ class DashboardController extends Controller
                 DB::beginTransaction();
 
                 $pivot->update([
-                    'theme_id' => $theme
+                    'theme_id' => $theme->id
                 ]);
 
                 DB::commit();
@@ -88,7 +186,7 @@ class DashboardController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Tema berhasil ditambahkan!',
-            'theme_id' => $theme,
+            'theme_id' => $theme->id,
             'theme_name' => $theme_name->name,
         ],200);
     }

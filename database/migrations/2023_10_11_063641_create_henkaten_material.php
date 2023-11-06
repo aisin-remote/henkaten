@@ -20,7 +20,7 @@ return new class extends Migration
             $table->enum('type', ['plan','unplan']);
             $table->timestamp('date');
             $table->string('troubleshoot')->nullable();
-            $table->string('approval');
+            $table->string('approval')->nullable();
             $table->timestamps();
         });
     }

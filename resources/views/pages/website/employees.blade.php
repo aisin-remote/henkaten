@@ -1,7 +1,25 @@
 @extends('layouts.root.main')
 
 @section('main')
-    <div class="col-md-12" style="margin-top: -50px">
+    <div class="col-lg-6 col-md-12 col-12">
+        <div class="card shadow-md card-hover">
+            <div class="card-body p-3 d-flex align-items-center gap-3" id="themeContainer">
+                <div>
+                    <h5 class="fw-semibold mb-0">Periode Planning</h5>
+                    <span class="fs-2 d-flex align-items-center py-1 d-inline">{{ Carbon\Carbon::now()->format('l, j F Y') }}
+                        <span id="time" class="fs-2 px-2"></span></span>
+                </div>
+
+                <button type="button" class="btn btn-secondary py-2 px-5 ms-auto" data-bs-toggle="modal"
+                    data-bs-target="#modalTheme" style="border: 3px none #686868">
+                    <h4 class="fw-bolder pt-1" style="color: white">
+                        {{ Carbon\Carbon::now()->format('l, j F Y') }}
+                    </h4>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
         <div class="card">
             <div class="card-body">
                 <!-- Nav tabs -->
@@ -9,7 +27,7 @@
                     <li class="nav-item" role="presentation">
                         <a class="nav-link active" data-bs-toggle="tab" href="#navpill-111" role="tab"
                             aria-selected="true">
-                            <span>Shift 1</span>
+                            <span style="font-weight: bolder">Shift 1</span>
                         </a>
                     </li>
                 </ul>
@@ -88,36 +106,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane p-3" id="navpill-222" role="tabpanel">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <p>
-                                    Raw denim you probably haven't heard of them jean
-                                    shorts Austin. Nesciunt tofu stumptown aliqua,
-                                    retro synth master cleanse. Mustache cliche
-                                    tempor, williamsburg carles vegan helvetica.
-                                </p>
-                            </div>
-                            <div class="col-md-4">
-                                <img src="../../dist/images/big/img1.jpg" alt="" class="img-fluid">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane p-3" id="navpill-333" role="tabpanel">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <img src="../../dist/images/big/img3.jpg" alt="" class="img-fluid">
-                            </div>
-                            <div class="col-md-8">
-                                <p>
-                                    Raw denim you probably haven't heard of them jean
-                                    shorts Austin. Nesciunt tofu stumptown aliqua,
-                                    retro synth master cleanse. Mustache cliche
-                                    tempor, williamsburg carles vegan helvetica.
-                                </p>
                             </div>
                         </div>
                     </div>
@@ -126,7 +114,7 @@
                     <li class="nav-item" role="presentation">
                         <a class="nav-link active" data-bs-toggle="tab" href="#navpill-111" role="tab"
                             aria-selected="true">
-                            <span>Shift 2</span>
+                            <span style="font-weight: bolder">Shift 2</span>
                         </a>
                     </li>
                 </ul>
@@ -208,41 +196,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane p-3" id="navpill-222" role="tabpanel">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <p>
-                                    Raw denim you probably haven't heard of them jean
-                                    shorts Austin. Nesciunt tofu stumptown aliqua,
-                                    retro synth master cleanse. Mustache cliche
-                                    tempor, williamsburg carles vegan helvetica.
-                                </p>
-                            </div>
-                            <div class="col-md-4">
-                                <img src="../../dist/images/big/img1.jpg" alt="" class="img-fluid">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane p-3" id="navpill-333" role="tabpanel">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <img src="../../dist/images/big/img3.jpg" alt="" class="img-fluid">
-                            </div>
-                            <div class="col-md-8">
-                                <p>
-                                    Raw denim you probably haven't heard of them jean
-                                    shorts Austin. Nesciunt tofu stumptown aliqua,
-                                    retro synth master cleanse. Mustache cliche
-                                    tempor, williamsburg carles vegan helvetica.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
                     <ul class="nav nav-pills nav-fill mt-4" role="tablist">
                         <li class="nav-item" role="presentation">
                             <a class="nav-link active" data-bs-toggle="tab" href="#navpill-111" role="tab"
                                 aria-selected="true">
-                                <span>Shift 3</span>
+                                <span style="font-weight: bolder">Shift 3</span>
                             </a>
                         </li>
                     </ul>

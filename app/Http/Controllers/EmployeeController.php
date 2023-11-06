@@ -16,6 +16,17 @@ use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends Controller
 {
+    public function index()
+    {
+        // get current date
+        $currentDate = Carbon::now();
+
+        // get active employee at this period of time (today)
+        
+        
+        return view('pages.website.employees');
+    }
+    
     public function employeeRegister()
     {
         return view('pages.website.registEmployee',[
@@ -108,9 +119,13 @@ class EmployeeController extends Controller
 
         // current date
         $currentDate = Carbon::parse($request->active_from);
+
+        // get remaining day current date
+        $lastDay = $currentDate->endOfWeek();
+        $remainingDays = $currentDate->diffInDays($lastDay);
         
         // set end date
-        $endDate = $currentDate->addDays(5);
+        $endDate = $currentDate->addDays($remainingDays);
 
         // get all active from date
         $startDate = EmployeeActive::select('active_from')
@@ -118,8 +133,10 @@ class EmployeeController extends Controller
                         ->first();
                         
         // if the "active_from" date isnt outside the range or the data is empty, you cant create new records
-        if($startDate || $currentDate->between($startDate,$endDate)){
-            return redirect()->back()->with('error', 'Planning gagal dibuat, range tanggal sudah terisi!');
+        if($startDate){
+            if(Carbon::parse($request->active_from)->between(Carbon::parse($request->active_from)->startOfWeek(),$endDate)){
+                return redirect()->back()->with('error', 'Planning gagal dibuat, range tanggal sudah terisi!');
+            }
         }
         
         try {
@@ -131,7 +148,8 @@ class EmployeeController extends Controller
                         'shift_id' => $request->shift,
                         'line_id' => $request->line,
                         'pos' => $pos[$i],
-                        'active_from' => $currentDate
+                        'active_from' => $request->active_from,
+                        'expired_at' => $endDate
                     ]);
                 }
                 
@@ -139,7 +157,8 @@ class EmployeeController extends Controller
                     PicActive::create([
                         'employee_id' => $pics[$i],
                         'line_id' => $request->line,
-                        'active_from' => $currentDate
+                        'active_from' => $request->active_from,
+                        'expired_at' => $endDate
                     ]);
                 }
                 

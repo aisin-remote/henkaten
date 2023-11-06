@@ -76,11 +76,11 @@
                 <!-- Tabler Icon -->
                 <!-- =================== -->
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link" href="/employees" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link" href="/employee" aria-expanded="false">
                         <span class="rounded-3">
                             <i class="ti ti-users"></i>
                         </span>
-                        <span class="hide-menu">Employees</span>
+                        <span class="hide-menu">Employee</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
