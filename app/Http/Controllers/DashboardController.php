@@ -177,6 +177,7 @@ class DashboardController extends Controller
                 'id' => $item->id,
                 'type' => 'Material',
                 'status' => $item->status,
+                'status_after' => $item->status_after,
                 'problem' => $item->henkaten_problem, 
                 'description' => $item->henkaten_description,
                 'date' => $item->date,
