@@ -349,7 +349,7 @@ class DashboardController extends Controller
                                 ->where('status_after', null)
                                 ->where('line_id', $lineId)
                                 ->latest()
-                                ->get();
+                                ->first();
                                 
                 if(!$otherStat){
                     // insert into line table
@@ -371,7 +371,7 @@ class DashboardController extends Controller
                                 ->where('status_after', null)
                                 ->where('line_id', $lineId)
                                 ->latest()
-                                ->get();
+                                ->first();
 
                 if(!$otherStat){
                     // insert into line table
