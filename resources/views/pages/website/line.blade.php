@@ -13,7 +13,6 @@
 
         foreach (['man', 'machine', 'method', 'material'] as $property) {
             $status = $line->{"status_$property"};
-
             if (isset($statusMappings[$status])) {
                 $priority = $statusMappings[$status]['priority'];
                 if ($priority > $worstPriority) {
@@ -100,6 +99,7 @@
                 'color' => $color_method,
                 'status' => $status_method,
                 'shape' => $shape_method,
+                'history' => $methodHistory,
             ],
             [
                 'modalId' => 'manModal',
@@ -108,6 +108,7 @@
                 'color' => $color_man,
                 'status' => $status_man,
                 'shape' => $shape_man,
+                'history' => $manHistory,
             ],
             [
                 'modalId' => 'materialModal',
@@ -116,6 +117,7 @@
                 'color' => $color_material,
                 'status' => $status_material,
                 'shape' => $shape_material,
+                'history' => $materialHistory,
             ],
             [
                 'modalId' => 'machineModal',
@@ -124,8 +126,8 @@
                 'color' => $color_machine,
                 'status' => $status_machine,
                 'shape' => $shape_machine,
+                'history' => $machineHistory,
             ],
-            // Add more modals here as needed
         ];
     @endphp
 
@@ -133,7 +135,7 @@
     @foreach ($modals as $modal)
         <div class="modal fade" id="{{ $modal['modalId'] }}" tabindex="-1" aria-labelledby="bs-example-modal-lg"
             style="display: none;" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header d-flex align-items-center">
                         <h4 class="modal-title" id="myLargeModalLabel">
@@ -143,47 +145,66 @@
                     </div>
                     <form class="mt-3">
                         <div class="modal-body">
-                            <div class="statusRadio text-center">
-                                <div class="btn-group" data-bs-toggle="buttons">
-                                    <label class="btn btn-light-primary text-primary font-medium">
-                                        <div class="form-check">
-                                            <input type="radio" id="{{ $modal['modalId'] }}RunningRadio"
-                                                class="running-radio form-check-input" name="{{ $modal['modalId'] }}Status"
-                                                value="running" @if ($modal['status'] == 'NO HENKATEN') checked @endif>
-                                            <label class="form-check-label" for="{{ $modal['modalId'] }}RunningRadio">
-                                                <span class="d-none d-md-block">
-                                                    RUNNING
-                                                </span>
-                                            </label>
-                                        </div>
-                                    </label>
-                                    <label class="btn btn-light-primary text-primary font-medium">
-                                        <div class="form-check">
-                                            <input type="radio" id="{{ $modal['modalId'] }}HenkatenRadio"
-                                                class="other-radio form-check-input" name="{{ $modal['modalId'] }}Status"
-                                                value="henkaten" @if ($modal['status'] == 'HENKATEN') checked @endif>
-                                            <label class="form-check-label" for="{{ $modal['modalId'] }}HenkatenRadio">
-                                                <span class="d-none d-md-block">
-                                                    HENKATEN
-                                                </span>
-                                            </label>
-                                        </div>
-                                    </label>
-                                    <label class="btn btn-light-primary text-primary font-medium">
-                                        <div class="form-check">
-                                            <input type="radio" id="{{ $modal['modalId'] }}StopRadio"
-                                                class="other-radio form-check-input" name="{{ $modal['modalId'] }}Status"
-                                                value="stop" @if ($modal['status'] == 'STOP') checked @endif>
-                                            <label class="form-check-label" for="{{ $modal['modalId'] }}StopRadio">
-                                                <span class="d-none d-md-block">
-                                                    STOP
-                                                </span>
-                                            </label>
-                                        </div>
-                                    </label>
+                            @if (!$modal['history']->isEmpty())
+                                <div class="accordion" id="accordionExample">
+                                    @foreach ($modal['history'] as $history)
+                                        @if ($history->troubleshoot == null)
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id="headingOne">
+                                                    <button class="accordion-button collapsed" type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#history-{{ $loop->index }}" aria-expanded="false"
+                                                        aria-controls="collapseOne">
+                                                        <span class="mb-1 badge bg-dark me-2">PIC :
+                                                            {{ $history->pic }}</span>
+                                                        @if ($history->troubleshoot == null)
+                                                            <span class="mb-1 badge bg-danger">Open</span>
+                                                        @else
+                                                            <span class="mb-1 badge bg-success">Closed</span>
+                                                        @endif
+                                                        <span class="ps-3">
+                                                            {{ $history->henkaten_problem }}
+                                                        </span>
+                                                    </button>
+                                                </h2>
+                                                <div id="history-{{ $loop->index }}" class="accordion-collapse collapse"
+                                                    aria-labelledby="headingOne" data-bs-parent="#accordionExample"
+                                                    style="">
+                                                    <div class="accordion-body">
+                                                        <strong>{{ $history->henkaten_description }}</strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
                                 </div>
+                            @endif
+                            <div class="statusRadio text-center mt-3">
+                                <label class="btn btn-light-primary text-primary font-medium me-2">
+                                    <div class="form-check">
+                                        <input type="radio" id="{{ $modal['modalId'] }}HenkatenRadio"
+                                            class="other-radio form-check-input" name="{{ $modal['modalId'] }}Status"
+                                            value="henkaten" @if ($modal['status'] == 'HENKATEN') checked @endif>
+                                        <label class="form-check-label" for="{{ $modal['modalId'] }}HenkatenRadio">
+                                            <span class="d-none d-md-block">
+                                                HENKATEN
+                                            </span>
+                                        </label>
+                                    </div>
+                                </label>
+                                <label class="btn btn-light-primary text-primary font-medium">
+                                    <div class="form-check">
+                                        <input type="radio" id="{{ $modal['modalId'] }}StopRadio"
+                                            class="other-radio form-check-input" name="{{ $modal['modalId'] }}Status"
+                                            value="stop" @if ($modal['status'] == 'STOP') checked @endif>
+                                        <label class="form-check-label" for="{{ $modal['modalId'] }}StopRadio">
+                                            <span class="d-none d-md-block">
+                                                STOP
+                                            </span>
+                                        </label>
+                                    </div>
+                                </label>
                             </div>
-
                             <div class="form-group mt-3 pic-form" style="display: none;">
                                 <label>PIC</label>
                                 <select class="select2 form-control select2-hidden-accessible picSelect"
@@ -191,18 +212,25 @@
                                     id="{{ $modal['modalId'] }}PicSelect" name="pic" required>
                                     <option value="0">-- Select PIC --</option>
                                     @foreach ($employees as $employee)
-                                        <option value="{{ $employee->id }}">
+                                        <option value="{{ $employee->name }}">
                                             {{ $employee->name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
-
-                            <div class="form-group mt-3 description" style="display: none;">
+                            <div class="form-group mt-3 mb-3 description" style="display: none;">
+                                <label>Problem</label>
+                                <input class="form-control" rows="3" placeholder="Problem..." name="problem"
+                                    id="{{ $modal['modalId'] }}Problem" required>
+                                </input>
+                            </div>
+                            <div class="form-group mt-3 mb-3 description" style="display: none;">
                                 <label>Description</label>
                                 <textarea class="form-control" rows="3" placeholder="Description..." name="description"
-                                    id="{{ $modal['modalId'] }}Description"></textarea>
+                                    id="{{ $modal['modalId'] }}Description" required>
+                                    </textarea>
                             </div>
+                            {{-- @endif --}}
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" id="{{ $modal['modalId'] }}Submit">Save
@@ -248,8 +276,8 @@
     </div>
     <div class="row">
         <div class="col-lg-6 col-md-12">
-            <img src="{{ asset('assets/images/mapping-per-line.png') }}" alt="" class="mw-100" usemap="#roomMap"
-                width="980vh">
+            <img src="{{ asset('assets/images/mapping-per-line.png') }}" alt="" class="mw-100"
+                usemap="#roomMap" width="980vh">
 
             <div style="position: absolute; top: 60vh; left: 28vh;">
                 <img src="../../dist/images/profile/tri.png" alt="Employee 1" style="width: 80px; height: 80px;"
@@ -343,165 +371,154 @@
         </div>
     </div>
     <div class="row">
-        <div class="product-list">
-            <div class="card">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-9">
-                        <form class="position-relative">
-                            <input type="text" class="form-control search-chat py-2 ps-5" id="text-srh"
-                                placeholder="Search Product">
-                            <i
-                                class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
-                        </form>
-                        <a class="fs-6 text-muted" href="javascript:void(0)" data-bs-toggle="tooltip"
-                            data-bs-placement="top" data-bs-title="Filter list"><i class="ti ti-filter"></i></a>
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-10">
+                        <h4 class="fw-4">
+                            Henkaten History Board
+                            <h6 class="text-muted">
+                                {{ Carbon\Carbon::now()->format('l, j F Y') }}
+                            </h6>
+                        </h4>
                     </div>
-                    <div class="table-responsive border rounded">
-                        <table class="table align-middle text-nowrap mb-0">
-                            <thead>
-                                <tr>
-                                    <th scope="col">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value=""
-                                                id="flexCheckDefault">
-                                        </div>
-                                    </th>
-                                    <th scope="col">Henkaten</th>
-                                    <th scope="col">Problem</th>
-                                    <th scope="col">status</th>
-                                    <th scope="col">Penanganan</th>
-                                    <th scope="col">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="form-check mb-0">
-                                            <input class="form-check-input" type="checkbox" value=""
-                                                id="flexCheckDefault">
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <img src="../../dist/images/products/s1.jpg" class="rounded-circle"
-                                                alt="..." width="56" height="56">
-                                            <div class="ms-3">
-                                                <h6 class="fw-semibold mb-0 fs-4">Machine</h6>
-                                                <p class="mb-0">DCAA01</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0">Mesin bagian A problem</p>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <span class="bg-success p-1 rounded-circle"></span>
-                                            <p class="mb-0 ms-2">Uncritical</p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <h6 class="mb-0 fs-4">Diganti</h6>
-                                    </td>
-                                    <td><a class="fs-6 text-muted" href="javascript:void(0)" data-bs-toggle="tooltip"
-                                            data-bs-placement="top" data-bs-title="Edit"><i
-                                                class="ti ti-dots-vertical"></i></a></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="form-check mb-0">
-                                            <input class="form-check-input" type="checkbox" value=""
-                                                id="flexCheckDefault">
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <img src="../../dist/images/products/s2.jpg" class="rounded-circle"
-                                                alt="..." width="56" height="56">
-                                            <div class="ms-3">
-                                                <h6 class="fw-semibold mb-0 fs-4">Machine</h6>
-                                                <p class="mb-0">DCAA01</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0">Mesin bagian B problem</p>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <span class="bg-danger p-1 rounded-circle"></span>
-                                            <p class="mb-0 ms-2">Critical</p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <h6 class="mb-0 fs-4">Beli baru</h6>
-                                    </td>
-                                    <td><a class="fs-6 text-muted" href="javascript:void(0)" data-bs-toggle="tooltip"
-                                            data-bs-placement="top" data-bs-title="Edit"><i
-                                                class="ti ti-dots-vertical"></i></a></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="form-check mb-0">
-                                            <input class="form-check-input" type="checkbox" value=""
-                                                id="flexCheckDefault">
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <img src="../../dist/images/products/s3.jpg" class="rounded-circle"
-                                                alt="..." width="56" height="56">
-                                            <div class="ms-3">
-                                                <h6 class="fw-semibold mb-0 fs-4">Machine</h6>
-                                                <p class="mb-0">DCAA01</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0">Mesin bagian C problem</p>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <span class="bg-success p-1 rounded-circle"></span>
-                                            <p class="mb-0 ms-2">Critical</p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <h6 class="mb-0 fs-4">Ganti</h6>
-                                    </td>
-                                    <td><a class="fs-6 text-muted" href="javascript:void(0)" data-bs-toggle="tooltip"
-                                            data-bs-placement="top" data-bs-title="Edit"><i
-                                                class="ti ti-dots-vertical"></i></a></td>
-                            </tbody>
-                        </table>
-                        <div class="d-flex align-items-center justify-content-end py-1">
-                            <p class="mb-0 fs-2">Rows per page:</p>
-                            <select class="form-select w-auto ms-0 ms-sm-2 me-8 me-sm-4 py-1 pe-7 ps-2 border-0"
-                                aria-label="Default select example">
-                                <option selected="">5</option>
-                                <option value="1">10</option>
-                                <option value="2">25</option>
-                            </select>
-                            <p class="mb-0 fs-2">1–5 of 12</p>
-                            <nav aria-label="...">
-                                <ul class="pagination justify-content-center mb-0 ms-8 ms-sm-9">
-                                    <li class="page-item p-1">
-                                        <a class="page-link border-0 rounded-circle text-dark fs-6 round-32 d-flex align-items-center justify-content-center"
-                                            href="#"><i class="ti ti-chevron-left"></i></a>
-                                    </li>
-                                    <li class="page-item p-1">
-                                        <a class="page-link border-0 rounded-circle text-dark fs-6 round-32 d-flex align-items-center justify-content-center"
-                                            href="#"><i class="ti ti-chevron-right"></i></a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
+                    <div class="col-2 text-end">
+                        <button class="btn btn-primary px-4 py-2">
+                            <span class="rounded-3 pe-2">
+                                <i class="ti ti-file-export"></i>
+                            </span>
+                            <span class="d-none d-sm-inline-block">Export</span>
+                        </button>
                     </div>
-
                 </div>
+            </div>
+            <div class="card-body p-3">
+                <table class="table table-responsive-lg" id="henkatenHistory" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>4M</th>
+                            <th>Status</th>
+                            <th>Description</th>
+                            <th>Time</th>
+                            <th>Troubleshoot</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($histories as $history)
+                            @php
+                                switch ($history['status']) {
+                                    case 'running':
+                                        $color = 'success';
+                                        break;
+                                    case 'henkaten':
+                                        $color = 'warning';
+                                        break;
+                                    case 'stop':
+                                        $color = 'danger';
+                                        break;
+                                    default:
+                                        $color = 'dark';
+                                        break;
+                                }
+                            @endphp
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $history['type'] }}</td>
+                                <td>
+                                    <span class="mb-1 badge bg-{{ $color }}">{{ $history['status'] }}</span>
+                                </td>
+                                <td>{{ $history['description'] }}</td>
+                                <td>{{ Carbon\Carbon::parse($history['date'])->format('j F Y, H:i:s') }}</td>
+                                @if ($history['troubleshoot'] == 'Belum ditangani')
+                                    <td>
+                                        <span class="mb-1 badge bg-danger">{{ $history['troubleshoot'] }}</span>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" checked data-toggle="toggle" data-on="Open"
+                                            data-off="Closed" data-onstyle="danger" data-offstyle="success"
+                                            data-width="150" style="margin: 0 auto !important"
+                                            id="statusCheckbox-{{ $loop->index }}"
+                                            data-history-id="{{ $history['id'] }}">
+                                    </td>
+                                @elseif($history['status_after'] == 'running')
+                                    <td>{{ $history['troubleshoot'] }}</td>
+                                    <td>
+                                        <input type="checkbox" checked data-toggle="toggle" data-on="Closed"
+                                            data-off="Open" data-onstyle="success" data-offstyle="closed"
+                                            data-width="150" style="margin: 0 auto !important"
+                                            id="statusCheckbox-{{ $loop->index }}"
+                                            data-history-id="{{ $history['id'] }}" disabled>
+                                    </td>
+                                @endif
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+
+    {{-- modal --}}
+    @foreach ($histories as $history)
+        <div class="modal fade" id="statusModal-{{ $history['id'] }}" tabindex="-1"
+            aria-labelledby="bs-example-modal-lg" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header d-flex align-items-center">
+                        <h4 class="modal-title" id="myLargeModalLabel">
+                            Troubleshoot
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('dashboard.troubleshootHenkaten') }}" method="POST" class="mt-3">
+                        @csrf
+                        @method('POST')
+                        <div class="modal-body">
+                            <input class="form-control" rows="3" value="{{ $history['type'] }}" type="hidden"
+                                name="type">
+                            <input class="form-control" rows="3" value="{{ $history['id'] }}" type="hidden"
+                                name="henkatenId">
+                            <input class="form-control" rows="3" value="{{ $line->id }}" type="hidden"
+                                name="lineId">
+                            <div class="form-group mb-3 description text-center">
+                                <h4>Problem</h4>
+                                <input class="form-control" rows="3" value="{{ $history['problem'] }}" disabled>
+                                </input>
+                            </div>
+                            <div class="form-group mt-3 mb-3 description" style="display: none;">
+                                <label>Troubleshoot</label>
+                                <input class="form-control" rows="3" placeholder="Troubleshoot..."
+                                    name="troubleshoot" id="troubleshoot" required>
+                                </input>
+                            </div>
+                            <label>Approved By</label>
+                            <select class="form-control picSelect" style="width: 100%; height: 36px" tabindex="-1"
+                                aria-hidden="true" id="approval" name="approvedBy" required>
+                                <option value="0">-- Select --</option>
+                                @foreach ($employees as $employee)
+                                    <option value="{{ $employee->name }}">
+                                        {{ $employee->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-secondary">Save
+                                changes</button>
+                            <button type="button"
+                                class="btn btn-light-danger text-danger font-medium waves-effect text-start"
+                                data-bs-dismiss="modal">
+                                Close
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endforeach
+    {{-- end of modal --}}
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.3.min.js"
     integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
@@ -530,6 +547,8 @@
     }
 
     $(document).ready(function() {
+        $('#henkatenHistory').DataTable();
+
         let labelText;
 
         function toggleFormElements(modal) {
@@ -560,23 +579,46 @@
             toggleFormElements($(this));
         });
 
-        // on submit
+        // method on submit
         $('#methodModalSubmit').on('click', function() {
             let table = 'method';
-            let status = labelText.toLowerCase().trim();
+            let status = labelText;
             let lineId = getLineId();
             let pic = $('#methodModalPicSelect').val();
             let description = $('#methodModalDescription').val();
+            let problem = $('#methodModalProblem').val();
+
+            if (!status) {
+                notif('error', 'Isi Status terlebih dahulu!');
+                return false;
+            }
+
+            if (status !== 'running' && pic == 0) {
+                notif('error', 'Isi PIC terlebih dahulu!');
+                return false;
+            }
+
+            if (status !== 'running' && description == 0) {
+                notif('error', 'Isi deskripsi terlebih dahulu!');
+                return false;
+            }
+
+            if (status !== 'running' && problem == 0) {
+                notif('error', 'Isi problem terlebih dahulu!');
+                return false;
+            }
 
             $.ajax({
                 type: 'get',
-                url: `{{ url('dashboard/storeHenkaten/${table}/${status}/${lineId}/${pic}/${description}') }}`,
+                url: `{{ url('dashboard/storeHenkaten/${table}/${status.toLowerCase().trim()}/${lineId}/${pic}/${problem}/${description}') }}`,
                 _token: "{{ csrf_token() }}",
                 dataType: 'json',
                 success: function(data) {
                     if (data.status == 'success') {
-                        
-                        notif('success', data.message)
+                        window.location.reload();
+                        setInterval(() => {
+                            notif('success', data.message)
+                        }, 5000);
                     } else {
                         notif('error', data.message);
                     }
@@ -590,6 +632,194 @@
                 }
             });
         })
+
+        // machine on submit
+        $('#machineModalSubmit').on('click', function() {
+            let table = 'machine';
+            let status = labelText;
+            let lineId = getLineId();
+            let pic = $('#machineModalPicSelect').val();
+            let description = $('#machineModalDescription').val();
+            let problem = $('#machineModalProblem').val();
+
+            if (!status) {
+                notif('error', 'Isi Status terlebih dahulu!');
+                return false;
+            }
+
+            if (status !== 'running' && pic == 0) {
+                notif('error', 'Isi PIC terlebih dahulu!');
+                return false;
+            }
+
+            if (status !== 'running' && description == 0) {
+                notif('error', 'Isi deskripsi terlebih dahulu!');
+                return false;
+            }
+
+            if (status !== 'running' && problem == 0) {
+                notif('error', 'Isi problem terlebih dahulu!');
+            }
+
+            $.ajax({
+                type: 'get',
+                url: `{{ url('dashboard/storeHenkaten/${table}/${status.toLowerCase().trim()}/${lineId}/${pic}/${problem}/${description}') }}`,
+                _token: "{{ csrf_token() }}",
+                dataType: 'json',
+                success: function(data) {
+                    if (data.status == 'success') {
+                        window.location.reload();
+                        setInterval(() => {
+                            notif('success', data.message)
+                        }, 5000);
+                    } else {
+                        notif('error', data.message);
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status == 0) {
+                        notif("error", 'Connection Error');
+                        return;
+                    }
+                    notif("error", 'Internal Server Error');
+                }
+            });
+        })
+
+        // material on submit
+        $('#materialModalSubmit').on('click', function() {
+            let table = 'material';
+            let status = labelText;
+            let lineId = getLineId();
+            let pic = $('#materialModalPicSelect').val();
+            let description = $('#materialModalDescription').val();
+            let problem = $('#materialModalProblem').val();
+
+            if (!status) {
+                notif('error', 'Isi Status terlebih dahulu!');
+                return false;
+            }
+
+            if (status !== 'running' && pic == 0) {
+                notif('error', 'Isi PIC terlebih dahulu!');
+                return false;
+            }
+
+            if (status !== 'running' && description == 0) {
+                notif('error', 'Isi deskripsi terlebih dahulu!');
+                return false;
+            }
+
+            if (status !== 'running' && problem == 0) {
+                notif('error', 'Isi problem terlebih dahulu!');
+            }
+
+            $.ajax({
+                type: 'get',
+                url: `{{ url('dashboard/storeHenkaten/${table}/${status.toLowerCase().trim()}/${lineId}/${pic}/${problem}/${description}') }}`,
+                _token: "{{ csrf_token() }}",
+                dataType: 'json',
+                success: function(data) {
+                    if (data.status == 'success') {
+                        window.location.reload();
+                        setInterval(() => {
+                            notif('success', data.message)
+                        }, 5000);
+                    } else {
+                        notif('error', data.message);
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status == 0) {
+                        notif("error", 'Connection Error');
+                        return;
+                    }
+                    notif("error", 'Internal Server Error');
+                }
+            });
+        })
+
+        // man on submit
+        $('#manModalSubmit').on('click', function() {
+            let table = 'man';
+            let status = labelText;
+            let lineId = getLineId();
+            let pic = $('#manModalPicSelect').val();
+            let description = $('#manModalDescription').val();
+            let problem = $('#manModalProblem').val();
+
+            if (!status) {
+                notif('error', 'Isi Status terlebih dahulu!');
+                return false;
+            }
+
+            if (status !== 'running' && pic == 0) {
+                notif('error', 'Isi PIC terlebih dahulu!');
+                return false;
+            }
+
+            if (status !== 'running' && description == 0) {
+                notif('error', 'Isi deskripsi terlebih dahulu!');
+                return false;
+            }
+
+            if (status !== 'running' && problem == 0) {
+                notif('error', 'Isi problem terlebih dahulu!');
+            }
+
+            $.ajax({
+                type: 'get',
+                url: `{{ url('dashboard/storeHenkaten/${table}/${status.toLowerCase().trim()}/${lineId}/${pic}/${problem}/${description}') }}`,
+                _token: "{{ csrf_token() }}",
+                dataType: 'json',
+                success: function(data) {
+                    if (data.status == 'success') {
+                        window.location.reload();
+                        setInterval(() => {
+                            notif('success', data.message)
+                        }, 5000);
+                    } else {
+                        notif('error', data.message);
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status == 0) {
+                        notif("error", 'Connection Error');
+                        return;
+                    }
+                    notif("error", 'Internal Server Error');
+                }
+            });
+        })
+
+        $('input[type="checkbox"]').each(function(index) {
+            let checkboxId = `statusCheckbox-${index}`;
+            let checkbox = $(`#${checkboxId}`);
+
+            checkbox.on('change', function() {
+                if (checkbox.prop('checked')) {
+                    // Checkbox is checked (Open)
+                    if (!confirm('Are you sure?')) {
+                        checkbox.bootstrapToggle('off'); // Uncheck the checkbox if canceled
+                    }
+                } else {
+                    // Checkbox is not checked (Closed)
+                    const historyId = $(this).data('history-id');
+                    $(`#statusModal-${historyId}`).modal('show');
+                }
+            });
+        });
+
+        var errorMessage = "{!! session('error') !!}";
+        var successMessage = "{!! session('success') !!}";
+
+        if (errorMessage) {
+            notif('error', errorMessage);
+        }
+
+        if (successMessage) {
+            notif('success', successMessage);
+        }
 
         $('#machineModalPicSelect').select2({
             dropdownParent: $('#machineModal')

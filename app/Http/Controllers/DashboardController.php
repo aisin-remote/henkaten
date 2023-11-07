@@ -8,6 +8,7 @@ use App\Models\Pivot;
 use App\Models\Shift;
 use App\Models\Theme;
 use App\Models\Employee;
+use App\Models\HenkatenMan;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\HenkatenMethod;
@@ -28,6 +29,72 @@ class DashboardController extends Controller
                     ->where('active_date', $current_date)
                     ->first();
 
+        $currentDate = Carbon::now()->format('Y-m-d');
+
+        // get all henkaten history
+        $manData = HenkatenMan::where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
+        $methodData = HenkatenMethod::where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
+        $machineData = HenkatenMachine::where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
+        $materialData = HenkatenMaterial::where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
+
+        // Merge the data and add the type field
+        $combinedData = [];
+
+        foreach ($manData as $item) {
+            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
+            $combinedData[] = [
+                'id' => $item->id,
+                'type' => 'Man',
+                'status' => $item->status,
+                'status_after' => $item->status_after,
+                'problem' => $item->henkaten_problem, 
+                'description' => $item->henkaten_description,
+                'date' => $item->date,
+                'troubleshoot' => $troubleshoot
+            ];
+        }
+
+        foreach ($methodData as $item) {
+            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
+            $combinedData[] = [
+                'id' => $item->id,
+                'type' => 'Method',
+                'status' => $item->status,
+                'status_after' => $item->status_after,
+                'problem' => $item->henkaten_problem, 
+                'description' => $item->henkaten_description,
+                'date' => $item->date,
+                'troubleshoot' => $troubleshoot
+            ];
+        }
+
+        foreach ($machineData as $item) {
+            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
+            $combinedData[] = [
+                'id' => $item->id,
+                'type' => 'Machine',
+                'status' => $item->status,
+                'status_after' => $item->status_after,
+                'problem' => $item->henkaten_problem, 
+                'description' => $item->henkaten_description,
+                'date' => $item->date,
+                'troubleshoot' => $troubleshoot
+            ];
+        }
+
+        foreach ($materialData as $item) {
+            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
+            $combinedData[] = [
+                'id' => $item->id,
+                'type' => 'Material',
+                'status' => $item->status,
+                'problem' => $item->henkaten_problem, 
+                'description' => $item->henkaten_description,
+                'date' => $item->date,
+                'troubleshoot' => $troubleshoot
+            ];
+        }
+
         // in this page we will get all line status
         return view('pages.website.dashboard',[
             'pivot' => $pivot,
@@ -35,25 +102,105 @@ class DashboardController extends Controller
             'employees' => Employee::select('id','name')
                             ->whereIn('role',['Leader','JP'])
                             ->get(),
-            'lines' => Line::all()
+            'lines' => Line::all(),
+            'histories' => $combinedData
         ]);
     }
 
     public function dashboardLine(Line $lineId) 
     {
+        $arrayStatus = [];
+        foreach(['man', 'method', 'machine', 'material'] as $type){
+            // search if running is exist
+            $status = Line::whereNot('status_' . $type, 'running')->where('id', $lineId->id)->first();
+            if($status){
+                $arrayStatus[$type] = $status->{'status_'. $type};
+            }
+        }
+
+        $currentDate = Carbon::now()->format('Y-m-d');
+
+        // get all henkaten history
+        $manData = HenkatenMan::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get();
+        $methodData = HenkatenMethod::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get();
+        $machineData = HenkatenMachine::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get();
+        $materialData = HenkatenMaterial::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get();
+
+        // Merge the data and add the type field
+        $combinedData = [];
+
+        foreach ($manData as $item) {
+            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
+            $combinedData[] = [
+                'id' => $item->id,
+                'type' => 'Man',
+                'status' => $item->status,
+                'status_after' => $item->status_after,
+                'problem' => $item->henkaten_problem, 
+                'description' => $item->henkaten_description,
+                'date' => $item->date,
+                'troubleshoot' => $troubleshoot
+            ];
+        }
+
+        foreach ($methodData as $item) {
+            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
+            $combinedData[] = [
+                'id' => $item->id,
+                'type' => 'Method',
+                'status' => $item->status,
+                'status_after' => $item->status_after,
+                'problem' => $item->henkaten_problem, 
+                'description' => $item->henkaten_description,
+                'date' => $item->date,
+                'troubleshoot' => $troubleshoot
+            ];
+        }
+
+        foreach ($machineData as $item) {
+            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
+            $combinedData[] = [
+                'id' => $item->id,
+                'type' => 'Machine',
+                'status' => $item->status,
+                'status_after' => $item->status_after,
+                'problem' => $item->henkaten_problem, 
+                'description' => $item->henkaten_description,
+                'date' => $item->date,
+                'troubleshoot' => $troubleshoot
+            ];
+        }
+
+        foreach ($materialData as $item) {
+            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
+            $combinedData[] = [
+                'id' => $item->id,
+                'type' => 'Material',
+                'status' => $item->status,
+                'problem' => $item->henkaten_problem, 
+                'description' => $item->henkaten_description,
+                'date' => $item->date,
+                'troubleshoot' => $troubleshoot
+            ];
+        }
+
         return view('pages.website.line',[
             'line' => Line::findOrFail($lineId->id),
-            'employees' => Employee::all()
+            'employees' => Employee::all(),
+            'statuses' => $arrayStatus,
+            'histories' => $combinedData,
+            'methodHistory' => HenkatenMethod::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get(),
+            'machineHistory' => HenkatenMachine::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get(),
+            'manHistory' => HenkatenMan::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get(),
+            'materialHistory' => HenkatenMaterial::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get(),
         ]);
     }
 
-    public function storeHenkaten($table , $status , $lineId , $pic , $description)
+    public function storeHenkaten($table , $status , $lineId , $pic = null  , $problem = null, $description = null)
     {
         // get all data from FE
         $lineId = $lineId ? $lineId : null;
         $status = $status ? $status : null;
-        $pic = $pic ? $pic : null;
-        $description = $description ? $description : null;
         $table = $table ? $table : null;
 
         // initiate model
@@ -65,6 +212,15 @@ class DashboardController extends Controller
         $shifts = Shift::all();
         $shiftId = null;
 
+        // check the current status and the request status
+        // $currentStatus = Line::select('status_' . $table)->where('id', $lineId)->first();
+        // if ($currentStatus->{'status_' . $table} == $status){
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => 'Status sama!'
+        //     ]);
+        // }
+
         foreach ($shifts as $shift) {
             if($currentTime->between($shift->time_start, $shift->time_end)){
                 $shiftId = $shift->id;
@@ -72,13 +228,15 @@ class DashboardController extends Controller
             }
         }
 
-        function insertHenkaten($model, $shiftId, $lineId, $pic, $description){
+        function insertHenkaten($model, $shiftId, $lineId, $pic = null, $status, $problem = null, $description = null){
             $result = $model->create([
                 'shift_id' => $shiftId,
                 'line_id' => $lineId,
                 'pic' => $pic,
+                'status' => $status,
+                'henkaten_problem' => $problem,
                 'henkaten_description' => $description,
-                'type' => 'unplan',
+                'type' => null,
                 'date' => Carbon::now()->format('Y-m-d H:i:s'),
             ]);
 
@@ -90,7 +248,7 @@ class DashboardController extends Controller
 
             if($table == 'method'){
                 // insert into henkaten table
-                insertHenkaten($methodModel, $shiftId, $lineId, $pic, $description);
+                insertHenkaten($methodModel, $shiftId, $lineId, $pic, $status,$problem, $description);
 
                 // insert into line table
                 Line::where('id', $lineId)->update([
@@ -99,7 +257,7 @@ class DashboardController extends Controller
                 
             }else if($table == 'machine'){
                 // insert into henkaten table
-                insertHenkaten($machineModel, $shiftId, $lineId, $pic, $description);
+                insertHenkaten($machineModel, $shiftId, $lineId, $pic, $status,$problem, $description);
 
                 // insert into line table
                 Line::where('id', $lineId)->update([
@@ -108,7 +266,7 @@ class DashboardController extends Controller
                 
             }else if($table == 'material'){
                 // insert into henkaten table
-                insertHenkaten($materialModel, $shiftId, $lineId, $pic, $description);
+                insertHenkaten($materialModel, $shiftId, $lineId, $pic, $status,$problem, $description);
 
                 // insert into line table
                 Line::where('id', $lineId)->update([
@@ -129,6 +287,110 @@ class DashboardController extends Controller
                 'status' => 'error',
                 'message' => $th->getMessage(),
             ]);
+        }
+    }
+
+    public function troubleshootHenkaten(Request $request)
+    {
+        $troubleshoot = $request->get('troubleshoot');
+        $approvedBy = $request->get('approvedBy');
+        $henkatenId = $request->get('henkatenId');
+        $type = strtolower($request->get('type'));
+        $lineId = $request->get('lineId');
+
+        // initiate model
+        $methodModel = new HenkatenMethod();
+        $machineModel = new HenkatenMachine();
+        $materialModel = new HenkatenMaterial();
+
+        function updateHenkaten($model, $henkatenId, $troubleshoot, $approvedBy){
+            $result = $model->where('id', $henkatenId)
+                        ->update([
+                            'troubleshoot' => $troubleshoot,
+                            'approval' => $approvedBy,
+                            'status_after' => 'running' 
+                        ]);
+
+            return $result;
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // update henkaten table
+            if($type == 'method'){
+                // insert into henkaten table
+                updateHenkaten($methodModel, $henkatenId, $troubleshoot, $approvedBy);
+
+                // check if there is any problem not solved yet
+                $otherStat = HenkatenMethod::select('status')
+                                ->where('status_after', null)
+                                ->where('line_id', $lineId)
+                                ->latest()
+                                ->first();
+                                
+                if(!$otherStat){
+                    // insert into line table
+                    Line::where('id', $lineId)->update([
+                        'status_method' => 'running'
+                    ]);
+                }else{
+                    Line::where('id', $lineId)->update([
+                        'status_method' => $otherStat->status
+                    ]);
+                }
+                
+            }else if($type == 'machine'){
+                // insert into henkaten table
+                updateHenkaten($machineModel, $henkatenId, $troubleshoot, $approvedBy);
+
+                // check if there is any problem not solved yet
+                $otherStat = HenkatenMachine::select('status')
+                                ->where('status_after', null)
+                                ->where('line_id', $lineId)
+                                ->latest()
+                                ->get();
+                                
+                if(!$otherStat){
+                    // insert into line table
+                    Line::where('id', $lineId)->update([
+                        'status_machine' => 'running'
+                    ]);
+                }else{
+                    Line::where('id', $lineId)->update([
+                        'status_method' => $otherStat->status
+                    ]);
+                }                
+                
+            }else if($type == 'material'){
+                // insert into henkaten table
+                updateHenkaten($materialModel, $henkatenId, $troubleshoot, $approvedBy);
+
+                // check if there is any problem not solved yet
+                $otherStat = HenkatenMaterial::select('status')
+                                ->where('status_after', null)
+                                ->where('line_id', $lineId)
+                                ->latest()
+                                ->get();
+
+                if(!$otherStat){
+                    // insert into line table
+                    Line::where('id', $lineId)->update([
+                        'status_material' => 'running'
+                    ]);
+                }else{
+                    Line::where('id', $lineId)->update([
+                        'status_method' => $otherStat->status
+                    ]);
+                }
+            }
+
+            DB::commit();
+            
+            return redirect()->back()->with('success', 'Data berhasil disimpan!');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 

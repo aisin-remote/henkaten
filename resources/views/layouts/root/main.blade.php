@@ -20,6 +20,10 @@
         href="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/favicon.ico" />
     <!-- Owl Carousel -->
     <link rel="stylesheet" href={{ asset('dist/libs/owl.carousel/dist/assets/owl.carousel.min.css') }}>
+    {{-- <link rel="stylesheet" href={{ asset('dist/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}> --}}
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css"
+        rel="stylesheet">
     <link rel="stylesheet" href={{ asset('dist/libs/select2/dist/css/select2.min.css') }}>
     <!-- Core Css -->
     <link id="themeColors" rel="stylesheet" href={{ asset('dist/css/style.min.css') }} />
@@ -177,6 +181,8 @@
         </div>
     </div>
     <!-- Import Js Files -->
+    {{-- <script src={{ asset('dist/js/datatable/datatable-basic.init.js') }}></script>
+    <script src={{ asset('dist/libs/datatables.net/js/jquery.dataTables.min.js') }}></script> --}}
     <script src={{ asset('dist/libs/jquery/dist/jquery.min.js') }}></script>
     <script src={{ asset('dist/libs/jquery-ui/dist/jquery-ui.min.js') }}></script>
     <script src={{ asset('dist/libs/jquery-repeater/jquery.repeater.min.js') }}></script>
@@ -186,18 +192,18 @@
     <script src={{ asset('dist/js/app.min.js') }}></script>
     <script src={{ asset('dist/js/repeater-init.js') }}></script>
     <script src={{ asset('dist/js/app.horizontal.init.js') }}></script>
-    <script src={{ asset('dist/js/app-style-switcher.js') }}></script>
     <script src={{ asset('dist/js/sidebarmenu.js') }}></script>
     <script src={{ asset('dist/js/custom.js') }}></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap4.min.js"></script>
     <!--  current page js files -->
     <script src={{ asset('dist/libs/owl.carousel/dist/owl.carousel.min.js') }}></script>
-    <script src={{ asset('dist/libs/apexcharts/dist/apexcharts.min.js') }}></script>
     <script src={{ asset('dist/js/dashboard.js') }}></script>
     <script src={{ asset('dist/js/plugins/toastr-init.js') }}></script>
     <script src={{ asset('dist/libs/select2/dist/js/select2.full.min.js') }}></script>
     {{-- <script src={{ asset('dist/libs/select2/dist/js/select2.min.js') }}></script> --}}
     <script src={{ asset('dist/js/forms/select2.init.js') }}></script>
-
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
     <script>
         const carousel = document.querySelector('.vertical-carousel');
         const items = carousel.querySelectorAll('.col-md-12');
