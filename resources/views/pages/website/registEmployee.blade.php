@@ -146,4 +146,27 @@
             }
         });
     });
+
+    $(document).ready(function() {
+        $('input[name="npk"]').on('input', function() {
+            var inputValue = $(this).val();
+            if (inputValue.length < 6) {
+                $(this).addClass('is-invalid');
+                $(this).siblings('.error-message').remove();
+                $(this).after('<span class="error-message text-danger">NPK harus terdiri dari 6 karakter</span>');
+            } else {
+                $(this).removeClass('is-invalid');
+                $(this).siblings('.error-message').remove();
+            }
+        });
+
+        $('form').submit(function(event) {
+            if ($('input[name="npk"]').val().length < 6) {
+                event.preventDefault();
+                $('input[name="npk"]').addClass('is-invalid');
+                $('input[name="npk"]').siblings('.error-message').remove();
+                $('input[name="npk"]').after('<span class="error-message text-danger">NPK harus terdiri dari 6 karakter</span>');
+            }
+        });
+    });
 </script>
