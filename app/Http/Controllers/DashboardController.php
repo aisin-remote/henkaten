@@ -449,9 +449,9 @@ class DashboardController extends Controller
         ],200);
     }
 
-    public function selectFirstPic(Request $request)
+    public function selectFirstPic($id)
     {
-        $pic = $request->pic;
+        $pic = $id;
         if($pic == 0){
             return response()->json([
                 'status' => 'error',
@@ -459,6 +459,13 @@ class DashboardController extends Controller
             ]);
         }
 
+        $existingPics = Pivot::where('first_pic_id', $pic)->orWhere('second_pic_id', $pic)->first();
+        if ($existingPics) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Karyawan ini sudah menjadi PIC 1 atau PIC 2.'
+            ]);
+        }
 
         // get current pivot
         $current_date = Carbon::now()->toDateString();
@@ -521,13 +528,21 @@ class DashboardController extends Controller
         ],200);
     }
 
-    public function selectSecondPic(Request $request)
+    public function selectSecondPic($id)
     {
-        $pic = $request->pic;
+        $pic = $id;
         if($pic == 0){
             return response()->json([
                 'status' => 'error',
                 'message' => 'Pilih karyawan yang tersedia!'
+            ]);
+        }
+
+        $existingPics = Pivot::where('first_pic_id', $pic)->orWhere('second_pic_id', $pic)->first();
+        if ($existingPics) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Karyawan ini sudah menjadi PIC 1 atau PIC 2.'
             ]);
         }
 
