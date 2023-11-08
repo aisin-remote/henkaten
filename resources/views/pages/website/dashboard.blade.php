@@ -1,604 +1,614 @@
 @extends('layouts.root.main')
 
 @section('main')
-@php
-$modalTitle = $pivot && $pivot->theme ? 'Change Theme' : 'Add Theme';
-@endphp
-
-<!-- theme modal -->
-<div class="modal fade" id="modalTheme" tabindex="-1" aria-labelledby="themeModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="themeModalLabel">{{ $modalTitle }}</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form>
-                <div class="modal-body">
-                    @if ($pivot && $pivot->theme)
-                    <div class="mb-3">
-                        <label class="mb-2">Current Theme</label>
-                        <input type="text" class="form-control" placeholder="" disabled value="{{ $pivot->theme->name }}">
-                    </div>
-                    @endif
-
-                    <label class="mb-2">New Theme</label>
-                    <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" id="themeSelect">
-                        <option>Select</option>
-                        @foreach ($themes as $theme)
-                        <option value="{{ $theme->id }}">{{ $theme->name }}</option>
-                        @endforeach
-                    </select>
-
-                    <div class="position-relative text-center my-4">
-                        <p class="mb-0 fs-4 px-3 d-inline-block bg-white text-dark z-index-5 position-relative">
-                            or set with custom theme
-                        </p>
-                        <span class="border-top w-100 position-absolute top-50 start-50 translate-middle"></span>
-                    </div>
-
-                    <div class="mt-3">
-                        <label class="mb-2">Custom Theme</label>
-                        <input type="text" class="form-control" id="customThemeInput" placeholder="Custom Theme" name="custom_theme">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="themeForm">Save changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-{{-- end of modal --}}
-
-@php
-$modalTitle = $pivot && $pivot->firstPic ? 'Change PIC' : 'Add PIC';
-@endphp
-
-{{-- 1 PIC modal --}}
-<div class="modal fade" id="firstPicModal" tabindex="-1" aria-labelledby="themeModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">{{ $modalTitle }}</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form>
-                <div class="modal-body">
-                    @if ($pivot && $pivot->firstPic)
-                    <div class="mb-3">
-                        <label class="mb-2">Current PIC</label>
-                        <input type="text" class="form-control" placeholder="" disabled value="{{ $pivot->firstPic->name }}">
-                    </div>
-                    @endif
-
-                    <label class="mb-2">New PIC</label>
-                    <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px" data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true" id="firstPicSelect" required>
-                        <option data-select2-id="select2-data-3-t8ia" value="0">Select</option>
-                        @foreach ($employees as $employee)
-                        <option data-select2-id="select2-data-3-t8ia" value="{{ $employee->id }}">
-                            {{ $employee->name }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="firstPicForm">Save changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-{{-- end of modal --}}
-@php
-$modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
-@endphp
-
-{{-- 2 PIC modal --}}
-<div class="modal fade" id="secondPicModal" tabindex="-1" aria-labelledby="themeModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">{{ $modalTitle }}</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form>
-                <div class="modal-body">
-                    @if ($pivot && $pivot->secondPic)
-                    <div class="mb-3">
-                        <label class="mb-2">Current PIC</label>
-                        <input type="text" class="form-control" placeholder="" disabled value="{{ $pivot->secondPic->name }}">
-                    </div>
-                    @endif
-
-                    <label class="mb-2">New PIC</label>
-                    <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px" data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true" id="secondPicSelect" required>
-                        <option data-select2-id="select2-data-3-t8ia" value="0">Select</option>
-                        @foreach ($employees as $employee)
-                        <option data-select2-id="select2-data-3-t8ia" value="{{ $employee->id }}">
-                            {{ $employee->name }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="secondPicForm">Save changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-{{-- end of modal --}}
-
-<div class="row" style="margin-top: -30px">
-    <div class="col-lg-6 col-md-12 col-12">
-        <div class="card shadow-md card-hover">
-            <div class="card-body p-3 d-flex align-items-center gap-3" id="themeContainer">
-                <div>
-                    <h5 class="fw-semibold mb-0">Tema Safety</h5>
-                    <span class="fs-2 d-flex align-items-center py-1 d-inline">{{ Carbon\Carbon::now()->format('l, j F Y') }}
-                        <span id="time" class="fs-2 px-2"></span></span>
-                </div>
-                @php
-                $theme = $pivot ? $pivot->theme : null;
-                @endphp
-
-                <button type="button" class="btn btn-{{ $theme ? 'secondary' : 'light' }} py-2 px-5 ms-auto" data-bs-toggle="modal" data-bs-target="#modalTheme" style="border: 3px {{ $theme ? 'none' : 'dotted' }} {{ $theme ? 'lightgrey' : '#686868' }}">
-                    <h4 class="fw-bolder pt-1" style="color: {{ $theme ? 'white' : '#686868' }}">
-                        {{ $theme ? $theme->name : 'Set Theme' }}
-                    </h4>
-                </button>
-            </div>
-        </div>
-    </div>
-
     @php
-    $firstPic = $pivot ? $pivot->firstPic : null;
-
-    if ($pivot && $firstPic) {
-    if ($firstPic->role == 'JP') {
-    $color = 'warning';
-    } else {
-    $color = 'danger';
-    }
-    }
+        $modalTitle = $pivot && $pivot->theme ? 'Change Theme' : 'Add Theme';
     @endphp
 
-    <div class="col-lg-3 col-sm-12" id="firstPicContainer">
-        <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#firstPicModal" id="firstPic">
-            @if ($firstPic)
-            <div class="card-body p-3 d-flex align-items-center gap-3">
-                <img src="{{ $firstPic->photo ? asset('uploads/doc/' . $firstPic->photo) : asset('path_to_default_image') }}" alt="" class="rounded-circle" width="60" height="60">
-                <div>
-                    <h6 class="fw-semibold mb-0">{{ $firstPic->name }}</h6>
-                    <span class="fs-2 d-flex align-items-center py-1"><i class="ti ti-map-pin text-dark fs-3 me-1"></i>{{ $firstPic->npk }}</span>
+    <!-- theme modal -->
+    <div class="modal fade" id="modalTheme" tabindex="-1" aria-labelledby="themeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="themeModalLabel">{{ $modalTitle }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <button class="btn btn-{{ $color }} py-1 px-3 ms-auto">{{ $firstPic->role }}</button>
+                <form>
+                    <div class="modal-body">
+                        @if ($pivot && $pivot->theme)
+                            <div class="mb-3">
+                                <label class="mb-2">Current Theme</label>
+                                <input type="text" class="form-control" placeholder="" disabled
+                                    value="{{ $pivot->theme->name }}">
+                            </div>
+                        @endif
+
+                        <label class="mb-2">New Theme</label>
+                        <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
+                            tabindex="-1" aria-hidden="true" id="themeSelect">
+                            <option>Select</option>
+                            @foreach ($themes as $theme)
+                                <option value="{{ $theme->id }}">{{ $theme->name }}</option>
+                            @endforeach
+                        </select>
+
+                        <div class="position-relative text-center my-4">
+                            <p class="mb-0 fs-4 px-3 d-inline-block bg-white text-dark z-index-5 position-relative">
+                                or set with custom theme
+                            </p>
+                            <span class="border-top w-100 position-absolute top-50 start-50 translate-middle"></span>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="mb-2">Custom Theme</label>
+                            <input type="text" class="form-control" placeholder="Custom Theme" name="custom_theme">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="themeForm">Save changes</button>
+                    </div>
+                </form>
             </div>
-            @else
-            <form action="#" class="dropzone dz-clickable p-3 rounded-1">
-                <p class="text-center pt-3">Add First PIC</p>
-            </form>
-            @endif
+        </div>
+    </div>
+    {{-- end of modal --}}
+
+    @php
+        $modalTitle = $pivot && $pivot->firstPic ? 'Change PIC' : 'Add PIC';
+    @endphp
+
+    {{-- 1 PIC modal --}}
+    <div class="modal fade" id="firstPicModal" tabindex="-1" aria-labelledby="themeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">{{ $modalTitle }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form>
+                    <div class="modal-body">
+                        @if ($pivot && $pivot->firstPic)
+                            <div class="mb-3">
+                                <label class="mb-2">Current PIC</label>
+                                <input type="text" class="form-control" placeholder="" disabled
+                                    value="{{ $pivot->firstPic->name }}">
+                            </div>
+                        @endif
+
+                        <label class="mb-2">New PIC</label>
+                        <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
+                            data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true" id="firstPicSelect"
+                            required>
+                            <option data-select2-id="select2-data-3-t8ia" value="0">Select</option>
+                            @foreach ($employees as $employee)
+                                <option data-select2-id="select2-data-3-t8ia" value="{{ $employee->id }}">
+                                    {{ $employee->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="firstPicForm">Save changes</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
+    {{-- end of modal --}}
     @php
-    $secondPic = $pivot ? $pivot->secondPic : null;
-
-    if ($pivot && $secondPic) {
-    if ($secondPic->role == 'JP') {
-    $color = 'warning';
-    } else {
-    $color = 'danger';
-    }
-    }
+        $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
     @endphp
 
-    <div class="col-lg-3 col-sm-12" id="secondPicContainer">
-        <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#secondPicModal" id="secondPic">
-            @if ($secondPic)
-            <div class="card-body p-3 d-flex align-items-center gap-3">
-                <img src="{{ $secondPic->photo ? asset('uploads/doc/' . $secondPic->photo) : asset('path_to_default_image') }}" alt="" class="rounded-circle" width="60" height="60">
-                <div>
-                    <h6 class="fw-semibold mb-0">{{ $secondPic->name }}</h6>
-                    <span class="fs-2 d-flex align-items-center py-1"><i class="ti ti-map-pin text-dark fs-3 me-1"></i>{{ $secondPic->npk }}</span>
+    {{-- 2 PIC modal --}}
+    <div class="modal fade" id="secondPicModal" tabindex="-1" aria-labelledby="themeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">{{ $modalTitle }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <button class="btn btn-{{ $color }} py-1 px-3 ms-auto">{{ $secondPic->role }}</button>
+                <form>
+                    <div class="modal-body">
+                        @if ($pivot && $pivot->secondPic)
+                            <div class="mb-3">
+                                <label class="mb-2">Current PIC</label>
+                                <input type="text" class="form-control" placeholder="" disabled
+                                    value="{{ $pivot->secondPic->name }}">
+                            </div>
+                        @endif
+
+                        <label class="mb-2">New PIC</label>
+                        <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
+                            data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true" id="secondPicSelect"
+                            required>
+                            <option data-select2-id="select2-data-3-t8ia" value="0">Select</option>
+                            @foreach ($employees as $employee)
+                                <option data-select2-id="select2-data-3-t8ia" value="{{ $employee->id }}">
+                                    {{ $employee->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="secondPicForm">Save changes</button>
+                    </div>
+                </form>
             </div>
-            @else
-            <form action="#" class="dropzone dz-clickable p-3 rounded-1">
-                <p class="text-center pt-3">Add Second PIC</p>
-            </form>
-            @endif
         </div>
     </div>
+    {{-- end of modal --}}
 
-    @php
-    $statusMappings = [
-    'running' => ['priority' => 1, 'overall' => 'RUNNING', 'shape' => 'circle', 'color' => 'success'],
-    'henkaten' => ['priority' => 2, 'overall' => 'HENKATEN', 'shape' => 'triangle', 'color' => 'warning'],
-    'stop' => ['priority' => 3, 'overall' => 'STOP', 'shape' => 'x', 'color' => 'danger'],
-    ];
+    <div class="row" style="margin-top: -30px">
+        <div class="col-lg-6 col-md-12 col-12">
+            <div class="card shadow-md card-hover">
+                <div class="card-body p-3 d-flex align-items-center gap-3" id="themeContainer">
+                    <div>
+                        <h5 class="fw-semibold mb-0">Tema Safety</h5>
+                        <span
+                            class="fs-2 d-flex align-items-center py-1 d-inline">{{ Carbon\Carbon::now()->format('l, j F Y') }}
+                            <span id="time" class="fs-2 px-2"></span></span>
+                    </div>
+                    @php
+                        $theme = $pivot ? $pivot->theme : null;
+                    @endphp
 
-    $items = ['man', 'method', 'machine', 'material'];
-    $summaryResultsItem = [];
+                    <button type="button" class="btn btn-{{ $theme ? 'secondary' : 'light' }} py-2 px-5 ms-auto"
+                        data-bs-toggle="modal" data-bs-target="#modalTheme"
+                        style="border: 3px {{ $theme ? 'none' : 'dotted' }} {{ $theme ? 'lightgrey' : '#686868' }}">
+                        <h4 class="fw-bolder pt-1" style="color: {{ $theme ? 'white' : '#686868' }}">
+                            {{ $theme ? $theme->name : 'Set Theme' }}
+                        </h4>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-    // function to get summary each item
-    if (!function_exists('getOverallItem')) {
-    function getOverallItem($lines, $item, $statusMappings)
-    {
-    $worstPriorityItem = 0;
-    $overallStatusItem = '';
+        @php
+            $firstPic = $pivot ? $pivot->firstPic : null;
 
-    foreach ($lines as $line) {
-    $statusItem = $line->{"status_$item"};
-    if (isset($statusMappings[$statusItem])) {
-    $priorityItem = $statusMappings[$statusItem]['priority'];
-    if ($priorityItem > $worstPriorityItem) {
-    $worstPriorityItem = $priorityItem;
-    $overallStatusItem = $statusMappings[$statusItem]['overall'];
-    }
-    }
-    }
+            if ($pivot && $firstPic) {
+                if ($firstPic->role == 'JP') {
+                    $color = 'warning';
+                } else {
+                    $color = 'danger';
+                }
+            }
+        @endphp
 
-    return $overallStatusItem;
-    }
-    }
+        <div class="col-lg-3 col-sm-12" id="firstPicContainer">
+            <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#firstPicModal"
+                id="firstPic">
+                @if ($firstPic)
+                    <div class="card-body p-3 d-flex align-items-center gap-3">
+                        <img src="{{ $firstPic->photo ? asset('uploads/doc/' . $firstPic->photo) : asset('path_to_default_image') }}"
+                            alt="" class="rounded-circle" width="60" height="60">
+                        <div>
+                            <h6 class="fw-semibold mb-0">{{ $firstPic->name }}</h6>
+                            <span class="fs-2 d-flex align-items-center py-1"><i
+                                    class="ti ti-map-pin text-dark fs-3 me-1"></i>{{ $firstPic->npk }}</span>
+                        </div>
+                        <button class="btn btn-{{ $color }} py-1 px-3 ms-auto">{{ $firstPic->role }}</button>
+                    </div>
+                @else
+                    <form action="#" class="dropzone dz-clickable p-3 rounded-1">
+                        <p class="text-center pt-3">Add First PIC</p>
+                    </form>
+                @endif
+            </div>
+        </div>
 
-    foreach ($items as $item) {
-    $summaryResultsItem[$item] = getOverallItem($lines, $item, $statusMappings);
-    }
-    @endphp
-</div>
-<div class="row">
-    <div class="col-sm-12 col-md-12 col-lg-8">
-        <div class="card bg-info">
-            <div class="card-body">
-                <div class="text-white">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card p-4 py-4">
-                                <div class="card-body p-3 d-flex align-items-center gap-3">
+        @php
+            $secondPic = $pivot ? $pivot->secondPic : null;
+
+            if ($pivot && $secondPic) {
+                if ($secondPic->role == 'JP') {
+                    $color = 'warning';
+                } else {
+                    $color = 'danger';
+                }
+            }
+        @endphp
+
+        <div class="col-lg-3 col-sm-12" id="secondPicContainer">
+            <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="" id="secondPic">
+                @if ($secondPic)
+                    <div class="card-body p-3 d-flex align-items-center gap-3">
+                        <img src="{{ $secondPic->photo ? asset('uploads/doc/' . $secondPic->photo) : asset('path_to_default_image') }}"
+                            alt="" class="rounded-circle" width="60" height="60">
+                        <div>
+                            <h6 class="fw-semibold mb-0">{{ $secondPic->name }}</h6>
+                            <span class="fs-2 d-flex align-items-center py-1"><i
+                                    class="ti ti-map-pin text-dark fs-3 me-1"></i>{{ $secondPic->npk }}</span>
+                        </div>
+                        <button class="btn btn-{{ $color }} py-1 px-3 ms-auto">{{ $secondPic->role }}</button>
+                    </div>
+                @else
+                    <form action="#" class="dropzone dz-clickable p-3 rounded-1">
+                        <p class="text-center pt-3">Add Second PIC</p>
+                    </form>
+                @endif
+            </div>
+        </div>
+
+        @php
+            $statusMappings = [
+                'running' => ['priority' => 1, 'overall' => 'RUNNING', 'shape' => 'circle', 'color' => 'success'],
+                'henkaten' => ['priority' => 2, 'overall' => 'HENKATEN', 'shape' => 'triangle', 'color' => 'warning'],
+                'stop' => ['priority' => 3, 'overall' => 'STOP', 'shape' => 'x', 'color' => 'danger'],
+            ];
+
+            $items = ['man', 'method', 'machine', 'material'];
+            $summaryResultsItem = [];
+
+            // function to get summary each item
+            if (!function_exists('getOverallItem')) {
+                function getOverallItem($lines, $item, $statusMappings)
+                {
+                    $worstPriorityItem = 0;
+                    $overallStatusItem = '';
+
+                    foreach ($lines as $line) {
+                        $statusItem = $line->{"status_$item"};
+                        if (isset($statusMappings[$statusItem])) {
+                            $priorityItem = $statusMappings[$statusItem]['priority'];
+                            if ($priorityItem > $worstPriorityItem) {
+                                $worstPriorityItem = $priorityItem;
+                                $overallStatusItem = $statusMappings[$statusItem]['overall'];
+                            }
+                        }
+                    }
+
+                    return $overallStatusItem;
+                }
+            }
+
+            foreach ($items as $item) {
+                $summaryResultsItem[$item] = getOverallItem($lines, $item, $statusMappings);
+            }
+        @endphp
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-8">
+            <div class="card bg-info">
+                <div class="card-body">
+                    <div class="text-white">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card p-4 py-4">
+                                    <div class="card-body p-3 d-flex align-items-center gap-3">
+                                        <div class="row">
+                                            <div class="col-lg-9">
+                                                <h1 class="fw-bolder text-center pt-3"
+                                                    style="font-size: 1em; display:block; font-weight:900 !important; font-size:80px !important">
+                                                    OVERALL
+                                                    <br> DIE
+                                                    CASTING
+                                                </h1>
+                                            </div>
+                                            <div class="col-lg-3 text-center" id="overallShape">
+                                                <img src="{{ asset('assets/images/running.svg') }}" class="dark-logo"
+                                                    width="240" alt="" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            @foreach ($items as $item)
+                                @php
+                                    $overallStatus = $summaryResultsItem[$item];
+
+                                    if (!function_exists('overallMapStatusToShape')) {
+                                        function overallMapStatusToShape($status)
+                                        {
+                                            switch ($status) {
+                                                case 'RUNNING':
+                                                    return 'circle';
+                                                case 'HENKATEN':
+                                                    return 'triangle';
+                                                case 'STOP':
+                                                    return 'x';
+                                                default:
+                                                    return '';
+                                            }
+                                        }
+                                    }
+
+                                    if (!function_exists('overallMapStatusToColor')) {
+                                        function overallMapStatusToColor($status)
+                                        {
+                                            switch ($status) {
+                                                case 'RUNNING':
+                                                    return 'success';
+                                                case 'HENKATEN':
+                                                    return 'warning';
+                                                case 'STOP':
+                                                    return 'danger';
+                                                default:
+                                                    return 'dark';
+                                            }
+                                        }
+                                    }
+
+                                    $shape = overallMapStatusToShape($overallStatus);
+                                    $color = overallMapStatusToColor($overallStatus);
+                                @endphp
+                                <div class="col-md-3 col-sm-12">
+                                    <div class="card overflow-hidden card-hover">
+                                        <div class="card-body bg-white text-center text-muted p-10">
+                                            <div class="p-30">
+                                                <i class="ti ti-{{ $shape }} fs-7 mb-2"></i>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer text-white bg-{{ $color }} p-30">
+                                            <div class=" no-block align-items-center">
+                                                <div class="text-center">
+                                                    <h3 class="font-weight-medium text-white fs-6">
+                                                        {{ strtoupper($item) }}
+                                                    </h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card p-4 py-4">
+                                    <div class="card-body p-3 align-items-center text-center">
+                                        <h1 class="fw-bolder"
+                                            style="font-size: 5em; display:block; font-weight:900 !important">
+                                            NO HENKATEN
+                                        </h1>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-lg-4">
+            <div class="row vertical-carousel">
+                <div class="carousel-inner">
+                    @foreach ($lines as $line)
+                        <div class="col-md-12 col-lg-4 carousel-item dc-card" id="{{ $line->id }}">
+                            <div class="card overflow-hidden shadow card-hover" style="width:100%">
+                                <div class="card-body bg-info text-white text-center p-10">
+                                    <div class="d-inline-block">
+                                        <h3 class="text-light fw-bolder">{{ $line->name }}</h3>
+                                    </div>
+                                </div>
+                                @php
+                                    $statusMappings = [
+                                        'running' => ['priority' => 1, 'overall' => 'RUNNING', 'shape' => 'circle', 'color' => 'success'],
+                                        'henkaten' => ['priority' => 2, 'overall' => 'HENKATEN', 'shape' => 'triangle', 'color' => 'warning'],
+                                        'stop' => ['priority' => 3, 'overall' => 'STOP', 'shape' => 'x', 'color' => 'danger'],
+                                    ];
+
+                                    // summaery all line
+                                    $worstPriority = 0;
+                                    $overall_status = $shape_status = $color_status = '';
+
+                                    // summary of all line
+                                    foreach (['man', 'machine', 'method', 'material'] as $property) {
+                                        $status = $line->{"status_$property"};
+
+                                        if (isset($statusMappings[$status])) {
+                                            $priority = $statusMappings[$status]['priority'];
+                                            if ($priority > $worstPriority) {
+                                                $worstPriority = $priority;
+                                                $overall_status = $statusMappings[$status]['overall'];
+                                                $shape_status = $statusMappings[$status]['shape'];
+                                                $color_status = $statusMappings[$status]['color'];
+                                            }
+                                        }
+                                    }
+
+                                    $overallStatuses[] = $overall_status;
+
+                                    // Check if the function exists before declaring it
+                                    if (!function_exists('mapStatus')) {
+                                        function mapStatus($status)
+                                        {
+                                            switch ($status) {
+                                                case 'running':
+                                                    return 'NO HENKATEN';
+                                                case 'henkaten':
+                                                    return 'HENKATEN';
+                                                case 'stop':
+                                                    return 'STOP';
+                                                default:
+                                                    return 'OFF';
+                                            }
+                                        }
+                                    }
+
+                                    if (!function_exists('mapStatusToShape')) {
+                                        function mapStatusToShape($status)
+                                        {
+                                            switch ($status) {
+                                                case 'running':
+                                                    return 'circle';
+                                                case 'henkaten':
+                                                    return 'triangle';
+                                                case 'stop':
+                                                    return 'x';
+                                                default:
+                                                    return '';
+                                            }
+                                        }
+                                    }
+
+                                    if (!function_exists('mapStatusToColor')) {
+                                        function mapStatusToColor($status)
+                                        {
+                                            switch ($status) {
+                                                case 'running':
+                                                    return 'success';
+                                                case 'henkaten':
+                                                    return 'warning';
+                                                case 'stop':
+                                                    return 'danger';
+                                                default:
+                                                    return 'dark';
+                                            }
+                                        }
+                                    }
+
+                                    // Assign status for each status property
+                                    $status_man = mapStatus($line->status_man);
+                                    $status_method = mapStatus($line->status_method);
+                                    $status_material = mapStatus($line->status_material);
+                                    $status_machine = mapStatus($line->status_machine);
+
+                                    // Assign shapes for each status property
+                                    $shape_man = mapStatusToShape($line->status_man);
+                                    $shape_method = mapStatusToShape($line->status_method);
+                                    $shape_material = mapStatusToShape($line->status_material);
+                                    $shape_machine = mapStatusToShape($line->status_machine);
+
+                                    // Assign color for each status property
+                                    $color_man = mapStatusToColor($line->status_man);
+                                    $color_method = mapStatusToColor($line->status_method);
+                                    $color_material = mapStatusToColor($line->status_material);
+                                    $color_machine = mapStatusToColor($line->status_machine);
+                                @endphp
+                                <div class="card-body bg-{{ $color_status }} text-white text-center p-1 pt-2">
+                                    <div class="d-inline-block">
+                                        <h4 class="text-light fw-bold">{{ $overall_status }}</h4>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white">
                                     <div class="row">
-                                        <div class="col-lg-9">
-                                            <h1 class="fw-bolder text-center pt-3" style="font-size: 1em; display:block; font-weight:900 !important; font-size:80px !important">
-                                                OVERALL
-                                                <br> DIE
-                                                CASTING
-                                            </h1>
-                                        </div>
-                                        <div class="col-lg-3 text-center" id="overallShape">
-                                            <img src="{{ asset('assets/images/running.svg') }}" class="dark-logo" width="240" alt="" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        @foreach ($items as $item)
-                        @php
-                        $overallStatus = $summaryResultsItem[$item];
-
-                        if (!function_exists('overallMapStatusToShape')) {
-                        function overallMapStatusToShape($status)
-                        {
-                        switch ($status) {
-                        case 'RUNNING':
-                        return 'circle';
-                        case 'HENKATEN':
-                        return 'triangle';
-                        case 'STOP':
-                        return 'x';
-                        default:
-                        return '';
-                        }
-                        }
-                        }
-
-                        if (!function_exists('overallMapStatusToColor')) {
-                        function overallMapStatusToColor($status)
-                        {
-                        switch ($status) {
-                        case 'RUNNING':
-                        return 'success';
-                        case 'HENKATEN':
-                        return 'warning';
-                        case 'STOP':
-                        return 'danger';
-                        default:
-                        return 'dark';
-                        }
-                        }
-                        }
-
-                        $shape = overallMapStatusToShape($overallStatus);
-                        $color = overallMapStatusToColor($overallStatus);
-                        @endphp
-                        <div class="col-md-3 col-sm-12">
-                            <div class="card overflow-hidden card-hover">
-                                <div class="card-body bg-white text-center text-muted p-10">
-                                    <div class="p-30">
-                                        <i class="ti ti-{{ $shape }} fs-7 mb-2"></i>
-                                    </div>
-                                </div>
-                                <div class="card-footer text-white bg-{{ $color }} p-30">
-                                    <div class=" no-block align-items-center">
-                                        <div class="text-center">
-                                            <h3 class="font-weight-medium text-white fs-6">
-                                                {{ strtoupper($item) }}
-                                            </h3>
+                                        <div class="col-12">
+                                            <div class="row text-center">
+                                                <div class="col border-end">
+                                                    <div class="mb-2">MEN</div>
+                                                    <i class="ti ti-{{ $shape_man }} fs-7 mb-2"></i>
+                                                </div>
+                                                <div class="col border-end">
+                                                    <div class="mb-2">MACHINE</div>
+                                                    <i class="ti ti-{{ $shape_machine }} fs-7 mb-2"></i>
+                                                </div>
+                                                <div class="col border-end">
+                                                    <div class="mb-2">METHOD</div>
+                                                    <i class="ti ti-{{ $shape_method }} fs-7 mb-2"></i>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="mb-2">MATERIAL</div>
+                                                    <i class="ti ti-{{ $shape_material }} fs-7 mb-2"></i>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        @endforeach
+                    @endforeach
+
+                    @php
+                        // Determine the overall status for all lines
+                        $worstOverallPriority = 0;
+                        $overall_status_all_lines = ''; // Different variable name for overall status for all lines
+
+                        foreach ($overallStatuses as $status) {
+                            $priority = array_search($status, array_column($statusMappings, 'overall'));
+                            if ($priority >= $worstOverallPriority) {
+                                $worstOverallPriority = $priority;
+                                $overall_status_all_lines = $status;
+                            }
+                        }
+
+                    @endphp
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- hidden for  --}}
+    <input type="hidden" value="{{ $overall_status_all_lines }}" id="overall_line_status"></input>
+
+    <!-- pic modal 1-->
+    <div class="modal fade" id="firstPicModal" tabindex="-1" aria-labelledby="themeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add PIC</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form>
+                    <div class="modal-body">
+                        <label class="mb-2">New PIC</label>
+                        <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
+                            data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true" id="firstPicSelect"
+                            required>
+                            <option data-select2-id="select2-data-3-t8ia" value="0">Select</option>
+                            @foreach ($employees as $employee)
+                                <option data-select2-id="select2-data-3-t8ia" value="{{ $employee->id }}">
+                                    {{ $employee->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card p-4 py-4">
-                                <div class="card-body p-3 align-items-center text-center">
-                                    <h1 class="fw-bolder" style="font-size: 5em; display:block; font-weight:900 !important">
-                                        NO HENKATEN
-                                    </h1>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="firstPicForm">Save changes</button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
-    <div class="col-md-12 col-lg-4">
-        <div class="row vertical-carousel">
-            <div class="carousel-inner">
-                @foreach ($lines as $line)
-                <div class="col-md-12 col-lg-4 carousel-item dc-card" id="{{ $line->id }}">
-                    <div class="card overflow-hidden shadow card-hover" style="width:100%">
-                        <div class="card-body bg-info text-white text-center p-10">
-                            <div class="d-inline-block">
-                                <h3 class="text-light fw-bolder">{{ $line->name }}</h3>
-                            </div>
-                        </div>
-                        @php
-                        $statusMappings = [
-                        'running' => ['priority' => 1, 'overall' => 'RUNNING', 'shape' => 'circle', 'color' => 'success'],
-                        'henkaten' => ['priority' => 2, 'overall' => 'HENKATEN', 'shape' => 'triangle', 'color' => 'warning'],
-                        'stop' => ['priority' => 3, 'overall' => 'STOP', 'shape' => 'x', 'color' => 'danger'],
-                        ];
+    {{-- end of modal --}}
 
-                        // summaery all line
-                        $worstPriority = 0;
-                        $overall_status = $shape_status = $color_status = '';
-
-                        // summary of all line
-                        foreach (['man', 'machine', 'method', 'material'] as $property) {
-                        $status = $line->{"status_$property"};
-
-                        if (isset($statusMappings[$status])) {
-                        $priority = $statusMappings[$status]['priority'];
-                        if ($priority > $worstPriority) {
-                        $worstPriority = $priority;
-                        $overall_status = $statusMappings[$status]['overall'];
-                        $shape_status = $statusMappings[$status]['shape'];
-                        $color_status = $statusMappings[$status]['color'];
-                        }
-                        }
-                        }
-
-                        $overallStatuses[] = $overall_status;
-
-                        // Check if the function exists before declaring it
-                        if (!function_exists('mapStatus')) {
-                        function mapStatus($status)
-                        {
-                        switch ($status) {
-                        case 'running':
-                        return 'NO HENKATEN';
-                        case 'henkaten':
-                        return 'HENKATEN';
-                        case 'stop':
-                        return 'STOP';
-                        default:
-                        return 'OFF';
-                        }
-                        }
-                        }
-
-                        if (!function_exists('mapStatusToShape')) {
-                        function mapStatusToShape($status)
-                        {
-                        switch ($status) {
-                        case 'running':
-                        return 'circle';
-                        case 'henkaten':
-                        return 'triangle';
-                        case 'stop':
-                        return 'x';
-                        default:
-                        return '';
-                        }
-                        }
-                        }
-
-                        if (!function_exists('mapStatusToColor')) {
-                        function mapStatusToColor($status)
-                        {
-                        switch ($status) {
-                        case 'running':
-                        return 'success';
-                        case 'henkaten':
-                        return 'warning';
-                        case 'stop':
-                        return 'danger';
-                        default:
-                        return 'dark';
-                        }
-                        }
-                        }
-
-                        // Assign status for each status property
-                        $status_man = mapStatus($line->status_man);
-                        $status_method = mapStatus($line->status_method);
-                        $status_material = mapStatus($line->status_material);
-                        $status_machine = mapStatus($line->status_machine);
-
-                        // Assign shapes for each status property
-                        $shape_man = mapStatusToShape($line->status_man);
-                        $shape_method = mapStatusToShape($line->status_method);
-                        $shape_material = mapStatusToShape($line->status_material);
-                        $shape_machine = mapStatusToShape($line->status_machine);
-
-                        // Assign color for each status property
-                        $color_man = mapStatusToColor($line->status_man);
-                        $color_method = mapStatusToColor($line->status_method);
-                        $color_material = mapStatusToColor($line->status_material);
-                        $color_machine = mapStatusToColor($line->status_machine);
-                        @endphp
-                        <div class="card-body bg-{{ $color_status }} text-white text-center p-1 pt-2">
-                            <div class="d-inline-block">
-                                <h4 class="text-light fw-bold">{{ $overall_status }}</h4>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-white">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="row text-center">
-                                        <div class="col border-end">
-                                            <div class="mb-2">MEN</div>
-                                            <i class="ti ti-{{ $shape_man }} fs-7 mb-2"></i>
-                                        </div>
-                                        <div class="col border-end">
-                                            <div class="mb-2">MACHINE</div>
-                                            <i class="ti ti-{{ $shape_machine }} fs-7 mb-2"></i>
-                                        </div>
-                                        <div class="col border-end">
-                                            <div class="mb-2">METHOD</div>
-                                            <i class="ti ti-{{ $shape_method }} fs-7 mb-2"></i>
-                                        </div>
-                                        <div class="col">
-                                            <div class="mb-2">MATERIAL</div>
-                                            <i class="ti ti-{{ $shape_material }} fs-7 mb-2"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <!-- pic modal 2 -->
+    <div class="modal fade" id="secondPicModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add PIC</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form>
+                    <div class="modal-body">
+                        <label class="mb-2">New PIC</label>
+                        <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
+                            data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true"
+                            id="secondPicSelect">
+                            <option data-select2-id="select2-data-3-t8ia">Select</option>
+                            @foreach ($employees as $employee)
+                                <option data-select2-id="select2-data-3-t8ia" value="{{ $employee->id }}">
+                                    {{ $employee->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                </div>
-                @endforeach
-
-                @php
-                // Determine the overall status for all lines
-                $worstOverallPriority = 0;
-                $overall_status_all_lines = ''; // Different variable name for overall status for all lines
-
-                foreach ($overallStatuses as $status) {
-                $priority = array_search($status, array_column($statusMappings, 'overall'));
-                if ($priority >= $worstOverallPriority) {
-                $worstOverallPriority = $priority;
-                $overall_status_all_lines = $status;
-                }
-                }
-
-                @endphp
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="form2">Save changes</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</div>
-
-{{-- hidden for  --}}
-<input type="hidden" value="{{ $overall_status_all_lines }}" id="overall_line_status"></input>
-
-<!-- pic modal 1-->
-<div class="modal fade" id="firstPicModal" tabindex="-1" aria-labelledby="themeModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Add PIC</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form>
-                <div class="modal-body">
-                    <label class="mb-2">New PIC</label>
-                    <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px" data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true" id="firstPicSelect" required>
-                        <option data-select2-id="select2-data-3-t8ia" value="0">Select</option>
-                        @foreach ($employees as $employee)
-                        <option data-select2-id="select2-data-3-t8ia" value="{{ $employee->id }}">
-                            {{ $employee->name }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="firstPicForm">Save changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-{{-- end of modal --}}
-
-<!-- pic modal 2 -->
-<div class="modal fade" id="secondPicModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Add PIC</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form>
-                <div class="modal-body">
-                    <label class="mb-2">New PIC</label>
-                    <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px" data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true" id="secondPicSelect">
-                        <option data-select2-id="select2-data-3-t8ia">Select</option>
-                        @foreach ($employees as $employee)
-                        <option data-select2-id="select2-data-3-t8ia" value="{{ $employee->id }}">
-                            {{ $employee->name }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="form2">Save changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-{{-- end of modal --}}
+    {{-- end of modal --}}
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.3.min.js"
+    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script>
-    $(document).ready(function() {
-        var themeSelect = document.getElementById('themeSelect');
-        var customThemeInput = document.getElementById('customThemeInput');
-        $('#themeSelect').on('change', function() {
-            var theme = $(this).val();
-            if (theme !== 'Select') {
-                customThemeInput.disabled = true;
-            } else {
-                customThemeInput.disabled = false;
-            }
-        });
-
-        $('#customThemeInput').on('input', function() {
-            var customTheme = $(this).val();
-            if (customTheme !== null && customTheme.length > 0) {
-                themeSelect.disabled = true;
-            } else {
-                themeSelect.disabled = false;
-            }
-        });
-    });
+    // get theme
+    let pivot = @json($pivot);
+    let themeName;
+    if (pivot !== null) {
+        themeName = pivot.theme
+        if (themeName !== null) {
+            themeName = themeName.name;
+        } else {
+            themeName = '';
+        }
+    }
 
     function initApp() {
         if (!localStorage.getItem('firstPic')) {
@@ -683,9 +693,12 @@ $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
             let pic = $('#firstPicSelect').val();
             $.ajax({
                 type: 'get',
-                url: `{{ url('dashboard/selectFirstPic/${pic}') }}`,
+                url: "{{ url('dashboard/selectFirstPic') }}",
                 _token: "{{ csrf_token() }}",
                 dataType: 'json',
+                data: {
+                    pic: pic
+                },
                 success: function(data) {
                     if (data.status == 'success') {
                         // set local storage
@@ -697,15 +710,14 @@ $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
                             notif('success', data.message);
                         }, 500);
 
-                        let color = data.role == 'Leader' ? 'danger' : 'warning';
+                        let color = data.role == 'leader' ? 'danger' : 'warning';
                         let photo = data.photo;
-                        console.log(data.photo);
 
                         $('#firstPicContainer').html('');
                         $('#firstPicContainer').html(`
-                        <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#firstPicModal" id="firstPic">
+                        <div class="card shadow-md card-hover">
                             <div class="card-body p-3 d-flex align-items-center gap-3">
-                                <img src="{{ asset('uploads/doc/${photo}') }}"
+                                <img src="{{ asset('uploads/doc') }}"
                                     alt="" class="rounded-circle" width="60" height="60">
                                 <div>
                                     <h6 class="fw-semibold mb-0">${data.name}</h6>
@@ -735,9 +747,12 @@ $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
             let pic = $('#secondPicSelect').val();
             $.ajax({
                 type: 'get',
-                url: `{{ url('dashboard/selectSecondPic/${pic}') }}`,
+                url: "{{ url('dashboard/selectSecondPic') }}",
                 _token: "{{ csrf_token() }}",
                 dataType: 'json',
+                data: {
+                    pic: pic
+                },
                 success: function(data) {
                     if (data.status == 'success') {
                         // set local storage
@@ -749,14 +764,14 @@ $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
                             notif('success', data.message);
                         }, 500);
 
-                        let color = data.role == 'Leader' ? 'danger' : 'warning';
+                        let color = data.role == 'leader' ? 'danger' : 'warning';
                         let photo = data.photo;
 
                         $('#secondPicContainer').html('');
                         $('#secondPicContainer').html(`
-                        <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#secondPicModal" id="secondPic">
+                        <div class="card shadow-md card-hover">
                             <div class="card-body p-3 d-flex align-items-center gap-3">
-                                <img src="{{ asset('uploads/doc/${photo}') }}"
+                                <img src="../../public/uploads/doc/ . ${photo}"
                                     alt="" class="rounded-circle" width="60" height="60">
                                 <div>
                                     <h6 class="fw-semibold mb-0">${data.name}</h6>
