@@ -14,4 +14,9 @@ class HenkatenMethod extends Model
     protected $table = 'henkaten_method';
 
     protected $guarded = ['id'];
+
+    public function line()
+    {
+        return $this->belongsTo(Line::class);
+    }
 }

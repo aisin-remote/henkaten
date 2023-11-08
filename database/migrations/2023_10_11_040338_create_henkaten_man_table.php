@@ -25,7 +25,7 @@ return new class extends Migration
             $table->foreign('shift_id')->references('id')->on('shifts')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->foreign('line_id')->references('id')->on('lines')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->text('henkaten_description')->nullable();
-            $table->enum('type', ['plan','unplan']);
+            $table->enum('type', ['plan','unplan'])->nullable();
             $table->timestamp('date');
             $table->string('troubleshoot')->nullable();
             $table->string('approval')->nullable();

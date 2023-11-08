@@ -32,10 +32,10 @@ class DashboardController extends Controller
         $currentDate = Carbon::now()->format('Y-m-d');
 
         // get all henkaten history
-        $manData = HenkatenMan::where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
-        $methodData = HenkatenMethod::where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
-        $machineData = HenkatenMachine::where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
-        $materialData = HenkatenMaterial::where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
+        $manData = HenkatenMan::with('line')->where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
+        $methodData = HenkatenMethod::with('line')->where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
+        $machineData = HenkatenMachine::with('line')->where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
+        $materialData = HenkatenMaterial::with('line')->where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
 
         // Merge the data and add the type field
         $combinedData = [];
@@ -49,7 +49,6 @@ class DashboardController extends Controller
                 'status_after' => $item->status_after,
                 'problem' => $item->henkaten_problem, 
                 'description' => $item->henkaten_description,
-                'date' => $item->date,
                 'troubleshoot' => $troubleshoot
             ];
         }
@@ -64,6 +63,7 @@ class DashboardController extends Controller
                 'problem' => $item->henkaten_problem, 
                 'description' => $item->henkaten_description,
                 'date' => $item->date,
+                'line' => $item->line->name,
                 'troubleshoot' => $troubleshoot
             ];
         }
@@ -78,6 +78,7 @@ class DashboardController extends Controller
                 'problem' => $item->henkaten_problem, 
                 'description' => $item->henkaten_description,
                 'date' => $item->date,
+                'line' => $item->line->name,
                 'troubleshoot' => $troubleshoot
             ];
         }
@@ -91,6 +92,7 @@ class DashboardController extends Controller
                 'problem' => $item->henkaten_problem, 
                 'description' => $item->henkaten_description,
                 'date' => $item->date,
+                'line' => $item->line->name,
                 'troubleshoot' => $troubleshoot
             ];
         }
@@ -107,17 +109,8 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function dashboardLine(Line $lineId) 
+    public function dashboardLine(Line $lineId)
     {
-        $arrayStatus = [];
-        foreach(['man', 'method', 'machine', 'material'] as $type){
-            // search if running is exist
-            $status = Line::whereNot('status_' . $type, 'running')->where('id', $lineId->id)->first();
-            if($status){
-                $arrayStatus[$type] = $status->{'status_'. $type};
-            }
-        }
-
         $currentDate = Carbon::now()->format('Y-m-d');
 
         // get all henkaten history
@@ -125,6 +118,9 @@ class DashboardController extends Controller
         $methodData = HenkatenMethod::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get();
         $machineData = HenkatenMachine::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get();
         $materialData = HenkatenMaterial::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get();
+
+        // get man power at spesific line and shift
+        
 
         // Merge the data and add the type field
         $combinedData = [];
@@ -188,7 +184,6 @@ class DashboardController extends Controller
         return view('pages.website.line',[
             'line' => Line::findOrFail($lineId->id),
             'employees' => Employee::all(),
-            'statuses' => $arrayStatus,
             'histories' => $combinedData,
             'methodHistory' => HenkatenMethod::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get(),
             'machineHistory' => HenkatenMachine::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get(),

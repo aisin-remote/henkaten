@@ -20,7 +20,7 @@
             </li>
         </ul>
         <ul class="navbar-nav quick-links d-none d-xl-flex">
-            <span class="badge bg-warning fw-bolder px-4 py-2">Shift 1</span>
+            <span class="badge bg-warning fw-bolder px-4 py-2" id="shift">Shift 1</span>
         </ul>
         <div class="d-block d-xl-none">
             <a href="index.html" class="text-nowrap nav-link">

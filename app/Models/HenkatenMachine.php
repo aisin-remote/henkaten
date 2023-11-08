@@ -14,4 +14,9 @@ class HenkatenMachine extends Model
     protected $table = 'henkaten_machine';
 
     protected $guarded = ['id'];
+
+    public function line()
+    {
+        return $this->belongsTo(Line::class);
+    }
 }

@@ -23,7 +23,6 @@ class EmployeeController extends Controller
 
         // get active employee at this period of time (today)
         
-        
         return view('pages.website.employees');
     }
     

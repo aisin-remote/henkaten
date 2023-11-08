@@ -17,7 +17,7 @@ return new class extends Migration
             $table->uuid('id', 191)->primary();
             $table->string('pic')->nullable();
             $table->text('henkaten_description')->nullable();
-            $table->enum('type', ['plan','unplan']);
+            $table->enum('type', ['plan','unplan'])->nullable();
             $table->timestamp('date');
             $table->string('troubleshoot')->nullable();
             $table->string('approval')->nullable();

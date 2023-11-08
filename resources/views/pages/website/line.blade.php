@@ -547,7 +547,13 @@
     }
 
     $(document).ready(function() {
-        $('#henkatenHistory').DataTable();
+        // set shift to local storage
+        localStorage.setItem('shift', $('#shift').html());
+
+        // initialize datatable
+        $('#henkatenHistory').DataTable({
+            scrollX: true,
+        });
 
         let labelText;
 

@@ -360,35 +360,45 @@
                             <div class="col-12">
                                 <div class="card p-4 py-4">
                                     <div class="card-body p-3 align-items-center text-center"
-                                        style="max-height: 10em; width: 100%; overflow:scroll; overflow-x: hidden">
-                                        <div class="accordion" id="accordionExample">
-                                            @foreach ($histories as $history)
-                                                <div class="accordion-item">
-                                                    <h2 class="accordion-header" id="headingOne">
-                                                        <button class="accordion-button collapsed" type="button"
-                                                            data-bs-toggle="collapse"
-                                                            data-bs-target="#history-{{ $loop->index }}"
-                                                            aria-expanded="false" aria-controls="collapseOne">
-                                                            @if ($history['troubleshoot'] == 'Belum ditangani')
-                                                                <span class="mb-1 badge bg-danger">Open</span>
-                                                            @else
-                                                                <span class="mb-1 badge bg-success">Closed</span>
-                                                            @endif
-                                                            <span class="ps-3">
-                                                                {{ $history['problem'] }}
-                                                            </span>
-                                                        </button>
-                                                    </h2>
-                                                    <div id="history-{{ $loop->index }}"
-                                                        class="accordion-collapse collapse" aria-labelledby="headingOne"
-                                                        data-bs-parent="#accordionExample" style="">
-                                                        <div class="accordion-body">
-                                                            <strong>{{ $history['description'] }}</strong>
+                                        style="max-height: 11em; width: 100%; overflow:scroll; overflow-x: hidden">
+                                        @if ($histories !== [])
+                                            <div class="accordion" id="accordionExample">
+                                                @foreach ($histories as $history)
+                                                    <div class="accordion-item">
+                                                        <h2 class="accordion-header" id="headingOne">
+                                                            <button class="accordion-button collapsed" type="button"
+                                                                data-bs-toggle="collapse"
+                                                                data-bs-target="#history-{{ $loop->index }}"
+                                                                aria-expanded="false" aria-controls="collapseOne">
+                                                                <span
+                                                                    class="mb-1 badge bg-dark me-2">{{ $history['line'] }}</span>
+                                                                @if ($history['troubleshoot'] == 'Belum ditangani')
+                                                                    <span class="mb-1 badge bg-danger">Open</span>
+                                                                @else
+                                                                    <span class="mb-1 badge bg-success">Closed</span>
+                                                                @endif
+                                                                <span class="ps-3">
+                                                                    {{ $history['problem'] }}
+                                                                </span>
+                                                            </button>
+                                                        </h2>
+                                                        <div id="history-{{ $loop->index }}"
+                                                            class="accordion-collapse collapse"
+                                                            aria-labelledby="headingOne"
+                                                            data-bs-parent="#accordionExample" style="">
+                                                            <div class="accordion-body">
+                                                                <strong>{{ $history['description'] }}</strong>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <h1 class="fw-bolder"
+                                                style="font-size: 5em; display:block; font-weight:900 !important">
+                                                NO HENKATEN
+                                            </h1>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

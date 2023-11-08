@@ -14,4 +14,9 @@ class HenkatenMan extends Model
     protected $table = 'henkaten_man';
 
     protected $guarded = ['id'];
+
+    public function line()
+    {
+        return $this->belongsTo(Line::class);
+    }
 }

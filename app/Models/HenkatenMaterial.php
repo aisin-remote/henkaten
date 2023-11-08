@@ -14,4 +14,9 @@ class HenkatenMaterial extends Model
     protected $table = 'henkaten_material';
 
     protected $guarded = ['id'];
+
+    public function line()
+    {
+        return $this->belongsTo(Line::class);
+    }
 }
