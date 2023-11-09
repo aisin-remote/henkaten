@@ -24,7 +24,7 @@ $modalTitle = $pivot && $pivot->theme ? 'Change Theme' : 'Add Theme';
 
                     <label class="mb-2">New Theme</label>
                     <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" id="themeSelect">
-                        <option>Select</option>
+                        <option value="null">Select</option>
                         @foreach ($themes as $theme)
                         <option value="{{ $theme->id }}">{{ $theme->name }}</option>
                         @endforeach
@@ -145,11 +145,12 @@ $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
                 </div>
                 @php
                 $theme = $pivot ? $pivot->theme : null;
+                $themeName = $theme ? $theme->name : ($pivot->custom_theme ? $pivot->custom_theme : 'Set Theme');
                 @endphp
 
-                <button type="button" class="btn btn-{{ $theme ? 'secondary' : 'light' }} py-2 px-5 ms-auto" data-bs-toggle="modal" data-bs-target="#modalTheme" style="border: 3px {{ $theme ? 'none' : 'dotted' }} {{ $theme ? 'lightgrey' : '#686868' }}">
-                    <h4 class="fw-bolder pt-1" style="color: {{ $theme ? 'white' : '#686868' }}">
-                        {{ $theme ? $theme->name : 'Set Theme' }}
+                <button type="button" class="btn btn-{{ $themeName ? 'secondary' : 'light' }} py-2 px-5 ms-auto" data-bs-toggle="modal" data-bs-target="#modalTheme" style="border: 3px {{ $themeName ? 'none' : 'dotted' }} {{ $themeName ? 'lightgrey' : '#686868' }}">
+                    <h4 class="fw-bolder pt-1" style="color: {{ $themeName ? 'white' : '#686868' }}">
+                        {{ $themeName ? $themeName : 'Set Theme' }}
                     </h4>
                 </button>
             </div>
@@ -610,7 +611,7 @@ $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
         var customThemeInput = document.getElementById('customThemeInput');
         $('#themeSelect').on('change', function() {
             var theme = $(this).val();
-            if (theme !== 'Select') {
+            if (theme !== 'null') {
                 customThemeInput.disabled = true;
             } else {
                 customThemeInput.disabled = false;
@@ -809,6 +810,9 @@ $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
         // submit theme form
         $('#themeForm').on('click', function() {
             let theme = $('#themeSelect').val();
+            if (theme == "null") {
+                theme = $('#customThemeInput').val() + '-custom'
+            }
             $.ajax({
                 type: 'get',
                 url: `{{ url('dashboard/selectTheme/${theme}') }}`,
@@ -818,6 +822,7 @@ $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
                     theme: theme
                 },
                 success: function(data) {
+                    console.log(data);
                     if (data.status == 'success') {
 
                         $('#modalTheme').modal('hide');
@@ -834,9 +839,10 @@ $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
                                     class="fs-2 d-flex align-items-center py-1">{{ Carbon\Carbon::now()->isoFormat('lll') }}</span>
                             </div>
 
-                            <button type="button" class="btn btn-{{ $theme ? 'secondary' : 'light' }} py-2 px-5 ms-auto" data-bs-toggle="modal" data-bs-target="#modalTheme" style="border: 3px {{ $theme ? 'none' : 'dotted' }} {{ $theme ? 'lightgrey' : '#686868' }}">
-                                <h4 class="fw-bolder pt-1" style="color: {{ $theme ? 'white' : '#686868' }}">
-                                ${data.theme_name}
+                            <button id="themeModal" type="button" class="btn btn-secondary py-2 px-5 ms-auto"
+                                data-bs-toggle="modal" data-bs-target="#modalTheme">
+                                <h4 class=" fw-bolder text-light pt-1">
+                                    ${data.theme_name}
                                 </h4>
                             </button>
                         `);
