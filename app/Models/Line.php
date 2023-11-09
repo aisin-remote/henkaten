@@ -31,4 +31,9 @@ class Line extends Model
     {
         return $this->hasMany(HenkatenMaterial::class, 'line_id');
     }
+
+    public function employeeActive()
+    {
+        return $this->hasMany(EmployeeActive::class);
+    }
 }

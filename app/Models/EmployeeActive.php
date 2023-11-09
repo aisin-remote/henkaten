@@ -14,4 +14,19 @@ class EmployeeActive extends Model
     protected $table = 'employee_active';
 
     protected $guarded = ['id'];
+
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
+    }
+    
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
+    
+    public function line()
+    {
+        return $this->belongsTo(Line::class);
+    }
 }

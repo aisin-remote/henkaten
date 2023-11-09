@@ -399,7 +399,7 @@
                             <th>No</th>
                             <th>4M</th>
                             <th>Status</th>
-                            <th>Description</th>
+                            <th>Problem</th>
                             <th>Time</th>
                             <th>Troubleshoot</th>
                             <th>Action</th>
@@ -429,7 +429,7 @@
                                 <td>
                                     <span class="mb-1 badge bg-{{ $color }}">{{ $history['status'] }}</span>
                                 </td>
-                                <td>{{ $history['description'] }}</td>
+                                <td>{{ $history['problem'] }}</td>
                                 <td>{{ Carbon\Carbon::parse($history['date'])->format('j F Y, H:i:s') }}</td>
                                 @if ($history['troubleshoot'] == 'Belum ditangani')
                                     <td>

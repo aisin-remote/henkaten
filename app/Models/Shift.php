@@ -14,4 +14,9 @@ class Shift extends Model
     protected $table = 'shifts';
 
     protected $guarded = ['id'];
+
+    public function employeeActive()
+    {
+        return $this->hasMany(EmployeeActive::class);
+    }
 }

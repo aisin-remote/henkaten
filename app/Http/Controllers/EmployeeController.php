@@ -20,10 +20,19 @@ class EmployeeController extends Controller
     {
         // get current date
         $currentDate = Carbon::now();
-
-        // get active employee at this period of time (today)
+        $firstDay = $currentDate->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
+        $lastDay = $currentDate->endOfWeek(Carbon::SUNDAY)->format('Y-m-d');
         
-        return view('pages.website.employees');
+        // get active employee at this period of time (this week)
+        $activeEmployees = EmployeeActive::with('shift')
+                        ->with('employee')
+                        ->with('line')
+                        ->whereBetween('active_from', [$firstDay, $lastDay])
+                        ->get();
+
+        return view('pages.website.employees',[
+            'employees' => $activeEmployees
+        ]);
     }
     
     public function employeeRegister()
@@ -58,7 +67,7 @@ class EmployeeController extends Controller
         
         if($request->has('photo')){
             $doc = $request->file('photo');
-            $docName = time() . '-' . $doc->getClientOriginalName();
+            $docName = time() . '-' . $validatedData['name'];
             $doc->move(public_path('uploads/doc'), $docName);   
 
             //store doc name

@@ -32,10 +32,10 @@ class DashboardController extends Controller
         $currentDate = Carbon::now()->format('Y-m-d');
 
         // get all henkaten history
-        $manData = HenkatenMan::with('line')->where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
-        $methodData = HenkatenMethod::with('line')->where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
-        $machineData = HenkatenMachine::with('line')->where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
-        $materialData = HenkatenMaterial::with('line')->where('date', 'like', '%' .$currentDate .'%')->where('status_after', null)->get();
+        $manData = HenkatenMan::with('line')->where('status_after', null)->get();
+        $methodData = HenkatenMethod::with('line')->where('status_after', null)->get();
+        $machineData = HenkatenMachine::with('line')->where('status_after', null)->get();
+        $materialData = HenkatenMaterial::with('line')->where('status_after', null)->get();
 
         // Merge the data and add the type field
         $combinedData = [];
@@ -114,10 +114,10 @@ class DashboardController extends Controller
         $currentDate = Carbon::now()->format('Y-m-d');
 
         // get all henkaten history
-        $manData = HenkatenMan::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get();
-        $methodData = HenkatenMethod::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get();
-        $machineData = HenkatenMachine::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get();
-        $materialData = HenkatenMaterial::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get();
+        $manData = HenkatenMan::where('line_id', $lineId->id)->get();
+        $methodData = HenkatenMethod::where('line_id', $lineId->id)->get();
+        $machineData = HenkatenMachine::where('line_id', $lineId->id)->get();
+        $materialData = HenkatenMaterial::where('line_id', $lineId->id)->get();
 
         // get man power at spesific line and shift
         

@@ -24,4 +24,9 @@ class Employee extends Model
     {
         return $this->hasMany(Pivot::class, 'second_pic_id');
     }
+    
+    public function employeeActive()
+    {
+        return $this->hasMany(EmployeeActive::class);
+    }
 }

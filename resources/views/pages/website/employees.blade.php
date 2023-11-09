@@ -1,320 +1,87 @@
 @extends('layouts.root.main')
 
 @section('main')
-    <div class="col-lg-6 col-md-12 col-12">
-        <div class="card shadow-md card-hover">
-            <div class="card-body p-3 d-flex align-items-center gap-3" id="themeContainer">
-                <div>
-                    <h5 class="fw-semibold mb-0">Periode Planning</h5>
-                    <span class="fs-2 d-flex align-items-center py-1 d-inline">{{ Carbon\Carbon::now()->format('l, j F Y') }}
-                        <span id="time" class="fs-2 px-2"></span></span>
-                </div>
-
-                <button type="button" class="btn btn-secondary py-2 px-5 ms-auto" data-bs-toggle="modal"
-                    data-bs-target="#modalTheme" style="border: 3px none #686868">
-                    <h4 class="fw-bolder pt-1" style="color: white">
-                        {{ Carbon\Carbon::now()->format('l, j F Y') }}
-                    </h4>
-                </button>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-12">
+    <div class="row">
         <div class="card">
-            <div class="card-body">
-                <!-- Nav tabs -->
-                <ul class="nav nav-pills nav-fill mt-4" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#navpill-111" role="tab"
-                            aria-selected="true">
-                            <span style="font-weight: bolder">Shift 1</span>
-                        </a>
-                    </li>
-                </ul>
-                <!-- Tab panes -->
-                <div class="tab-content border mt-3">
-                    <div class="tab-pane active p-3" id="navpill-111" role="tabpanel">
-                        <div class="owl-carousel counter-carousel owl-theme">
-                            <div class="item">
-                                <div class="card border-0 zoom-in bg-light-primary shadow-none">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                alt="" class="rounded" width="100" height="100">
-                                            <p class="fw-semibold fs-3 text-primary mb-1 mt-3"> Employee 1</p>
-                                            <h5 class="fw-semibold text-primary mb-0">002484</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="card border-0 zoom-in bg-light-warning shadow-none">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                alt="" class="rounded" width="100" height="100">
-                                            <p class="fw-semibold fs-3 text-warning mb-1 mt-3">Employee 2</p>
-                                            <h5 class="fw-semibold text-warning mb-0">002484</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="card border-0 zoom-in bg-light-info shadow-none">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                alt="" class="rounded" width="100" height="100">
-                                            <p class="fw-semibold fs-3 text-info mb-1 mt-3">Employee 3</p>
-                                            <h5 class="fw-semibold text-info mb-0">002484</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="card border-0 zoom-in bg-light-danger shadow-none">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                alt="" class="rounded" width="100" height="100">
-                                            <p class="fw-semibold fs-3 text-danger mb-1 mt-3">Employee 4</p>
-                                            <h5 class="fw-semibold text-danger mb-0">002484</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="card border-0 zoom-in bg-light-success shadow-none">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                alt="" class="rounded" width="100" height="100">
-                                            <p class="fw-semibold fs-3 text-success mb-1 mt-3">Employee 5</p>
-                                            <h5 class="fw-semibold text-success mb-0">002484</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="card border-0 zoom-in bg-light-info shadow-none">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                alt="" class="rounded" width="100" height="100">
-                                            <p class="fw-semibold fs-3 text-info mb-1 mt-3">Employee 6</p>
-                                            <h5 class="fw-semibold text-info mb-0">002484</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-10">
+                        <h4 class="fw-4">
+                            Employee Planning List
+                            <h6 class="text-muted">
+                                {{ Carbon\Carbon::now()->format('l, j F Y') }}
+                            </h6>
+                        </h4>
                     </div>
                 </div>
-                <ul class="nav nav-pills nav-fill mt-4" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#navpill-111" role="tab"
-                            aria-selected="true">
-                            <span style="font-weight: bolder">Shift 2</span>
-                        </a>
-                    </li>
-                </ul>
-                <!-- Tab panes -->
-                <div class="tab-content border mt-3">
-                    <div class="tab-pane active p-3" id="navpill-111" role="tabpanel">
-                        <div class="owl-carousel counter-carousel owl-theme">
-                            <div class="item">
-                                <div class="card border-0 zoom-in bg-light-primary shadow-none">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                alt="" class="rounded" width="100" height="100">
-                                            <p class="fw-semibold fs-3 text-primary mb-1 mt-3"> Employee 1</p>
-                                            <h5 class="fw-semibold text-primary mb-0">002484</h5>
-                                        </div>
+            </div>
+            <div class="card-body p-3">
+                <table class="table text-nowrap align-middle mb-0" id="henkatenHistory" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Shift</th>
+                            <th>Name</th>
+                            <th>role</th>
+                            <th>Active Date</th>
+                            <th>Line</th>
+                            <th>Henkaten History</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($employees as $emp)
+                            @php
+                                if ($emp->employee->role == 'JP') {
+                                    $color = 'danger';
+                                } else {
+                                    $color = 'warning';
+                                }
+                            @endphp
+                            <tr>
+                                <td>{{ $emp->shift->name }}</td>
+                                <td class="ps-0 text-truncate">
+                                    <img src="{{ asset('uploads/doc/' . $emp->employee->photo) }}"
+                                        class="rounded img-fluid me-2" width="40" alt="{{ $emp->employee->name }}">
+                                    <span class="ps-2 fw-semibold">{{ $emp->employee->name }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ $color }} p-2 px-3">
+                                        {{ $emp->employee->role }}
+                                    </span>
+                                </td>
+                                <td>{{ Carbon\Carbon::parse($emp->active_from)->format('j F Y') }} -
+                                    {{ Carbon\Carbon::parse($emp->expired_at)->format('j F Y') }}</td>
+                                <td>{{ $emp->line->name }}</td>
+                                <td>
+                                    <div class="progress" style="height: 20px">
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 25%"
+                                            aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
+                                        <div class="progress-bar bg-cyan" role="progressbar" style="width: 25%"
+                                            aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: 25%"
+                                            aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: 25%"
+                                            aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="card border-0 zoom-in bg-light-warning shadow-none">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                alt="" class="rounded" width="100" height="100">
-                                            <p class="fw-semibold fs-3 text-warning mb-1 mt-3">Employee 2</p>
-                                            <h5 class="fw-semibold text-warning mb-0">002484</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="card border-0 zoom-in bg-light-info shadow-none">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                alt="" class="rounded" width="100" height="100">
-                                            <p class="fw-semibold fs-3 text-info mb-1 mt-3">Employee 3</p>
-                                            <h5 class="fw-semibold text-info mb-0">002484</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="card border-0 zoom-in bg-light-danger shadow-none">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                alt="" class="rounded" width="100" height="100">
-                                            <p class="fw-semibold fs-3 text-danger mb-1 mt-3">Employee 4</p>
-                                            <h5 class="fw-semibold text-danger mb-0">002484</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="card border-0 zoom-in bg-light-success shadow-none">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                alt="" class="rounded" width="100" height="100">
-                                            <p class="fw-semibold fs-3 text-success mb-1 mt-3">Employee 5</p>
-                                            <h5 class="fw-semibold text-success mb-0">002484</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="card border-0 zoom-in bg-light-info shadow-none">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                alt="" class="rounded" width="100" height="100">
-                                            <p class="fw-semibold fs-3 text-info mb-1 mt-3">Employee 6</p>
-                                            <h5 class="fw-semibold text-info mb-0">002484</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <ul class="nav nav-pills nav-fill mt-4" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link active" data-bs-toggle="tab" href="#navpill-111" role="tab"
-                                aria-selected="true">
-                                <span style="font-weight: bolder">Shift 3</span>
-                            </a>
-                        </li>
-                    </ul>
-                    <!-- Tab panes -->
-                    <div class="tab-content border mt-3">
-                        <div class="tab-pane active p-3" id="navpill-111" role="tabpanel">
-                            <div class="owl-carousel counter-carousel owl-theme">
-                                <div class="item">
-                                    <div class="card border-0 zoom-in bg-light-primary shadow-none">
-                                        <div class="card-body">
-                                            <div class="text-center">
-                                                <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                    alt="" class="rounded" width="100" height="100">
-                                                <p class="fw-semibold fs-3 text-primary mb-1 mt-3"> Employee 1</p>
-                                                <h5 class="fw-semibold text-primary mb-0">002484</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <div class="card border-0 zoom-in bg-light-warning shadow-none">
-                                        <div class="card-body">
-                                            <div class="text-center">
-                                                <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                    alt="" class="rounded" width="100" height="100">
-                                                <p class="fw-semibold fs-3 text-warning mb-1 mt-3">Employee 2</p>
-                                                <h5 class="fw-semibold text-warning mb-0">002484</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <div class="card border-0 zoom-in bg-light-info shadow-none">
-                                        <div class="card-body">
-                                            <div class="text-center">
-                                                <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                    alt="" class="rounded" width="100" height="100">
-                                                <p class="fw-semibold fs-3 text-info mb-1 mt-3">Employee 3</p>
-                                                <h5 class="fw-semibold text-info mb-0">002484</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <div class="card border-0 zoom-in bg-light-danger shadow-none">
-                                        <div class="card-body">
-                                            <div class="text-center">
-                                                <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                    alt="" class="rounded" width="100" height="100">
-                                                <p class="fw-semibold fs-3 text-danger mb-1 mt-3">Employee 4</p>
-                                                <h5 class="fw-semibold text-danger mb-0">002484</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <div class="card border-0 zoom-in bg-light-success shadow-none">
-                                        <div class="card-body">
-                                            <div class="text-center">
-                                                <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                    alt="" class="rounded" width="100" height="100">
-                                                <p class="fw-semibold fs-3 text-success mb-1 mt-3">Employee 5</p>
-                                                <h5 class="fw-semibold text-success mb-0">002484</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <div class="card border-0 zoom-in bg-light-info shadow-none">
-                                        <div class="card-body">
-                                            <div class="text-center">
-                                                <img src="{{ asset('uploads/doc/1698069774-WhatsApp Image 2023-10-18 at 2.18.28 PM.jpeg') }}"
-                                                    alt="" class="rounded" width="100" height="100">
-                                                <p class="fw-semibold fs-3 text-info mb-1 mt-3">Employee 6</p>
-                                                <h5 class="fw-semibold text-info mb-0">002484</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane p-3" id="navpill-222" role="tabpanel">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <p>
-                                        Raw denim you probably haven't heard of them jean
-                                        shorts Austin. Nesciunt tofu stumptown aliqua,
-                                        retro synth master cleanse. Mustache cliche
-                                        tempor, williamsburg carles vegan helvetica.
-                                    </p>
-                                </div>
-                                <div class="col-md-4">
-                                    <img src="../../dist/images/big/img1.jpg" alt="" class="img-fluid">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane p-3" id="navpill-333" role="tabpanel">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <img src="../../dist/images/big/img3.jpg" alt="" class="img-fluid">
-                                </div>
-                                <div class="col-md-8">
-                                    <p>
-                                        Raw denim you probably haven't heard of them jean
-                                        shorts Austin. Nesciunt tofu stumptown aliqua,
-                                        retro synth master cleanse. Mustache cliche
-                                        tempor, williamsburg carles vegan helvetica.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary">Detail</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 @endsection
+<script src="https://code.jquery.com/jquery-3.6.3.min.js"
+    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function() {
+        // initialize datatable
+        $('#henkatenHistory').DataTable({
+            scrollX: true,
+        });
+    });
+</script>
