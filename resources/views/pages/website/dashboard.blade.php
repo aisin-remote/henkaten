@@ -15,10 +15,14 @@ $modalTitle = $pivot && $pivot->theme ? 'Change Theme' : 'Add Theme';
             </div>
             <form>
                 <div class="modal-body">
-                    @if ($pivot && $pivot->theme)
+                    @if ($pivot && ($pivot->theme || $pivot->custom_theme))
                     <div class="mb-3">
                         <label class="mb-2">Current Theme</label>
-                        <input type="text" class="form-control" placeholder="" disabled value="{{ $pivot->theme->name }}">
+                        @php
+                        $theme = $pivot ? $pivot->theme : null;
+                        $themeName = $theme ? $theme->name : ($pivot->custom_theme ? $pivot->custom_theme : 'Set Theme');
+                        @endphp
+                        <input type="text" class="form-control" placeholder="" disabled value="{{ $themeName }}">
                     </div>
                     @endif
 
