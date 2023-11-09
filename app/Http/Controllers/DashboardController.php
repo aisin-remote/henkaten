@@ -24,10 +24,10 @@ class DashboardController extends Controller
         // get current pivot
         $current_date = Carbon::now()->toDateString();
         $pivot = Pivot::with('theme')
-                    ->with('firstPic')
-                    ->with('secondPic')
-                    ->where('active_date', $current_date)
-                    ->first();
+            ->with('firstPic')
+            ->with('secondPic')
+            ->where('active_date', $current_date)
+            ->first();
 
         $currentDate = Carbon::now()->format('Y-m-d');
 
@@ -47,7 +47,7 @@ class DashboardController extends Controller
                 'type' => 'Man',
                 'status' => $item->status,
                 'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem, 
+                'problem' => $item->henkaten_problem,
                 'description' => $item->henkaten_description,
                 'troubleshoot' => $troubleshoot
             ];
@@ -60,7 +60,7 @@ class DashboardController extends Controller
                 'type' => 'Method',
                 'status' => $item->status,
                 'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem, 
+                'problem' => $item->henkaten_problem,
                 'description' => $item->henkaten_description,
                 'date' => $item->date,
                 'line' => $item->line->name,
@@ -75,7 +75,7 @@ class DashboardController extends Controller
                 'type' => 'Machine',
                 'status' => $item->status,
                 'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem, 
+                'problem' => $item->henkaten_problem,
                 'description' => $item->henkaten_description,
                 'date' => $item->date,
                 'line' => $item->line->name,
@@ -89,7 +89,7 @@ class DashboardController extends Controller
                 'id' => $item->id,
                 'type' => 'Material',
                 'status' => $item->status,
-                'problem' => $item->henkaten_problem, 
+                'problem' => $item->henkaten_problem,
                 'description' => $item->henkaten_description,
                 'date' => $item->date,
                 'line' => $item->line->name,
@@ -98,12 +98,12 @@ class DashboardController extends Controller
         }
 
         // in this page we will get all line status
-        return view('pages.website.dashboard',[
+        return view('pages.website.dashboard', [
             'pivot' => $pivot,
             'themes' => Theme::all(),
-            'employees' => Employee::select('id','name')
-                            ->whereIn('role',['Leader','JP'])
-                            ->get(),
+            'employees' => Employee::select('id', 'name')
+                ->whereIn('role', ['Leader', 'JP'])
+                ->get(),
             'lines' => Line::all(),
             'histories' => $combinedData
         ]);
@@ -120,7 +120,7 @@ class DashboardController extends Controller
         $materialData = HenkatenMaterial::where('line_id', $lineId->id)->get();
 
         // get man power at spesific line and shift
-        
+
 
         // Merge the data and add the type field
         $combinedData = [];
@@ -132,7 +132,7 @@ class DashboardController extends Controller
                 'type' => 'Man',
                 'status' => $item->status,
                 'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem, 
+                'problem' => $item->henkaten_problem,
                 'description' => $item->henkaten_description,
                 'date' => $item->date,
                 'troubleshoot' => $troubleshoot
@@ -146,7 +146,7 @@ class DashboardController extends Controller
                 'type' => 'Method',
                 'status' => $item->status,
                 'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem, 
+                'problem' => $item->henkaten_problem,
                 'description' => $item->henkaten_description,
                 'date' => $item->date,
                 'troubleshoot' => $troubleshoot
@@ -160,7 +160,7 @@ class DashboardController extends Controller
                 'type' => 'Machine',
                 'status' => $item->status,
                 'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem, 
+                'problem' => $item->henkaten_problem,
                 'description' => $item->henkaten_description,
                 'date' => $item->date,
                 'troubleshoot' => $troubleshoot
@@ -174,25 +174,25 @@ class DashboardController extends Controller
                 'type' => 'Material',
                 'status' => $item->status,
                 'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem, 
+                'problem' => $item->henkaten_problem,
                 'description' => $item->henkaten_description,
                 'date' => $item->date,
                 'troubleshoot' => $troubleshoot
             ];
         }
 
-        return view('pages.website.line',[
+        return view('pages.website.line', [
             'line' => Line::findOrFail($lineId->id),
             'employees' => Employee::all(),
             'histories' => $combinedData,
-            'methodHistory' => HenkatenMethod::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get(),
-            'machineHistory' => HenkatenMachine::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get(),
-            'manHistory' => HenkatenMan::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get(),
-            'materialHistory' => HenkatenMaterial::where('line_id', $lineId->id)->where('date', 'like', '%' .$currentDate .'%')->get(),
+            'methodHistory' => HenkatenMethod::where('line_id', $lineId->id)->where('date', 'like', '%' . $currentDate . '%')->get(),
+            'machineHistory' => HenkatenMachine::where('line_id', $lineId->id)->where('date', 'like', '%' . $currentDate . '%')->get(),
+            'manHistory' => HenkatenMan::where('line_id', $lineId->id)->where('date', 'like', '%' . $currentDate . '%')->get(),
+            'materialHistory' => HenkatenMaterial::where('line_id', $lineId->id)->where('date', 'like', '%' . $currentDate . '%')->get(),
         ]);
     }
 
-    public function storeHenkaten($table , $status , $lineId , $pic = null  , $problem = null, $description = null)
+    public function storeHenkaten($table, $status, $lineId, $pic = null, $problem = null, $description = null)
     {
         // get all data from FE
         $lineId = $lineId ? $lineId : null;
@@ -218,13 +218,14 @@ class DashboardController extends Controller
         // }
 
         foreach ($shifts as $shift) {
-            if($currentTime->between($shift->time_start, $shift->time_end)){
+            if ($currentTime->between($shift->time_start, $shift->time_end)) {
                 $shiftId = $shift->id;
                 break;
             }
         }
 
-        function insertHenkaten($model, $shiftId, $lineId, $pic = null, $status, $problem = null, $description = null){
+        function insertHenkaten($model, $shiftId, $lineId, $pic = null, $status, $problem = null, $description = null)
+        {
             $result = $model->create([
                 'shift_id' => $shiftId,
                 'line_id' => $lineId,
@@ -242,27 +243,25 @@ class DashboardController extends Controller
         try {
             DB::beginTransaction();
 
-            if($table == 'method'){
+            if ($table == 'method') {
                 // insert into henkaten table
-                insertHenkaten($methodModel, $shiftId, $lineId, $pic, $status,$problem, $description);
+                insertHenkaten($methodModel, $shiftId, $lineId, $pic, $status, $problem, $description);
 
                 // insert into line table
                 Line::where('id', $lineId)->update([
                     'status_method' => $status
                 ]);
-                
-            }else if($table == 'machine'){
+            } else if ($table == 'machine') {
                 // insert into henkaten table
-                insertHenkaten($machineModel, $shiftId, $lineId, $pic, $status,$problem, $description);
+                insertHenkaten($machineModel, $shiftId, $lineId, $pic, $status, $problem, $description);
 
                 // insert into line table
                 Line::where('id', $lineId)->update([
                     'status_machine' => $status
                 ]);
-                
-            }else if($table == 'material'){
+            } else if ($table == 'material') {
                 // insert into henkaten table
-                insertHenkaten($materialModel, $shiftId, $lineId, $pic, $status,$problem, $description);
+                insertHenkaten($materialModel, $shiftId, $lineId, $pic, $status, $problem, $description);
 
                 // insert into line table
                 Line::where('id', $lineId)->update([
@@ -276,7 +275,6 @@ class DashboardController extends Controller
                 'status' => 'success',
                 'message' => 'Henkaten berhasil tersimpan!'
             ]);
-            
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
@@ -299,13 +297,14 @@ class DashboardController extends Controller
         $machineModel = new HenkatenMachine();
         $materialModel = new HenkatenMaterial();
 
-        function updateHenkaten($model, $henkatenId, $troubleshoot, $approvedBy){
+        function updateHenkaten($model, $henkatenId, $troubleshoot, $approvedBy)
+        {
             $result = $model->where('id', $henkatenId)
-                        ->update([
-                            'troubleshoot' => $troubleshoot,
-                            'approval' => $approvedBy,
-                            'status_after' => 'running' 
-                        ]);
+                ->update([
+                    'troubleshoot' => $troubleshoot,
+                    'approval' => $approvedBy,
+                    'status_after' => 'running'
+                ]);
 
             return $result;
         }
@@ -314,67 +313,65 @@ class DashboardController extends Controller
             DB::beginTransaction();
 
             // update henkaten table
-            if($type == 'method'){
+            if ($type == 'method') {
                 // insert into henkaten table
                 updateHenkaten($methodModel, $henkatenId, $troubleshoot, $approvedBy);
 
                 // check if there is any problem not solved yet
                 $otherStat = HenkatenMethod::select('status')
-                                ->where('status_after', null)
-                                ->where('line_id', $lineId)
-                                ->latest()
-                                ->first();
-                                
-                if(!$otherStat){
+                    ->where('status_after', null)
+                    ->where('line_id', $lineId)
+                    ->latest()
+                    ->first();
+
+                if (!$otherStat) {
                     // insert into line table
                     Line::where('id', $lineId)->update([
                         'status_method' => 'running'
                     ]);
-                }else{
+                } else {
                     Line::where('id', $lineId)->update([
                         'status_method' => $otherStat->status
                     ]);
                 }
-                
-            }else if($type == 'machine'){
+            } else if ($type == 'machine') {
                 // insert into henkaten table
                 updateHenkaten($machineModel, $henkatenId, $troubleshoot, $approvedBy);
 
                 // check if there is any problem not solved yet
                 $otherStat = HenkatenMachine::select('status')
-                                ->where('status_after', null)
-                                ->where('line_id', $lineId)
-                                ->latest()
-                                ->first();
-                                
-                if(!$otherStat){
+                    ->where('status_after', null)
+                    ->where('line_id', $lineId)
+                    ->latest()
+                    ->first();
+
+                if (!$otherStat) {
                     // insert into line table
                     Line::where('id', $lineId)->update([
                         'status_machine' => 'running'
                     ]);
-                }else{
+                } else {
                     Line::where('id', $lineId)->update([
                         'status_method' => $otherStat->status
                     ]);
-                }                
-                
-            }else if($type == 'material'){
+                }
+            } else if ($type == 'material') {
                 // insert into henkaten table
                 updateHenkaten($materialModel, $henkatenId, $troubleshoot, $approvedBy);
 
                 // check if there is any problem not solved yet
                 $otherStat = HenkatenMaterial::select('status')
-                                ->where('status_after', null)
-                                ->where('line_id', $lineId)
-                                ->latest()
-                                ->first();
+                    ->where('status_after', null)
+                    ->where('line_id', $lineId)
+                    ->latest()
+                    ->first();
 
-                if(!$otherStat){
+                if (!$otherStat) {
                     // insert into line table
                     Line::where('id', $lineId)->update([
                         'status_material' => 'running'
                     ]);
-                }else{
+                } else {
                     Line::where('id', $lineId)->update([
                         'status_method' => $otherStat->status
                     ]);
@@ -382,7 +379,7 @@ class DashboardController extends Controller
             }
 
             DB::commit();
-            
+
             return redirect()->back()->with('success', 'Data berhasil disimpan!');
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -390,69 +387,125 @@ class DashboardController extends Controller
         }
     }
 
-    public function selectTheme(Theme $theme)
+    public function selectTheme(Request $request)
     {
-        if(!$theme){
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Pilih tema yang tersedia!'
-            ]);
-        }
+        // if (!$theme) {
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => 'Pilih tema yang tersedia!'
+        //     ]);
+        // }
 
         // get theme name
-        $theme_name = Theme::select('name')->where('id',$theme->id)->first();
+
+        $parts = explode("/", $request->path());
+        $customTheme = explode("-", $parts[2]);
+
+        $theme_name = Theme::select('name')->where('id', $parts[2])->first();
 
         // get current pivot
         $current_date = Carbon::now()->toDateString();
         $pivot = Pivot::where('active_date', $current_date)->first();
-        if(!$pivot){
-            try {
-                DB::beginTransaction();
-                
-                // insert new data if pivot table is empty
-                Pivot::create([
-                    'theme_id' => $theme->id,
-                    'active_date' => $current_date
-                ]);
+        if (!$pivot) {
+            if (($theme_name == null)) {
+                try {
+                    DB::beginTransaction();
+                    // insert new data if pivot table is empty
+                    Pivot::create([
+                        'custom_theme' => $customTheme[0],
+                        'active_date' => $current_date
+                    ]);
 
-                DB::commit();
-            } catch (\Throwable $th) {
-                DB::rollBack();
-                return response()->json([
-                    'status' => 'error',
-                    'message' => $th
-                ],500);
+                    DB::commit();
+                } catch (\Throwable $th) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => $th
+                    ], 500);
+                }
+            } else {
+                try {
+                    DB::beginTransaction();
+
+                    // insert new data if pivot table is empty
+                    Pivot::create([
+                        'theme_id' => $parts[2],
+                        'active_date' => $current_date
+                    ]);
+
+                    DB::commit();
+                } catch (\Throwable $th) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => $th
+                    ], 500);
+                }
             }
-        }else{
-            try {
-                DB::beginTransaction();
+        } else {
+            if (($theme_name == null)) {
+                try {
+                    DB::beginTransaction();
 
-                $pivot->update([
-                    'theme_id' => $theme->id
-                ]);
+                    // insert new data if pivot table is empty
+                    $pivot->update([
+                        'custom_theme' => $customTheme[0],
+                        'theme_id' => null
+                    ]);
 
-                DB::commit();
-            } catch (\Throwable $th) {
-                DB::rollBack();
-                return response()->json([
-                    'status' => 'error',
-                    'message' => $th
-                ],500);
+                    DB::commit();
+                } catch (\Throwable $th) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => $th
+                    ], 500);
+                }
+            } else {
+                try {
+                    DB::beginTransaction();
+
+                    // insert new data if pivot table is empty
+                    $pivot->update([
+                        'custom_theme' => null,
+                        'theme_id' => $parts[2]
+                    ]);
+
+                    DB::commit();
+                } catch (\Throwable $th) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => $th
+                    ], 500);
+                }
             }
         }
 
+        $custom_theme = Pivot::select('custom_theme')->where('custom_theme', $customTheme[0])->first();
+
+        $theme_name_final = '';
+        if (isset($custom_theme)) {
+            $decoded_custom_theme = urldecode($custom_theme->custom_theme);
+            $theme_name_final = $decoded_custom_theme;
+        } elseif (isset($theme_name)) {
+            $theme_name_final = $theme_name->name;
+        }
+
+        // Mengembalikan respons JSON tanpa if-else
         return response()->json([
             'status' => 'success',
             'message' => 'Tema berhasil ditambahkan!',
-            'theme_id' => $theme->id,
-            'theme_name' => $theme_name->name,
-        ],200);
+            'theme_id' => $parts[2],
+            'theme_name' => $theme_name_final,
+        ], 200);
     }
 
     public function selectFirstPic($id)
     {
         $pic = $id;
-        if($pic == 0){
+        if ($pic == 0) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Pilih karyawan yang tersedia!'
@@ -470,19 +523,19 @@ class DashboardController extends Controller
         // get current pivot
         $current_date = Carbon::now()->toDateString();
         $pivot = Pivot::where('active_date', $current_date)->first();
-        
+
         $employee = Employee::where('id', $pic)->first();
-        if(!$employee){
+        if (!$employee) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'karyawan tidak terdaftar!'
-            ],404);
+            ], 404);
         }
 
-        if(!$pivot){
+        if (!$pivot) {
             try {
                 DB::beginTransaction();
-                
+
                 // insert new data if pivot table is empty
                 Pivot::create([
                     'first_pic_id' => $pic,
@@ -498,9 +551,9 @@ class DashboardController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'message' => $th
-                ],500);
+                ], 500);
             }
-        }else{
+        } else {
             try {
                 DB::beginTransaction();
 
@@ -514,7 +567,7 @@ class DashboardController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'message' => $th
-                ],500);
+                ], 500);
             }
         }
 
@@ -525,13 +578,13 @@ class DashboardController extends Controller
             'photo' => $employee->photo,
             'role' => $employee->role,
             'npk' => $employee->npk
-        ],200);
+        ], 200);
     }
 
     public function selectSecondPic($id)
     {
         $pic = $id;
-        if($pic == 0){
+        if ($pic == 0) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Pilih karyawan yang tersedia!'
@@ -549,19 +602,19 @@ class DashboardController extends Controller
         // get current pivot
         $current_date = Carbon::now()->toDateString();
         $pivot = Pivot::where('active_date', $current_date)->first();
-        
+
         $employee = Employee::where('id', $pic)->first();
-        if(!$employee){
+        if (!$employee) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'karyawan tidak terdaftar!'
-            ],404);
+            ], 404);
         }
 
-        if(!$pivot){
+        if (!$pivot) {
             try {
                 DB::beginTransaction();
-                
+
                 // insert new data if pivot table is empty
                 Pivot::create([
                     'second_pic_id' => $pic,
@@ -577,9 +630,9 @@ class DashboardController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'message' => $th
-                ],500);
+                ], 500);
             }
-        }else{
+        } else {
             try {
                 DB::beginTransaction();
 
@@ -593,7 +646,7 @@ class DashboardController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'message' => $th
-                ],500);
+                ], 500);
             }
         }
 
@@ -604,6 +657,6 @@ class DashboardController extends Controller
             'photo' => $employee->photo,
             'role' => $employee->role,
             'npk' => $employee->npk
-        ],200);
+        ], 200);
     }
 }
