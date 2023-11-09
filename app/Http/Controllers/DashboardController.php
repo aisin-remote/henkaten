@@ -11,6 +11,7 @@ use App\Models\Employee;
 use App\Models\HenkatenMan;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\EmployeeActive;
 use App\Models\HenkatenMethod;
 use App\Models\HenkatenMachine;
 use App\Models\HenkatenMaterial;
@@ -112,6 +113,7 @@ class DashboardController extends Controller
     public function dashboardLine(Line $lineId)
     {
         $currentDate = Carbon::now()->format('Y-m-d');
+        $currentTime = Carbon::now()->format('H:i:s');
 
         // get all henkaten history
         $manData = HenkatenMan::where('line_id', $lineId->id)->get();
@@ -119,9 +121,18 @@ class DashboardController extends Controller
         $machineData = HenkatenMachine::where('line_id', $lineId->id)->get();
         $materialData = HenkatenMaterial::where('line_id', $lineId->id)->get();
 
-        // get man power at spesific line and shift
-
-
+        // get man power at spesific line and range of time
+        $activeEmployees = EmployeeActive::with('shift')
+                            ->with('employee')
+                            ->where('active_from', '<=' , $currentDate)
+                            ->where('expired_at', '>=' , $currentDate)
+                            ->where('line_id', $lineId->id)
+                            ->whereHas('shift', function ($query) use ($currentTime) {
+                                $query->where('time_start', '<=', $currentTime)
+                                    ->where('time_end', '>=', $currentTime);
+                            })
+                            ->get();
+        
         // Merge the data and add the type field
         $combinedData = [];
 
@@ -180,15 +191,15 @@ class DashboardController extends Controller
                 'troubleshoot' => $troubleshoot
             ];
         }
-
         return view('pages.website.line', [
             'line' => Line::findOrFail($lineId->id),
             'employees' => Employee::all(),
+            'activeEmployees' => $activeEmployees,
             'histories' => $combinedData,
-            'methodHistory' => HenkatenMethod::where('line_id', $lineId->id)->where('date', 'like', '%' . $currentDate . '%')->get(),
-            'machineHistory' => HenkatenMachine::where('line_id', $lineId->id)->where('date', 'like', '%' . $currentDate . '%')->get(),
-            'manHistory' => HenkatenMan::where('line_id', $lineId->id)->where('date', 'like', '%' . $currentDate . '%')->get(),
-            'materialHistory' => HenkatenMaterial::where('line_id', $lineId->id)->where('date', 'like', '%' . $currentDate . '%')->get(),
+            'methodHistory' => HenkatenMethod::where('line_id', $lineId->id)->get(),
+            'machineHistory' => HenkatenMachine::where('line_id', $lineId->id)->get(),
+            'manHistory' => HenkatenMan::where('line_id', $lineId->id)->get(),
+            'materialHistory' => HenkatenMaterial::where('line_id', $lineId->id)->get(),
         ]);
     }
 

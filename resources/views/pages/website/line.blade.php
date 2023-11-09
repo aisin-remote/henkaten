@@ -316,57 +316,49 @@
             </div>
             <h5 class="text-muted mb-2 fw-bolder">Man Power</h5>
             <div class="row">
-                <div class="col-lg-4 col-md-6">
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <img src="../../dist/images/profile/tri.png" class="rounded-1 img-fluid" width="100">
-                            <div class="mt-n2">
-                                <span class="badge bg-warning">OPERATOR</span>
-                                <h3 class="card-title mt-3">Ahmad Tri</h3>
-                                <h6 class="card-subtitle">003921</h6>
-                            </div>
-                            <div class="row mt-4">
-                                <div class="col-12">
-                                    <button class="btn btn-warning" style="width: 100% !important">POS 1</button>
+                @if (!$activeEmployees->isEmpty())
+                    @foreach ($activeEmployees as $emp)
+                        @php
+                            if (!function_exists('mapRoleToColor')) {
+                                function mapRoleToColor($role)
+                                {
+                                    switch ($role) {
+                                        case 'JP':
+                                            return 'danger';
+                                        case 'Operator':
+                                            return 'warning';
+                                        case 'Leader':
+                                            return 'dark';
+                                        default:
+                                            return 'dark';
+                                    }
+                                }
+                            }
+
+                            $color = mapRoleToColor($emp->employee->role);
+                        @endphp
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <img src="../../dist/images/profile/tri.png" class="rounded-1 img-fluid"
+                                        width="100">
+                                    <div class="mt-n2">
+                                        <span
+                                            class="badge bg-{{ $color }}">{{ strtoupper($emp->employee->role) }}</span>
+                                        <h3 class="card-title mt-3">{{ ucwords($emp->employee->name) }}</h3>
+                                        <h6 class="card-subtitle">{{ $emp->employee->npk }}</h6>
+                                    </div>
+                                    <div class="row mt-4">
+                                        <div class="col-12">
+                                            <button class="btn btn-secondary" style="width: 100% !important">POS
+                                                {{ strtoupper($emp->pos) }}</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <img src="../../dist/images/profile/syarief.png" class="rounded-1 img-fluid" width="100">
-                            <div class="mt-n2">
-                                <span class="badge bg-danger">JP</span>
-                                <h3 class="card-title mt-3">Syarief</h3>
-                                <h6 class="card-subtitle">002899</h6>
-                            </div>
-                            <div class="row mt-4">
-                                <div class="col-12">
-                                    <button class="btn btn-danger" style="width: 100% !important">POS 2</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <img src="../../dist/images/profile/saiful.png" class="rounded-1 img-fluid" width="100">
-                            <div class="mt-n2">
-                                <span class="badge bg-dark">LEADER</span>
-                                <h3 class="card-title mt-3">Saiful</h3>
-                                <h6 class="card-subtitle">002899</h6>
-                            </div>
-                            <div class="row mt-4">
-                                <div class="col-12">
-                                    <button class="btn btn-dark" style="width: 100% !important">PIC</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    @endforeach
+                @endif
             </div>
         </div>
     </div>
