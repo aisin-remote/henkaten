@@ -15,17 +15,18 @@
                 </div>
                 <form>
                     <div class="modal-body">
-                        @if ($pivot && ($pivot->theme || $pivot->custom_theme))
+                        <div id="formModalTheme">
+                    @php
+                        $themeName = $pivot->theme->name ?? ($pivot->custom_theme ?? 'Set Theme');
+                    @endphp
+                        @if ($themeName !== 'Set Theme')
                             <div class="mb-3">
                                 <label class="mb-2">Current Theme</label>
-                                @php
-                                    $theme = $pivot ? $pivot->theme : null;
-                                    $themeName = $theme ? $theme->name : ($pivot->custom_theme ? $pivot->custom_theme : 'Set Theme');
-                                @endphp
                                 <input type="text" class="form-control" placeholder="" disabled
                                     value="{{ $themeName }}">
                             </div>
                         @endif
+                        </div>
 
                         <label class="mb-2">New Theme</label>
                         <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
@@ -1027,6 +1028,15 @@
                                     ${data.theme_name}
                                 </h4>
                             </button>
+                        `);
+                        $('#formModalTheme').html('');
+                        $('#formModalTheme').html(`
+                            <div id="formModalTheme">
+                            <div class="mb-3">
+                                <label class="mb-2">Current Theme</label>
+                                <input type="text" class="form-control" placeholder="" disabled
+                                    value="${data.theme_name}">
+                            </div>
                         `);
                     } else {
                         notif('error', data.message);
