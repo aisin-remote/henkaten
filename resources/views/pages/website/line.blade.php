@@ -358,13 +358,22 @@
                             </div>
                         </div>
                     @endforeach
+                @else
+                    <div class="col-lg-12 col-sm-12 mt-3" id="firstPicContainer">
+                        <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#firstPicModal"
+                            id="firstPic">
+                            <a href="{{ route('employeePlanning.index') }}" class="dropzone dz-clickable p-3 rounded-1">
+                                <p class="text-center pt-3 text-danger">Create Employee Planning</p>
+                            </a>
+                        </div>
+                    </div>
                 @endif
             </div>
         </div>
     </div>
     <div class="row">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header" style="background-color: white !important">
                 <div class="row">
                     <div class="col-10">
                         <h4 class="fw-4">
