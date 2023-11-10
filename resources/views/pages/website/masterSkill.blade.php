@@ -27,7 +27,7 @@
                     @foreach ($masterSkill as $master)
                     <tr>
                         <td>{{ $master->name }}</td>
-                        <td>{{ $master->level }}</td>
+                        <td>{{ $master->levels }}</td>
                     </tr>
                     @endforeach
                 </tbody>
