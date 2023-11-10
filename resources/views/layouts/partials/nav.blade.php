@@ -80,7 +80,7 @@
                         <span class="rounded-3">
                             <i class="ti ti-users"></i>
                         </span>
-                        <span class="hide-menu">Employee</span>
+                        <span class="hide-menu">Active Employee</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
@@ -92,31 +92,29 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link" href="/employee/register" aria-expanded="false">
-                        <span class="rounded-3">
-                            <i class="ti ti-user-plus"></i>
-                        </span>
-                        <span class="hide-menu">Regist Employee</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
                     <a class="sidebar-link has-arrow" aria-expanded="false">
                         <span>
-                            <i class="ti ti-barbell"></i>
+                            <i class="ti ti-box"></i>
                         </span>
-                        <span class="hide-menu">Skills</span>
+                        <span class="hide-menu">Master</span>
                     </a>
                     <ul aria-expanded="false" class="collapse first-level">
                         <li class="sidebar-item">
+                            <a href="/employee/register" class="sidebar-link">
+                                <i class="ti ti-user"></i>
+                                <span class="hide-menu">Employee</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
                             <a href="/skill" class="sidebar-link">
-                                <i class="ti ti-apps"></i>
-                                <span class="hide-menu">Regist Skills</span>
+                                <i class="ti ti-barbell"></i>
+                                <span class="hide-menu">Skill</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
                             <a href="/skill/minimum" class="sidebar-link">
                                 <i class="ti ti-aperture"></i>
-                                <span class="hide-menu">Minimum Skills</span>
+                                <span class="hide-menu">Minimum Skill</span>
                             </a>
                         </li>
                     </ul>

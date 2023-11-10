@@ -15,7 +15,7 @@
                 <strong>Error - </strong> {{ session('error') }}
             </div>
         @endif
-        <div class="card shadow">
+        <div class="card shadow" id="addEmployeeCard" style="display: none">
             <div class="border-bottom title-part-padding">
                 <h3 class="card-title mb-0">Add New Employee</h3>
             </div>
@@ -99,6 +99,53 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="card shadow">
+            <div class="card-header" style="background-color: white !important">
+                <div class="row">
+                    <div class="col-10">
+                        <h4 class="fw-4">
+                            Registered Employee
+                        </h4>
+                    </div>
+                    <div class="col-2 text-end">
+                        <button class="btn btn-primary px-4 py-2" id="addEmployee">
+                            <span class="rounded-3 pe-2" id="icon">
+                                <i class="ti ti-plus"></i>
+                            </span>
+                            <span class="d-none d-sm-inline-block">Add Employee</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-3">
+                <table class="table text-nowrap align-middle mb-0" id="masterSkill" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Photos</th>
+                            <th>Name</th>
+                            <th>NPK</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($masterEmployee as $emp)
+                            <tr>
+                                <td> <img
+                                        src="{{ $emp->photo ? asset('uploads/doc/' . $emp->photo) : asset('path_to_default_image') }}"
+                                        alt="" class="rounded-circle" width="60" height="60"> </td>
+                                <td>{{ $emp->name }}</td>
+                                <td>{{ $emp->npk }}</td>
+                                <td>{{ $emp->role }}</td>
+                                <td>{{ $emp->status }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.3.min.js"
     integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
@@ -153,7 +200,9 @@
             if (inputValue.length < 6) {
                 $(this).addClass('is-invalid');
                 $(this).siblings('.error-message').remove();
-                $(this).after('<span class="error-message text-danger">NPK harus terdiri dari 6 karakter</span>');
+                $(this).after(
+                    '<span class="error-message text-danger">NPK harus terdiri dari 6 karakter</span>'
+                );
             } else {
                 $(this).removeClass('is-invalid');
                 $(this).siblings('.error-message').remove();
@@ -165,8 +214,17 @@
                 event.preventDefault();
                 $('input[name="npk"]').addClass('is-invalid');
                 $('input[name="npk"]').siblings('.error-message').remove();
-                $('input[name="npk"]').after('<span class="error-message text-danger">NPK harus terdiri dari 6 karakter</span>');
+                $('input[name="npk"]').after(
+                    '<span class="error-message text-danger">NPK harus terdiri dari 6 karakter</span>'
+                );
             }
         });
+
+        $('#addEmployee').on('click', function() {
+            $("#addEmployeeCard").toggle();
+
+            $("#icon").html($("#addEmployeeCard").is(":visible") ? '<i class="ti ti-minus"></i>' :
+                '<i class="ti ti-plus"></i>');
+        })
     });
 </script>

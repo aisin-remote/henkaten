@@ -15,7 +15,7 @@
                 <strong>Error - </strong> {{ session('error') }}
             </div>
         @endif
-        <div class="card shadow">
+        <div class="card shadow" id="addSkillCard" style="display: none">
             <div class="border-bottom title-part-padding">
                 <h3 class="card-title mb-0">Add New Skill</h3>
             </div>
@@ -57,4 +57,60 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="card shadow">
+            <div class="card-header" style="background-color: white !important">
+                <div class="row">
+                    <div class="col-10">
+                        <h4 class="fw-4">
+                            Registered Skill
+                        </h4>
+                    </div>
+                    <div class="col-2 text-end">
+                        <button class="btn btn-primary px-4 py-2" id="addSkill">
+                            <span class="rounded-3 pe-2" id="icon">
+                                <i class="ti ti-plus"></i>
+                            </span>
+                            <span class="d-none d-sm-inline-block">Add Skill</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-3">
+                <table class="table text-nowrap align-middle mb-0" id="masterSkill" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($masterSkill as $master)
+                            <tr>
+                                <td>{{ $master->name }}</td>
+                                <td>{{ $master->levels }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 @endsection
+<script src="https://code.jquery.com/jquery-3.6.3.min.js"
+    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function() {
+        // initialize datatable
+        $('#masterSkill').DataTable({
+            scrollX: true,
+        });
+
+        $('#addSkill').on('click', function() {
+            $("#addSkillCard").toggle();
+
+            $("#icon").html($("#addSkillCard").is(":visible") ? '<i class="ti ti-minus"></i>' :
+                '<i class="ti ti-plus"></i>');
+        })
+    });
+</script>

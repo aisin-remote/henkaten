@@ -37,8 +37,12 @@ class EmployeeController extends Controller
 
     public function employeeRegister()
     {
+        $masterEmployees = Employee::select('name', 'npk', 'role', 'status', 'photo')
+            ->get();
+            
         return view('pages.website.registEmployee', [
-            'skills' => Skill::select('name')->groupBy('name')->get()
+            'skills' => Skill::select('name')->groupBy('name')->get(),
+            'masterEmployee' => $masterEmployees
         ]);
     }
 
@@ -210,15 +214,5 @@ class EmployeeController extends Controller
             'status' => 'success',
             'data' => $skills
         ], 200);
-    }
-
-    public function masterEmployee()
-    {
-        $masterEmployees = Employee::select('name', 'npk', 'role', 'status', 'photo')
-            ->get();
-
-        return view('pages.website.masterEmployee', [
-            'masterEmployee' => $masterEmployees
-        ]);
     }
 }

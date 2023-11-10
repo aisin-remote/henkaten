@@ -13,7 +13,14 @@ class skillController extends Controller
 {
     public function index()
     {
-        return view('pages.website.registSkill');
+
+        $masterSkills = Skill::select('name', DB::raw('GROUP_CONCAT(level) as levels'))
+            ->groupBy('name')
+            ->get();
+            
+        return view('pages.website.registSkill',[
+            'masterSkill' => $masterSkills
+        ]);
     }
 
     public function minimumIndex()
@@ -84,16 +91,5 @@ class skillController extends Controller
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
         }
-    }
-
-    public function masterSkill()
-    {
-        $masterSkills = Skill::select('name', DB::raw('GROUP_CONCAT(level) as levels'))
-            ->groupBy('name')
-            ->get();
-
-        return view('pages.website.masterSkill', [
-            'masterSkill' => $masterSkills
-        ]);
     }
 }
