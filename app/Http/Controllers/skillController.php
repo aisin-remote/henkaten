@@ -87,15 +87,13 @@ class skillController extends Controller
     }
 
     public function masterSkill()
-{
-    $masterSkills = Skill::select('name', DB::raw('GROUP_CONCAT(level) as levels'))
-                        ->groupBy('name')
-                        ->get();
+    {
+        $masterSkills = Skill::select('name', DB::raw('GROUP_CONCAT(level) as levels'))
+            ->groupBy('name')
+            ->get();
 
-    return view('pages.website.masterSkill', [
-        'masterSkill' => $masterSkills
-    ]);
-}
-
-
+        return view('pages.website.masterSkill', [
+            'masterSkill' => $masterSkills
+        ]);
+    }
 }

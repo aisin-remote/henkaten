@@ -78,6 +78,9 @@ Route::middleware(['auth'])->group(function () {
     // master skill
     Route::get('/master-skill', [skillController::class,'masterSkill'])->name('master.skill');
     
+    // master employee
+    Route::get('/master-employee', [EmployeeController::class,'masterEmployee'])->name('master.employee');
+    
     Route::get('/mappingAllLine', function () {
         return view('welcome');
     }); 
