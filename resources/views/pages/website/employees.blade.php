@@ -3,7 +3,7 @@
 @section('main')
     <div class="row">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header" style="background-color: white;">
                 <div class="row">
                     <div class="col-10">
                         <h4 class="fw-4">
