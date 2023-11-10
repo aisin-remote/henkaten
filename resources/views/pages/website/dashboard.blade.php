@@ -16,16 +16,16 @@
                 <form>
                     <div class="modal-body">
                         <div id="formModalTheme">
-                    @php
-                        $themeName = $pivot->theme->name ?? ($pivot->custom_theme ?? 'Set Theme');
-                    @endphp
-                        @if ($themeName !== 'Set Theme')
-                            <div class="mb-3">
-                                <label class="mb-2">Current Theme</label>
-                                <input type="text" class="form-control" placeholder="" disabled
-                                    value="{{ $themeName }}">
-                            </div>
-                        @endif
+                            @php
+                                $themeName = $pivot->theme->name ?? ($pivot->custom_theme ?? 'Set Theme');
+                            @endphp
+                            @if ($themeName !== 'Set Theme')
+                                <div class="mb-3">
+                                    <label class="mb-2">Current Theme</label>
+                                    <input type="text" class="form-control" placeholder="" disabled
+                                        value="{{ $themeName }}">
+                                </div>
+                            @endif
                         </div>
 
                         <label class="mb-2">New Theme</label>
@@ -1019,7 +1019,8 @@
                             <div>
                                 <h5 class="fw-semibold mb-0">Tema Safety</h5>
                                 <span
-                                    class="fs-2 d-flex align-items-center py-1">{{ Carbon\Carbon::now()->isoFormat('lll') }}</span>
+                                    class="fs-2 d-flex align-items-center py-1 d-inline">{{ Carbon\Carbon::now()->format('l, j F Y') }}
+                                    <span id="time" class="fs-2 px-2"></span></span>
                             </div>
 
                             <button id="themeModal" type="button" class="btn btn-secondary py-2 px-5 ms-auto"
