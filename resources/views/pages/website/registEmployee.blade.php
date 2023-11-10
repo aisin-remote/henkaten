@@ -122,23 +122,54 @@
                 <table class="table text-nowrap align-middle mb-0" id="masterSkill" style="width:100%">
                     <thead>
                         <tr>
-                            <th>Photos</th>
                             <th>Name</th>
                             <th>NPK</th>
                             <th>Role</th>
                             <th>Status</th>
+                            <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($masterEmployee as $emp)
+                            @php
+                                if ($emp->role == 'JP') {
+                                    $color = 'danger';
+                                } elseif ($emp->role == 'Operator') {
+                                    $color = 'warning';
+                                } else {
+                                    $color = 'dark';
+                                }
+                            @endphp
                             <tr>
-                                <td> <img
-                                        src="{{ $emp->photo ? asset('uploads/doc/' . $emp->photo) : asset('path_to_default_image') }}"
-                                        alt="" class="rounded-circle" width="60" height="60"> </td>
-                                <td>{{ $emp->name }}</td>
+                                <td class="ps-0 text-truncate">
+                                    <img src="{{ asset('uploads/doc/' . $emp->photo) }}" class="rounded img-fluid me-2"
+                                        width="40" alt="{{ $emp->name }}">
+                                    <span class="ps-2 fw-semibold">{{ $emp->name }}</span>
+                                </td>
                                 <td>{{ $emp->npk }}</td>
-                                <td>{{ $emp->role }}</td>
-                                <td>{{ $emp->status }}</td>
+                                <td>
+                                    <span class="badge rounded-pill bg-{{ $color }} p-2 px-3">
+                                        {{ $emp->role }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div
+                                        style="background-color: lightgreen; width:10px; height:10px; border-radius:100%; display:inline-block; margin-right:2px">
+                                    </div>
+                                    {{ $emp->status }}
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-warning" id="addEmployee">
+                                        <span class="rounded-3" id="icon">
+                                            <i class="ti ti-pencil"></i>
+                                        </span>
+                                    </button>
+                                    <button class="btn btn-secondary" id="addEmployee">
+                                        <span class="rounded-3" id="icon">
+                                            <i class="ti ti-search"></i>
+                                        </span>
+                                    </button>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

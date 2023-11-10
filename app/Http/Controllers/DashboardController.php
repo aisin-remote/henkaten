@@ -423,7 +423,7 @@ class DashboardController extends Controller
                     DB::beginTransaction();
                     // insert new data if pivot table is empty
                     Pivot::create([
-                        'custom_theme' => $customTheme[0],
+                        'custom_theme' => urldecode($customTheme[0]),
                         'active_date' => $current_date
                     ]);
 
@@ -461,7 +461,7 @@ class DashboardController extends Controller
 
                     // insert new data if pivot table is empty
                     $pivot->update([
-                        'custom_theme' => $customTheme[0],
+                        'custom_theme' => urldecode($customTheme[0]),
                         'theme_id' => null
                     ]);
 
@@ -494,11 +494,11 @@ class DashboardController extends Controller
             }
         }
 
-        $custom_theme = Pivot::select('custom_theme')->where('custom_theme', $customTheme[0])->first();
+        $custom_theme = Pivot::select('custom_theme')->where('custom_theme', urldecode($customTheme[0]))->first();
 
         $theme_name_final = '';
         if (isset($custom_theme)) {
-            $decoded_custom_theme = urldecode($custom_theme->custom_theme);
+            $decoded_custom_theme = $custom_theme->custom_theme;
             $theme_name_final = $decoded_custom_theme;
         } elseif (isset($theme_name)) {
             $theme_name_final = $theme_name->name;
