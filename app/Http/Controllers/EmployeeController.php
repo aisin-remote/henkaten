@@ -22,22 +22,22 @@ class EmployeeController extends Controller
         $currentDate = Carbon::now();
         $firstDay = $currentDate->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
         $lastDay = $currentDate->endOfWeek(Carbon::SUNDAY)->format('Y-m-d');
-        
+
         // get active employee at this period of time (this week)
         $activeEmployees = EmployeeActive::with('shift')
-                        ->with('employee')
-                        ->with('line')
-                        ->whereBetween('active_from', [$firstDay, $lastDay])
-                        ->get();
+            ->with('employee')
+            ->with('line')
+            ->whereBetween('active_from', [$firstDay, $lastDay])
+            ->get();
 
-        return view('pages.website.employees',[
+        return view('pages.website.employees', [
             'employees' => $activeEmployees
         ]);
     }
-    
+
     public function employeeRegister()
     {
-        return view('pages.website.registEmployee',[
+        return view('pages.website.registEmployee', [
             'skills' => Skill::select('name')->groupBy('name')->get()
         ]);
     }
@@ -49,12 +49,12 @@ class EmployeeController extends Controller
         $arraySkill = [];
 
         // mapping each skill
-        for($i=0; $i<count($skills); $i++){
+        for ($i = 0; $i < count($skills); $i++) {
             $skillId = Skill::select('id')->where('name', $skills[$i])->where('level', $levels[$i])->first();
-            if (!$skillId){
+            if (!$skillId) {
                 return redirect()->back()->with('error', 'Skill atau level berlum terdaftar!');
             }
-    
+
             array_push($arraySkill, $skillId);
         }
 
@@ -64,11 +64,11 @@ class EmployeeController extends Controller
             'role' => 'required',
             'photo' => 'required|max:2048'
         ]);
-        
-        if($request->has('photo')){
+
+        if ($request->has('photo')) {
             $doc = $request->file('photo');
             $docName = time() . '-' . $validatedData['name'];
-            $doc->move(public_path('uploads/doc'), $docName);   
+            $doc->move(public_path('uploads/doc'), $docName);
 
             //store doc name
             $validatedData['photo'] = $docName;
@@ -79,9 +79,9 @@ class EmployeeController extends Controller
 
             // insert into employee table
             $employee = Employee::create($validatedData);
-            
+
             // insert into employee skill
-            foreach($arraySkill as $skill) {
+            foreach ($arraySkill as $skill) {
                 EmployeeSkill::create([
                     'employee_id' => $employee->id,
                     'skill_id' => $skill->id,
@@ -90,7 +90,6 @@ class EmployeeController extends Controller
 
             DB::commit();
             return redirect()->back()->with('success', 'Karyawan berhasil ditambah!');
-
         } catch (\Throwable $th) {
             DB::rollback();
             return redirect()->back()->with('error', 'Karyawan gagal ditambah!');
@@ -99,15 +98,15 @@ class EmployeeController extends Controller
 
     public function employeePlanning()
     {
-        return view('pages.website.planning',[
-            'employees' => Employee::select('id','name')
-                            ->whereIn('role',['Operator','JP'])
-                            ->get(),
-            'pics' =>  Employee::select('id','name')
-                        ->whereNotIn('role',['Operator','JP'])
-                        ->get(),
-            'shifts' => Shift::select('id','name')->get(),
-            'lines' => Line::select('id','name')->get()
+        return view('pages.website.planning', [
+            'employees' => Employee::select('id', 'name')
+                ->whereIn('role', ['Operator', 'JP'])
+                ->get(),
+            'pics' =>  Employee::select('id', 'name')
+                ->whereNotIn('role', ['Operator', 'JP'])
+                ->get(),
+            'shifts' => Shift::select('id', 'name')->get(),
+            'lines' => Line::select('id', 'name')->get()
         ]);
     }
 
@@ -131,45 +130,45 @@ class EmployeeController extends Controller
         // get remaining day current date
         $lastDay = $currentDate->endOfWeek();
         $remainingDays = $currentDate->diffInDays($lastDay);
-        
+
         // set end date
         $endDate = $currentDate->addDays($remainingDays);
 
         // get all active from date
         $startDate = EmployeeActive::select('active_from')
-                        ->whereDate('active_from', '>=', Carbon::now())
-                        ->first();
-                        
+            ->whereDate('active_from', '>=', Carbon::now())
+            ->first();
+
         // if the "active_from" date isnt outside the range or the data is empty, you cant create new records
-        if($startDate){
-            if(Carbon::parse($request->active_from)->between(Carbon::parse($request->active_from)->startOfWeek(),$endDate)){
+        if ($startDate) {
+            if (Carbon::parse($request->active_from)->between(Carbon::parse($request->active_from)->startOfWeek(), $endDate)) {
                 return redirect()->back()->with('error', 'Planning gagal dibuat, range tanggal sudah terisi!');
             }
         }
-        
+
         try {
             DB::beginTransaction();
 
-                for($i=0; $i<count($employees); $i++){
-                    EmployeeActive::create([
-                        'employee_id' => $employees[$i],
-                        'shift_id' => $request->shift,
-                        'line_id' => $request->line,
-                        'pos' => $pos[$i],
-                        'active_from' => $request->active_from,
-                        'expired_at' => $endDate
-                    ]);
-                }
-                
-                for($i=0; $i<count($pics); $i++){
-                    PicActive::create([
-                        'employee_id' => $pics[$i],
-                        'line_id' => $request->line,
-                        'active_from' => $request->active_from,
-                        'expired_at' => $endDate
-                    ]);
-                }
-                
+            for ($i = 0; $i < count($employees); $i++) {
+                EmployeeActive::create([
+                    'employee_id' => $employees[$i],
+                    'shift_id' => $request->shift,
+                    'line_id' => $request->line,
+                    'pos' => $pos[$i],
+                    'active_from' => $request->active_from,
+                    'expired_at' => $endDate
+                ]);
+            }
+
+            for ($i = 0; $i < count($pics); $i++) {
+                PicActive::create([
+                    'employee_id' => $pics[$i],
+                    'line_id' => $request->line,
+                    'active_from' => $request->active_from,
+                    'expired_at' => $endDate
+                ]);
+            }
+
             DB::commit();
             return redirect()->back()->with('success', 'Planning berhasil dibuat!');
         } catch (\Throwable $th) {
@@ -181,35 +180,45 @@ class EmployeeController extends Controller
     public function getSkillEmp(Request $request)
     {
         $skills = EmployeeSkill::with('skill')->where('employee_id', $request->employee)->get();
-        if(!$skills){
+        if (!$skills) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Skill tidak ditemukan'
-            ],400);
+            ], 400);
         }
 
         return response()->json([
             'status' => 'success',
             'data' => $skills
-        ],200);
+        ], 200);
     }
 
     public function getSkillPos(Request $request)
     {
         $skills = MinimumSkill::with('skill')
-                    ->where('line_id', $request->line)
-                    ->where('pos', $request->pos)
-                    ->get();
-        if(!$skills){
+            ->where('line_id', $request->line)
+            ->where('pos', $request->pos)
+            ->get();
+        if (!$skills) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Skill tidak ditemukan'
-            ],400);
+            ], 400);
         }
 
         return response()->json([
             'status' => 'success',
             'data' => $skills
-        ],200);
+        ], 200);
+    }
+
+    public function masterEmployee()
+    {
+        $masterEmployees = Employee::select('name', 'npk', 'role', 'status', 'photo')
+            ->get();
+
+        return view('pages.website.masterEmployee', [
+            'masterEmployee' => $masterEmployees
+        ]);
     }
 }

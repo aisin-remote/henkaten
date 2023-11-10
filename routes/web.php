@@ -74,6 +74,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/minimum', [skillController::class, 'minimumIndex'])->name('skill.minimum.index');
         Route::post('/minimumRegist', [skillController::class, 'minimumRegist'])->name('skill.minimum.regist');
     });
+
+    // master skill
+    Route::get('/master-skill', [skillController::class,'masterSkill'])->name('master.skill');
+    
+    // master employee
+    Route::get('/master-employee', [EmployeeController::class,'masterEmployee'])->name('master.employee');
     
     Route::get('/mappingAllLine', function () {
         return view('welcome');
