@@ -123,16 +123,16 @@ class DashboardController extends Controller
 
         // get man power at spesific line and range of time
         $activeEmployees = EmployeeActive::with('shift')
-                            ->with('employee')
-                            ->where('active_from', '<=' , $currentDate)
-                            ->where('expired_at', '>=' , $currentDate)
-                            ->where('line_id', $lineId->id)
-                            ->whereHas('shift', function ($query) use ($currentTime) {
-                                $query->where('time_start', '<=', $currentTime)
-                                    ->where('time_end', '>=', $currentTime);
-                            })
-                            ->get();
-        
+            ->with('employee')
+            ->where('active_from', '<=', $currentDate)
+            ->where('expired_at', '>=', $currentDate)
+            ->where('line_id', $lineId->id)
+            ->whereHas('shift', function ($query) use ($currentTime) {
+                $query->where('time_start', '<=', $currentTime)
+                    ->where('time_end', '>=', $currentTime);
+            })
+            ->get();
+
         // Merge the data and add the type field
         $combinedData = [];
 
@@ -523,7 +523,13 @@ class DashboardController extends Controller
             ]);
         }
 
-        $existingPics = Pivot::where('first_pic_id', $pic)->orWhere('second_pic_id', $pic)->first();
+        $existingPics = Pivot::where(function ($query) use ($pic) {
+            $query->where('first_pic_id', $pic)
+                ->orWhere('second_pic_id', $pic);
+        })
+            ->whereDate('active_date', '=', now()->toDateString()) // Menggunakan toDateString() untuk mendapatkan tanggal saja
+            ->first();
+
         if ($existingPics) {
             return response()->json([
                 'status' => 'error',
@@ -602,7 +608,13 @@ class DashboardController extends Controller
             ]);
         }
 
-        $existingPics = Pivot::where('first_pic_id', $pic)->orWhere('second_pic_id', $pic)->first();
+        $existingPics = Pivot::where(function ($query) use ($pic) {
+            $query->where('first_pic_id', $pic)
+                ->orWhere('second_pic_id', $pic);
+        })
+            ->whereDate('active_date', '=', now()->toDateString()) // Menggunakan toDateString() untuk mendapatkan tanggal saja
+            ->first();
+
         if ($existingPics) {
             return response()->json([
                 'status' => 'error',
