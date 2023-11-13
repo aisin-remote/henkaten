@@ -65,6 +65,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/getSkillEmp', [EmployeeController::class, 'getSkillEmp'])->name('employee.getSkillEmp');  
         Route::get('/getSkillPos', [EmployeeController::class, 'getSkillPos'])->name('employee.getSkillPos');  
         
+        // edit employees
+        Route::get('/{id}/edit', [EmployeeController::class, 'employeeEdit'])->name('editEmployee');
+        Route::put('/{id}/update', [EmployeeController::class, 'employeeUpdate'])->name('employee.update');
     });
 
     // regist employee skill
