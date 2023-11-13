@@ -226,6 +226,16 @@
     });
 
     $(document).ready(function() {
+        // initialize datatable
+        $('#masterSkill').DataTable({
+            scrollX: true,
+            columnDefs: [{
+                orderable: false,
+                targets: 0
+            }],
+            order: [],
+        });
+
         $('input[name="npk"]').on('input', function() {
             var inputValue = $(this).val();
             if (inputValue.length < 6) {

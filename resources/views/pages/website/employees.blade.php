@@ -45,7 +45,7 @@
                                     <span class="ps-2 fw-semibold">{{ $emp->employee->name }}</span>
                                 </td>
                                 <td>
-                                    <span class="badge bg-{{ $color }} p-2 px-3">
+                                    <span class="badge rounded-pill bg-{{ $color }} p-2 px-3">
                                         {{ $emp->employee->role }}
                                     </span>
                                 </td>

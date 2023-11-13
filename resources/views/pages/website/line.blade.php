@@ -279,15 +279,21 @@
             <img src="{{ asset('assets/images/mapping-per-line.png') }}" alt="" class="mw-100"
                 usemap="#roomMap" width="980vh">
 
-            <div style="position: absolute; top: 60vh; left: 28vh;">
-                <img src="../../dist/images/profile/tri.png" alt="Employee 1" style="width: 80px; height: 80px;"
-                    class="rounded-1" />
-            </div>
-
-            <div style="position: absolute; top: 71vh; left: 44vh;">
-                <img src="../../dist/images/profile/syarief.png" alt="Employee 2" style="width: 80px; height: 80px;"
-                    class="rounded-1" />
-            </div>
+            @foreach ($activeEmployees as $emp)
+                @php
+                    if ($emp->pos == '1') {
+                        $top = 60;
+                        $left = 28;
+                    } else {
+                        $top = 71;
+                        $left = 44;
+                    }
+                @endphp
+                <div style="position: absolute; top: {{ $top }}vh; left: {{ $left }}vh;">
+                    <img src="{{ asset('uploads/doc/' . $emp->employee->photo) }}" alt="Employee 1"
+                        style="width: 80px; height: 80px;" class="rounded-1" />
+                </div>
+            @endforeach
         </div>
         <div class="col-lg-6">
             <div class="row text-center">
@@ -340,8 +346,8 @@
                         <div class="col-lg-4 col-md-6">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <img src="../../dist/images/profile/tri.png" class="rounded-1 img-fluid"
-                                        width="100">
+                                    <img src="{{ asset('uploads/doc/' . $emp->employee->photo) }}" class="rounded-1"
+                                        width="100" height="100">
                                     <div class="mt-n2">
                                         <span
                                             class="badge bg-{{ $color }}">{{ strtoupper($emp->employee->role) }}</span>

@@ -511,7 +511,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="card p-4 py-4">
-                                    <div class="card-body p-3 align-items-center text-center"
+                                    <div class="card-body p-3 align-items-center"
                                         style="max-height: 11em; width: 100%; overflow:scroll; overflow-x: hidden">
                                         @if ($histories !== [])
                                             <div class="accordion" id="accordionExample">
@@ -1061,6 +1061,23 @@
 
             $('#secondPic').attr('data-bs-target', '#secondPicModal');
         });
+
+        function updateThemeStatus() {
+            var currentDate = new Date();
+            var endOfDay = new Date();
+
+            // Set the time to 23:59:00
+            endOfDay.setHours(23, 59, 59);
+
+            // Check if the current time is greater than the end of the day
+            if (currentDate > endOfDay) {
+                // reload the page
+                location.reload();
+            }
+        }
+
+        // Run the updateThemeStatus function every minute (adjust the interval as needed)
+        setInterval(updateThemeStatus, 60000); // 60000 milliseconds = 1 minute
 
         $('.dc-card').on('click', function() {
             let idCard = $(this).attr('id');
