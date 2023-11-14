@@ -109,6 +109,81 @@ class DashboardController extends Controller
             'histories' => $combinedData
         ]);
     }
+    
+    public function indexLine()
+    {
+        // get all henkaten history
+        $manData = HenkatenMan::with('line')->where('status_after', null)->get();
+        $methodData = HenkatenMethod::with('line')->where('status_after', null)->get();
+        $machineData = HenkatenMachine::with('line')->where('status_after', null)->get();
+        $materialData = HenkatenMaterial::with('line')->where('status_after', null)->get();
+
+        // Merge the data and add the type field
+        $combinedData = [];
+
+        foreach ($manData as $item) {
+            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
+            $combinedData[] = [
+                'id' => $item->id,
+                'type' => 'Man',
+                'status' => $item->status,
+                'status_after' => $item->status_after,
+                'problem' => $item->henkaten_problem,
+                'description' => $item->henkaten_description,
+                'troubleshoot' => $troubleshoot
+            ];
+        }
+
+        foreach ($methodData as $item) {
+            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
+            $combinedData[] = [
+                'id' => $item->id,
+                'type' => 'Method',
+                'status' => $item->status,
+                'status_after' => $item->status_after,
+                'problem' => $item->henkaten_problem,
+                'description' => $item->henkaten_description,
+                'date' => $item->date,
+                'line' => $item->line->name,
+                'troubleshoot' => $troubleshoot
+            ];
+        }
+
+        foreach ($machineData as $item) {
+            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
+            $combinedData[] = [
+                'id' => $item->id,
+                'type' => 'Machine',
+                'status' => $item->status,
+                'status_after' => $item->status_after,
+                'problem' => $item->henkaten_problem,
+                'description' => $item->henkaten_description,
+                'date' => $item->date,
+                'line' => $item->line->name,
+                'troubleshoot' => $troubleshoot
+            ];
+        }
+
+        foreach ($materialData as $item) {
+            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
+            $combinedData[] = [
+                'id' => $item->id,
+                'type' => 'Material',
+                'status' => $item->status,
+                'problem' => $item->henkaten_problem,
+                'description' => $item->henkaten_description,
+                'date' => $item->date,
+                'line' => $item->line->name,
+                'troubleshoot' => $troubleshoot
+            ];
+        }
+
+        // in this page we will get all line status
+        return view('pages.website.lineDashboard', [
+            'lines' => Line::all(),
+            'histories' => $combinedData
+        ]);
+    }
 
     public function dashboardLine(Line $lineId)
     {

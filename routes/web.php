@@ -39,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [DashboardController::class, 'index']);
     
     // dashboard
+    Route::get('/lineDashboard', [DashboardController::class, 'indexLine'])->name('dashboard.indexLine');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::prefix('dashboard')->group(function(){
         Route::get('{lineId}', [DashboardController::class, 'dashboardLine'])->name('dashboard.line');
@@ -82,15 +83,6 @@ Route::middleware(['auth'])->group(function () {
         return view('welcome');
     }); 
     
-    Route::get('/line', function () {
-    //    
-    });
-
-    Route::get('/lineSelection', function () {
-        return view('lineSelection');
-    });
-    
-
     // logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout.auth');
 });

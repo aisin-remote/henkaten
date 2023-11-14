@@ -22,52 +22,14 @@
                         <span class="hide-menu">Dashboard</span>
                     </a>
                 </li>
-                {{-- <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow" href="index.html" aria-expanded="false">
-                        <span>
-                            <i class="ti ti-home-2"></i>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link" href="/lineDashboard" aria-expanded="false">
+                        <span class="rounded-3">
+                            <i class="ti ti-article"></i>
                         </span>
-                        <span class="hide-menu">Dashboard</span>
+                        <span class="hide-menu">Lines</span>
                     </a>
-                    <ul aria-expanded="false" class="collapse first-level">
-                        <li class="sidebar-item">
-                            <a href="index.html" class="sidebar-link">
-                                <i class="ti ti-aperture"></i>
-                                <span class="hide-menu">Modern</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="index2.html" class="sidebar-link">
-                                <i class="ti ti-shopping-cart"></i>
-                                <span class="hide-menu">eCommerce</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="index3.html" class="sidebar-link">
-                                <i class="ti ti-currency-dollar"></i>
-                                <span class="hide-menu">NFT</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="index4.html" class="sidebar-link">
-                                <i class="ti ti-cpu"></i>
-                                <span class="hide-menu">Crypto</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="index5.html" class="sidebar-link">
-                                <i class="ti ti-activity-heartbeat"></i>
-                                <span class="hide-menu">General</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="index6.html" class="sidebar-link">
-                                <i class="ti ti-playlist"></i>
-                                <span class="hide-menu">Music</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li> --}}
+                </li>
                 <li class="nav-small-cap">
                     <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
                     <span class="hide-menu">Icons</span>
