@@ -75,6 +75,7 @@
                                     <option value="2" {{ $level === "2" ? 'selected' : '' }}>2</option>
                                     <option value="3" {{ $level === "3" ? 'selected' : '' }}>3</option>
                                     <option value="4" {{ $level === "4" ? 'selected' : '' }}>4</option>
+                                    <option value="5" {{ $level === "5" ? 'selected' : '' }}>5</option>
                                 </select>
                             </div>
                             <div class="col-lg-1 col-sm-12">
@@ -127,6 +128,7 @@
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
+                    <option value="5">5</option>
                 </select>
             </div>
             <div class="col-lg-1 col-sm-12">

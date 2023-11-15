@@ -40,9 +40,16 @@ class EmployeeController extends Controller
         $masterEmployees = Employee::select('id', 'name', 'npk', 'role', 'status', 'photo')
             ->get();
 
+        $allSkills = Skill::select('id', 'name', 'level')->get();
+        $nameSkills = Skill::select('name')->groupBy('name')->get();
+        $empSkills = EmployeeSkill::select()->get();
+
         return view('pages.website.registEmployee', [
             'skills' => Skill::select('name')->groupBy('name')->get(),
-            'masterEmployee' => $masterEmployees
+            'masterEmployee' => $masterEmployees,
+            'allSkills' => $allSkills,
+            'empSkills' => $empSkills,
+            'nameSkills' => $nameSkills
         ]);
     }
 
@@ -293,10 +300,22 @@ class EmployeeController extends Controller
             EmployeeSkill::where('employee_id', $employee->id)->whereIn('skill_id', $skillsToDelete)->delete();
 
             DB::commit();
-            return redirect()->back()->with('success', 'Karyawan berhasil diperbarui!');
+            return redirect('employee/register')->with('success', 'Karyawan berhasil diperbarui!');
         } catch (\Throwable $th) {
             DB::rollback();
             return redirect()->back()->with('error', 'Karyawan gagal diperbarui!');
         }
+    }
+
+    public function employeeDetail($id)
+    {
+        // Mengambil data karyawan berdasarkan ID
+        $employee = Employee::find($id);
+        $skills = EmployeeSkill::where('employee_id', $id)->get();
+        $allSkills = Skill::select('id', 'name', 'level')->get();
+        $nameSkills = Skill::select('name')->groupBy('name')->get();
+
+        // Mengirim data karyawan ke view edit
+        return view('pages.website.detailEmployee', compact('employee', 'skills', 'allSkills', 'nameSkills'));
     }
 }

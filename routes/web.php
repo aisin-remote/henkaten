@@ -70,6 +70,8 @@ Route::middleware(['auth'])->group(function () {
         // edit employees
         Route::get('/{id}/edit', [EmployeeController::class, 'employeeEdit'])->name('editEmployee');
         Route::post('/{id}/update', [EmployeeController::class, 'employeeUpdate'])->name('employee.update');
+
+        Route::get('/{id}/detail', [EmployeeController::class, 'employeeDetail'])->name('detailEmployee');
     });    
 
     // regist employee skill
