@@ -248,7 +248,7 @@ class EmployeeController extends Controller
             'name' => 'required|max:255|min:3',
             'npk' => 'required|max:6|min:6',
             'role' => 'required',
-            'photo' => 'required|max:2048'
+            'photo' => 'nullable|max:2048'
         ]);
 
         if ($request->has('photo')) {
@@ -269,10 +269,21 @@ class EmployeeController extends Controller
 
             // insert into employee skill
             foreach ($arraySkill as $skill) {
-                EmployeeSkill::create([
-                    'employee_id' => $employee->id,
-                    'skill_id' => $skill->id,
-                ]);
+                $employeeSkill = EmployeeSkill::where('employee_id', $employee->id)
+                    ->where('skill_id', $skill->id)
+                    ->first();
+
+                if ($employeeSkill) {
+                    $employeeSkill->update([
+                        'employee_id' => $employee->id,
+                        'skill_id' => $skill->id,
+                    ]);
+                } else {
+                    EmployeeSkill::create([
+                        'employee_id' => $employee->id,
+                        'skill_id' => $skill->id,
+                    ]);
+                }
             }
 
             DB::commit();

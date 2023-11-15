@@ -22,7 +22,7 @@
         <div class="card-body">
             <form action="{{ route('employee.update', ['id' => $employee->id]) }}" method="POST" enctype="multipart/form-data" class="mt-4">
                 @csrf
-                @method('PUT')
+                @method('POST')
                 <div class="">
                     <div class="row">
                         <div class="col-lg-3 col-sm-12">
@@ -40,7 +40,7 @@
                             </select>
                         </div>
                         <div class="col-lg-4 col-sm-12">
-                            <input class="form-control" type="file" id="photo" name="photo">
+                            <input class="form-control" type="file" id="photo" name="photo" value="{{ $employee->photo }}">
                             <small class="text-danger">*Update if you want to change the employee's photo</small>
                         </div>
                     </div>
