@@ -59,11 +59,12 @@
                                     @if($skill->skill_id == $s->id)
                                     <?php
                                     $level = $s->level;
+                                    $name = $s->name;
                                     ?>
                                     @endif>
                                     @endforeach
                                     @foreach ($nameSkills as $skill)
-                                    <option value="{{ $skill->name }}">{{ $skill->name }}</option>
+                                    <option value="{{ $skill->name }}" {{ $name === $skill->name ? 'selected' : '' }}>{{ $skill->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
