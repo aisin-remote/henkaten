@@ -64,19 +64,17 @@
                                 <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="level[]">
                                     @foreach ($allSkills as $s)
                                     @if($skill->skill_id == $s->id)
-                                    <option value="{{ $s->level }}" {{ $skill->skill_id == $s->id ? 'selected' : '' }}> Select </option>
+                                    <?php
+                                    $level = $s->level;
+                                    ?>
                                     @endif>
                                     @endforeach
-                                    <option value="1" {{ $skill->level === 1 ? 'selected' : '' }}>1</option>
-                                    <option value="2" {{ $skill->level === 2 ? 'selected' : '' }}>2</option>
-                                    <option value="3" {{ $skill->level === 3 ? 'selected' : '' }}>3</option>
-                                    <option value="4" {{ $skill->level === 4 ? 'selected' : '' }}>4</option>
+                                    <option value="" disabled> Select </option>
+                                    <option value="1" {{ $level === "1" ? 'selected' : '' }}>1</option>
+                                    <option value="2" {{ $level === "2" ? 'selected' : '' }}>2</option>
+                                    <option value="3" {{ $level === "3" ? 'selected' : '' }}>3</option>
+                                    <option value="4" {{ $level === "4" ? 'selected' : '' }}>4</option>
                                 </select>
-                                @foreach ($allSkills as $s)
-                                @if($skill->skill_id == $s->id)
-                                <small class="text-danger">*Update if you want to change the employee's level. (Current level : {{ $s->level }})</small>
-                                @endif
-                                @endforeach
                             </div>
                             <div class="col-lg-1 col-sm-12">
                                 <button data-repeater-delete="" class="btn btn-danger waves-effect waves-light remove-row" type="button">
