@@ -324,6 +324,31 @@
         </div>
     </div>
     {{-- end of modal --}}
+
+    {{-- modal error --}}
+    <div class="modal fade" id="manOnlyModal-flag" tabindex="-1" aria-labelledby="bs-example-modal-lg"
+        style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content modal-filled bg-light-danger">
+                <div class="modal-body p-4">
+                    <div class="text-center text-danger">
+                        <i class="ti ti-hexagon-letter-x fs-7"></i>
+                        <h4 class="mt-2">Oh snap!</h4>
+                        <p class="mt-3">
+                            Create Employee Planning First
+                        </p>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <a href="{{ route('employeePlanning.index') }}" type="button"
+                            class="btn btn-secondary font-medium waves-effect text-start">
+                            Create Planning
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- end of modal --}}
+
     <div class="row" style="margin-top: -30px">
         <div class="card bg-light-{{ $color_status }} shadow-none position-relative overflow-hidden">
             <div class="card-body px-4 py-3">
