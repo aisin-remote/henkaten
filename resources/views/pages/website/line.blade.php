@@ -285,8 +285,14 @@
                                     <div class="mb-4">
                                         <label for="exampleInputPassword1" class="form-label fw-semibold">Replacement
                                             Employee</label>
-                                        <input type="text" class="form-control" id="exampleInputtext"
-                                            placeholder="Deo">
+                                        <select class="select2 form-select select2-hidden-accessible employeeReplacement"
+                                            style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
+                                            name="employeeReplacement[]" required>
+                                            <option>Select Employee</option>
+                                            @foreach ($employees as $employee)
+                                                <option value="{{ $employee->id }}">{{ $employee->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -974,6 +980,10 @@
         });
         $('#materialModalPicSelect').select2({
             dropdownParent: $('#materialModal')
+        });
+
+        $('.employeeReplacement').select2({
+            dropdownParent: $('#manOnlyModal')
         });
     });
 </script>

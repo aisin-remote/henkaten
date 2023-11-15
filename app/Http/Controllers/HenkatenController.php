@@ -107,7 +107,7 @@ class HenkatenController extends Controller
 
     public function insertManHenkaten()
     {
-        //
+        
     }
 
     public function troubleshootHenkaten(Request $request)
