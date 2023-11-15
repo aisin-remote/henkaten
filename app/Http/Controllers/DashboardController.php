@@ -235,7 +235,8 @@ class DashboardController extends Controller
                 'problem' => $item->henkaten_problem,
                 'description' => $item->henkaten_description,
                 'date' => $item->date,
-                'troubleshoot' => $troubleshoot
+                'troubleshoot' => $troubleshoot,
+                'troubleshootTime' => $item->updated_at
             ];
         }
 
@@ -249,7 +250,8 @@ class DashboardController extends Controller
                 'problem' => $item->henkaten_problem,
                 'description' => $item->henkaten_description,
                 'date' => $item->date,
-                'troubleshoot' => $troubleshoot
+                'troubleshoot' => $troubleshoot,
+                'troubleshootTime' => $item->updated_at
             ];
         }
 
@@ -263,7 +265,8 @@ class DashboardController extends Controller
                 'problem' => $item->henkaten_problem,
                 'description' => $item->henkaten_description,
                 'date' => $item->date,
-                'troubleshoot' => $troubleshoot
+                'troubleshoot' => $troubleshoot,
+                'troubleshootTime' => $item->updated_at
             ];
         }
         return view('pages.website.line', [
@@ -276,201 +279,6 @@ class DashboardController extends Controller
             'manHistory' => HenkatenMan::where('line_id', $lineId->id)->get(),
             'materialHistory' => HenkatenMaterial::where('line_id', $lineId->id)->get(),
         ]);
-    }
-
-    public function storeHenkaten($table, $status, $lineId, $pic = null, $problem = null, $description = null)
-    {
-        // get all data from FE
-        $lineId = $lineId ? $lineId : null;
-        $status = $status ? $status : null;
-        $table = $table ? $table : null;
-
-        // initiate model
-        $methodModel = new HenkatenMethod();
-        $machineModel = new HenkatenMachine();
-        $materialModel = new HenkatenMaterial();
-
-        $currentTime = Carbon::now();
-        $shifts = Shift::all();
-        $shiftId = null;
-
-        // check the current status and the request status
-        // $currentStatus = Line::select('status_' . $table)->where('id', $lineId)->first();
-        // if ($currentStatus->{'status_' . $table} == $status){
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => 'Status sama!'
-        //     ]);
-        // }
-
-        foreach ($shifts as $shift) {
-            if ($currentTime->between($shift->time_start, $shift->time_end)) {
-                $shiftId = $shift->id;
-                break;
-            }
-        }
-
-        function insertHenkaten($model, $shiftId, $lineId, $pic = null, $status, $problem = null, $description = null)
-        {
-            $result = $model->create([
-                'shift_id' => $shiftId,
-                'line_id' => $lineId,
-                'pic' => $pic,
-                'status' => $status,
-                'henkaten_problem' => $problem,
-                'henkaten_description' => $description,
-                'type' => null,
-                'date' => Carbon::now()->format('Y-m-d H:i:s'),
-            ]);
-
-            return $result;
-        }
-
-        try {
-            DB::beginTransaction();
-
-            if ($table == 'method') {
-                // insert into henkaten table
-                insertHenkaten($methodModel, $shiftId, $lineId, $pic, $status, $problem, $description);
-
-                // insert into line table
-                Line::where('id', $lineId)->update([
-                    'status_method' => $status
-                ]);
-            } else if ($table == 'machine') {
-                // insert into henkaten table
-                insertHenkaten($machineModel, $shiftId, $lineId, $pic, $status, $problem, $description);
-
-                // insert into line table
-                Line::where('id', $lineId)->update([
-                    'status_machine' => $status
-                ]);
-            } else if ($table == 'material') {
-                // insert into henkaten table
-                insertHenkaten($materialModel, $shiftId, $lineId, $pic, $status, $problem, $description);
-
-                // insert into line table
-                Line::where('id', $lineId)->update([
-                    'status_material' => $status
-                ]);
-            }
-
-            DB::commit();
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Henkaten berhasil tersimpan!'
-            ]);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return response()->json([
-                'status' => 'error',
-                'message' => $th->getMessage(),
-            ]);
-        }
-    }
-
-    public function troubleshootHenkaten(Request $request)
-    {
-        $troubleshoot = $request->get('troubleshoot');
-        $approvedBy = $request->get('approvedBy');
-        $henkatenId = $request->get('henkatenId');
-        $type = strtolower($request->get('type'));
-        $lineId = $request->get('lineId');
-
-        // initiate model
-        $methodModel = new HenkatenMethod();
-        $machineModel = new HenkatenMachine();
-        $materialModel = new HenkatenMaterial();
-
-        function updateHenkaten($model, $henkatenId, $troubleshoot, $approvedBy)
-        {
-            $result = $model->where('id', $henkatenId)
-                ->update([
-                    'troubleshoot' => $troubleshoot,
-                    'approval' => $approvedBy,
-                    'status_after' => 'running'
-                ]);
-
-            return $result;
-        }
-
-        try {
-            DB::beginTransaction();
-
-            // update henkaten table
-            if ($type == 'method') {
-                // insert into henkaten table
-                updateHenkaten($methodModel, $henkatenId, $troubleshoot, $approvedBy);
-
-                // check if there is any problem not solved yet
-                $otherStat = HenkatenMethod::select('status')
-                    ->where('status_after', null)
-                    ->where('line_id', $lineId)
-                    ->latest()
-                    ->first();
-
-                if (!$otherStat) {
-                    // insert into line table
-                    Line::where('id', $lineId)->update([
-                        'status_method' => 'running'
-                    ]);
-                } else {
-                    Line::where('id', $lineId)->update([
-                        'status_method' => $otherStat->status
-                    ]);
-                }
-            } else if ($type == 'machine') {
-                // insert into henkaten table
-                updateHenkaten($machineModel, $henkatenId, $troubleshoot, $approvedBy);
-
-                // check if there is any problem not solved yet
-                $otherStat = HenkatenMachine::select('status')
-                    ->where('status_after', null)
-                    ->where('line_id', $lineId)
-                    ->latest()
-                    ->first();
-
-                if (!$otherStat) {
-                    // insert into line table
-                    Line::where('id', $lineId)->update([
-                        'status_machine' => 'running'
-                    ]);
-                } else {
-                    Line::where('id', $lineId)->update([
-                        'status_method' => $otherStat->status
-                    ]);
-                }
-            } else if ($type == 'material') {
-                // insert into henkaten table
-                updateHenkaten($materialModel, $henkatenId, $troubleshoot, $approvedBy);
-
-                // check if there is any problem not solved yet
-                $otherStat = HenkatenMaterial::select('status')
-                    ->where('status_after', null)
-                    ->where('line_id', $lineId)
-                    ->latest()
-                    ->first();
-
-                if (!$otherStat) {
-                    // insert into line table
-                    Line::where('id', $lineId)->update([
-                        'status_material' => 'running'
-                    ]);
-                } else {
-                    Line::where('id', $lineId)->update([
-                        'status_method' => $otherStat->status
-                    ]);
-                }
-            }
-
-            DB::commit();
-
-            return redirect()->back()->with('success', 'Data berhasil disimpan!');
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return redirect()->back()->with('error', $th->getMessage());
-        }
     }
 
     public function selectTheme(Request $request)

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\skillController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\HenkatenController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\DashboardController;
@@ -47,8 +48,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('selectFirstPic/{id}', [DashboardController::class, 'selectFirstPic'])->name('dashboard.firstPic');
         Route::get('selectSecondPic/{id}', [DashboardController::class, 'selectSecondPic'])->name('dashboard.SecondPic');
 
-        Route::get('storeHenkaten/{table}/{status}/{lineId}/{pic?}/{problem?}/{description?}', [DashboardController::class, 'storeHenkaten'])->name('dashboard.storeHenkaten');
-        Route::post('troubleshootHenkaten', [DashboardController::class, 'troubleshootHenkaten'])->name('dashboard.troubleshootHenkaten');
+        Route::get('storeHenkaten/{table}/{status}/{lineId}/{pic?}/{problem?}/{description?}', [HenkatenController::class, 'storeHenkaten'])->name('dashboard.storeHenkaten');
+        Route::post('troubleshootHenkaten', [HenkatenController::class, 'troubleshootHenkaten'])->name('dashboard.troubleshootHenkaten');
     });
 
     // employees 
