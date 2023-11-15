@@ -131,7 +131,7 @@
         ];
     @endphp
 
-    {{-- modal --}}
+    {{-- modal (other tham man) --}}
     @foreach ($modals as $modal)
         <div class="modal fade" id="{{ $modal['modalId'] }}" tabindex="-1" aria-labelledby="bs-example-modal-lg"
             style="display: none;" aria-hidden="true">
@@ -248,6 +248,76 @@
     @endforeach
     {{-- end of modal --}}
 
+    {{-- modal man --}}
+    <div class="modal fade" id="manOnlyModal" tabindex="-1" aria-labelledby="bs-example-modal-lg" style="display: none;"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header d-flex align-items-center">
+                    <h4 class="modal-title" id="myLargeModalLabel">
+                        Man Henkaten
+                    </h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form class="mt-3">
+                    <div class="modal-body">
+                        @foreach ($activeEmployees as $emp)
+                            <div class="row">
+                                <div class="col-lg-1">
+                                    <label for="exampleInputPassword1" class="form-label fw-semibold"
+                                        style="color: white">Pos</label>
+                                    <p class="mt-2 text-center badge bg-danger rounded-pill">Pos {{ $emp->pos }}</p>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div class="mb-4">
+                                        <label for="exampleInputPassword1" class="form-label fw-semibold">Current
+                                            Employee</label>
+                                        <input type="text" class="form-control" id="exampleInputtext"
+                                            placeholder="John" value="{{ $emp->employee->name }}" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-lg-1">
+                                    <label for="exampleInputPassword1" class="form-label fw-semibold"
+                                        style="color: white">Last</label>
+                                    <p class="text-center mt-1">- to -</p>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div class="mb-4">
+                                        <label for="exampleInputPassword1" class="form-label fw-semibold">Replacement
+                                            Employee</label>
+                                        <input type="text" class="form-control" id="exampleInputtext"
+                                            placeholder="Deo">
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                        <div class="form-group mt-3 mb-3 description" style="display: none;">
+                            <label>Problem</label>
+                            <input class="form-control" rows="3" placeholder="Problem..." name="problem"
+                                id="{{ $modal['modalId'] }}Problem" required>
+                            </input>
+                        </div>
+                        <div class="form-group mt-3 mb-3 description" style="display: none;">
+                            <label>Description</label>
+                            <textarea class="form-control" rows="3" placeholder="Description" name="description"
+                                id="{{ $modal['modalId'] }}Description" required>
+                                </textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="submit">Save
+                            changes</button>
+                        <button type="button"
+                            class="btn btn-light-danger text-danger font-medium waves-effect text-start"
+                            data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{-- end of modal --}}
     <div class="row" style="margin-top: -30px">
         <div class="card bg-light-{{ $color_status }} shadow-none position-relative overflow-hidden">
             <div class="card-body px-4 py-3">
@@ -278,7 +348,6 @@
         <div class="col-lg-6 col-md-12">
             <img src="{{ asset('assets/images/mapping-per-line.png') }}" alt="" class="mw-100"
                 usemap="#roomMap" width="980vh">
-
             @foreach ($activeEmployees as $emp)
                 @php
                     if ($emp->pos == '1') {
@@ -298,9 +367,18 @@
         <div class="col-lg-6">
             <div class="row text-center">
                 @foreach ($modals as $modal)
+                    @php
+                        $flag = '';
+                        if ($activeEmployees->isEmpty()) {
+                            $flag = '-flag';
+                        }
+
+                        $target = $modal['modalId'] == 'manModal' ? '#manOnlyModal' . $flag : '#' . $modal['modalId'];
+
+                    @endphp
                     <div class="col-lg-12">
                         <div class="card overflow-hidden card-hover" data-bs-toggle="modal"
-                            data-bs-target="#{{ $modal['modalId'] }}">
+                            data-bs-target="{{ $target }}">
                             <div class="d-flex flex-row">
                                 <div class="p-3 text-start">
                                     <h3 class="text-{{ $modal['color'] }} mb-0 fs-6 fw-bolder pb-2">{{ $modal['title'] }}
@@ -340,7 +418,6 @@
                                     }
                                 }
                             }
-
                             $color = mapRoleToColor($emp->employee->role);
                         @endphp
                         <div class="col-lg-4 col-md-6">
@@ -356,7 +433,8 @@
                                     </div>
                                     <div class="row mt-4">
                                         <div class="col-12">
-                                            <button class="btn btn-secondary" style="width: 100% !important">POS
+                                            <button class="btn btn-light-danger text-danger"
+                                                style="width: 100% !important">POS
                                                 {{ strtoupper($emp->pos) }}</button>
                                         </div>
                                     </div>
@@ -406,9 +484,19 @@
                             <th>No</th>
                             <th>4M</th>
                             <th>Status</th>
-                            <th>Problem</th>
+                            <th>Desc</th>
                             <th>Time</th>
                             <th>Troubleshoot</th>
+                            @php
+                                $hasTroubleshootTime = collect($histories)->contains(function ($history) {
+                                    return $history['troubleshoot'] !== 'Belum ditangani';
+                                });
+                            @endphp
+
+                            {{-- If 'Troubleshoot Time' is present, add the column --}}
+                            @if ($hasTroubleshootTime)
+                                <th>Troubleshoot Time</th>
+                            @endif
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -438,26 +526,59 @@
                                 </td>
                                 <td>{{ $history['problem'] }}</td>
                                 <td>{{ Carbon\Carbon::parse($history['date'])->format('j F Y, H:i:s') }}</td>
-                                @if ($history['troubleshoot'] == 'Belum ditangani')
-                                    <td>
-                                        <span class="mb-1 badge bg-danger">{{ $history['troubleshoot'] }}</span>
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" checked data-toggle="toggle" data-on="Open"
-                                            data-off="Closed" data-onstyle="danger" data-offstyle="success"
-                                            data-width="150" style="margin: 0 auto !important"
-                                            id="statusCheckbox-{{ $loop->index }}"
-                                            data-history-id="{{ $history['id'] }}">
-                                    </td>
-                                @elseif($history['status_after'] == 'running')
-                                    <td>{{ $history['troubleshoot'] }}</td>
-                                    <td>
-                                        <input type="checkbox" checked data-toggle="toggle" data-on="Closed"
-                                            data-off="Open" data-onstyle="success" data-offstyle="closed"
-                                            data-width="150" style="margin: 0 auto !important"
-                                            id="statusCheckbox-{{ $loop->index }}"
-                                            data-history-id="{{ $history['id'] }}" disabled>
-                                    </td>
+                                @if ($history['status'] == 'stop')
+                                    @if ($history['troubleshoot'] == 'Belum ditangani')
+                                        <td class="text-center">
+                                            <span class="mb-1 badge bg-danger">{{ $history['troubleshoot'] }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" checked data-toggle="toggle" data-on="Open"
+                                                data-off="Closed" data-onstyle="danger" data-offstyle="success"
+                                                data-width="150" style="margin: 0 auto !important"
+                                                id="statusCheckbox-{{ $loop->index }}"
+                                                data-history-id="{{ $history['id'] }}">
+                                        </td>
+                                    @elseif($history['status_after'] == 'running')
+                                        <td class="text-center">{{ $history['troubleshoot'] }}</td>
+                                        <td class="text-center">
+                                            {{ Carbon\Carbon::parse($history['troubleshootTime'])->format('j F Y, H:i:s') }}
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" checked data-toggle="toggle" data-on="Closed"
+                                                data-off="Open" data-onstyle="success" data-offstyle="closed"
+                                                data-width="150" style="margin: 0 auto !important"
+                                                id="statusCheckbox-{{ $loop->index }}"
+                                                data-history-id="{{ $history['id'] }}" disabled>
+                                        </td>
+                                    @endif
+                                @else
+                                    @if ($history['troubleshoot'] == 'Belum ditangani')
+                                        <td>
+                                            <span class="mb-1 badge bg-danger">{{ $history['troubleshoot'] }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <button class="btn btn-warning" data-history-id="{{ $history['id'] }}"
+                                                id="edit">
+                                                <span class="rounded-3" id="icon">
+                                                    <i class="ti ti-pencil"></i>
+                                                </span>
+                                            </button>
+                                        </td>
+                                    @else
+                                        <td>{{ $history['troubleshoot'] }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ Carbon\Carbon::parse($history['troubleshootTime'])->format('j F Y, H:i:s') }}
+                                        </td>
+                                        <td class="text-center">
+                                            <button class="btn btn-warning" data-history-id="{{ $history['id'] }}"
+                                                id="edit" disabled>
+                                                <span class="rounded-3" id="icon">
+                                                    <i class="ti ti-pencil"></i>
+                                                </span>
+                                            </button>
+                                        </td>
+                                    @endif
                                 @endif
                             </tr>
                         @endforeach
@@ -560,6 +681,10 @@
         // initialize datatable
         $('#henkatenHistory').DataTable({
             scrollX: true,
+            columnDefs: [{
+                orderable: false,
+                targets: 6
+            }],
         });
 
         let labelText;
@@ -806,8 +931,7 @@
         })
 
         $('input[type="checkbox"]').each(function(index) {
-            let checkboxId = `statusCheckbox-${index}`;
-            let checkbox = $(`#${checkboxId}`);
+            let checkbox = $(this);
 
             checkbox.on('change', function() {
                 if (checkbox.prop('checked')) {
@@ -822,6 +946,11 @@
                 }
             });
         });
+
+        $('#edit').on('click', function() {
+            const historyId = $(this).data('history-id');
+            $(`#statusModal-${historyId}`).modal('show');
+        })
 
         var errorMessage = "{!! session('error') !!}";
         var successMessage = "{!! session('success') !!}";

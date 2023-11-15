@@ -26,7 +26,7 @@ return new class extends Migration
             $table->foreign('line_id')->references('id')->on('lines')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->text('henkaten_description')->nullable();
             $table->enum('type', ['plan','unplan'])->nullable();
-            $table->timestamp('date');
+            $table->timestamp('date')->useCurrent(false);
             $table->string('troubleshoot')->nullable();
             $table->string('approval')->nullable();
             $table->timestamps();
