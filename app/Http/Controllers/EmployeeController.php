@@ -286,6 +286,12 @@ class EmployeeController extends Controller
                 }
             }
 
+            $existingSkills = EmployeeSkill::where('employee_id', $employee->id)->pluck('skill_id')->toArray();
+
+            $skillsToDelete = array_diff($existingSkills, array_column($arraySkill, 'id'));
+
+            EmployeeSkill::where('employee_id', $employee->id)->whereIn('skill_id', $skillsToDelete)->delete();
+
             DB::commit();
             return redirect()->back()->with('success', 'Karyawan berhasil diperbarui!');
         } catch (\Throwable $th) {
