@@ -222,9 +222,10 @@ class EmployeeController extends Controller
         $employee = Employee::find($id);
         $skills = EmployeeSkill::where('employee_id', $id)->get();
         $allSkills = Skill::select('id', 'name', 'level')->get();
+        $nameSkills = Skill::select('name')->groupBy('name')->get();
 
         // Mengirim data karyawan ke view edit
-        return view('pages.website.editEmployee', compact('employee', 'skills', 'allSkills'));
+        return view('pages.website.editEmployee', compact('employee', 'skills', 'allSkills', 'nameSkills'));
     }
 
     public function employeeUpdate(Request $request,  $id)

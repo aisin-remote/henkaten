@@ -56,19 +56,19 @@
                                 <select class="select2 form-select select2-hidden-accessible" style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" name="skill_name[]">
                                     <option value="0">Select</option>
                                     @foreach ($allSkills as $s)
-                                    <option value="{{ $s->name }}" {{ $skill->skill_id === $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-lg-2 col-sm-12">
-                                <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="level[]">
-                                    @foreach ($allSkills as $s)
                                     @if($skill->skill_id == $s->id)
                                     <?php
                                     $level = $s->level;
                                     ?>
                                     @endif>
                                     @endforeach
+                                    @foreach ($nameSkills as $skill)
+                                    <option value="{{ $skill->name }}">{{ $skill->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-lg-2 col-sm-12">
+                                <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="level[]">
                                     <option value="" disabled> Select </option>
                                     <option value="1" {{ $level === "1" ? 'selected' : '' }}>1</option>
                                     <option value="2" {{ $level === "2" ? 'selected' : '' }}>2</option>
@@ -114,8 +114,8 @@
                     style="width: 100%; height: 36px" tabindex="-1"
                     aria-hidden="true" id="themeSelect" name="skill_name[]">
                     <option value="0">Select</option>
-                    @foreach ($skills as $skill)
-                        <option value="{{ $skill->name }}">{{ $skill->name }}</option>
+                    @foreach ($nameSkills as $skill)
+                            <option value="{{ $skill->name }}">{{ $skill->name }}</option>
                     @endforeach
                 </select>
             </div>
