@@ -106,3 +106,49 @@
 @endsection
 
 <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#addSkill').on('click', function() {
+            var newRow = `<div class="row mb-3">
+            <div class="col-lg-9 col-sm-12">
+                <select class="select2 form-select select2-hidden-accessible"
+                    style="width: 100%; height: 36px" tabindex="-1"
+                    aria-hidden="true" id="themeSelect" name="skill_name[]">
+                    <option value="0">Select</option>
+                    @foreach ($skills as $skill)
+                        <option value="{{ $skill->name }}">{{ $skill->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-lg-2 col-sm-12">
+                <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="level[]">
+                    <option selected value="0">-- select level --</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-sm-12">
+                <button data-repeater-delete="" class="btn btn-danger waves-effect waves-light remove-row"
+                    type="button">
+                    <i class="ti ti-circle-x fs-5"></i>
+                </button>
+            </div>
+        </div>`;
+
+            // Append the new row
+            $('.repeater-container').append(newRow);
+
+            // Initialize Select2 for the Select elements in the new row
+            $('.repeater-container').find('.select2').select2();
+        });
+
+        $('.repeater-container').on('click', '.remove-row', function() {
+            if (confirm("Are you sure you want to remove this item?")) {
+                $(this).closest('.row.mb-3').remove();
+            }
+        });
+    });
+</script>
