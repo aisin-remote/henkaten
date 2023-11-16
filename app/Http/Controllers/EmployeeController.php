@@ -40,9 +40,16 @@ class EmployeeController extends Controller
         $masterEmployees = Employee::select('id', 'name', 'npk', 'role', 'status', 'photo')
             ->get();
 
+        $allSkills = Skill::select('id', 'name', 'level')->get();
+        $nameSkills = Skill::select('name')->groupBy('name')->get();
+        $empSkills = EmployeeSkill::select()->get();
+
         return view('pages.website.registEmployee', [
             'skills' => Skill::select('name')->groupBy('name')->get(),
-            'masterEmployee' => $masterEmployees
+            'masterEmployee' => $masterEmployees,
+            'allSkills' => $allSkills,
+            'empSkills' => $empSkills,
+            'nameSkills' => $nameSkills
         ]);
     }
 
@@ -249,7 +256,7 @@ class EmployeeController extends Controller
             'name' => 'required|max:255|min:3',
             'npk' => 'required|max:6|min:6',
             'role' => 'required',
-            'photo' => 'required|max:2048'
+            'photo' => 'nullable|max:2048'
         ]);
 
         if ($request->has('photo')) {
@@ -270,17 +277,46 @@ class EmployeeController extends Controller
 
             // insert into employee skill
             foreach ($arraySkill as $skill) {
-                EmployeeSkill::create([
-                    'employee_id' => $employee->id,
-                    'skill_id' => $skill->id,
-                ]);
+                $employeeSkill = EmployeeSkill::where('employee_id', $employee->id)
+                    ->where('skill_id', $skill->id)
+                    ->first();
+
+                if ($employeeSkill) {
+                    $employeeSkill->update([
+                        'employee_id' => $employee->id,
+                        'skill_id' => $skill->id,
+                    ]);
+                } else {
+                    EmployeeSkill::create([
+                        'employee_id' => $employee->id,
+                        'skill_id' => $skill->id,
+                    ]);
+                }
             }
 
+            $existingSkills = EmployeeSkill::where('employee_id', $employee->id)->pluck('skill_id')->toArray();
+
+            $skillsToDelete = array_diff($existingSkills, array_column($arraySkill, 'id'));
+
+            EmployeeSkill::where('employee_id', $employee->id)->whereIn('skill_id', $skillsToDelete)->delete();
+
             DB::commit();
-            return redirect()->back()->with('success', 'Karyawan berhasil diperbarui!');
+            return redirect('employee/register')->with('success', 'Karyawan berhasil diperbarui!');
         } catch (\Throwable $th) {
             DB::rollback();
             return redirect()->back()->with('error', 'Karyawan gagal diperbarui!');
         }
+    }
+
+    public function employeeDetail($id)
+    {
+        // Mengambil data karyawan berdasarkan ID
+        $employee = Employee::find($id);
+        $skills = EmployeeSkill::where('employee_id', $id)->get();
+        $allSkills = Skill::select('id', 'name', 'level')->get();
+        $nameSkills = Skill::select('name')->groupBy('name')->get();
+
+        // Mengirim data karyawan ke view edit
+        return view('pages.website.detailEmployee', compact('employee', 'skills', 'allSkills', 'nameSkills'));
     }
 }

@@ -59,19 +59,21 @@ Route::middleware(['auth'])->group(function () {
         // regist employees
         Route::get('/register', [EmployeeController::class, 'employeeRegister'])->name('employeeRegister.index');  
         Route::post('/store', [EmployeeController::class, 'employeeStore'])->name('employee.store');  
-
+    
         // planning employees
         Route::get('/planning', [EmployeeController::class, 'employeePlanning'])->name('employeePlanning.index');  
         Route::post('/planning/store', [EmployeeController::class, 'employeePlanningStore'])->name('employeePlanning.store');
-
+    
         // get employee skill from employee
         Route::get('/getSkillEmp', [EmployeeController::class, 'getSkillEmp'])->name('employee.getSkillEmp');  
         Route::get('/getSkillPos', [EmployeeController::class, 'getSkillPos'])->name('employee.getSkillPos');  
         
         // edit employees
         Route::get('/{id}/edit', [EmployeeController::class, 'employeeEdit'])->name('editEmployee');
-        Route::put('/{id}/update', [EmployeeController::class, 'employeeUpdate'])->name('employee.update');
-    });
+        Route::post('/{id}/update', [EmployeeController::class, 'employeeUpdate'])->name('employee.update');
+
+        Route::get('/{id}/detail', [EmployeeController::class, 'employeeDetail'])->name('detailEmployee');
+    });    
 
     // regist employee skill
     Route::get('/skill', [skillController::class, 'index'])->name('skill.index');
