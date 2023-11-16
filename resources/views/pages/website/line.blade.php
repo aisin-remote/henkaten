@@ -407,21 +407,62 @@
         <div class="col-lg-6 col-md-12">
             <img src="{{ asset('assets/images/mapping-per-line.png') }}" alt="" class="mw-100"
                 usemap="#roomMap" width="980vh">
-            @foreach ($activeEmployees as $emp)
-                @php
-                    if ($emp->pos == '1') {
-                        $top = 60;
-                        $left = 28;
-                    } else {
-                        $top = 71;
-                        $left = 44;
-                    }
-                @endphp
-                <div style="position: absolute; top: {{ $top }}vh; left: {{ $left }}vh;">
-                    <img src="{{ asset('uploads/doc/' . $emp->employee->photo) }}" alt="Employee 1"
-                        style="width: 80px; height: 80px;" class="rounded-1" />
-                </div>
-            @endforeach
+            @if (!$manHenkaten->isEmpty())
+                @foreach ($activeEmployees as $emp)
+                    @php
+                        $photo = null; // Initialize $photo to null
+                    @endphp
+                    @foreach ($manHenkaten as $man)
+                        @php
+                            $henkatenEmployeeId = $man->employee_before_id;
+                            $activeEmployeeId = $emp->employee_id;
+
+                            if ($activeEmployeeId == $henkatenEmployeeId) {
+                                $photo = $man->manAfter->photo;
+                                $pos = $emp->pos;
+                            } else {
+                                $pos = $emp->pos;
+                            }
+
+                            // set photo
+                            if ($pos == '1') {
+                                $top = 60;
+                                $left = 28;
+                            } else {
+                                $top = 71;
+                                $left = 44;
+                            }
+                        @endphp
+                    @endforeach
+
+                    <!-- Display the employee photo with the new one from "henkaten" -->
+                    <div>
+                        <div style="position: absolute; top: {{ $top }}vh; left: {{ $left }}vh;">
+                            <img src="{{ asset('uploads/doc/' . ($photo ?? $emp->employee->photo)) }}"
+                                alt="Employee Photo" style="width: 80px; height: 80px;" class="rounded-1" />
+                        </div>
+                    </div>
+                @endforeach
+            @else
+                @foreach ($activeEmployees as $emp)
+                    @php
+                        // set pos
+                        if ($emp->pos == '1') {
+                            $top = 60;
+                            $left = 28;
+                        } else {
+                            $top = 71;
+                            $left = 44;
+                        }
+                        $photo = $emp->employee->photo;
+                    @endphp
+                    <!-- Displaying the employee photo with default position -->
+                    <div style="position: absolute; top: {{ $top }}vh; left: {{ $left }}vh;">
+                        <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
+                            style="width: 80px; height: 80px;" class="rounded-1" />
+                    </div>
+                @endforeach
+            @endif
         </div>
         <div class="col-lg-6">
             <div class="row text-center">
@@ -462,6 +503,23 @@
                 @if (!$activeEmployees->isEmpty())
                     @foreach ($activeEmployees as $emp)
                         @php
+                            $photo = $emp->employee->photo;
+                            $role = $emp->employee->role;
+                            $name = $emp->employee->name;
+                            $npk = $emp->employee->npk;
+
+                            foreach ($manHenkaten as $man) {
+                                $henkatenEmployeeId = $man->employee_before_id;
+                                $activeEmployeeId = $emp->employee_id;
+
+                                if ($activeEmployeeId == $henkatenEmployeeId) {
+                                    $photo = $man->manAfter->photo;
+                                    $role = $man->manAfter->role;
+                                    $name = $man->manAfter->name;
+                                    $npk = $man->manAfter->npk;
+                                }
+                            }
+
                             if (!function_exists('mapRoleToColor')) {
                                 function mapRoleToColor($role)
                                 {
@@ -477,18 +535,18 @@
                                     }
                                 }
                             }
-                            $color = mapRoleToColor($emp->employee->role);
+
+                            $color = mapRoleToColor($role);
                         @endphp
                         <div class="col-lg-4 col-md-6">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <img src="{{ asset('uploads/doc/' . $emp->employee->photo) }}" class="rounded-1"
-                                        width="100" height="100">
+                                    <img src="{{ asset('uploads/doc/' . $photo) }}" class="rounded-1" width="100"
+                                        height="100">
                                     <div class="mt-n2">
-                                        <span
-                                            class="badge bg-{{ $color }}">{{ strtoupper($emp->employee->role) }}</span>
-                                        <h3 class="card-title mt-3">{{ ucwords($emp->employee->name) }}</h3>
-                                        <h6 class="card-subtitle">{{ $emp->employee->npk }}</h6>
+                                        <span class="badge bg-{{ $color }}">{{ strtoupper($role) }}</span>
+                                        <h3 class="card-title mt-3">{{ ucwords($name) }}</h3>
+                                        <h6 class="card-subtitle">{{ $npk }}</h6>
                                     </div>
                                     <div class="row mt-4">
                                         <div class="col-12">
@@ -644,19 +702,65 @@
                                             </button>
                                         </td>
                                     @else
-                                        <td>{{ $history['troubleshoot'] }}
-                                        </td>
-                                        <td class="text-center">
-                                            {{ Carbon\Carbon::parse($history['troubleshootTime'])->format('j F Y, H:i:s') }}
-                                        </td>
-                                        <td class="text-center">
-                                            <button class="btn btn-warning" data-history-id="{{ $history['id'] }}"
-                                                id="edit" disabled>
-                                                <span class="rounded-3" id="icon">
-                                                    <i class="ti ti-pencil"></i>
-                                                </span>
-                                            </button>
-                                        </td>
+                                        @if ($history['type'] == 'Man')
+                                            @foreach ($activeEmployees as $emp)
+                                                @php
+                                                    $photos = [];
+
+                                                    // Pre-calculate photos
+                                                    foreach ($activeEmployees as $emp) {
+                                                        $photo_before = $emp->employee->photo;
+                                                        $photo_after = null;
+
+                                                        foreach ($manHenkaten as $man) {
+                                                            $henkatenEmployeeId = $man->employee_before_id;
+                                                            $activeEmployeeId = $emp->employee_id;
+
+                                                            if ($activeEmployeeId == $henkatenEmployeeId) {
+                                                                $photo_after = $man->manAfter->photo;
+                                                                break; // Exit the loop once a match is found
+                                                            }
+                                                        }
+
+                                                        $photos[] = [
+                                                            'photo_before' => $photo_before,
+                                                            'photo_after' => $photo_after,
+                                                        ];
+                                                    }
+                                                @endphp
+                                            @endforeach
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <a href="javascript:void(0)">
+                                                        <img src="{{ asset('uploads/doc/' . $photos[$loop->index]['photo_before']) }}"
+                                                            class="rounded-circle" alt="t1" width="40">
+                                                    </a>
+                                                    <p class="mt-3 text-muted" style="font-size:0.8em">To</p>
+                                                    <a href="javascript:void(0)">
+                                                        <img src="{{ asset('uploads/doc/' . $photos[$loop->index]['photo_after']) }}"
+                                                            class="rounded-circle" alt="t2" width="40">
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                {{ Carbon\Carbon::now()->format('j F Y, H:i:s') }}
+                                            </td>
+                                            <td class="text-center"></td>
+                                        @else
+                                            <td>{{ $history['troubleshoot'] }}
+                                            </td>
+                                            <td class="text-center">
+                                                {{ Carbon\Carbon::parse($history['troubleshootTime'])->format('j F Y, H:i:s') }}
+                                            </td>
+                                            <td class="text-center">
+                                                <button class="btn btn-warning" data-history-id="{{ $history['id'] }}"
+                                                    id="edit" disabled>
+                                                    <span class="rounded-3" id="icon">
+                                                        <i class="ti ti-pencil"></i>
+                                                    </span>
+                                                </button>
+                                            </td>
+                                        @endif
                                     @endif
                                 @endif
                             </tr>
@@ -762,7 +866,7 @@
             scrollX: true,
             columnDefs: [{
                 orderable: false,
-                targets: 6
+                targets: [6, 7]
             }],
         });
 

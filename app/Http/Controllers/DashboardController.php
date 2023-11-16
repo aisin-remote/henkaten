@@ -222,6 +222,17 @@ class DashboardController extends Controller
             })
             ->first();
 
+        // get man henkaten
+        $manHenkaten = HenkatenMan::with('shift')
+            ->with('manAfter')
+            ->with('manBefore')
+            ->where('line_id', $lineId->id)
+            ->whereHas('shift', function ($query) use ($currentTime) {
+                $query->where('time_start', '<=', $currentTime)
+                    ->where('time_end', '>=', $currentTime);
+            })
+            ->get();
+        
         // Merge the data and add the type field
         $combinedData = [];
 
@@ -292,6 +303,7 @@ class DashboardController extends Controller
             'methodHistory' => HenkatenMethod::where('line_id', $lineId->id)->get(),
             'machineHistory' => HenkatenMachine::where('line_id', $lineId->id)->get(),
             'manHistory' => HenkatenMan::where('line_id', $lineId->id)->get(),
+            'manHenkaten' => $manHenkaten,
             'materialHistory' => HenkatenMaterial::where('line_id', $lineId->id)->get(),
         ]);
     }
@@ -306,7 +318,6 @@ class DashboardController extends Controller
         // }
 
         // get theme name
-
         $parts = explode("/", $request->path());
         $customTheme = explode("-", $parts[2]);
 

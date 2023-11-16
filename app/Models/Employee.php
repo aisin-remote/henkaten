@@ -34,4 +34,14 @@ class Employee extends Model
     {
         return $this->hasMany(PicActive::class);
     }
+
+    public function manBefore()
+    {
+        return $this->hasMany(HenkatenMan::class, 'employee_before_id');
+    }
+    
+    public function manAfter()
+    {
+        return $this->hasMany(HenkatenMan::class, 'employee_after_id');
+    }
 }

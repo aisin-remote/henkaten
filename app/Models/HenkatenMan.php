@@ -19,4 +19,24 @@ class HenkatenMan extends Model
     {
         return $this->belongsTo(Line::class);
     }
+    
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
+    
+    public function manBefore()
+    {
+        return $this->belongsTo(Employee::class, 'employee_before_id');
+    }
+    
+    public function manAfter()
+    {
+        return $this->belongsTo(Employee::class, 'employee_after_id');
+    }
 }
