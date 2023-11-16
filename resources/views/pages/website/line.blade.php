@@ -205,7 +205,7 @@
                                     </div>
                                 </label>
                             </div>
-                            <div class="form-group mt-3 pic-form" style="display: none;">
+                            <div class="form-group mt-3 pic-form">
                                 <label>PIC</label>
                                 <select class="select2 form-control select2-hidden-accessible picSelect"
                                     style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
@@ -218,13 +218,13 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="form-group mt-3 mb-3 description" style="display: none;">
+                            <div class="form-group mt-3 mb-3 description">
                                 <label>Problem</label>
                                 <input class="form-control" rows="3" placeholder="Problem..." name="problem"
                                     id="{{ $modal['modalId'] }}Problem" required>
                                 </input>
                             </div>
-                            <div class="form-group mt-3 mb-3 description" style="display: none;">
+                            <div class="form-group mt-3 mb-3 description">
                                 <label>Description</label>
                                 <textarea class="form-control" rows="3" placeholder="Description..." name="description"
                                     id="{{ $modal['modalId'] }}Description" required>
@@ -426,10 +426,10 @@
 
                             // set photo
                             if ($pos == '1') {
-                                $top = 60;
+                                $top = 50;
                                 $left = 28;
                             } else {
-                                $top = 71;
+                                $top = 61;
                                 $left = 44;
                             }
                         @endphp
@@ -448,10 +448,10 @@
                     @php
                         // set pos
                         if ($emp->pos == '1') {
-                            $top = 60;
+                            $top = 50;
                             $left = 28;
                         } else {
-                            $top = 71;
+                            $top = 61;
                             $left = 44;
                         }
                         $photo = $emp->employee->photo;
@@ -706,22 +706,18 @@
                                             @foreach ($activeEmployees as $emp)
                                                 @php
                                                     $photos = [];
-
                                                     // Pre-calculate photos
                                                     foreach ($activeEmployees as $emp) {
                                                         $photo_before = $emp->employee->photo;
                                                         $photo_after = null;
-
                                                         foreach ($manHenkaten as $man) {
                                                             $henkatenEmployeeId = $man->employee_before_id;
                                                             $activeEmployeeId = $emp->employee_id;
-
                                                             if ($activeEmployeeId == $henkatenEmployeeId) {
                                                                 $photo_after = $man->manAfter->photo;
                                                                 break; // Exit the loop once a match is found
                                                             }
                                                         }
-
                                                         $photos[] = [
                                                             'photo_before' => $photo_before,
                                                             'photo_after' => $photo_after,
@@ -866,7 +862,7 @@
             scrollX: true,
             columnDefs: [{
                 orderable: false,
-                targets: [6, 7]
+                targets: 6
             }],
         });
 

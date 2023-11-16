@@ -363,8 +363,7 @@
         @endphp
 
         <div class="col-lg-3 col-sm-12" id="secondPicContainer">
-            <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#secondPicModal"
-                id="secondPic">
+            <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="" id="secondPic">
                 @if ($secondPic)
                     <div class="card-body p-3 d-flex align-items-center gap-3">
                         <img src="{{ $secondPic->photo ? asset('uploads/doc/' . $secondPic->photo) : asset('path_to_default_image') }}"
@@ -712,7 +711,6 @@
                                 $overall_status_all_lines = $status;
                             }
                         }
-
                     @endphp
                 </div>
             </div>
