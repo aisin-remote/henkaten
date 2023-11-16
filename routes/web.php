@@ -49,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('selectSecondPic/{id}', [DashboardController::class, 'selectSecondPic'])->name('dashboard.SecondPic');
 
         Route::get('storeHenkaten/{table}/{status}/{lineId}/{pic?}/{problem?}/{description?}', [HenkatenController::class, 'storeHenkaten'])->name('dashboard.storeHenkaten');
+        Route::get('storeManHenkaten/{before}/{after?}/{status}/{lineId}/{problem?}/{description?}', [HenkatenController::class, 'storeManHenkaten'])->name('dashboard.storeManHenkaten');
         Route::post('troubleshootHenkaten', [HenkatenController::class, 'troubleshootHenkaten'])->name('dashboard.troubleshootHenkaten');
     });
 

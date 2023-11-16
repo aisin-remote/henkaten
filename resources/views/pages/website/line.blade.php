@@ -135,7 +135,7 @@
     @foreach ($modals as $modal)
         <div class="modal fade" id="{{ $modal['modalId'] }}" tabindex="-1" aria-labelledby="bs-example-modal-lg"
             style="display: none;" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header d-flex align-items-center">
                         <h4 class="modal-title" id="myLargeModalLabel">
@@ -184,7 +184,7 @@
                                     <div class="form-check">
                                         <input type="radio" id="{{ $modal['modalId'] }}HenkatenRadio"
                                             class="other-radio form-check-input" name="{{ $modal['modalId'] }}Status"
-                                            value="henkaten" @if ($modal['status'] == 'HENKATEN') checked @endif>
+                                            value="henkaten">
                                         <label class="form-check-label" for="{{ $modal['modalId'] }}HenkatenRadio">
                                             <span class="d-none d-md-block">
                                                 HENKATEN
@@ -196,7 +196,7 @@
                                     <div class="form-check">
                                         <input type="radio" id="{{ $modal['modalId'] }}StopRadio"
                                             class="other-radio form-check-input" name="{{ $modal['modalId'] }}Status"
-                                            value="stop" @if ($modal['status'] == 'STOP') checked @endif>
+                                            value="stop">
                                         <label class="form-check-label" for="{{ $modal['modalId'] }}StopRadio">
                                             <span class="d-none d-md-block">
                                                 STOP
@@ -261,8 +261,32 @@
                 </div>
                 <form class="mt-3">
                     <div class="modal-body">
+                        <div class="statusRadio text-center">
+                            <label class="btn btn-light-primary text-primary font-medium me-2">
+                                <div class="form-check">
+                                    <input type="radio" id="manHenkatenRadio" class="other-radio form-check-input"
+                                        name="manStatus" value="henkaten">
+                                    <label class="form-check-label" for="manHenkatenRadio">
+                                        <span class="d-none d-md-block">
+                                            HENKATEN
+                                        </span>
+                                    </label>
+                                </div>
+                            </label>
+                            <label class="btn btn-light-primary text-primary font-medium">
+                                <div class="form-check">
+                                    <input type="radio" id="manStopRadio" class="other-radio form-check-input"
+                                        name="manStatus" value="stop">
+                                    <label class="form-check-label" for="manStopRadio">
+                                        <span class="d-none d-md-block">
+                                            STOP
+                                        </span>
+                                    </label>
+                                </div>
+                            </label>
+                        </div>
                         @foreach ($activeEmployees as $emp)
-                            <div class="row">
+                            <div class="row mt-5">
                                 <div class="col-lg-1">
                                     <label for="exampleInputPassword1" class="form-label fw-semibold"
                                         style="color: white">Pos</label>
@@ -272,8 +296,12 @@
                                     <div class="mb-4">
                                         <label for="exampleInputPassword1" class="form-label fw-semibold">Current
                                             Employee</label>
-                                        <input type="text" class="form-control" id="exampleInputtext"
-                                            placeholder="John" value="{{ $emp->employee->name }}" disabled>
+                                        <input type="text" class="form-control" id="employeeBefore"
+                                            name="employeeBefore[]" placeholder="John"
+                                            value="{{ $emp->employee->name }}" disabled>
+
+                                        <input type="hidden" class="form-control employeeBefore" name="employeeBefore[]"
+                                            placeholder="John" value="{{ $emp->employee->id }}" disabled>
                                     </div>
                                 </div>
                                 <div class="col-lg-1">
@@ -287,8 +315,8 @@
                                             Employee</label>
                                         <select class="select2 form-select select2-hidden-accessible employeeReplacement"
                                             style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
-                                            name="employeeReplacement[]" required>
-                                            <option>Select Employee</option>
+                                            name="employeeReplacement" required>
+                                            <option value="0">Select Employee</option>
                                             @foreach ($employees as $employee)
                                                 <option value="{{ $employee->id }}">{{ $employee->name }}</option>
                                             @endforeach
@@ -300,18 +328,18 @@
                         <div class="form-group mt-3 mb-3 description" style="display: none;">
                             <label>Problem</label>
                             <input class="form-control" rows="3" placeholder="Problem..." name="problem"
-                                id="{{ $modal['modalId'] }}Problem" required>
+                                id="manProblem" disabled required>
                             </input>
                         </div>
                         <div class="form-group mt-3 mb-3 description" style="display: none;">
                             <label>Description</label>
-                            <textarea class="form-control" rows="3" placeholder="Description" name="description"
-                                id="{{ $modal['modalId'] }}Description" required>
-                                </textarea>
+                            <textarea class="form-control" rows="3" placeholder="Description" name="description" id="manDescription"
+                                disabled required>
+                            </textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" id="submit">Save
+                        <button type="button" class="btn btn-secondary" id="manModalSubmit2">Save
                             changes</button>
                         <button type="button"
                             class="btn btn-light-danger text-danger font-medium waves-effect text-start"
@@ -335,7 +363,7 @@
                         <i class="ti ti-hexagon-letter-x fs-7"></i>
                         <h4 class="mt-2">Oh snap!</h4>
                         <p class="mt-3">
-                            Create Employee Planning First
+                            Create Employee Planning First!
                         </p>
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         <a href="{{ route('employeePlanning.index') }}" type="button"
@@ -473,6 +501,26 @@
                             </div>
                         </div>
                     @endforeach
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <img src="{{ asset('uploads/doc/' . $activePic->employee->photo) }}" class="rounded-1"
+                                    width="100" height="100">
+                                <div class="mt-n2">
+                                    <span
+                                        class="badge bg-{{ $color }}">{{ strtoupper($activePic->employee->role) }}</span>
+                                    <h3 class="card-title mt-3">{{ ucwords($activePic->employee->name) }}</h3>
+                                    <h6 class="card-subtitle">{{ $activePic->employee->npk }}</h6>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-12">
+                                        <button class="btn btn-dark" style="width: 100% !important">
+                                            {{ strtoupper('pic') }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 @else
                     <div class="col-lg-12 col-sm-12 mt-3" id="firstPicContainer">
                         <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#firstPicModal"
@@ -855,6 +903,69 @@
             });
         })
 
+        // man on submit
+        $('#manModalSubmit2').on('click', function() {
+
+            let employeeReplacement = [];
+            let employeeBefore = [];
+
+            $('.employeeBefore').each(function() {
+                // Get the value of each input and push it to the array
+                let value = $(this).val();
+                employeeBefore.push(value);
+            });
+
+            // Iterate through each element with the class employeeReplacement
+            $('.employeeReplacement').each(function() {
+                // Get the value of each input and push it to the array
+                let value = $(this).val();
+                employeeReplacement.push(value);
+            });
+
+            let status = labelText;
+            let lineId = getLineId();
+            let description = $('#manDescription').val().trim();
+            let problem = $('#manProblem').val().trim();
+
+            if (!status) {
+                notif('error', 'Isi Status terlebih dahulu!');
+                return false;
+            }
+
+            if (status !== 'running' && problem == 0) {
+                notif('error', 'Isi problem terlebih dahulu!');
+            }
+
+            if (status !== 'running' && description == 0) {
+                notif('error', 'Isi deskripsi terlebih dahulu!');
+                return false;
+            }
+
+            $.ajax({
+                type: 'get',
+                url: `{{ url('dashboard/storeManHenkaten/${employeeBefore}/${employeeReplacement}/${status.toLowerCase().trim()}/${lineId}/${problem}/${description}') }}`,
+                _token: "{{ csrf_token() }}",
+                dataType: 'json',
+                success: function(data) {
+                    if (data.status == 'success') {
+                        window.location.reload();
+                        setInterval(() => {
+                            notif('success', data.message)
+                        }, 5000);
+                    } else {
+                        notif('error', data.message);
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status == 0) {
+                        notif("error", 'Connection Error');
+                        return;
+                    }
+                    notif("error", 'Internal Server Error');
+                }
+            });
+        })
+
         // material on submit
         $('#materialModalSubmit').on('click', function() {
             let table = 'material';
@@ -908,58 +1019,6 @@
             });
         })
 
-        // man on submit
-        $('#manModalSubmit').on('click', function() {
-            let table = 'man';
-            let status = labelText;
-            let lineId = getLineId();
-            let pic = $('#manModalPicSelect').val();
-            let description = $('#manModalDescription').val();
-            let problem = $('#manModalProblem').val();
-
-            if (!status) {
-                notif('error', 'Isi Status terlebih dahulu!');
-                return false;
-            }
-
-            if (status !== 'running' && pic == 0) {
-                notif('error', 'Isi PIC terlebih dahulu!');
-                return false;
-            }
-
-            if (status !== 'running' && description == 0) {
-                notif('error', 'Isi deskripsi terlebih dahulu!');
-                return false;
-            }
-
-            if (status !== 'running' && problem == 0) {
-                notif('error', 'Isi problem terlebih dahulu!');
-            }
-
-            $.ajax({
-                type: 'get',
-                url: `{{ url('dashboard/storeHenkaten/${table}/${status.toLowerCase().trim()}/${lineId}/${pic}/${problem}/${description}') }}`,
-                _token: "{{ csrf_token() }}",
-                dataType: 'json',
-                success: function(data) {
-                    if (data.status == 'success') {
-                        window.location.reload();
-                        setInterval(() => {
-                            notif('success', data.message)
-                        }, 5000);
-                    } else {
-                        notif('error', data.message);
-                    }
-                },
-                error: function(xhr) {
-                    if (xhr.status == 0) {
-                        notif("error", 'Connection Error');
-                        return;
-                    }
-                    notif("error", 'Internal Server Error');
-                }
-            });
-        })
 
         $('input[type="checkbox"]').each(function(index) {
             let checkbox = $(this);
@@ -1009,6 +1068,28 @@
 
         $('.employeeReplacement').select2({
             dropdownParent: $('#manOnlyModal')
+        });
+
+        $('.employeeReplacement').on('change', function() {
+            // Recalculate the count of elements with value 0
+            let countZero = $('.employeeReplacement').filter(function() {
+                return $(this).val() === '0';
+            }).length;
+
+            // Check the count and disable or enable accordingly
+            if (countZero === 2) {
+                $('#manProblem').attr('disabled', 'disabled');
+                $('#manDescription').attr('disabled', 'disabled');
+            } else {
+                $('#manProblem').removeAttr('disabled');
+                $('#manDescription').removeAttr('disabled');
+            }
+        });
+
+        // Push the initial values to the array
+        $('.employeeReplacement').each(function() {
+            let value = $(this).val();
+            employeeReplacement.push(value);
         });
     });
 </script>

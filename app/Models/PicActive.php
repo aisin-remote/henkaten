@@ -14,4 +14,14 @@ class PicActive extends Model
     protected $table = 'pic_active';
 
     protected $guarded = ['id'];
+
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
 }

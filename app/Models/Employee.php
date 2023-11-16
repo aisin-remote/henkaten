@@ -29,4 +29,9 @@ class Employee extends Model
     {
         return $this->hasMany(EmployeeActive::class);
     }
+
+    public function picActive()
+    {
+        return $this->hasMany(PicActive::class);
+    }
 }

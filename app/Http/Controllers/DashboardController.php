@@ -8,6 +8,7 @@ use App\Models\Pivot;
 use App\Models\Shift;
 use App\Models\Theme;
 use App\Models\Employee;
+use App\Models\PicActive;
 use App\Models\HenkatenMan;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -49,6 +50,7 @@ class DashboardController extends Controller
                 'status' => $item->status,
                 'status_after' => $item->status_after,
                 'problem' => $item->henkaten_problem,
+                'line' => $item->line->name,
                 'description' => $item->henkaten_description,
                 'troubleshoot' => $troubleshoot
             ];
@@ -208,6 +210,18 @@ class DashboardController extends Controller
             })
             ->get();
 
+        // get active pic
+        $activePic = PicActive::with('shift')
+            ->with('employee')
+            ->where('active_from', '<=', $currentDate)
+            ->where('expired_at', '>=', $currentDate)
+            ->where('line_id', $lineId->id)
+            ->whereHas('shift', function ($query) use ($currentTime) {
+                $query->where('time_start', '<=', $currentTime)
+                    ->where('time_end', '>=', $currentTime);
+            })
+            ->first();
+
         // Merge the data and add the type field
         $combinedData = [];
 
@@ -273,6 +287,7 @@ class DashboardController extends Controller
             'line' => Line::findOrFail($lineId->id),
             'employees' => Employee::all(),
             'activeEmployees' => $activeEmployees,
+            'activePic' => $activePic,
             'histories' => $combinedData,
             'methodHistory' => HenkatenMethod::where('line_id', $lineId->id)->get(),
             'machineHistory' => HenkatenMachine::where('line_id', $lineId->id)->get(),

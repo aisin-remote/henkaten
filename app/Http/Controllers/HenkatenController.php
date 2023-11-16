@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Line;
 use App\Models\Shift;
+use App\Models\HenkatenMan;
 use Illuminate\Http\Request;
 use App\Models\HenkatenMethod;
 use App\Models\HenkatenMachine;
@@ -105,9 +106,74 @@ class HenkatenController extends Controller
         }
     }
 
-    public function insertManHenkaten()
+    public function storeManHenkaten($before, $after, $status, $lineId, $problem, $description)
     {
+        // map employee before and after
+        $employeesBefore = explode(',', $before);
+        $employeesAfter = explode(',', $after);
+
+        $flag = 2;
+        foreach ($employeesAfter as $employee){
+            if ($employee == '0'){
+                $flag--;
+            }
+        }
         
+        // if employee after is empty
+        if($flag == 0){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Masukkan karyawan pengganti!'
+            ]);
+        }
+
+        $currentTime = Carbon::now();
+        $shifts = Shift::all();
+        $shiftId = null;
+
+        foreach ($shifts as $shift) {
+            if ($currentTime->between($shift->time_start, $shift->time_end)) {
+                $shiftId = $shift->id;
+                break;
+            }
+        }
+        
+        // insert into henkaten man table
+        try {
+            DB::beginTransaction();
+            
+            for($i= 0; $i<2; $i++) {
+                if($employeesAfter[$i] !== '0' ){
+                    HenkatenMan::create([
+                        'employee_before_id' => $employeesBefore[$i],
+                        'employee_after_id' => $employeesAfter[$i],
+                        'shift_id' => $shiftId,
+                        'line_id' => $lineId,
+                        'status' => $status,
+                        'henkaten_problem' => $problem,
+                        'henkaten_description' => $description,
+                        'date' => Carbon::now()->format('Y-m-d H:i:s'),
+                    ]);
+                }
+            }
+
+            // insert into line table
+            Line::where('id', $lineId)->update([
+                'status_man' => $status
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data berhasil disimpan!'
+            ],200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ]);
+        }
     }
 
     public function troubleshootHenkaten(Request $request)

@@ -167,6 +167,7 @@ class EmployeeController extends Controller
             for ($i = 0; $i < count($pics); $i++) {
                 PicActive::create([
                     'employee_id' => $pics[$i],
+                    'shift_id' => $request->shift,
                     'line_id' => $request->line,
                     'active_from' => $request->active_from,
                     'expired_at' => $endDate
