@@ -30,8 +30,16 @@ class EmployeeController extends Controller
             ->whereBetween('active_from', [$firstDay, $lastDay])
             ->get();
 
+        $allSkills = Skill::select('id', 'name', 'level')->get();
+        $nameSkills = Skill::select('name')->groupBy('name')->get();
+        $empSkills = EmployeeSkill::select()->get();
+
         return view('pages.website.employees', [
-            'employees' => $activeEmployees
+            'skills' => Skill::select('name')->groupBy('name')->get(),
+            'employees' => $activeEmployees,
+            'allSkills' => $allSkills,
+            'empSkills' => $empSkills,
+            'nameSkills' => $nameSkills
         ]);
     }
 

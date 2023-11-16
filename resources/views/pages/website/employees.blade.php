@@ -93,7 +93,15 @@
                                     <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
                                         <div class="ms-2 text-start">
                                             <h6 class="fw-normal text-muted mb-2">Skill</h6>
-
+                                            @foreach ($skills as $skill)
+                                            @php
+                                            $employeeSkillIds = $empSkills->where('employee_id', $emp->employee_id)->pluck('skill_id')->all();
+                                            $employeeSkills = $allSkills->whereIn('id', $employeeSkillIds);
+                                            @endphp
+                                            @endforeach
+                                            @foreach ($employeeSkills as $skill)
+                                            <h4 class="mb-0 fs-5">{{ $skill->name }}</h4>
+                                            @endforeach
                                         </div>
                                     </div>
                                 </div>
@@ -101,7 +109,13 @@
                                     <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
                                         <div class="ms-2 text-start">
                                             <h6 class="fw-normal text-muted mb-2">Level</h6>
-
+                                            @foreach ($employeeSkills as $skill)
+                                            <div class="progress mb-2" style="height: 15px; width: 10vw">
+                                                <div class="progress-bar" role="progressbar" style="width: {{ $skill->level * 20 }}%;" aria-valuenow="{{ $skill->level }}" aria-valuemin="0" aria-valuemax="5">
+                                                    {{ $skill->level }}
+                                                </div>
+                                            </div>
+                                            @endforeach
                                         </div>
                                     </div>
                                 </div>
