@@ -15,7 +15,7 @@
                 <strong>Error - </strong> {{ session('error') }}
             </div>
         @endif
-        <div class="card shadow">
+        <div class="card shadow" id="addMinimumSkillCard" style="display: none">
             <div class="border-bottom title-part-padding">
                 <h3 class="card-title mb-0">Set Minimum Requirement Skill</h3>
             </div>
@@ -69,25 +69,24 @@
                             </div>
                         </div>
                     </div>
+                    <button type="button" data-repeater-create="" class="btn btn-info waves-effect waves-light mb-3"
+                        id="addSkill">
+                        <div class="d-flex align-items-center">
+                            Add Skill
+                            <i class="ti ti-circle-plus ms-1 fs-5"></i>
+                        </div>
+                    </button>
+                    <div class="mb-3">
+                        <button
+                            class="btn rounded-pill px-4 btn-success text-light font-weight-medium waves-effect waves-light submit-skill"
+                            type="submit">
+                            <i class="ti ti-send fs-5"></i>
+                            Submit
+                        </button>
+                    </div>
                 </form>
             </div>
-            <button type="button" data-repeater-create="" class="btn btn-info waves-effect waves-light mb-3"
-                id="addSkill">
-                <div class="d-flex align-items-center">
-                    Add Skill
-                    <i class="ti ti-circle-plus ms-1 fs-5"></i>
-                </div>
-            </button>
-            <div class="mb-3">
-                <button class="btn rounded-pill px-4 btn-success text-light font-weight-medium waves-effect waves-light"
-                    type="submit">
-                    <i class="ti ti-send fs-5"></i>
-                    Submit
-                </button>
-            </div>
-            </form>
         </div>
-    </div>
     </div>
 
     <div class="row">
@@ -101,20 +100,14 @@
                     </div>
                     <div class="col-2 text-end">
                         <button type="button" data-repeater-create="" class="btn btn-info waves-effect waves-light mb-3"
-                            id="addSkill">
+                            id="addMinimumSkill">
                             <div class="d-flex align-items-center">
-                                Add Skill
-                                <i class="ti ti-circle-plus ms-1 fs-5"></i>
+                                <span class="rounded-3 pe-2" id="icon">
+                                    <i class="ti ti-plus"></i>
+                                </span>
+                                Add Minimum Skill
                             </div>
                         </button>
-                        <div class="mb-3">
-                            <button
-                                class="btn rounded-pill px-4 btn-success text-light font-weight-medium waves-effect waves-light submit-skill"
-                                type="submit">
-                                <i class="ti ti-send fs-5"></i>
-                                Submit
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -167,6 +160,12 @@
     }
 
     $(document).ready(function() {
+        // initialize datatable
+        $('#masterSkill').DataTable({
+            scrollX: true,
+            order: [],
+        });
+
         $('#addSkill').on('click', function() {
             var newRow = `<div class="row mb-3">
                             <div class="col-lg-3 col-sm-12">
@@ -260,5 +259,12 @@
                 $(this).closest('.row.mb-3').remove();
             }
         });
+
+        $('#addMinimumSkill').on('click', function() {
+            $("#addMinimumSkillCard").toggle();
+
+            $("#icon").html($("#addMinimumSkillCard").is(":visible") ? '<i class="ti ti-minus"></i>' :
+                '<i class="ti ti-plus"></i>');
+        })
     });
 </script>
