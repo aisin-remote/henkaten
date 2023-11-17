@@ -1060,23 +1060,6 @@
             $('#secondPic').attr('data-bs-target', '#secondPicModal');
         });
 
-        function updateThemeStatus() {
-            var currentDate = new Date();
-            var endOfDay = new Date();
-
-            // Set the time to 23:59:00
-            endOfDay.setHours(23, 59, 59);
-
-            // Check if the current time is greater than the end of the day
-            if (currentDate > endOfDay) {
-                // reload the page
-                location.reload();
-            }
-        }
-
-        // Run the updateThemeStatus function every minute (adjust the interval as needed)
-        setInterval(updateThemeStatus, 60000); // 60000 milliseconds = 1 minute
-
         $('.dc-card').on('click', function() {
             let idCard = $(this).attr('id');
             window.location.replace(`{{ url('/dashboard/${idCard}') }}`);

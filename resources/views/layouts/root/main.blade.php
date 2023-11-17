@@ -231,6 +231,71 @@
 
         // Optional: Auto-rotate the carousel
         setInterval(nextItem, 3000); // Uncomment this line to auto-rotate every 3 seconds
+
+        function refreshPage() {
+            location.reload(true); // Reload the page with a hard refresh
+        }
+
+        // Function to calculate the time until the next refresh
+        function timeUntilNextRefresh(hours, minutes, seconds) {
+            var now = new Date();
+            var targetTime = new Date();
+
+            // Set the target time
+            targetTime.setHours(hours, minutes, seconds, 0);
+
+            // Calculate the time difference
+            var timeDiff = targetTime - now;
+
+            // If the target time has already passed for today, set it for tomorrow
+            if (timeDiff <= 0) {
+                targetTime.setDate(targetTime.getDate() + 1);
+                timeDiff = targetTime - now;
+            }
+
+            // Return the time difference in milliseconds
+            return timeDiff;
+        }
+
+        // Function to schedule the refresh based on the specified times
+        function scheduleRefresh() {
+            var now = new Date();
+            var nextRefreshTime;
+
+            // Define the refresh times (24-hour format)
+            var refreshTimes = [{
+                    hours: 14,
+                    minutes: 10,
+                    seconds: 0
+                },
+                {
+                    hours: 22,
+                    minutes: 10,
+                    seconds: 0
+                },
+                {
+                    hours: 6,
+                    minutes: 0,
+                    seconds: 0
+                }
+            ];
+
+            // Find the next refresh time
+            for (var i = 0; i < refreshTimes.length; i++) {
+                var timeDiff = timeUntilNextRefresh(refreshTimes[i].hours, refreshTimes[i].minutes, refreshTimes[i]
+                    .seconds);
+
+                if (nextRefreshTime === undefined || timeDiff < nextRefreshTime) {
+                    nextRefreshTime = timeDiff;
+                }
+            }
+
+            // Schedule the refresh
+            setTimeout(refreshPage, nextRefreshTime);
+        }
+
+        // Initial schedule
+        scheduleRefresh();
     </script>
 </body>
 
