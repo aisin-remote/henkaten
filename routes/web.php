@@ -22,7 +22,7 @@ use App\Http\Controllers\DashboardController;
 |
 */
 
-Route::middleware(['guest'])->group(function (){
+Route::middleware(['guest'])->group(function () {
     Route::get('/', function () {
         return view('pages.auth.login');
     });
@@ -32,17 +32,16 @@ Route::middleware(['guest'])->group(function (){
 
     Route::get('/register', [RegisterController::class, 'index'])->name('register.index');
     Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
-
 });
 
 Route::middleware(['auth'])->group(function () {
     // default routes
     Route::get('/', [DashboardController::class, 'index']);
-    
+
     // dashboard
     Route::get('/lineDashboard', [DashboardController::class, 'indexLine'])->name('dashboard.indexLine');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-    Route::prefix('dashboard')->group(function(){
+    Route::prefix('dashboard')->group(function () {
         Route::get('{lineId}', [DashboardController::class, 'dashboardLine'])->name('dashboard.line');
         Route::get('selectTheme/{theme}', [DashboardController::class, 'selectTheme'])->name('dashboard.theme');
         Route::get('selectFirstPic/{id}', [DashboardController::class, 'selectFirstPic'])->name('dashboard.firstPic');
@@ -55,24 +54,26 @@ Route::middleware(['auth'])->group(function () {
 
     // employees 
     Route::get('/employee', [EmployeeController::class, 'index'])->name('employee.index');
-    Route::prefix('/employee')->group(function(){
+    Route::prefix('/employee')->group(function () {
         // regist employees
-        Route::post('/store', [EmployeeController::class, 'employeeStore'])->name('employee.store');  
-    
+        Route::post('/store', [EmployeeController::class, 'employeeStore'])->name('employee.store');
+
         // planning employees
-        Route::get('/planning', [EmployeeController::class, 'employeePlanning'])->name('employeePlanning.index');  
+        Route::get('/planning', [EmployeeController::class, 'employeePlanning'])->name('employeePlanning.index');
         Route::post('/planning/store', [EmployeeController::class, 'employeePlanningStore'])->name('employeePlanning.store');
-    
+
         // get employee skill from employee
-        Route::get('/getSkillEmp', [EmployeeController::class, 'getSkillEmp'])->name('employee.getSkillEmp');  
-        Route::get('/getSkillPos', [EmployeeController::class, 'getSkillPos'])->name('employee.getSkillPos');  
-        
+        Route::get('/getSkillEmp', [EmployeeController::class, 'getSkillEmp'])->name('employee.getSkillEmp');
+        Route::get('/getSkillPos', [EmployeeController::class, 'getSkillPos'])->name('employee.getSkillPos');
+
         // edit employees
         Route::get('/{id}/edit', [EmployeeController::class, 'employeeEdit'])->name('editEmployee');
         Route::post('/{id}/update', [EmployeeController::class, 'employeeUpdate'])->name('employee.update');
 
         Route::get('/{id}/detail', [EmployeeController::class, 'employeeDetail'])->name('detailEmployee');
-    });    
+
+        Route::delete('/{id}', [EmployeeController::class, 'destroy'])->name('employee.destroy');
+    });
 
     // regist employee skill
     Route::get('/skill', [skillController::class, 'index'])->name('skill.index');
@@ -87,9 +88,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/mappingAllLine', function () {
         return view('welcome');
-    }); 
-    
+    });
+
     // logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout.auth');
 });
-

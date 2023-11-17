@@ -105,7 +105,7 @@ class EmployeeController extends Controller
         $allSkills = Skill::select('id', 'name', 'level')->get();
         $nameSkills = Skill::select('name')->groupBy('name')->get();
         $empSkills = EmployeeSkill::select()->get();
-        
+
         return view('pages.website.planning', [
             'employees' => Employee::select('id', 'name')
                 ->whereIn('role', ['Operator', 'JP'])
@@ -321,5 +321,18 @@ class EmployeeController extends Controller
 
         // Mengirim data karyawan ke view edit
         return view('pages.website.detailEmployee', compact('employee', 'skills', 'allSkills', 'nameSkills'));
+    }
+
+    public function destroy($id)
+    {
+        if (request()->isMethod('delete')) {
+            $employee = Employee::findOrFail($id);
+            $employee->delete();
+
+            return redirect('/employee')->with('success', 'Employee deleted successfully!');
+        } else {
+            // Handle unsupported methods
+            return response()->json(['error' => 'Method not allowed'], 405);
+        }
     }
 }
