@@ -277,7 +277,7 @@
                     if (data.status == 'success') {
                         let minimumSkills = data.data;
                         minimumSkillCount = minimumSkills.length
-                        console.log(minimumSkills);
+                        console.log(minimumSkillCount);
                         if (minimumSkillCount == 0) {
                             console.log('test1')
                             flag++;
