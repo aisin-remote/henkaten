@@ -157,7 +157,7 @@
                             <th>Shift</th>
                             <th>Pos</th>
                             <th>role</th>
-                            <th>Active Date</th>
+                            <th>Planning Date</th>
                             {{-- <th>Henkaten History</th> --}}
                             <th class="text-center">Action</th>
                         </tr>
