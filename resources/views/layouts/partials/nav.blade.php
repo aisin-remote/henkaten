@@ -37,14 +37,14 @@
                 <!-- =================== -->
                 <!-- Tabler Icon -->
                 <!-- =================== -->
-                <li class="sidebar-item">
+                {{-- <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link" href="/employee" aria-expanded="false">
                         <span class="rounded-3">
                             <i class="ti ti-users"></i>
                         </span>
                         <span class="hide-menu">Active Employee</span>
                     </a>
-                </li>
+                </li> --}}
                 <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link" href="/employee/planning" aria-expanded="false">
                         <span class="rounded-3">
@@ -62,7 +62,7 @@
                     </a>
                     <ul aria-expanded="false" class="collapse first-level">
                         <li class="sidebar-item">
-                            <a href="/employee/register" class="sidebar-link">
+                            <a href="/employee" class="sidebar-link">
                                 <i class="ti ti-user"></i>
                                 <span class="hide-menu">Employee</span>
                             </a>

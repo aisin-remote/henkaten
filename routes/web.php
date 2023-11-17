@@ -57,7 +57,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/employee', [EmployeeController::class, 'index'])->name('employee.index');
     Route::prefix('/employee')->group(function(){
         // regist employees
-        Route::get('/register', [EmployeeController::class, 'employeeRegister'])->name('employeeRegister.index');  
         Route::post('/store', [EmployeeController::class, 'employeeStore'])->name('employee.store');  
     
         // planning employees

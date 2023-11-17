@@ -18,33 +18,6 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-        // get current date
-        $currentDate = Carbon::now();
-        $firstDay = $currentDate->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
-        $lastDay = $currentDate->endOfWeek(Carbon::SUNDAY)->format('Y-m-d');
-
-        // get active employee at this period of time (this week)
-        $activeEmployees = EmployeeActive::with('shift')
-            ->with('employee')
-            ->with('line')
-            ->whereBetween('active_from', [$firstDay, $lastDay])
-            ->get();
-
-        $allSkills = Skill::select('id', 'name', 'level')->get();
-        $nameSkills = Skill::select('name')->groupBy('name')->get();
-        $empSkills = EmployeeSkill::select()->get();
-
-        return view('pages.website.employees', [
-            'skills' => Skill::select('name')->groupBy('name')->get(),
-            'employees' => $activeEmployees,
-            'allSkills' => $allSkills,
-            'empSkills' => $empSkills,
-            'nameSkills' => $nameSkills
-        ]);
-    }
-
-    public function employeeRegister()
-    {
         $masterEmployees = Employee::select('id', 'name', 'npk', 'role', 'status', 'photo')
             ->get();
 
@@ -117,6 +90,22 @@ class EmployeeController extends Controller
 
     public function employeePlanning()
     {
+        // get current date
+        $currentDate = Carbon::now();
+        $firstDay = $currentDate->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
+        $lastDay = $currentDate->endOfWeek(Carbon::SUNDAY)->format('Y-m-d');
+
+        // get active employee at this period of time (this week)
+        $activeEmployees = EmployeeActive::with('shift')
+            ->with('employee')
+            ->with('line')
+            ->whereBetween('active_from', [$firstDay, $lastDay])
+            ->get();
+
+        $allSkills = Skill::select('id', 'name', 'level')->get();
+        $nameSkills = Skill::select('name')->groupBy('name')->get();
+        $empSkills = EmployeeSkill::select()->get();
+        
         return view('pages.website.planning', [
             'employees' => Employee::select('id', 'name')
                 ->whereIn('role', ['Operator', 'JP'])
@@ -125,7 +114,13 @@ class EmployeeController extends Controller
                 ->whereNotIn('role', ['Operator', 'JP'])
                 ->get(),
             'shifts' => Shift::select('id', 'name')->get(),
-            'lines' => Line::select('id', 'name')->get()
+            'lines' => Line::select('id', 'name')->get(),
+
+            'skills' => Skill::select('name')->groupBy('name')->get(),
+            'activeEmployees' => $activeEmployees,
+            'allSkills' => $allSkills,
+            'empSkills' => $empSkills,
+            'nameSkills' => $nameSkills
         ]);
     }
 

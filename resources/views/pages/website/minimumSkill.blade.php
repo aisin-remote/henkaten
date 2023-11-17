@@ -90,7 +90,7 @@
     </div>
 
     <div class="row">
-        <div class="card shadow">
+        <div class="card shadow p-3">
             <div class="card-header" style="background-color: white !important">
                 <div class="row">
                     <div class="col-10">
@@ -140,6 +140,11 @@
                                     <a class="btn btn-warning" href="{{ route('minimumSkill.edit', $minimumSkill->id) }}">
                                         <span class="rounded-3" id="icon">
                                             <i class="ti ti-pencil"></i>
+                                        </span>
+                                    </a>
+                                    <a class="btn btn-danger" href="#">
+                                        <span class="rounded-3" id="icon">
+                                            <i class="ti ti-x"></i>
                                         </span>
                                     </a>
                                 </td>
