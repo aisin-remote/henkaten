@@ -26,6 +26,7 @@ class skillController extends Controller
     public function minimumIndex()
     {
         return view('pages.website.minimumSkill', [
+            'minimumSkills' => MinimumSkill::all(),
             'skills' => Skill::selectRaw('MAX(id) as id, name')->groupBy('name')->get(),
             'lines' => Line::all()
         ]);

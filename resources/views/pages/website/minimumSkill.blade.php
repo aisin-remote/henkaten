@@ -69,22 +69,83 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" data-repeater-create="" class="btn btn-info waves-effect waves-light mb-3"
-                        id="addSkill">
-                        <div class="d-flex align-items-center">
-                            Add Skill
-                            <i class="ti ti-circle-plus ms-1 fs-5"></i>
-                        </div>
-                    </button>
-                    <div class="mb-3">
-                        <button
-                            class="btn rounded-pill px-4 btn-success text-light font-weight-medium waves-effect waves-light submit-skill"
-                            type="submit">
-                            <i class="ti ti-send fs-5"></i>
-                            Submit
-                        </button>
-                    </div>
                 </form>
+            </div>
+            <button type="button" data-repeater-create="" class="btn btn-info waves-effect waves-light mb-3"
+                id="addSkill">
+                <div class="d-flex align-items-center">
+                    Add Skill
+                    <i class="ti ti-circle-plus ms-1 fs-5"></i>
+                </div>
+            </button>
+            <div class="mb-3">
+                <button class="btn rounded-pill px-4 btn-success text-light font-weight-medium waves-effect waves-light"
+                    type="submit">
+                    <i class="ti ti-send fs-5"></i>
+                    Submit
+                </button>
+            </div>
+            </form>
+        </div>
+    </div>
+    </div>
+
+    <div class="row">
+        <div class="card shadow">
+            <div class="card-header" style="background-color: white !important">
+                <div class="row">
+                    <div class="col-10">
+                        <h4 class="fw-4">
+                            Minimum Requirement Skill
+                        </h4>
+                    </div>
+                    <div class="col-2 text-end">
+                        <button type="button" data-repeater-create="" class="btn btn-info waves-effect waves-light mb-3"
+                            id="addSkill">
+                            <div class="d-flex align-items-center">
+                                Add Skill
+                                <i class="ti ti-circle-plus ms-1 fs-5"></i>
+                            </div>
+                        </button>
+                        <div class="mb-3">
+                            <button
+                                class="btn rounded-pill px-4 btn-success text-light font-weight-medium waves-effect waves-light submit-skill"
+                                type="submit">
+                                <i class="ti ti-send fs-5"></i>
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-3">
+                <table class="table text-nowrap align-middle mb-0" id="masterSkill" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Line</th>
+                            <th>Pos</th>
+                            <th>Skill</th>
+                            <th>Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($minimumSkills as $minimumSkill)
+                            @php
+                                $lineName = $line
+                                    ->where('id', $minimumSkill->line_id)
+                                    ->pluck('name')
+                                    ->first();
+                                $skill = $skill->where('id', $minimumSkill->skill_id)->first();
+                            @endphp
+                            <tr>
+                                <td>{{ $lineName }}</td>
+                                <td>{{ $minimumSkill->pos }}</td>
+                                <td>{{ $skill->name }}</td>
+                                <td>{{ $skill->level }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
