@@ -119,6 +119,7 @@
                             <th>Pos</th>
                             <th>Skill</th>
                             <th>Level</th>
+                            <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -135,6 +136,13 @@
                                 <td>{{ $minimumSkill->pos }}</td>
                                 <td>{{ $skill->name }}</td>
                                 <td>{{ $skill->level }}</td>
+                                <td class="text-center">
+                                    <a class="btn btn-warning" href="{{ route('minimumSkill.edit', $minimumSkill->id) }}">
+                                        <span class="rounded-3" id="icon">
+                                            <i class="ti ti-pencil"></i>
+                                        </span>
+                                    </a>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
