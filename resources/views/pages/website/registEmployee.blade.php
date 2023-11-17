@@ -341,7 +341,7 @@
 
             if (confirm('Are you sure you want to delete this employee?')) {
                 $.ajax({
-                    url: '{{ url(' / employee / ') }}/' + employeeId,
+                    url: '/employee/' + employeeId,
                     type: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -350,7 +350,8 @@
                         // Handle success, e.g., redirect or update UI
                         window.location.reload();
                     },
-                    error: function(xhr, textStatus, errorThrown) {
+                    error: function(error) {
+                        console.error('Error deleting employee:', error);
                         window.location.reload();
                         // Handle error, e.g., show error message
                     }
