@@ -17,8 +17,8 @@ class skillController extends Controller
         $masterSkills = Skill::select('name', DB::raw('GROUP_CONCAT(level) as levels'))
             ->groupBy('name')
             ->get();
-            
-        return view('pages.website.registSkill',[
+
+        return view('pages.website.registSkill', [
             'masterSkill' => $masterSkills
         ]);
     }
@@ -89,6 +89,46 @@ class skillController extends Controller
             DB::commit();
 
             return redirect()->back()->with('success', 'Minimum skill berhasil ditambah!');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
+    public function minimumRegistEdit($id)
+    {
+        $minimumSkill = MinimumSkill::find($id);
+        $lines = Line::all();
+        $skills = Skill::selectRaw('MAX(id) as id, name')->groupBy('name')->get();
+        $skillName = Skill::all();
+
+        return view('pages.website.editMinimumSkill', compact('minimumSkill', 'lines', 'skills', 'skillName'));
+    }
+
+    public function minimumRegistUpdate(Request $request, $id)
+    {
+        $skills = [];
+
+        for ($i = 0; $i < count($request->skill); $i++) {
+            $skillId = Skill::select('id')
+                ->where('name', $request->skill[$i])
+                ->where('level', $request->level[$i])
+                ->first();
+            array_push($skills, $skillId->id);
+        }
+
+        try {
+            DB::beginTransaction();
+            for ($i = 0; $i < count($request->skill); $i++) {
+                MinimumSkill::where('id', $id)->update([
+                    'skill_id' => $skills[$i],
+                    'pos' => $request->pos[$i],
+                    'line_id' => $request->line[$i],
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect('skill/minimum')->with('success', 'Minimum skill berhasil diubah!');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
         }
