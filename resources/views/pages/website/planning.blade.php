@@ -304,10 +304,12 @@
                         });
 
                         if (flag !== 0) {
+                            console.log('test1')
                             localStorage.setItem('pass', false)
                             $(".submit-planning").prop("disabled", true);
                             notif('error', 'Skill tidak memenuhi kriteria pos!')
                         } else {
+                            console.log('test2')
                             localStorage.setItem('pass', true)
                             $(".submit-planning").removeAttr("disabled");
                             notif('success', 'Skill memenuhi kriteria pos!')
