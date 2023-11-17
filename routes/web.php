@@ -79,6 +79,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/skill', [skillController::class, 'index'])->name('skill.index');
     Route::prefix('/skill')->group(function () {
         Route::post('/regist', [skillController::class, 'regist'])->name('skill.regist');
+        Route::get('/checkSkill', [skillController::class, 'checkSkill'])->name('skill.checkSkill');
         Route::get('/minimum', [skillController::class, 'minimumIndex'])->name('skill.minimum.index');
         Route::post('/minimumRegist', [skillController::class, 'minimumRegist'])->name('skill.minimum.regist');
     });

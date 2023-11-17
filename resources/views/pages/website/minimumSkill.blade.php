@@ -26,7 +26,7 @@
                     <div class="repeater-container">
                         <div class="row mb-3">
                             <div class="col-lg-3 col-sm-12">
-                                <select class="select2 form-select select2-hidden-accessible"
+                                <select class="select2 form-select select2-hidden-accessible line"
                                     style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" name="line[]">
                                     <option>-- select line --</option>
                                     @foreach ($lines as $line)
@@ -35,7 +35,7 @@
                                 </select>
                             </div>
                             <div class="col-lg-2 col-sm-12">
-                                <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="pos[]">
+                                <select class="form-select mr-sm-2 pos" id="inlineFormCustomSelect" name="pos[]">
                                     <option selected>-- select pos --</option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
@@ -43,7 +43,7 @@
                                 </select>
                             </div>
                             <div class="col-lg-3 col-sm-12">
-                                <select class="select2 form-select select2-hidden-accessible"
+                                <select class="select2 form-select select2-hidden-accessible skill"
                                     style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" name="skill[]">
                                     <option>-- select skill --</option>
                                     @foreach ($skills as $skill)
@@ -78,7 +78,7 @@
                     </button>
                     <div class="mb-3">
                         <button
-                            class="btn rounded-pill px-4 btn-success text-light font-weight-medium waves-effect waves-light"
+                            class="btn rounded-pill px-4 btn-success text-light font-weight-medium waves-effect waves-light submit-skill"
                             type="submit">
                             <i class="ti ti-send fs-5"></i>
                             Submit
@@ -92,11 +92,24 @@
 <script src="https://code.jquery.com/jquery-3.6.3.min.js"
     integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script>
+    // toast
+    function notif(status, message) {
+        if (status == 'success') {
+            toastr.success(message, "Success!", {
+                progressBar: true,
+            });
+        } else {
+            toastr.error(message, "Error!", {
+                progressBar: true,
+            });
+        }
+    }
+
     $(document).ready(function() {
         $('#addSkill').on('click', function() {
             var newRow = `<div class="row mb-3">
                             <div class="col-lg-3 col-sm-12">
-                                <select class="select2 form-select select2-hidden-accessible"
+                                <select class="select2 form-select select2-hidden-accessible line"
                                     style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" name="line[]">
                                     <option>-- select line --</option>
                                     @foreach ($lines as $line)
@@ -105,7 +118,7 @@
                                 </select>
                             </div>
                             <div class="col-lg-2 col-sm-12">
-                                <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="pos[]">
+                                <select class="form-select mr-sm-2 pos" id="inlineFormCustomSelect" name="pos[]">
                                     <option selected>-- select pos --</option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
@@ -113,7 +126,7 @@
                                 </select>
                             </div>
                             <div class="col-lg-3 col-sm-12">
-                                <select class="select2 form-select select2-hidden-accessible"
+                                <select class="select2 form-select select2-hidden-accessible skill"
                                     style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" name="skill[]">
                                     <option>-- select skill --</option>
                                     @foreach ($skills as $skill)
@@ -144,6 +157,41 @@
 
             // Initialize Select2 for the Select elements in the new row
             $('.repeater-container').find('.select2').select2();
+        });
+
+        $('.repeater-container').on('change', '.skill', function() {
+            var repeaterItem = $(this).closest('.row'); // Find the closest row within the repeater
+            var line = repeaterItem.find('.line').val();
+            var pos = repeaterItem.find('.pos').val();
+            var skill = $(this).val();
+
+            $.ajax({
+                type: 'get',
+                url: "{{ url('skill/checkSkill') }}",
+                dataType: 'json',
+                data: {
+                    line: line,
+                    pos: pos,
+                    skill: skill,
+                },
+                success: function(data) {
+                    console.log(data);
+                    if (data.status == 'success') {
+                        notif(data.status, data.message);
+                        $(".submit-skill").removeAttr("disabled");
+                    } else {
+                        notif(data.status, data.message);
+                        $(".submit-skill").prop("disabled", true);
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status == 0) {
+                        notif("error", 'Connection Error');
+                        return;
+                    }
+                    notif("error", 'Internal Server Error');
+                }
+            });
         });
 
         $('.repeater-container').on('click', '.remove-row', function() {
