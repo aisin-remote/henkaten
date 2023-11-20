@@ -65,7 +65,10 @@ Route::middleware(['auth'])->group(function () {
         // get employee skill from employee
         Route::get('/getSkillEmp', [EmployeeController::class, 'getSkillEmp'])->name('employee.getSkillEmp');
         Route::get('/getSkillPos', [EmployeeController::class, 'getSkillPos'])->name('employee.getSkillPos');
-
+        
+        // get PIC
+        Route::get('/getPic', [EmployeeController::class, 'getPic'])->name('employee.getPic');
+        
         // edit employees
         Route::get('/{id}/edit', [EmployeeController::class, 'employeeEdit'])->name('editEmployee');
         Route::post('/{id}/update', [EmployeeController::class, 'employeeUpdate'])->name('employee.update');

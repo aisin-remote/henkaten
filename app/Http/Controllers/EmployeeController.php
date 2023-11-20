@@ -137,6 +137,7 @@ class EmployeeController extends Controller
         $employees = $request->employee_name;
         $pics = $request->pic_name;
         $pos = $request->pos;
+        $startDates = [];
 
         // current date
         $currentDate = Carbon::parse($request->active_from);
@@ -149,14 +150,17 @@ class EmployeeController extends Controller
         $endDate = $currentDate->addDays($remainingDays);
 
         // get all active from date
-        $startDate = EmployeeActive::select('active_from')
-            ->whereDate('active_from', '>=', Carbon::now())
-            ->first();
+        for ($i = 0; $i < count($employees); $i++) {
+            $startDate = EmployeeActive::select('active_from')
+                ->whereDate('active_from', '>=', Carbon::now())
+                ->where('employee_id', $employees[$i])
+                ->first();
 
-        // if the "active_from" date isnt outside the range or the data is empty, you cant create new records
-        if ($startDate) {
-            if (Carbon::parse($request->active_from)->between(Carbon::parse($request->active_from)->startOfWeek(), $endDate)) {
-                return redirect()->back()->with('error', 'Planning gagal dibuat, range tanggal sudah terisi!');
+            // if the "active_from" date isnt outside the range or the data is empty, you cant create new records
+            if ($startDate) {
+                if (Carbon::parse($request->active_from)->between(Carbon::parse($request->active_from)->startOfWeek(), $endDate)) {
+                    return redirect()->back()->with('error', 'Planning gagal dibuat, karyawan (' . $employees[$i] . ') sudah pernah didaftarkan');
+                }
             }
         }
 
@@ -190,6 +194,42 @@ class EmployeeController extends Controller
             DB::rollBack();
             return redirect()->back()->with('error', 'Planning gagal dibuat!');
         }
+    }
+
+    public function getPic(Request $request)
+    {
+        $shift = $request->shift;
+        $line = $request->line;
+
+        if(!$shift){
+            return response()->json([
+                'status' => 'error',
+                'mesasge' => 'belum memilih shift!'
+            ]);
+        }
+        if(!$line){
+            return response()->json([
+                'status' => 'error',
+                'mesasge' => 'belum memilih line!'
+            ]);
+        }
+
+        $pic = PicActive::select('employee_id')
+                ->where('shift_id', $shift)
+                ->where('line_id', $line)
+                ->first();
+                
+        if(!$pic){
+            return response()->json([
+                'status' => 'error',
+                'mesasge' => 'belum memiliki pic!'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'employee' => $pic->employee_id
+        ]);
     }
 
     public function getSkillEmp(Request $request)

@@ -25,8 +25,9 @@
                     @method('POST')
                     <div class="">
                         <div class="col-12 mb-3">
-                            <select class="select2 form-select select2-hidden-accessible" style="width: 100%; height: 36px"
-                                tabindex="-1" aria-hidden="true" id="shift" name="shift" required>
+                            <select class="select2 form-select select2-hidden-accessible shift"
+                                style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" id="shift"
+                                name="shift" required>
                                 <option>Select Shift</option>
                                 @foreach ($shifts as $shift)
                                     <option value="{{ $shift->id }}">{{ $shift->name }}</option>
@@ -44,31 +45,18 @@
                         </div>
                         <div class="repeater-pic-container">
                             <div class="row mb-3">
-                                <div class="col-lg-11 col-sm-12">
-                                    <select class="select2 form-select select2-hidden-accessible"
+                                <div class="col-lg-12 col-sm-12">
+                                    <select class="select2 form-select select2-hidden-accessible pic"
                                         style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" id="pic_name"
                                         name="pic_name[]" required>
-                                        <option>Select PIC</option>
+                                        <option value="0">Select PIC</option>
                                         @foreach ($pics as $pic)
                                             <option value="{{ $pic->id }}">{{ $pic->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-lg-1 col-sm-12">
-                                    <button data-repeater-delete=""
-                                        class="btn btn-danger waves-effect waves-light remove-pic-row" type="button">
-                                        <i class="ti ti-circle-x fs-5"></i>
-                                    </button>
-                                </div>
                             </div>
                         </div>
-                        <button type="button" data-repeater-create="" class="btn btn-info waves-effect waves-light mb-3"
-                            id="addPic">
-                            <div class="d-flex align-items-center">
-                                Add PIC
-                                <i class="ti ti-circle-plus ms-1 fs-5"></i>
-                            </div>
-                        </button>
                         <div class="repeater-mp-container">
                             <div class="row mb-3">
                                 <div class="col-lg-9 col-sm-12">
@@ -86,7 +74,6 @@
                                         <option value="default">-- select pos --</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
-                                        <option value="lastman">Lastman</option>
                                     </select>
                                 </div>
                                 <div class="col-lg-1 col-sm-12">
@@ -365,10 +352,10 @@
         $('#addPic').on('click', function() {
             var newRow = `<div class="row mb-3">
                                 <div class="col-lg-11 col-sm-12">
-                                    <select class="select2 form-select select2-hidden-accessible"
+                                    <select class="select2 form-select select2-hidden-accessible pic"
                                         style="width: 100%; height: 36px"
                                         tabindex="-1" aria-hidden="true" id="pic_name" name="pic_name[]" required>
-                                        <option>Select PIC</option>
+                                        <option value="0">Select PIC</option>
                                         @foreach ($pics as $pic)
                                             <option value="{{ $pic->id }}">{{ $pic->name }}</option>
                                         @endforeach
@@ -502,6 +489,67 @@
                 }
             });
         });
+
+        // get pic when line changed changed
+        $('.shift').on('change', function() {
+            let line = $('#line').val();
+            let shift = $(this).val();
+            $.ajax({
+                type: 'get',
+                url: "{{ url('employee/getPic') }}",
+                _token: "{{ csrf_token() }}",
+                dataType: 'json',
+                data: {
+                    shift: shift,
+                    line: line,
+                },
+                success: function(data) {
+                    if (data.status == 'success') {
+                        $('.pic').val(data.employee);
+                        $('.pic').trigger('change');
+                        $('.pic').prop("disabled", true);
+                    } else if (data.status == 'error') {
+                        console.log(data.message);
+                        $('.pic').val('0');
+                        $('.pic').trigger('change');
+                        $('.pic').removeAttr("disabled");
+                    }
+                },
+                error: function(xhr) {
+                    console.log(xhr.status);
+                }
+            });
+        })
+
+        $('#line').on('change', function() {
+            let line = $(this).val();
+            let shift = $('.shift').val();
+            $.ajax({
+                type: 'get',
+                url: "{{ url('employee/getPic') }}",
+                _token: "{{ csrf_token() }}",
+                dataType: 'json',
+                data: {
+                    shift: shift,
+                    line: line,
+                },
+                success: function(data) {
+                    if (data.status == 'success') {
+                        $('.pic').val(data.employee);
+                        $('.pic').trigger('change');
+                        $('.pic').prop("disabled", true);
+                    } else if (data.status == 'error') {
+                        console.log(data.message);
+                        $('.pic').val('0');
+                        $('.pic').trigger('change');
+                        $('.pic').removeAttr("disabled");
+                    }
+                },
+                error: function(xhr) {
+                    console.log(xhr.status);
+                }
+            });
+        })
 
         $('#addPlanning').on('click', function() {
             $("#addPlanningCard").toggle();

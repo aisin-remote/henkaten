@@ -1060,6 +1060,10 @@
             $('#secondPic').attr('data-bs-target', '#secondPicModal');
         });
 
+        $('#shift').on('click', function() {
+            alert('test');
+        })
+
         $('.dc-card').on('click', function() {
             let idCard = $(this).attr('id');
             window.location.replace(`{{ url('/dashboard/${idCard}') }}`);

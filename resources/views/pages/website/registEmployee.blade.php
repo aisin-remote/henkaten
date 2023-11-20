@@ -369,7 +369,6 @@
                     error: function(error) {
                         console.error('Error deleting employee:', error);
                         window.location.reload();
-                        // Handle error, e.g., show error message
                     }
                 });
             }
