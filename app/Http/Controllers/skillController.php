@@ -103,28 +103,28 @@ class skillController extends Controller
         // check skill if skill is already registerd in minimum skill
         // get skill name in spesific line and pos
         $skills = MinimumSkill::with('skill')->where('line_id', $line)->where('pos', $pos)->get();
-        if(!$skills){
+        if (!$skills) {
             return response()->json([
                 'status' => 'success',
                 'message' => 'skill bisa didaftarkan!'
-            ],200);    
+            ], 200);
         }
 
-        foreach ($skills as $item){
-            if($item->skill->name == $skill){
+        foreach ($skills as $item) {
+            if ($item->skill->name == $skill) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'skill sudah terdaftar!'
-                ]);  
-            }else{
+                ]);
+            } else {
                 return response()->json([
                     'status' => 'success',
                     'message' => 'skill bisa didaftarkan!'
-                ],200);  
+                ], 200);
             }
         }
     }
-    
+
     public function minimumRegistEdit($id)
     {
         $minimumSkill = MinimumSkill::find($id);
@@ -172,6 +172,20 @@ class skillController extends Controller
             $employee->delete();
 
             return redirect('/employee')->with('success', 'Minimum Skill deleted successfully!');
+        } else {
+            // Handle unsupported methods
+            return response()->json(['error' => 'Method not allowed'], 405);
+        }
+    }
+
+    public function destroySkill($name)
+    {
+        if (request()->isMethod('delete')) {
+            $employee = Skill::where('name', $name);
+            // dd($employee);
+            $employee->delete();
+
+            return redirect('/employee')->with('success', 'Skill deleted successfully!');
         } else {
             // Handle unsupported methods
             return response()->json(['error' => 'Method not allowed'], 405);
