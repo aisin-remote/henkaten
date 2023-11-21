@@ -142,7 +142,7 @@
                                             <i class="ti ti-pencil"></i>
                                         </span>
                                     </a>
-                                    <a class="btn btn-danger" href="#">
+                                    <a class="btn btn-danger delete-minimum-skill" href="#"  data-min-id="{{ $minimumSkill->id }}">
                                         <span class="rounded-3" id="icon">
                                             <i class="ti ti-x"></i>
                                         </span>
@@ -278,5 +278,32 @@
             $("#icon").html($("#addMinimumSkillCard").is(":visible") ? '<i class="ti ti-minus"></i>' :
                 '<i class="ti ti-plus"></i>');
         })
+    });
+
+    $(document).ready(function() {
+        $('.delete-minimum-skill').on('click', function(e) {
+            e.preventDefault();
+
+            var employeeId = $(this).data('min-id');
+
+            if (confirm('Are you sure you want to delete this minimum skill?')) {
+                $.ajax({
+                    url: `{{ url('/skill/minimum/${employeeId}') }}`,
+                    type: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        // Handle success, e.g., redirect or update UI
+                        window.location.reload();
+                    },
+                    error: function(error) {
+                        console.error('Error deleting minimum skill:', error);
+                        window.location.reload();
+                    }
+                });
+            }
+        });
     });
 </script>

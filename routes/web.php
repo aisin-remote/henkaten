@@ -87,6 +87,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/minimumRegist', [skillController::class, 'minimumRegist'])->name('skill.minimum.regist');
         Route::get('/minimumRegist/{id}/edit', [skillController::class, 'minimumRegistEdit'])->name('minimumSkill.edit');
         Route::post('/minimumRegist/{id}', [skillController::class, 'minimumRegistUpdate'])->name('minimumSkill.update');
+        Route::delete('/minimum/{id}', [skillController::class, 'destroy'])->name('minimumSkill.destroy');
     });
 
     Route::get('/mappingAllLine', function () {

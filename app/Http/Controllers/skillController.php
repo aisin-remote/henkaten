@@ -164,4 +164,17 @@ class skillController extends Controller
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
+
+    public function destroy($id)
+    {
+        if (request()->isMethod('delete')) {
+            $employee = MinimumSkill::findOrFail($id);
+            $employee->delete();
+
+            return redirect('/employee')->with('success', 'Minimum Skill deleted successfully!');
+        } else {
+            // Handle unsupported methods
+            return response()->json(['error' => 'Method not allowed'], 405);
+        }
+    }
 }
