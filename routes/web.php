@@ -76,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{id}/detail', [EmployeeController::class, 'employeeDetail'])->name('detailEmployee');
 
         Route::delete('/{id}', [EmployeeController::class, 'destroy'])->name('employee.destroy');
+        Route::delete('/planning/{id}', [EmployeeController::class, 'destroyPlanning'])->name('employee.planning.destroy');
     });
 
     // regist employee skill
