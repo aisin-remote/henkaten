@@ -324,7 +324,6 @@
                                         <option value="default">-- select pos --</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
-                                        <option value="lastman">Lastman</option>
                                     </select>
                                 </div>
                                 <div class="col-lg-1 col-sm-12">
@@ -443,12 +442,12 @@
                         minimumSkillCount = minimumSkills.length
                         console.log(minimumSkillCount);
                         if (minimumSkillCount == 0) {
-                            console.log('test1')
+                            console.log('tidak memiliki skill')
                             flag++;
                         }
 
-                        if (minimumSkillCount !== skillCount) {
-                            console.log('test2')
+                        if (skillCount < minimumSkillCount) {
+                            console.log('tidak memiliki semua skill yang dibutuhkan')
                             flag++;
                         }
 
@@ -460,7 +459,7 @@
                                     let employeeSkill = localStorage.getItem(key);
                                     let minimumSkills = item.skill.level;
                                     if (employeeSkill < minimumSkills) {
-                                        console.log('test3')
+                                        console.log('level skill kurang')
                                         flag++;
                                     }
                                 }
@@ -468,12 +467,10 @@
                         });
 
                         if (flag !== 0) {
-                            console.log('test1')
                             localStorage.setItem('pass', false)
                             $(".submit-planning").prop("disabled", true);
                             notif('error', 'Skill tidak memenuhi kriteria pos!')
                         } else {
-                            console.log('test2')
                             localStorage.setItem('pass', true)
                             $(".submit-planning").removeAttr("disabled");
                             notif('success', 'Skill memenuhi kriteria pos!')
@@ -506,6 +503,9 @@
                 success: function(data) {
                     if (data.status == 'success') {
                         $('.pic').val(data.employee);
+                        $('.repeater-pic-container').append(
+                            `<input type="hidden" name="pic_name" value="${data.employee}">`
+                        )
                         $('.pic').trigger('change');
                         $('.pic').prop("disabled", true);
                     } else if (data.status == 'error') {
@@ -536,6 +536,9 @@
                 success: function(data) {
                     if (data.status == 'success') {
                         $('.pic').val(data.employee);
+                        $('.repeater-pic-container').append(
+                            `<input type="hidden" name="pic_name" value="${data.employee}">`
+                        )
                         $('.pic').trigger('change');
                         $('.pic').prop("disabled", true);
                     } else if (data.status == 'error') {

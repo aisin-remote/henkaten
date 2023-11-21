@@ -137,7 +137,6 @@ class EmployeeController extends Controller
         $employees = $request->employee_name;
         $pics = $request->pic_name;
         $pos = $request->pos;
-        $startDates = [];
 
         // current date
         $currentDate = Carbon::parse($request->active_from);
@@ -152,13 +151,12 @@ class EmployeeController extends Controller
         // get all active from date
         for ($i = 0; $i < count($employees); $i++) {
             $startDate = EmployeeActive::select('active_from')
-                ->whereDate('active_from', '>=', Carbon::now())
                 ->where('employee_id', $employees[$i])
                 ->first();
 
             // if the "active_from" date isnt outside the range or the data is empty, you cant create new records
             if ($startDate) {
-                if (Carbon::parse($request->active_from)->between(Carbon::parse($request->active_from)->startOfWeek(), $endDate)) {
+                if (Carbon::parse($request->active_from)->between(Carbon::parse($startDate->active_from)->startOfWeek(), $endDate)) {
                     return redirect()->back()->with('error', 'Planning gagal dibuat, karyawan (' . $employees[$i] . ') sudah pernah didaftarkan');
                 }
             }
