@@ -58,7 +58,6 @@ class skillController extends Controller
 
     public function minimumRegist(Request $request)
     {
-        $skills = [];
         $validatedData = $request->validate([
             'skill' => 'required',
             'pos' => 'required',
@@ -66,31 +65,43 @@ class skillController extends Controller
             'level' => 'required',
         ]);
 
-        // get skill id
-        for ($i = 0; $i < count($validatedData['skill']); $i++) {
-            $skillId = Skill::select('id')
-                ->where('name', $validatedData['skill'][$i])
-                ->where('level', $validatedData['level'][$i])
-                ->first();
-            array_push($skills, $skillId->id);
-        }
-
         try {
             DB::beginTransaction();
 
             for ($i = 0; $i < count($validatedData['skill']); $i++) {
-                MinimumSkill::create([
-                    'skill_id' => $skills[$i],
-                    'pos' => $request->pos[$i],
-                    'line_id' => $request->line[$i],
-                ]);
+                $skill = Skill::where('name', $validatedData['skill'][$i])
+                    ->where('level', $validatedData['level'][$i])
+                    ->firstOrFail();
+
+                // Check if the MinimumSkill record already exists
+                $existingMinimumSkill = MinimumSkill::join('skills', 'minimum_skills.skill_id', '=', 'skills.id')
+                    ->where('minimum_skills.pos', $request->pos[$i])
+                    ->where('minimum_skills.line_id', $request->line[$i])
+                    ->where('skills.name', $validatedData['skill'][$i])
+                    ->get();
+
+                if ($existingMinimumSkill->isEmpty()) {
+                    $create = MinimumSkill::create([
+                        'skill_id' => $skill->id,
+                        'pos' => $request->pos[$i],
+                        'line_id' => $request->line[$i],
+                    ]);
+                }
             }
 
+            // Commit the transaction
             DB::commit();
 
-            return redirect()->back()->with('success', 'Minimum skill berhasil ditambah!');
+            if ($create) {
+                return redirect()->back()->with('success', 'Minimum skill berhasil ditambah!');
+            } else {
+                return redirect()->back()->with('warning', 'Data yang diinput sudah ada.');
+            }
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', $th->getMessage());
+            // Rollback the transaction in case of an exception
+            DB::rollBack();
+            // return redirect()->back()->with('error', $th->getMessage());
+            return redirect()->back()->with('error', 'Data gagal diinput');
         }
     }
 
@@ -103,28 +114,28 @@ class skillController extends Controller
         // check skill if skill is already registerd in minimum skill
         // get skill name in spesific line and pos
         $skills = MinimumSkill::with('skill')->where('line_id', $line)->where('pos', $pos)->get();
-        if(!$skills){
+        if (!$skills) {
             return response()->json([
                 'status' => 'success',
                 'message' => 'skill bisa didaftarkan!'
-            ],200);    
+            ], 200);
         }
 
-        foreach ($skills as $item){
-            if($item->skill->name == $skill){
+        foreach ($skills as $item) {
+            if ($item->skill->name == $skill) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'skill sudah terdaftar!'
-                ]);  
-            }else{
+                ]);
+            } else {
                 return response()->json([
                     'status' => 'success',
                     'message' => 'skill bisa didaftarkan!'
-                ],200);  
+                ], 200);
             }
         }
     }
-    
+
     public function minimumRegistEdit($id)
     {
         $minimumSkill = MinimumSkill::find($id);
@@ -162,6 +173,33 @@ class skillController extends Controller
             return redirect('skill/minimum')->with('success', 'Minimum skill berhasil diubah!');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
+    public function destroy($id)
+    {
+        if (request()->isMethod('delete')) {
+            $employee = MinimumSkill::findOrFail($id);
+            $employee->delete();
+
+            return redirect('/employee')->with('success', 'Minimum Skill deleted successfully!');
+        } else {
+            // Handle unsupported methods
+            return response()->json(['error' => 'Method not allowed'], 405);
+        }
+    }
+
+    public function destroySkill($name)
+    {
+        if (request()->isMethod('delete')) {
+            $employee = Skill::where('name', $name);
+            // dd($employee);
+            $employee->delete();
+
+            return redirect('/employee')->with('success', 'Skill deleted successfully!');
+        } else {
+            // Handle unsupported methods
+            return response()->json(['error' => 'Method not allowed'], 405);
         }
     }
 }

@@ -376,4 +376,17 @@ class EmployeeController extends Controller
             return response()->json(['error' => 'Method not allowed'], 405);
         }
     }
+
+    public function destroyPlanning($id)
+    {
+        if (request()->isMethod('delete')) {
+            $employee = EmployeeActive::findOrFail($id);
+            $employee->delete();
+
+            return redirect('/employee')->with('success', 'Employee deleted successfully!');
+        } else {
+            // Handle unsupported methods
+            return response()->json(['error' => 'Method not allowed'], 405);
+        }
+    }
 }

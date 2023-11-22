@@ -76,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{id}/detail', [EmployeeController::class, 'employeeDetail'])->name('detailEmployee');
 
         Route::delete('/{id}', [EmployeeController::class, 'destroy'])->name('employee.destroy');
+        Route::delete('/planning/{id}', [EmployeeController::class, 'destroyPlanning'])->name('employee.planning.destroy');
     });
 
     // regist employee skill
@@ -87,6 +88,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/minimumRegist', [skillController::class, 'minimumRegist'])->name('skill.minimum.regist');
         Route::get('/minimumRegist/{id}/edit', [skillController::class, 'minimumRegistEdit'])->name('minimumSkill.edit');
         Route::post('/minimumRegist/{id}', [skillController::class, 'minimumRegistUpdate'])->name('minimumSkill.update');
+        Route::delete('/minimum/{id}', [skillController::class, 'destroy'])->name('minimumSkill.destroy');
+        Route::delete('/{name}', [skillController::class, 'destroySkill'])->name('skill.destroy');
     });
 
     Route::get('/mappingAllLine', function () {
