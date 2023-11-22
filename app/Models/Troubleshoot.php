@@ -6,17 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class HenkatenMethod extends Model
+class Troubleshoot extends Model
 {
     use HasFactory;
     use HasUuids;
 
-    protected $table = 'henkaten_method';
+    protected $table = 'troubleshoots';
 
     protected $guarded = ['id'];
 
-    public function line()
+    public function henkaten()
     {
-        return $this->belongsTo(Line::class);
+        return $this->belongsTo(Henkaten::class);    
     }
 }

@@ -6,20 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class HenkatenMan extends Model
+class Henkaten extends Model
 {
     use HasFactory;
     use HasUuids;
 
-    protected $table = 'henkaten_man';
-
+    protected $table = 'henkatens';
+    
     protected $guarded = ['id'];
 
-    public function line()
+    public function troubleshoot()
     {
-        return $this->belongsTo(Line::class);
+        return $this->hasOne(Troubleshoot::class);
     }
-    
+
     public function shift()
     {
         return $this->belongsTo(Shift::class);

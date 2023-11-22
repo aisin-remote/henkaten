@@ -68,15 +68,5 @@ class DatabaseSeeder extends Seeder
         Theme::create([
             'name' => 'Gunakan Loto Saat Dandori'
         ]);
-
-        Skill::create([
-            'name' => 'Baritori',
-            'level' => '1'
-        ]);
-
-        Skill::create([
-            'name' => 'NG Judgement',
-            'level' => '2'
-        ]);
     }
 }

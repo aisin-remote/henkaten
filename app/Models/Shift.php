@@ -27,6 +27,6 @@ class Shift extends Model
     
     public function man()
     {
-        return $this->hasMany(HenkatenMan::class);
+        return $this->hasMany(Henkaten::class);
     }
 }

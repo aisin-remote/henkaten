@@ -8,6 +8,7 @@ use App\Models\Pivot;
 use App\Models\Shift;
 use App\Models\Theme;
 use App\Models\Employee;
+use App\Models\Henkaten;
 use App\Models\PicActive;
 use App\Models\HenkatenMan;
 use Illuminate\Support\Str;
@@ -16,6 +17,7 @@ use App\Models\EmployeeActive;
 use App\Models\HenkatenMethod;
 use App\Models\HenkatenMachine;
 use App\Models\HenkatenMaterial;
+use App\Models\HenkatenManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
@@ -31,74 +33,8 @@ class DashboardController extends Controller
             ->where('active_date', $current_date)
             ->first();
 
-        $currentDate = Carbon::now()->format('Y-m-d');
-
-        // get all henkaten history
-        $manData = HenkatenMan::with('line')->where('status_after', null)->get();
-        $methodData = HenkatenMethod::with('line')->where('status_after', null)->get();
-        $machineData = HenkatenMachine::with('line')->where('status_after', null)->get();
-        $materialData = HenkatenMaterial::with('line')->where('status_after', null)->get();
-
-        // Merge the data and add the type field
-        $combinedData = [];
-
-        foreach ($manData as $item) {
-            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
-            $combinedData[] = [
-                'id' => $item->id,
-                'type' => 'Man',
-                'status' => $item->status,
-                'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem,
-                'line' => $item->line->name,
-                'description' => $item->henkaten_description,
-                'troubleshoot' => $troubleshoot
-            ];
-        }
-
-        foreach ($methodData as $item) {
-            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
-            $combinedData[] = [
-                'id' => $item->id,
-                'type' => 'Method',
-                'status' => $item->status,
-                'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem,
-                'description' => $item->henkaten_description,
-                'date' => $item->date,
-                'line' => $item->line->name,
-                'troubleshoot' => $troubleshoot
-            ];
-        }
-
-        foreach ($machineData as $item) {
-            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
-            $combinedData[] = [
-                'id' => $item->id,
-                'type' => 'Machine',
-                'status' => $item->status,
-                'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem,
-                'description' => $item->henkaten_description,
-                'date' => $item->date,
-                'line' => $item->line->name,
-                'troubleshoot' => $troubleshoot
-            ];
-        }
-
-        foreach ($materialData as $item) {
-            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
-            $combinedData[] = [
-                'id' => $item->id,
-                'type' => 'Material',
-                'status' => $item->status,
-                'problem' => $item->henkaten_problem,
-                'description' => $item->henkaten_description,
-                'date' => $item->date,
-                'line' => $item->line->name,
-                'troubleshoot' => $troubleshoot
-            ];
-        }
+        // get henkaten where status still active
+        $activeProblem = Henkaten::where('is_done', '0')->get();
 
         // in this page we will get all line status
         return view('pages.website.dashboard', [
@@ -108,82 +44,15 @@ class DashboardController extends Controller
                 ->whereIn('role', ['Leader', 'JP'])
                 ->get(),
             'lines' => Line::all(),
-            'histories' => $combinedData
+            'histories' => $activeProblem
         ]);
     }
     
     public function indexLine()
     {
-        // get all henkaten history
-        $manData = HenkatenMan::with('line')->where('status_after', null)->get();
-        $methodData = HenkatenMethod::with('line')->where('status_after', null)->get();
-        $machineData = HenkatenMachine::with('line')->where('status_after', null)->get();
-        $materialData = HenkatenMaterial::with('line')->where('status_after', null)->get();
-
-        // Merge the data and add the type field
-        $combinedData = [];
-
-        foreach ($manData as $item) {
-            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
-            $combinedData[] = [
-                'id' => $item->id,
-                'type' => 'Man',
-                'status' => $item->status,
-                'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem,
-                'description' => $item->henkaten_description,
-                'troubleshoot' => $troubleshoot
-            ];
-        }
-
-        foreach ($methodData as $item) {
-            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
-            $combinedData[] = [
-                'id' => $item->id,
-                'type' => 'Method',
-                'status' => $item->status,
-                'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem,
-                'description' => $item->henkaten_description,
-                'date' => $item->date,
-                'line' => $item->line->name,
-                'troubleshoot' => $troubleshoot
-            ];
-        }
-
-        foreach ($machineData as $item) {
-            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
-            $combinedData[] = [
-                'id' => $item->id,
-                'type' => 'Machine',
-                'status' => $item->status,
-                'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem,
-                'description' => $item->henkaten_description,
-                'date' => $item->date,
-                'line' => $item->line->name,
-                'troubleshoot' => $troubleshoot
-            ];
-        }
-
-        foreach ($materialData as $item) {
-            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
-            $combinedData[] = [
-                'id' => $item->id,
-                'type' => 'Material',
-                'status' => $item->status,
-                'problem' => $item->henkaten_problem,
-                'description' => $item->henkaten_description,
-                'date' => $item->date,
-                'line' => $item->line->name,
-                'troubleshoot' => $troubleshoot
-            ];
-        }
-
         // in this page we will get all line status
         return view('pages.website.lineDashboard', [
             'lines' => Line::all(),
-            'histories' => $combinedData
         ]);
     }
 
@@ -192,12 +61,8 @@ class DashboardController extends Controller
         $currentDate = Carbon::now()->format('Y-m-d');
         $currentTime = Carbon::now()->format('H:i:s');
 
-        // get all henkaten history
-        $manData = HenkatenMan::where('line_id', $lineId->id)->get();
-        $methodData = HenkatenMethod::where('line_id', $lineId->id)->get();
-        $machineData = HenkatenMachine::where('line_id', $lineId->id)->get();
-        $materialData = HenkatenMaterial::where('line_id', $lineId->id)->get();
-
+        // get all history
+        $histories = Henkaten::with('troubleshoot')->where('line_id', $lineId->id)->get();
         // get man power at spesific line and range of time
         $activeEmployees = EmployeeActive::with('shift')
             ->with('employee')
@@ -223,100 +88,31 @@ class DashboardController extends Controller
             ->first();
 
         // get man henkaten
-        $manHenkaten = HenkatenMan::with('shift')
+        $manHenkaten = Henkaten::with('shift')
             ->with('manAfter')
             ->with('manBefore')
             ->where('line_id', $lineId->id)
+            // ->whereNotNull('employee_before_id')
+            // ->whereNotNull('employee_after_id')
             ->whereHas('shift', function ($query) use ($currentTime) {
                 $query->where('time_start', '<=', $currentTime)
                     ->where('time_end', '>=', $currentTime);
             })
-            ->get();
+            ->get();        
         
-        // Merge the data and add the type field
-        $combinedData = [];
-
-        foreach ($manData as $item) {
-            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
-            $combinedData[] = [
-                'id' => $item->id,
-                'type' => 'Man',
-                'status' => $item->status,
-                'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem,
-                'description' => $item->henkaten_description,
-                'date' => $item->date,
-                'troubleshoot' => $troubleshoot
-            ];
-        }
-
-        foreach ($methodData as $item) {
-            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
-            $combinedData[] = [
-                'id' => $item->id,
-                'type' => 'Method',
-                'status' => $item->status,
-                'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem,
-                'description' => $item->henkaten_description,
-                'date' => $item->date,
-                'troubleshoot' => $troubleshoot,
-                'troubleshootTime' => $item->updated_at
-            ];
-        }
-
-        foreach ($machineData as $item) {
-            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
-            $combinedData[] = [
-                'id' => $item->id,
-                'type' => 'Machine',
-                'status' => $item->status,
-                'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem,
-                'description' => $item->henkaten_description,
-                'date' => $item->date,
-                'troubleshoot' => $troubleshoot,
-                'troubleshootTime' => $item->updated_at
-            ];
-        }
-
-        foreach ($materialData as $item) {
-            $troubleshoot = $item->troubleshoot ? $item->troubleshoot : 'Belum ditangani';
-            $combinedData[] = [
-                'id' => $item->id,
-                'type' => 'Material',
-                'status' => $item->status,
-                'status_after' => $item->status_after,
-                'problem' => $item->henkaten_problem,
-                'description' => $item->henkaten_description,
-                'date' => $item->date,
-                'troubleshoot' => $troubleshoot,
-                'troubleshootTime' => $item->updated_at
-            ];
-        }
         return view('pages.website.line', [
             'line' => Line::findOrFail($lineId->id),
             'employees' => Employee::all(),
             'activeEmployees' => $activeEmployees,
             'activePic' => $activePic,
-            'histories' => $combinedData,
-            'methodHistory' => HenkatenMethod::where('line_id', $lineId->id)->get(),
-            'machineHistory' => HenkatenMachine::where('line_id', $lineId->id)->get(),
-            'manHistory' => HenkatenMan::where('line_id', $lineId->id)->get(),
+            'histories' => $histories,
             'manHenkaten' => $manHenkaten,
-            'materialHistory' => HenkatenMaterial::where('line_id', $lineId->id)->get(),
+            'henkatenManagements' => HenkatenManagement::all()
         ]);
     }
 
     public function selectTheme(Request $request)
     {
-        // if (!$theme) {
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => 'Pilih tema yang tersedia!'
-        //     ]);
-        // }
-
         // get theme name
         $parts = explode("/", $request->path());
         $customTheme = explode("-", $parts[2]);

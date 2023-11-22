@@ -410,7 +410,6 @@
                             }
                         }
                     }
-
                     return $overallStatusItem;
                 }
             }

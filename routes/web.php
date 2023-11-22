@@ -47,9 +47,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('selectFirstPic/{id}', [DashboardController::class, 'selectFirstPic'])->name('dashboard.firstPic');
         Route::get('selectSecondPic/{id}', [DashboardController::class, 'selectSecondPic'])->name('dashboard.SecondPic');
 
-        Route::get('storeHenkaten/{table}/{status}/{lineId}/{pic?}/{problem?}/{description?}', [HenkatenController::class, 'storeHenkaten'])->name('dashboard.storeHenkaten');
-        Route::get('storeManHenkaten/{before}/{after?}/{status}/{lineId}/{problem?}/{description?}', [HenkatenController::class, 'storeManHenkaten'])->name('dashboard.storeManHenkaten');
+        Route::post('storeHenkaten', [HenkatenController::class, 'storeHenkaten'])->name('dashboard.storeHenkaten');
         Route::post('troubleshootHenkaten', [HenkatenController::class, 'troubleshootHenkaten'])->name('dashboard.troubleshootHenkaten');
+        Route::post('troubleshootApproval', [HenkatenController::class, 'troubleshootApproval'])->name('dashboard.troubleshootApproval');
     });
 
     // employees 

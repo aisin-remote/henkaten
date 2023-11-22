@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->string('id',191)->primary();
-            $table->string('name', 100);
-            $table->string('npk',6)->unique();
-            $table->enum('role', ['JP','LDR','SPV', 'MGR']);
-            $table->string('password');
+        Schema::create('henkaten_managements', function (Blueprint $table) {
+            $table->uuid('id', 191)->primary();
+            $table->enum('4M', ['man','method','machine', 'material'])->nullable();
+            $table->string('henkaten_item')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('henkaten_managements');
     }
 };

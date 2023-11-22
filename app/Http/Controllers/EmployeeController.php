@@ -135,7 +135,7 @@ class EmployeeController extends Controller
         ]);
 
         $employees = $request->employee_name;
-        $pics = $request->pic_name;
+        $pic = $request->pic_name;
         $pos = $request->pos;
 
         // current date
@@ -153,15 +153,18 @@ class EmployeeController extends Controller
             $startDate = EmployeeActive::select('active_from')
                 ->where('employee_id', $employees[$i])
                 ->first();
-
+                
             // if the "active_from" date isnt outside the range or the data is empty, you cant create new records
             if ($startDate) {
                 if (Carbon::parse($request->active_from)->between(Carbon::parse($startDate->active_from)->startOfWeek(), $endDate)) {
-                    return redirect()->back()->with('error', 'Planning gagal dibuat, karyawan (' . $employees[$i] . ') sudah pernah didaftarkan');
+                    return redirect()->back()->with('error', 'Planning gagal dibuat, karyawan (' . $employees[$i] . ') sudah pernah didaftarkan dirange waktu ini!');
                 }
             }
         }
 
+        // check if pic already exists
+        $picActive = PicActive::where('employee_id', $pic)->first();
+        
         try {
             DB::beginTransaction();
 
@@ -175,10 +178,10 @@ class EmployeeController extends Controller
                     'expired_at' => $endDate
                 ]);
             }
-
-            for ($i = 0; $i < count($pics); $i++) {
+            
+            if($picActive){
                 PicActive::create([
-                    'employee_id' => $pics[$i],
+                    'employee_id' => $pic,
                     'shift_id' => $request->shift,
                     'line_id' => $request->line,
                     'active_from' => $request->active_from,

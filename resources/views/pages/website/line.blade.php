@@ -99,7 +99,6 @@
                 'color' => $color_method,
                 'status' => $status_method,
                 'shape' => $shape_method,
-                'history' => $methodHistory,
             ],
             [
                 'modalId' => 'manModal',
@@ -108,7 +107,6 @@
                 'color' => $color_man,
                 'status' => $status_man,
                 'shape' => $shape_man,
-                'history' => $manHistory,
             ],
             [
                 'modalId' => 'materialModal',
@@ -117,7 +115,6 @@
                 'color' => $color_material,
                 'status' => $status_material,
                 'shape' => $shape_material,
-                'history' => $materialHistory,
             ],
             [
                 'modalId' => 'machineModal',
@@ -126,7 +123,6 @@
                 'color' => $color_machine,
                 'status' => $status_machine,
                 'shape' => $shape_machine,
-                'history' => $machineHistory,
             ],
         ];
     @endphp
@@ -143,48 +139,15 @@
                         </h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form class="mt-3">
+                    <form class="mt-3" action="{{ route('dashboard.storeHenkaten') }}" method="POST">
+                        @csrf
+                        @method('POST')
                         <div class="modal-body">
-                            @if (!$modal['history']->isEmpty())
-                                <div class="accordion" id="accordionExample">
-                                    @foreach ($modal['history'] as $history)
-                                        @if ($history->troubleshoot == null)
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header" id="headingOne">
-                                                    <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse"
-                                                        data-bs-target="#history-{{ $loop->index }}" aria-expanded="false"
-                                                        aria-controls="collapseOne">
-                                                        <span class="mb-1 badge bg-dark me-2">PIC :
-                                                            {{ $history->pic }}</span>
-                                                        @if ($history->troubleshoot == null)
-                                                            <span class="mb-1 badge bg-danger">Open</span>
-                                                        @else
-                                                            <span class="mb-1 badge bg-success">Closed</span>
-                                                        @endif
-                                                        <span class="ps-3">
-                                                            {{ $history->henkaten_problem }}
-                                                        </span>
-                                                    </button>
-                                                </h2>
-                                                <div id="history-{{ $loop->index }}" class="accordion-collapse collapse"
-                                                    aria-labelledby="headingOne" data-bs-parent="#accordionExample"
-                                                    style="">
-                                                    <div class="accordion-body">
-                                                        <strong>{{ $history->henkaten_description }}</strong>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    @endforeach
-                                </div>
-                            @endif
                             <div class="statusRadio text-center mt-3">
                                 <label class="btn btn-light-primary text-primary font-medium me-2">
                                     <div class="form-check">
                                         <input type="radio" id="{{ $modal['modalId'] }}HenkatenRadio"
-                                            class="other-radio form-check-input" name="{{ $modal['modalId'] }}Status"
-                                            value="henkaten">
+                                            class="other-radio form-check-input" name="status" value="henkaten">
                                         <label class="form-check-label" for="{{ $modal['modalId'] }}HenkatenRadio">
                                             <span class="d-none d-md-block">
                                                 HENKATEN
@@ -195,8 +158,7 @@
                                 <label class="btn btn-light-primary text-primary font-medium">
                                     <div class="form-check">
                                         <input type="radio" id="{{ $modal['modalId'] }}StopRadio"
-                                            class="other-radio form-check-input" name="{{ $modal['modalId'] }}Status"
-                                            value="stop">
+                                            class="other-radio form-check-input" name="status" value="stop">
                                         <label class="form-check-label" for="{{ $modal['modalId'] }}StopRadio">
                                             <span class="d-none d-md-block">
                                                 STOP
@@ -205,35 +167,40 @@
                                     </div>
                                 </label>
                             </div>
+                            <input type="hidden" name="type" value="{{ strtolower($modal['title']) }}">
+                            <input type="hidden" name="line" value="{{ $line->id }}">
                             <div class="form-group mt-3 pic-form">
-                                <label>PIC</label>
-                                <select class="select2 form-control select2-hidden-accessible picSelect"
+                                <label class="form-label mb-2 fw-semibold">Category</label>
+                                <select class="select2 form-control select2-hidden-accessible category"
                                     style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
-                                    id="{{ $modal['modalId'] }}PicSelect" name="pic" required>
-                                    <option value="0">-- Select PIC --</option>
-                                    @foreach ($employees as $employee)
-                                        <option value="{{ $employee->name }}">
-                                            {{ $employee->name }}
-                                        </option>
+                                    id="{{ $modal['modalId'] }}Category" name="category" required>
+                                    <option value="0">-- Select Category --</option>
+                                    <option value="Safety Issue">Safety Issue</option>
+                                    <option value="Productivity Issue">Productivity Issue</option>
+                                    <option value="Cost Issue">Cost Issue</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group mt-3 pic-form">
+                                <label class="form-label mb-2 fw-semibold">Henkaten Table No.</label>
+                                <select class="select2 form-control select2-hidden-accessible hanketenManagement"
+                                    style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
+                                    id="{{ $modal['modalId'] }}TableManagement" name="henkatenManagement" required>
+                                    <option value="0">-- Select --</option>
+                                    @foreach ($henkatenManagements as $henkaten)
+                                        <option value="{{ $henkaten->id }}">{{ $henkaten->henkaten_item }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="form-group mt-3 mb-3 description">
-                                <label>Problem</label>
-                                <input class="form-control" rows="3" placeholder="Problem..." name="problem"
-                                    id="{{ $modal['modalId'] }}Problem" required>
+                                <label class="form-label mb-2 fw-semibold">Henkaten / Abnormality Content</label>
+                                <input class="form-control" rows="3" placeholder="Abnormality..." name="abnormality"
+                                    id="{{ $modal['modalId'] }}Abnormality" required>
                                 </input>
                             </div>
-                            <div class="form-group mt-3 mb-3 description">
-                                <label>Description</label>
-                                <textarea class="form-control" rows="3" placeholder="Description..." name="description"
-                                    id="{{ $modal['modalId'] }}Description" required>
-                                    </textarea>
-                            </div>
-                            {{-- @endif --}}
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" id="{{ $modal['modalId'] }}Submit">Save
+                            <button type="submit" class="btn btn-secondary" id="{{ $modal['modalId'] }}Submit">Save
                                 changes</button>
                             <button type="button"
                                 class="btn btn-light-danger text-danger font-medium waves-effect text-start"
@@ -246,111 +213,6 @@
             </div>
         </div>
     @endforeach
-    {{-- end of modal --}}
-
-    {{-- modal man --}}
-    <div class="modal fade" id="manOnlyModal" tabindex="-1" aria-labelledby="bs-example-modal-lg" style="display: none;"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header d-flex align-items-center">
-                    <h4 class="modal-title" id="myLargeModalLabel">
-                        Man Henkaten
-                    </h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form class="mt-3">
-                    <div class="modal-body">
-                        <div class="statusRadio text-center">
-                            <label class="btn btn-light-primary text-primary font-medium me-2">
-                                <div class="form-check">
-                                    <input type="radio" id="manHenkatenRadio" class="other-radio form-check-input"
-                                        name="manStatus" value="henkaten">
-                                    <label class="form-check-label" for="manHenkatenRadio">
-                                        <span class="d-none d-md-block">
-                                            HENKATEN
-                                        </span>
-                                    </label>
-                                </div>
-                            </label>
-                            <label class="btn btn-light-primary text-primary font-medium">
-                                <div class="form-check">
-                                    <input type="radio" id="manStopRadio" class="other-radio form-check-input"
-                                        name="manStatus" value="stop">
-                                    <label class="form-check-label" for="manStopRadio">
-                                        <span class="d-none d-md-block">
-                                            STOP
-                                        </span>
-                                    </label>
-                                </div>
-                            </label>
-                        </div>
-                        @foreach ($activeEmployees as $emp)
-                            <div class="row mt-5">
-                                <div class="col-lg-1">
-                                    <label for="exampleInputPassword1" class="form-label fw-semibold"
-                                        style="color: white">Pos</label>
-                                    <p class="mt-2 text-center badge bg-danger rounded-pill">Pos {{ $emp->pos }}</p>
-                                </div>
-                                <div class="col-lg-5">
-                                    <div class="mb-4">
-                                        <label for="exampleInputPassword1" class="form-label fw-semibold">Current
-                                            Employee</label>
-                                        <input type="text" class="form-control" id="employeeBefore"
-                                            name="employeeBefore[]" placeholder="John"
-                                            value="{{ $emp->employee->name }}" disabled>
-
-                                        <input type="hidden" class="form-control employeeBefore" name="employeeBefore[]"
-                                            placeholder="John" value="{{ $emp->employee->id }}" disabled>
-                                    </div>
-                                </div>
-                                <div class="col-lg-1">
-                                    <label for="exampleInputPassword1" class="form-label fw-semibold"
-                                        style="color: white">Last</label>
-                                    <p class="text-center mt-1">- to -</p>
-                                </div>
-                                <div class="col-lg-5">
-                                    <div class="mb-4">
-                                        <label for="exampleInputPassword1" class="form-label fw-semibold">Replacement
-                                            Employee</label>
-                                        <select class="select2 form-select select2-hidden-accessible employeeReplacement"
-                                            style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
-                                            name="employeeReplacement" required>
-                                            <option value="0">Select Employee</option>
-                                            @foreach ($employees as $employee)
-                                                <option value="{{ $employee->id }}">{{ $employee->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                        <div class="form-group mt-3 mb-3 description" style="display: none;">
-                            <label>Problem</label>
-                            <input class="form-control" rows="3" placeholder="Problem..." name="problem"
-                                id="manProblem" disabled required>
-                            </input>
-                        </div>
-                        <div class="form-group mt-3 mb-3 description" style="display: none;">
-                            <label>Description</label>
-                            <textarea class="form-control" rows="3" placeholder="Description" name="description" id="manDescription"
-                                disabled required>
-                            </textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" id="manModalSubmit2">Save
-                            changes</button>
-                        <button type="button"
-                            class="btn btn-light-danger text-danger font-medium waves-effect text-start"
-                            data-bs-dismiss="modal">
-                            Close
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
     {{-- end of modal --}}
 
     {{-- modal error --}}
@@ -473,7 +335,7 @@
                             $flag = '-flag';
                         }
 
-                        $target = $modal['modalId'] == 'manModal' ? '#manOnlyModal' . $flag : '#' . $modal['modalId'];
+                        $target = $modal['modalId'] == 'manModal' ? '#' . $modal['modalId'] . $flag : '#' . $modal['modalId'];
 
                     @endphp
                     <div class="col-lg-12">
@@ -618,29 +480,22 @@
                 <table class="table table-responsive-lg" id="henkatenHistory" style="width:100%">
                     <thead>
                         <tr>
-                            <th>No</th>
+                            <th>Line Status</th>
                             <th>4M</th>
-                            <th>Status</th>
-                            <th>Desc</th>
+                            <th>Abnormality</th>
                             <th>Time</th>
-                            <th>Troubleshoot</th>
-                            @php
-                                $hasTroubleshootTime = collect($histories)->contains(function ($history) {
-                                    return $history['troubleshoot'] !== 'Belum ditangani';
-                                });
-                            @endphp
-
-                            {{-- If 'Troubleshoot Time' is present, add the column --}}
-                            @if ($hasTroubleshootTime)
-                                <th>Troubleshoot Time</th>
-                            @endif
-                            <th>Action</th>
+                            <th class="text-center">Troubleshoot</th>
+                            <th>Status</th>
+                            <th class="text-center">Action</th>
+                            @can('LDR')
+                                <th class="text-center">Approve</th>
+                            @endcan
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($histories as $history)
                             @php
-                                switch ($history['status']) {
+                                switch ($history->status) {
                                     case 'running':
                                         $color = 'success';
                                         break;
@@ -656,107 +511,130 @@
                                 }
                             @endphp
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $history['type'] }}</td>
                                 <td>
-                                    <span class="mb-1 badge bg-{{ $color }}">{{ $history['status'] }}</span>
+                                    <span class="mb-1 badge bg-{{ $color }} rounded-pill">
+                                        {{ $history->status }}
+                                    </span>
                                 </td>
-                                <td>{{ $history['problem'] }}</td>
-                                <td>{{ Carbon\Carbon::parse($history['date'])->format('j F Y, H:i:s') }}</td>
-                                @if ($history['status'] == 'stop')
-                                    @if ($history['troubleshoot'] == 'Belum ditangani')
-                                        <td class="text-center">
-                                            <span class="mb-1 badge bg-danger">{{ $history['troubleshoot'] }}</span>
-                                        </td>
-                                        <td class="text-center">
-                                            <input type="checkbox" checked data-toggle="toggle" data-on="Open"
-                                                data-off="Closed" data-onstyle="danger" data-offstyle="success"
-                                                data-width="150" style="margin: 0 auto !important"
-                                                id="statusCheckbox-{{ $loop->index }}"
+                                <td>{{ strtoupper($history->{"4M"}) }}</td>
+                                <td>{{ $history->abnormality }}</td>
+                                <td>{{ Carbon\Carbon::parse($history->date)->format('j F Y, H:i:s') }}</td>
+                                @if (!$history->troubleshoot)
+                                    <td class="text-center">
+                                        <span class="badge bg-danger">Belum ditangani</span>
+                                    </td>
+                                    <td>
+                                        <span class="mb-1 badge bg-light-danger text-danger">
+                                            Waiting Troubleshoot
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-secondary view-employee" data-bs-toggle="modal"
+                                            data-bs-target="">
+                                            <span class="rounded-3" id="icon">
+                                                <i class="ti ti-search"></i>
+                                            </span>
+                                        </button>
+                                        @can('JP')
+                                            <button class="btn btn-warning troubleshoot"
                                                 data-history-id="{{ $history['id'] }}">
-                                        </td>
-                                    @elseif($history['status_after'] == 'running')
-                                        <td class="text-center">{{ $history['troubleshoot'] }}</td>
-                                        <td class="text-center">
-                                            {{ Carbon\Carbon::parse($history['troubleshootTime'])->format('j F Y, H:i:s') }}
-                                        </td>
-                                        <td class="text-center">
-                                            <input type="checkbox" checked data-toggle="toggle" data-on="Closed"
-                                                data-off="Open" data-onstyle="success" data-offstyle="closed"
-                                                data-width="150" style="margin: 0 auto !important"
-                                                id="statusCheckbox-{{ $loop->index }}"
-                                                data-history-id="{{ $history['id'] }}" disabled>
-                                        </td>
-                                    @endif
-                                @else
-                                    @if ($history['troubleshoot'] == 'Belum ditangani')
-                                        <td>
-                                            <span class="mb-1 badge bg-danger">{{ $history['troubleshoot'] }}</span>
-                                        </td>
-                                        <td class="text-center">
-                                            <button class="btn btn-warning" data-history-id="{{ $history['id'] }}"
-                                                id="edit">
                                                 <span class="rounded-3" id="icon">
-                                                    <i class="ti ti-pencil"></i>
+                                                    <i class="ti ti-edit"></i>
+                                                </span>
+                                            </button>
+                                            <a href="#" class="btn btn-danger delete-employee" data-employee-id="">
+                                                <span class="rounded-3" id="icon">
+                                                    <i class="ti ti-x"></i>
+                                                </span>
+                                            </a>
+                                        @endcan
+                                    </td>
+                                    @can('LDR', 'SPV', 'MGR')
+                                        <td class="text-center">
+                                            <button class="btn btn-success" data-history-id="{{ $history['id'] }}" disabled>
+                                                <span class="rounded-3" id="icon">
+                                                    <i class="ti ti-checks"></i>
                                                 </span>
                                             </button>
                                         </td>
-                                    @else
-                                        @if ($history['type'] == 'Man')
-                                            @foreach ($activeEmployees as $emp)
-                                                @php
-                                                    $photos = [];
-                                                    // Pre-calculate photos
-                                                    foreach ($activeEmployees as $emp) {
-                                                        $photo_before = $emp->employee->photo;
-                                                        $photo_after = null;
-                                                        foreach ($manHenkaten as $man) {
-                                                            $henkatenEmployeeId = $man->employee_before_id;
-                                                            $activeEmployeeId = $emp->employee_id;
-                                                            if ($activeEmployeeId == $henkatenEmployeeId) {
-                                                                $photo_after = $man->manAfter->photo;
-                                                                break; // Exit the loop once a match is found
-                                                            }
-                                                        }
-                                                        $photos[] = [
-                                                            'photo_before' => $photo_before,
-                                                            'photo_after' => $photo_after,
-                                                        ];
-                                                    }
-                                                @endphp
-                                            @endforeach
-                                            <td>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <a href="javascript:void(0)">
-                                                        <img src="{{ asset('uploads/doc/' . $photos[$loop->index]['photo_before']) }}"
-                                                            class="rounded-circle" alt="t1" width="40">
-                                                    </a>
-                                                    <p class="mt-3 text-muted" style="font-size:0.8em">To</p>
-                                                    <a href="javascript:void(0)">
-                                                        <img src="{{ asset('uploads/doc/' . $photos[$loop->index]['photo_after']) }}"
-                                                            class="rounded-circle" alt="t2" width="40">
-                                                    </a>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                {{ Carbon\Carbon::now()->format('j F Y, H:i:s') }}
-                                            </td>
-                                            <td class="text-center"></td>
-                                        @else
-                                            <td>{{ $history['troubleshoot'] }}
-                                            </td>
-                                            <td class="text-center">
-                                                {{ Carbon\Carbon::parse($history['troubleshootTime'])->format('j F Y, H:i:s') }}
-                                            </td>
-                                            <td class="text-center">
-                                                <button class="btn btn-warning" data-history-id="{{ $history['id'] }}"
-                                                    id="edit" disabled>
+                                    @endcan
+                                @else
+                                    @if ($history->is_done === '0')
+                                        <td class="text-center">{{ $history->troubleshoot->troubleshoot }}</td>
+                                        <td>
+                                            <span class="mb-1 badge bg-light-warning text-warning">
+                                                Waiting Approval
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <button class="btn btn-secondary view-employee" data-bs-toggle="modal"
+                                                data-bs-target="">
+                                                <span class="rounded-3" id="icon">
+                                                    <i class="ti ti-search"></i>
+                                                </span>
+                                            </button>
+                                            @can('JP')
+                                                <button class="btn btn-warning troubleshoot"
+                                                    data-history-id="{{ $history['id'] }}">
                                                     <span class="rounded-3" id="icon">
-                                                        <i class="ti ti-pencil"></i>
+                                                        <i class="ti ti-edit"></i>
+                                                    </span>
+                                                </button>
+                                                <a href="#" class="btn btn-danger delete-employee" data-employee-id="">
+                                                    <span class="rounded-3" id="icon">
+                                                        <i class="ti ti-x"></i>
+                                                    </span>
+                                                </a>
+                                            @endcan
+                                        </td>
+                                        @can('LDR', 'SPV', 'MGR')
+                                            <td class="text-center">
+                                                <button class="btn btn-success approve"
+                                                    data-history-id="{{ $history['id'] }}">
+                                                    <span class="rounded-3">
+                                                        <i class="ti ti-checks"></i>
                                                     </span>
                                                 </button>
                                             </td>
-                                        @endif
+                                        @endcan
+                                    @else
+                                        <td class="text-center">{{ $history->troubleshoot->troubleshoot }}</td>
+                                        <td>
+                                            <span class="mb-1 badge bg-light-success text-success">
+                                                Approved by {{ $history->approver }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <button class="btn btn-secondary view-employee" data-bs-toggle="modal"
+                                                data-bs-target="">
+                                                <span class="rounded-3" id="icon">
+                                                    <i class="ti ti-search"></i>
+                                                </span>
+                                            </button>
+                                            @can('JP')
+                                                <button class="btn btn-warning troubleshoot"
+                                                    data-history-id="{{ $history['id'] }}">
+                                                    <span class="rounded-3" id="icon">
+                                                        <i class="ti ti-edit"></i>
+                                                    </span>
+                                                </button>
+                                                <a href="#" class="btn btn-danger delete-employee" data-employee-id="">
+                                                    <span class="rounded-3" id="icon">
+                                                        <i class="ti ti-x"></i>
+                                                    </span>
+                                                </a>
+                                            @endcan
+                                        </td>
+                                        @can('LDR', 'SPV', 'MGR')
+                                            <td class="text-center">
+                                                <button class="btn btn-success approve"
+                                                    data-history-id="{{ $history['id'] }}" disabled>
+                                                    <span class="rounded-3">
+                                                        <i class="ti ti-checks"></i>
+                                                    </span>
+                                                </button>
+                                            </td>
+                                        @endcan
                                     @endif
                                 @endif
                             </tr>
@@ -767,10 +645,10 @@
         </div>
     </div>
 
-    {{-- modal --}}
+    {{-- modal troubleshoot --}}
     @foreach ($histories as $history)
-        <div class="modal fade" id="statusModal-{{ $history['id'] }}" tabindex="-1"
-            aria-labelledby="bs-example-modal-lg" style="display: none;" aria-hidden="true">
+        <div class="modal fade modal-lg troubleshootModal" id="{{ $history['id'] }}Troubleshoot" tabindex="-1"
+            aria-labelledby="bs-example-modal-xl" style="display: none;" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header d-flex align-items-center">
@@ -783,33 +661,195 @@
                         @csrf
                         @method('POST')
                         <div class="modal-body">
-                            <input class="form-control" rows="3" value="{{ $history['type'] }}" type="hidden"
-                                name="type">
-                            <input class="form-control" rows="3" value="{{ $history['id'] }}" type="hidden"
-                                name="henkatenId">
-                            <input class="form-control" rows="3" value="{{ $line->id }}" type="hidden"
-                                name="lineId">
-                            <div class="form-group mb-3 description text-center">
-                                <h4>Problem</h4>
-                                <input class="form-control" rows="3" value="{{ $history['problem'] }}" disabled>
-                                </input>
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <input type="hidden" name="henkaten_id" value="{{ $history->id }}">
+                                    <input type="hidden" name="4M" value="{{ $history->{"4M"} }}">
+                                    <input type="hidden" name="status" value="{{ $history->status }}">
+                                    <input type="hidden" name="line" value="{{ $history->line_id }}">
+                                    <div class="form-group mt-3 mb-3 description" style="display: none;">
+                                        <label class="form-label fw-semibold">Troubleshoot</label>
+                                        <input class="form-control" rows="3" placeholder="Troubleshoot..."
+                                            name="troubleshoot" id="troubleshoot" required>
+                                        </input>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group mt-3 mb-3 description" style="display: none;">
-                                <label>Troubleshoot</label>
-                                <input class="form-control" rows="3" placeholder="Troubleshoot..."
-                                    name="troubleshoot" id="troubleshoot" required>
-                                </input>
-                            </div>
-                            <label>Approved By</label>
-                            <select class="form-control picSelect" style="width: 100%; height: 36px" tabindex="-1"
-                                aria-hidden="true" id="approval" name="approvedBy" required>
-                                <option value="0">-- Select --</option>
-                                @foreach ($employees as $employee)
-                                    <option value="{{ $employee->name }}">
-                                        {{ $employee->name }}
-                                    </option>
+                            @if ($history->{"4M"} === 'man')
+                                @foreach ($activeEmployees as $emp)
+                                    <div class="row mt-1">
+                                        <div class="col-lg-1">
+                                            <label for="exampleInputPassword1" class="form-label fw-semibold"
+                                                style="color: white">Pos</label>
+                                            <p class="mt-2 text-center badge bg-danger rounded-pill">Pos
+                                                {{ $emp->pos }}</p>
+                                        </div>
+                                        <div class="col-lg-5">
+                                            <div class="mb-4">
+                                                <label for="exampleInputPassword1" class="form-label fw-semibold">Current
+                                                    Employee</label>
+                                                <input type="text" class="form-control" id="employeeBefore"
+                                                    placeholder="John" value="{{ $emp->employee->name }}" disabled>
+
+                                                <input type="hidden" class="form-control employeeBefore" name="before[]"
+                                                    placeholder="John" value="{{ $emp->employee->id }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-1">
+                                            <label for="exampleInputPassword1" class="form-label fw-semibold"
+                                                style="color: white">Last</label>
+                                            <p class="text-center mt-1">- to -</p>
+                                        </div>
+                                        <div class="col-lg-5">
+                                            <div class="mb-4">
+                                                <label for="exampleInputPassword1"
+                                                    class="form-label fw-semibold">Replacement
+                                                    Employee</label>
+                                                <select
+                                                    class="select2 form-select select2-hidden-accessible employeeReplacement"
+                                                    style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
+                                                    name="after[]" id="{{ $history['id'] }}After" required>
+                                                    <option value="0">Select Employee</option>
+                                                    @foreach ($employees as $employee)
+                                                        <option value="{{ $employee->id }}">{{ $employee->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endforeach
-                            </select>
+                            @endif
+                            <div class="accordion accordion-flush position-relative overflow-hidden mt-2"
+                                id="accordionFlushExample">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="accordion-item mb-3 border rounded-top rounded-bottom">
+                                            <h2 class="accordion-header" id="flush-headingOne">
+                                                <button
+                                                    class="accordion-button fs-4 fw-bolder px-3 py-6 lh-base border-0 rounded-top collapsed"
+                                                    type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#flush-collapseOne" aria-expanded="false"
+                                                    aria-controls="flush-collapseOne">
+                                                    Quality Inspections
+                                                </button>
+                                            </h2>
+                                            <div id="flush-collapseOne" class="accordion-collapse collapse"
+                                                aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample"
+                                                style="">
+                                                <div class="accordion-body px-3 fw-normal">
+                                                    <div class="text-center mb-2">
+                                                        <h6 class="fw-semibold">Abnormality Inspection Report</h6>
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="radio"
+                                                                name="inspection" id="need" value="need">
+                                                            <label class="form-check-label" for="need">Need</label>
+                                                        </div>
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="radio"
+                                                                name="inspection" id="noNeed" value="no need">
+                                                            <label class="form-check-label" for="noNeed">No Need
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row ">
+                                                        <div class="col-12 mb-3">
+                                                            <div class="form-group pic-form">
+                                                                <label for="part"
+                                                                    class="form-label fw-semibold">Part</label>
+                                                                <input type="text" class="form-control" id="part"
+                                                                    name="part" placeholder="TCC d983">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12 mb-3">
+                                                            <div class="form-group pic-form">
+                                                                <label class="form-label mb-2 fw-semibold">Before
+                                                                    Treatment</label>
+                                                                <select
+                                                                    class="select2 form-control select2-hidden-accessible beforeTreatment"
+                                                                    style="width: 100%; height: 36px" tabindex="-1"
+                                                                    aria-hidden="true"
+                                                                    id="{{ $history['id'] }}BeforeTreatment"
+                                                                    name="beforeTreatment" required>
+                                                                    <option value="0">-- Select --</option>
+                                                                    <option value="ok">OK</option>
+                                                                    <option value="ng">NG</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12 mb-3">
+                                                            <div class="form-group pic-form">
+                                                                <label class="form-label mb-2 fw-semibold">After
+                                                                    Treatment</label>
+                                                                <select
+                                                                    class="select2 form-control select2-hidden-accessible"
+                                                                    style="width: 100%; height: 36px" tabindex="-1"
+                                                                    aria-hidden="true"
+                                                                    id="{{ $history['id'] }}AfterTreatment"
+                                                                    name="afterTreatment" required>
+                                                                    <option value="0">-- Select --</option>
+                                                                    <option value="ok">OK</option>
+                                                                    <option value="ng">NG</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="accordion-item mb-3 border rounded-top rounded-bottom">
+                                            <h2 class="accordion-header" id="flush-headingThree">
+                                                <button
+                                                    class="accordion-button fs-4 fw-semibold px-3 py-6 lh-base border-0 rounded-bottom collapsed"
+                                                    type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#flush-collapseThree" aria-expanded="false"
+                                                    aria-controls="flush-collapseThree">
+                                                    Safety
+                                                </button>
+                                            </h2>
+                                            <div id="flush-collapseThree" class="accordion-collapse collapse"
+                                                aria-labelledby="flush-headingThree"
+                                                data-bs-parent="#accordionFlushExample" style="">
+                                                <div class="accordion-body px-3 fw-normal">
+                                                    <div class="row">
+                                                        <div class="col-12 mb-3">
+                                                            <div class="form-group pic-form">
+                                                                <label class="form-label mb-2 fw-semibold">Result
+                                                                    Check</label>
+                                                                <select
+                                                                    class="select2 form-control select2-hidden-accessible"
+                                                                    style="width: 100%; height: 36px" tabindex="-1"
+                                                                    aria-hidden="true"
+                                                                    id="{{ $history['id'] }}ResultCheck"
+                                                                    name="resultCheck" required>
+                                                                    <option value="0">-- Select --</option>
+                                                                    <option value="ok">OK</option>
+                                                                    <option value="ng">NG</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mt-4">
+                                        <label class="form-label fw-semibold">Done By</label>
+                                        <select class="select2 form-control" style="width: 100%; height: 36px"
+                                            tabindex="-1" aria-hidden="true" id="{{ $history['id'] }}DoneBy"
+                                            name="doneBy" required>
+                                            <option value="0">-- Select Employee--</option>
+                                            @foreach ($employees as $employee)
+                                                <option value="{{ $employee->id }}">
+                                                    {{ $employee->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-secondary">Save
@@ -818,6 +858,43 @@
                                 class="btn btn-light-danger text-danger font-medium waves-effect text-start"
                                 data-bs-dismiss="modal">
                                 Close
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endforeach
+    {{-- end of modal --}}
+
+    {{-- modal approve --}}
+    @foreach ($histories as $history)
+        <div class="modal fade modal-md" id="{{ $history['id'] }}Approve" tabindex="-1"
+            aria-labelledby="bs-example-modal-xl" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header d-flex align-items-center">
+                        <h4 class="modal-title" id="myLargeModalLabel">
+                            Approval
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('dashboard.troubleshootApproval') }}" method="POST" class="mt-3">
+                        @csrf
+                        @method('POST')
+                        <div class="modal-body">
+                            <input type="hidden" name="henkaten_id" value="{{ $history->id }}">
+                            <input type="hidden" name="line" value="{{ $history->line_id }}">
+                            <input type="hidden" name="4M" value="{{ $history->{"4M"} }}">
+                            <input type="hidden" name="status" value="{{ $history->status }}">
+                            Do you really want to approve?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-secondary">Approve</button>
+                            <button type="button"
+                                class="btn btn-light-danger text-danger font-medium waves-effect text-start"
+                                data-bs-dismiss="modal">
+                                Cancel
                             </button>
                         </div>
                     </form>
@@ -856,6 +933,15 @@
     $(document).ready(function() {
         // set shift to local storage
         localStorage.setItem('shift', $('#shift').html());
+
+        var errorMessage = "{!! session('error') !!}";
+        var successMessage = "{!! session('success') !!}";
+
+        if (errorMessage) {
+            notif('error', errorMessage);
+        } else if (successMessage) {
+            notif('success', successMessage);
+        }
 
         // initialize datatable
         $('#henkatenHistory').DataTable({
@@ -896,250 +982,34 @@
             toggleFormElements($(this));
         });
 
-        // method on submit
-        $('#methodModalSubmit').on('click', function() {
-            let table = 'method';
-            let status = labelText;
-            let lineId = getLineId();
-            let pic = $('#methodModalPicSelect').val();
-            let description = $('#methodModalDescription').val();
-            let problem = $('#methodModalProblem').val();
-
-            if (!status) {
-                notif('error', 'Isi Status terlebih dahulu!');
-                return false;
-            }
-
-            if (status !== 'running' && pic == 0) {
-                notif('error', 'Isi PIC terlebih dahulu!');
-                return false;
-            }
-
-            if (status !== 'running' && description == 0) {
-                notif('error', 'Isi deskripsi terlebih dahulu!');
-                return false;
-            }
-
-            if (status !== 'running' && problem == 0) {
-                notif('error', 'Isi problem terlebih dahulu!');
-                return false;
-            }
-
-            $.ajax({
-                type: 'get',
-                url: `{{ url('dashboard/storeHenkaten/${table}/${status.toLowerCase().trim()}/${lineId}/${pic}/${problem}/${description}') }}`,
-                _token: "{{ csrf_token() }}",
-                dataType: 'json',
-                success: function(data) {
-                    if (data.status == 'success') {
-                        window.location.reload();
-                        setInterval(() => {
-                            notif('success', data.message)
-                        }, 5000);
-                    } else {
-                        notif('error', data.message);
-                    }
-                },
-                error: function(xhr) {
-                    if (xhr.status == 0) {
-                        notif("error", 'Connection Error');
-                        return;
-                    }
-                    notif("error", 'Internal Server Error');
-                }
-            });
-        })
-
-        // machine on submit
-        $('#machineModalSubmit').on('click', function() {
-            let table = 'machine';
-            let status = labelText;
-            let lineId = getLineId();
-            let pic = $('#machineModalPicSelect').val();
-            let description = $('#machineModalDescription').val();
-            let problem = $('#machineModalProblem').val();
-
-            if (!status) {
-                notif('error', 'Isi Status terlebih dahulu!');
-                return false;
-            }
-
-            if (status !== 'running' && pic == 0) {
-                notif('error', 'Isi PIC terlebih dahulu!');
-                return false;
-            }
-
-            if (status !== 'running' && description == 0) {
-                notif('error', 'Isi deskripsi terlebih dahulu!');
-                return false;
-            }
-
-            if (status !== 'running' && problem == 0) {
-                notif('error', 'Isi problem terlebih dahulu!');
-            }
-
-            $.ajax({
-                type: 'get',
-                url: `{{ url('dashboard/storeHenkaten/${table}/${status.toLowerCase().trim()}/${lineId}/${pic}/${problem}/${description}') }}`,
-                _token: "{{ csrf_token() }}",
-                dataType: 'json',
-                success: function(data) {
-                    if (data.status == 'success') {
-                        window.location.reload();
-                        setInterval(() => {
-                            notif('success', data.message)
-                        }, 5000);
-                    } else {
-                        notif('error', data.message);
-                    }
-                },
-                error: function(xhr) {
-                    if (xhr.status == 0) {
-                        notif("error", 'Connection Error');
-                        return;
-                    }
-                    notif("error", 'Internal Server Error');
-                }
-            });
-        })
-
-        // man on submit
-        $('#manModalSubmit2').on('click', function() {
-
-            let employeeReplacement = [];
-            let employeeBefore = [];
-
-            $('.employeeBefore').each(function() {
-                // Get the value of each input and push it to the array
-                let value = $(this).val();
-                employeeBefore.push(value);
-            });
-
-            // Iterate through each element with the class employeeReplacement
-            $('.employeeReplacement').each(function() {
-                // Get the value of each input and push it to the array
-                let value = $(this).val();
-                employeeReplacement.push(value);
-            });
-
-            let status = labelText;
-            let lineId = getLineId();
-            let description = $('#manDescription').val().trim();
-            let problem = $('#manProblem').val().trim();
-
-            if (!status) {
-                notif('error', 'Isi Status terlebih dahulu!');
-                return false;
-            }
-
-            if (status !== 'running' && problem == 0) {
-                notif('error', 'Isi problem terlebih dahulu!');
-            }
-
-            if (status !== 'running' && description == 0) {
-                notif('error', 'Isi deskripsi terlebih dahulu!');
-                return false;
-            }
-
-            $.ajax({
-                type: 'get',
-                url: `{{ url('dashboard/storeManHenkaten/${employeeBefore}/${employeeReplacement}/${status.toLowerCase().trim()}/${lineId}/${problem}/${description}') }}`,
-                _token: "{{ csrf_token() }}",
-                dataType: 'json',
-                success: function(data) {
-                    if (data.status == 'success') {
-                        window.location.reload();
-                        setInterval(() => {
-                            notif('success', data.message)
-                        }, 5000);
-                    } else {
-                        notif('error', data.message);
-                    }
-                },
-                error: function(xhr) {
-                    if (xhr.status == 0) {
-                        notif("error", 'Connection Error');
-                        return;
-                    }
-                    notif("error", 'Internal Server Error');
-                }
-            });
-        })
-
-        // material on submit
-        $('#materialModalSubmit').on('click', function() {
-            let table = 'material';
-            let status = labelText;
-            let lineId = getLineId();
-            let pic = $('#materialModalPicSelect').val();
-            let description = $('#materialModalDescription').val();
-            let problem = $('#materialModalProblem').val();
-
-            if (!status) {
-                notif('error', 'Isi Status terlebih dahulu!');
-                return false;
-            }
-
-            if (status !== 'running' && pic == 0) {
-                notif('error', 'Isi PIC terlebih dahulu!');
-                return false;
-            }
-
-            if (status !== 'running' && description == 0) {
-                notif('error', 'Isi deskripsi terlebih dahulu!');
-                return false;
-            }
-
-            if (status !== 'running' && problem == 0) {
-                notif('error', 'Isi problem terlebih dahulu!');
-            }
-
-            $.ajax({
-                type: 'get',
-                url: `{{ url('dashboard/storeHenkaten/${table}/${status.toLowerCase().trim()}/${lineId}/${pic}/${problem}/${description}') }}`,
-                _token: "{{ csrf_token() }}",
-                dataType: 'json',
-                success: function(data) {
-                    if (data.status == 'success') {
-                        window.location.reload();
-                        setInterval(() => {
-                            notif('success', data.message)
-                        }, 5000);
-                    } else {
-                        notif('error', data.message);
-                    }
-                },
-                error: function(xhr) {
-                    if (xhr.status == 0) {
-                        notif("error", 'Connection Error');
-                        return;
-                    }
-                    notif("error", 'Internal Server Error');
-                }
-            });
-        })
-
-
-        $('input[type="checkbox"]').each(function(index) {
-            let checkbox = $(this);
-
-            checkbox.on('change', function() {
-                if (checkbox.prop('checked')) {
-                    // Checkbox is checked (Open)
-                    if (!confirm('Are you sure?')) {
-                        checkbox.bootstrapToggle('off'); // Uncheck the checkbox if canceled
-                    }
-                } else {
-                    // Checkbox is not checked (Closed)
-                    const historyId = $(this).data('history-id');
-                    $(`#statusModal-${historyId}`).modal('show');
-                }
-            });
-        });
-
-        $('#edit').on('click', function() {
+        $('.troubleshoot').on('click', function() {
             const historyId = $(this).data('history-id');
-            $(`#statusModal-${historyId}`).modal('show');
+            $(`#${historyId}Troubleshoot`).modal('show');
+
+            $(`#${historyId}BeforeTreatment`).select2({
+                dropdownParent: $(`#${historyId}Troubleshoot`)
+            });
+
+            $(`#${historyId}AfterTreatment`).select2({
+                dropdownParent: $(`#${historyId}Troubleshoot`)
+            });
+
+            $(`#${historyId}ResultCheck`).select2({
+                dropdownParent: $(`#${historyId}Troubleshoot`)
+            });
+
+            $(`.employeeReplacement`).select2({
+                dropdownParent: $(`#${historyId}Troubleshoot`)
+            });
+
+            $(`#${historyId}DoneBy`).select2({
+                dropdownParent: $(`#${historyId}Troubleshoot`)
+            });
+        })
+
+        $('.approve').on('click', function() {
+            const historyId = $(this).data('history-id');
+            $(`#${historyId}Approve`).modal('show');
         })
 
         var errorMessage = "{!! session('error') !!}";
@@ -1153,21 +1023,31 @@
             notif('success', successMessage);
         }
 
-        $('#machineModalPicSelect').select2({
+        $('#machineModalTableManagement').select2({
             dropdownParent: $('#machineModal')
         });
-        $('#manModalPicSelect').select2({
+        $('#manModalTableManagement').select2({
             dropdownParent: $('#manModal')
         });
-        $('#methodModalPicSelect').select2({
+        $('#methodModalTableManagement').select2({
             dropdownParent: $('#methodModal')
         });
-        $('#materialModalPicSelect').select2({
+
+        $('#materialModalTableManagement').select2({
             dropdownParent: $('#materialModal')
         });
 
-        $('.employeeReplacement').select2({
-            dropdownParent: $('#manOnlyModal')
+        $('#machineModalCategory').select2({
+            dropdownParent: $('#machineModal')
+        });
+        $('#manModalCategory').select2({
+            dropdownParent: $('#manModal')
+        });
+        $('#methodModalCategory').select2({
+            dropdownParent: $('#methodModal')
+        });
+        $('#materialModalCategory').select2({
+            dropdownParent: $('#materialModal')
         });
 
         $('.employeeReplacement').on('change', function() {
