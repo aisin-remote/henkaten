@@ -24,6 +24,11 @@ class Henkaten extends Model
     {
         return $this->belongsTo(Shift::class);
     }
+    
+    public function line()
+    {
+        return $this->belongsTo(Line::class);
+    }
 
     public function employee()
     {

@@ -44,4 +44,9 @@ class Employee extends Model
     {
         return $this->hasMany(Troubleshoot::class, 'employee_after_id');
     }
+    
+    public function troubleshoot()
+    {
+        return $this->hasMany(Troubleshoot::class);
+    }
 }

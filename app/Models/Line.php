@@ -15,21 +15,9 @@ class Line extends Model
 
     protected $guarded = ['id'];
 
-    public function henkatenMachine()
+    public function henkaten()
     {
-        return $this->hasMany(HenkatenMachine::class, 'line_id');
-    }
-    public function henkatenMan()
-    {
-        return $this->hasMany(HenkatenMan::class, 'line_id');
-    }
-    public function henkatenMethod()
-    {
-        return $this->hasMany(HenkatenMethod::class, 'line_id');
-    }
-    public function henkatenMaterial()
-    {
-        return $this->hasMany(HenkatenMaterial::class, 'line_id');
+        return $this->hasMany(Henkaten::class, 'line_id');
     }
 
     public function employeeActive()
