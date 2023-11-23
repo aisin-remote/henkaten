@@ -10,6 +10,7 @@ use App\Http\Controllers\HenkatenController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\themeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,6 +94,10 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::get('/history', [HenkatenController::class, 'history'])->name('history');
+
+    Route::get('/theme', [themeController::class, 'index'])->name('theme');
+    Route::post('/themeStore', [themeController::class, 'regist'])->name('theme.regist');
+    Route::post('/theme/{id}', [themeController::class, 'destroy'])->name('theme.destroy');
 
     Route::get('/mappingAllLine', function () {
         return view('welcome');

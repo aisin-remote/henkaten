@@ -87,6 +87,12 @@
                                 <span class="hide-menu">Minimum Skill</span>
                             </a>
                         </li>
+                        <li class="sidebar-item">
+                            <a href="/theme" class="sidebar-link">
+                                <i class="ti ti-timeline-event-text"></i>
+                                <span class="hide-menu">Theme</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>
