@@ -511,7 +511,7 @@
                                 <div class="card p-4 py-4">
                                     <div class="card-body p-3 align-items-center"
                                         style="max-height: 11em; width: 100%; overflow:scroll; overflow-x: hidden">
-                                        @if ($histories !== [])
+                                        @if (!$histories->isEmpty())
                                             <div class="accordion" id="accordionExample">
                                                 @foreach ($histories as $history)
                                                     <div class="accordion-item">

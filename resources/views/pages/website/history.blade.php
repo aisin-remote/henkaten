@@ -29,7 +29,7 @@
                             <th class="text-center">Safety</th>
                             <th colspan="4" class="text-center">Quality Inspection</th>
                             <th rowspan="2" class="align-middle">Done by</th>
-                            <th rowspan="2" class="align-middle">Approval</th>
+                            <th rowspan="2" class="align-middle text-center">Approval</th>
                         </tr>
                         <tr>
                             <th>Result Check</th>
@@ -80,7 +80,8 @@
                                         class="badge bg-{{ $colorAfter }}">{{ $henkaten->troubleshoot->after_treatment }}</span>
                                 </td>
                                 <td>{{ $henkaten->troubleshoot->employee->name }}</td>
-                                <td>{{ $henkaten->approval !== null ? $henkaten->approval : 'Waiting...' }}</td>
+                                <td>{{ $henkaten->approver !== null ? 'approved by ' . $henkaten->approver : 'Waiting...' }}
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
