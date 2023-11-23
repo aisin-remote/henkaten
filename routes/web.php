@@ -65,10 +65,10 @@ Route::middleware(['auth'])->group(function () {
         // get employee skill from employee
         Route::get('/getSkillEmp', [EmployeeController::class, 'getSkillEmp'])->name('employee.getSkillEmp');
         Route::get('/getSkillPos', [EmployeeController::class, 'getSkillPos'])->name('employee.getSkillPos');
-        
+
         // get PIC
         Route::get('/getPic', [EmployeeController::class, 'getPic'])->name('employee.getPic');
-        
+
         // edit employees
         Route::get('/{id}/edit', [EmployeeController::class, 'employeeEdit'])->name('editEmployee');
         Route::post('/{id}/update', [EmployeeController::class, 'employeeUpdate'])->name('employee.update');
@@ -91,6 +91,8 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/minimum/{id}', [skillController::class, 'destroy'])->name('minimumSkill.destroy');
         Route::delete('/{name}', [skillController::class, 'destroySkill'])->name('skill.destroy');
     });
+
+    Route::get('/history', [HenkatenController::class, 'history'])->name('history');
 
     Route::get('/mappingAllLine', function () {
         return view('welcome');

@@ -54,6 +54,14 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link" href="/history" aria-expanded="false">
+                        <span class="rounded-3">
+                            <i class="ti ti-history"></i>
+                        </span>
+                        <span class="hide-menu">History</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
                     <a class="sidebar-link has-arrow" aria-expanded="false">
                         <span>
                             <i class="ti ti-box"></i>

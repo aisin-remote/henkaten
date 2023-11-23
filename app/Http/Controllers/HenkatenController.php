@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use Carbon\Carbon;
 use App\Models\Line;
 use App\Models\Shift;
@@ -288,5 +289,23 @@ class HenkatenController extends Controller
                 ->back()
                 ->with('error', 'Gagal diapprove!');
         }
+    }
+
+    public function history()
+    {
+        $henkatenHistory = Henkaten::all();
+        $lineIds = $henkatenHistory->pluck('line_id')->toArray();
+        $henkatenIds = $henkatenHistory->pluck('id')->toArray();
+        $lines = Line::whereIn('id', $lineIds)->pluck('name');
+        $handle = Troubleshoot::whereIn('henkaten_id', $henkatenIds)->get();
+        $handleName = $handle->pluck('done_by')->toArray();
+        $name = Employee::whereIn('id', $handleName)->pluck('name');
+
+        return view('pages.website.history', [
+            'henkatenHistory' => $henkatenHistory,
+            'lines' => $lines,
+            'handle' => $handle,
+            'name' => $name
+        ]);
     }
 }
