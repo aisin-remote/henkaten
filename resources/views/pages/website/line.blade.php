@@ -275,26 +275,48 @@
                         $photo = null; // Initialize $photo to null
                     @endphp
                     @foreach ($manHenkaten as $man)
-                        @php
-                            $henkatenEmployeeId = $man->employee_before_id;
-                            $activeEmployeeId = $emp->employee_id;
+                        @if ($man->henkaten->is_done === '1')
+                            @php
+                                $henkatenEmployeeId = $man->employee_before_id;
+                                $activeEmployeeId = $emp->employee_id;
 
-                            if ($activeEmployeeId == $henkatenEmployeeId) {
-                                $photo = $man->manAfter->photo;
-                                $pos = $emp->pos;
-                            } else {
-                                $pos = $emp->pos;
-                            }
+                                if ($activeEmployeeId == $henkatenEmployeeId) {
+                                    $photo = $man->manAfter->photo;
+                                    $pos = $emp->pos;
+                                } else {
+                                    $pos = $emp->pos;
+                                }
 
-                            // set photo
-                            if ($pos == '1') {
-                                $top = 50;
-                                $left = 28;
-                            } else {
-                                $top = 61;
-                                $left = 44;
-                            }
-                        @endphp
+                                // set photo
+                                if ($pos == '1') {
+                                    $top = 50;
+                                    $left = 28;
+                                } else {
+                                    $top = 61;
+                                    $left = 44;
+                                }
+                            @endphp
+                        @else
+                            @foreach ($activeEmployees as $emp)
+                                @php
+                                    // set pos
+                                    if ($emp->pos == '1') {
+                                        $top = 50;
+                                        $left = 28;
+                                    } else {
+                                        $top = 61;
+                                        $left = 44;
+                                    }
+                                    $photo = $emp->employee->photo;
+                                @endphp
+                                <!-- Displaying the employee photo with default position -->
+                                <div
+                                    style="position: absolute; top: {{ $top }}vh; left: {{ $left }}vh;">
+                                    <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
+                                        style="width: 80px; height: 80px;" class="rounded-1" />
+                                </div>
+                            @endforeach
+                        @endif
                     @endforeach
 
                     <!-- Display the employee photo with the new one from "henkaten" -->
@@ -371,14 +393,16 @@
                             $npk = $emp->employee->npk;
 
                             foreach ($manHenkaten as $man) {
-                                $henkatenEmployeeId = $man->employee_before_id;
-                                $activeEmployeeId = $emp->employee_id;
+                                if ($man->henkaten->is_done === '1') {
+                                    $henkatenEmployeeId = $man->employee_before_id;
+                                    $activeEmployeeId = $emp->employee_id;
 
-                                if ($activeEmployeeId == $henkatenEmployeeId) {
-                                    $photo = $man->manAfter->photo;
-                                    $role = $man->manAfter->role;
-                                    $name = $man->manAfter->name;
-                                    $npk = $man->manAfter->npk;
+                                    if ($activeEmployeeId == $henkatenEmployeeId) {
+                                        $photo = $man->manAfter->photo;
+                                        $role = $man->manAfter->role;
+                                        $name = $man->manAfter->name;
+                                        $npk = $man->manAfter->npk;
+                                    }
                                 }
                             }
 
@@ -633,7 +657,7 @@
                         @method('POST')
                         <div class="modal-body">
                             <div class="row">
-                                <div class="col-12 mb-3">
+                                <div class="col-12 mb-1">
                                     <input type="hidden" name="henkaten_id" value="{{ $history->id }}">
                                     <input type="hidden" name="4M" value="{{ $history->{"4M"} }}">
                                     <input type="hidden" name="status" value="{{ $history->status }}">

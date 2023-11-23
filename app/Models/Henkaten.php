@@ -29,14 +29,4 @@ class Henkaten extends Model
     {
         return $this->belongsTo(Employee::class);
     }
-    
-    public function manBefore()
-    {
-        return $this->belongsTo(Employee::class, 'employee_before_id');
-    }
-    
-    public function manAfter()
-    {
-        return $this->belongsTo(Employee::class, 'employee_after_id');
-    }
 }

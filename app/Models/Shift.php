@@ -25,7 +25,7 @@ class Shift extends Model
         return $this->hasMany(PicActive::class);
     }
     
-    public function man()
+    public function henkaten()
     {
         return $this->hasMany(Henkaten::class);
     }

@@ -37,11 +37,11 @@ class Employee extends Model
 
     public function manBefore()
     {
-        return $this->hasMany(Henkaten::class, 'employee_before_id');
+        return $this->hasMany(Troubleshoot::class, 'employee_before_id');
     }
     
     public function manAfter()
     {
-        return $this->hasMany(Henkaten::class, 'employee_after_id');
+        return $this->hasMany(Troubleshoot::class, 'employee_after_id');
     }
 }

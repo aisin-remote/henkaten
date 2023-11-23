@@ -19,4 +19,14 @@ class Troubleshoot extends Model
     {
         return $this->belongsTo(Henkaten::class);    
     }
+
+    public function manBefore()
+    {
+        return $this->belongsTo(Employee::class, 'employee_before_id');
+    }
+    
+    public function manAfter()
+    {
+        return $this->belongsTo(Employee::class, 'employee_after_id');
+    }
 }

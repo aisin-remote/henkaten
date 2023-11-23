@@ -143,6 +143,7 @@ class HenkatenController extends Controller
                             'done_by' => $request->doneBy,
                         ]);
                     }
+                    DB::commit();
                 }
             } else {
                 // Insert troubleshoot for non-'man' case
@@ -156,6 +157,8 @@ class HenkatenController extends Controller
                     'after_treatment' => $request->afterTreatment,
                     'done_by' => $request->doneBy,
                 ]);
+
+                DB::commit();
             }
 
             if ($request->status === 'stop') {
@@ -212,7 +215,9 @@ class HenkatenController extends Controller
             'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
             'stop' => ['priority' => 2, 'overall' => 'stop'],
         ];
-
+        
+        $currentDate = Carbon::now()->format('Y-m-d');
+        $currentTime = Carbon::now()->format('H:i:s');
         $worstPriority = 0;
 
         try {
@@ -224,30 +229,37 @@ class HenkatenController extends Controller
                 'approver' => auth()->user()->name,
             ]);
 
-            $otherStats = Henkaten::select('status')
-                ->where('is_done', '0')
+            // search other henkaten where status henkaten
+            $otherStats = Henkaten::with('shift')
+                ->where('date', 'LIKE' , $currentDate . '%')
+                ->where('status', 'henkaten')
                 ->where('line_id', $request->line)
                 ->where('4M', $request->{"4M"})
+                ->whereHas('shift', function ($query) use ($currentTime) {
+                    $query->where('time_start', '<=', $currentTime)
+                        ->where('time_end', '>=', $currentTime);
+                })
                 ->get();
 
+            if ($request->status === 'stop') {
+                if ($otherStats->isEmpty()) {
+                    try {
+                        DB::beginTransaction();
 
-            if ($otherStats->isEmpty()) {
-                try {
-                    DB::beginTransaction();
+                        // change line status if status before is 'stop'
+                        if ($request->status) {
+                            Line::where('id', $request->line)->update([
+                                'status_' . $request->{"4M"} => 'running',
+                            ]);
+                        }
 
-                    // change line status if status before is 'stop'
-                    if ($request->status) {
-                        Line::where('id', $request->line)->update([
-                            'status_' . $request->{"4M"} => 'running',
-                        ]);
+                        DB::commit();
+                    } catch (\Throwable $th) {
+                        DB::rollBack();
+                        return redirect()
+                            ->back()
+                            ->with('error', 'Data gagal disimpan!');
                     }
-
-                    DB::commit();
-                } catch (\Throwable $th) {
-                    DB::rollBack();
-                    return redirect()
-                        ->back()
-                        ->with('error', 'Data gagal disimpan!');
                 }
             }
 

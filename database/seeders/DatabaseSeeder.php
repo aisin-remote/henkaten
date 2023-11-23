@@ -59,9 +59,15 @@ class DatabaseSeeder extends Seeder
         ]);
             
         // Line
-        for($i=0; $i<6; $i++) {
+        for($i=0; $i<8; $i++) {
             Line::create([
                 'name' => 'DCAA0' . $i+1
+            ]);
+        }
+        
+        for($i=0; $i<2; $i++) {
+            Line::create([
+                'name' => 'DSAA0' . $i+1
             ]);
         }
 

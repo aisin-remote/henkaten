@@ -12,6 +12,7 @@ use App\Models\Henkaten;
 use App\Models\PicActive;
 use App\Models\HenkatenMan;
 use Illuminate\Support\Str;
+use App\Models\Troubleshoot;
 use Illuminate\Http\Request;
 use App\Models\EmployeeActive;
 use App\Models\HenkatenMethod;
@@ -63,6 +64,7 @@ class DashboardController extends Controller
 
         // get all history
         $histories = Henkaten::with('troubleshoot')->where('line_id', $lineId->id)->get();
+        
         // get man power at spesific line and range of time
         $activeEmployees = EmployeeActive::with('shift')
             ->with('employee')
@@ -88,17 +90,15 @@ class DashboardController extends Controller
             ->first();
 
         // get man henkaten
-        $manHenkaten = Henkaten::with('shift')
-            ->with('manAfter')
-            ->with('manBefore')
-            ->where('line_id', $lineId->id)
-            // ->whereNotNull('employee_before_id')
-            // ->whereNotNull('employee_after_id')
-            ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)
-                    ->where('time_end', '>=', $currentTime);
+        $manHenkaten = Troubleshoot::with(['henkaten.shift', 'manAfter', 'manBefore'])
+            ->whereHas('henkaten', function ($query) use ($lineId, $currentTime) {
+                $query->where('line_id', $lineId->id)
+                    ->whereHas('shift', function ($subQuery) use ($currentTime) {
+                        $subQuery->where('time_start', '<=', $currentTime)
+                            ->where('time_end', '>=', $currentTime);
+                    });
             })
-            ->get();        
+            ->get();     
         
         return view('pages.website.line', [
             'line' => Line::findOrFail($lineId->id),
