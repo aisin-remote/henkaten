@@ -127,7 +127,7 @@
         ];
     @endphp
 
-    {{-- modal (other tham man) --}}
+    {{-- modal henkaten --}}
     @foreach ($modals as $modal)
         <div class="modal fade" id="{{ $modal['modalId'] }}" tabindex="-1" aria-labelledby="bs-example-modal-lg"
             style="display: none;" aria-hidden="true">
@@ -216,8 +216,8 @@
     {{-- end of modal --}}
 
     {{-- modal error --}}
-    <div class="modal fade" id="manOnlyModal-flag" tabindex="-1" aria-labelledby="bs-example-modal-lg"
-        style="display: none;" aria-hidden="true">
+    <div class="modal fade" id="manModal-flag" tabindex="-1" aria-labelledby="bs-example-modal-lg" style="display: none;"
+        aria-hidden="true">
         <div class="modal-dialog modal-sm">
             <div class="modal-content modal-filled bg-light-danger">
                 <div class="modal-body p-4">
@@ -421,26 +421,28 @@
                             </div>
                         </div>
                     @endforeach
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <img src="{{ asset('uploads/doc/' . $activePic->employee->photo) }}" class="rounded-1"
-                                    width="100" height="100">
-                                <div class="mt-n2">
-                                    <span
-                                        class="badge bg-{{ $color }}">{{ strtoupper($activePic->employee->role) }}</span>
-                                    <h3 class="card-title mt-3">{{ ucwords($activePic->employee->name) }}</h3>
-                                    <h6 class="card-subtitle">{{ $activePic->employee->npk }}</h6>
-                                </div>
-                                <div class="row mt-4">
-                                    <div class="col-12">
-                                        <button class="btn btn-dark" style="width: 100% !important">
-                                            {{ strtoupper('pic') }}</button>
+                    @if ($activePic !== null)
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <img src="{{ asset('uploads/doc/' . $activePic->employee->photo) }}"
+                                        class="rounded-1" width="100" height="100">
+                                    <div class="mt-n2">
+                                        <span
+                                            class="badge bg-{{ $color }}">{{ strtoupper($activePic->employee->role) }}</span>
+                                        <h3 class="card-title mt-3">{{ ucwords($activePic->employee->name) }}</h3>
+                                        <h6 class="card-subtitle">{{ $activePic->employee->npk }}</h6>
+                                    </div>
+                                    <div class="row mt-4">
+                                        <div class="col-12">
+                                            <button class="btn btn-dark" style="width: 100% !important">
+                                                {{ strtoupper('pic') }}</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
                 @else
                     <div class="col-lg-12 col-sm-12 mt-3" id="firstPicContainer">
                         <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#firstPicModal"
@@ -495,20 +497,13 @@
                     <tbody>
                         @foreach ($histories as $history)
                             @php
-                                switch ($history->status) {
-                                    case 'running':
-                                        $color = 'success';
-                                        break;
-                                    case 'henkaten':
-                                        $color = 'warning';
-                                        break;
-                                    case 'stop':
-                                        $color = 'danger';
-                                        break;
-                                    default:
-                                        $color = 'dark';
-                                        break;
-                                }
+                                $statusColor = [
+                                    'running' => 'success',
+                                    'henkaten' => 'warning',
+                                    'stop' => 'danger',
+                                    'default' => 'dark',
+                                ];
+                                $color = $statusColor[$history->status] ?? $statusColor['default'];
                             @endphp
                             <tr>
                                 <td>
@@ -559,89 +554,65 @@
                                         </td>
                                     @endcan
                                 @else
-                                    @if ($history->is_done === '0')
-                                        <td class="text-center">{{ $history->troubleshoot->troubleshoot }}</td>
-                                        <td>
+                                    <td class="text-center">{{ $history->troubleshoot->troubleshoot }}</td>
+                                    <td>
+                                        @if ($history->is_done === '0')
                                             <span class="mb-1 badge bg-light-warning text-warning">
                                                 Waiting Approval
                                             </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <button class="btn btn-secondary view-employee" data-bs-toggle="modal"
-                                                data-bs-target="">
+                                        @else
+                                            <span class="mb-1 badge bg-light-success text-success">
+                                                Approved by {{ $history->approver }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-secondary view-employee" data-bs-toggle="modal"
+                                            data-bs-target="">
+                                            <span class="rounded-3" id="icon">
+                                                <i class="ti ti-search"></i>
+                                            </span>
+                                        </button>
+                                        @can('JP')
+                                            <button class="btn btn-warning troubleshoot"
+                                                data-history-id="{{ $history['id'] }}">
                                                 <span class="rounded-3" id="icon">
-                                                    <i class="ti ti-search"></i>
+                                                    <i class="ti ti-edit"></i>
                                                 </span>
                                             </button>
-                                            @can('JP')
-                                                <button class="btn btn-warning troubleshoot"
-                                                    data-history-id="{{ $history['id'] }}">
-                                                    <span class="rounded-3" id="icon">
-                                                        <i class="ti ti-edit"></i>
-                                                    </span>
-                                                </button>
-                                                <a href="#" class="btn btn-danger delete-employee" data-employee-id="">
-                                                    <span class="rounded-3" id="icon">
-                                                        <i class="ti ti-x"></i>
-                                                    </span>
-                                                </a>
-                                            @endcan
-                                        </td>
-                                        @can('LDR', 'SPV', 'MGR')
-                                            <td class="text-center">
+                                            <a href="#" class="btn btn-danger delete-employee" data-employee-id="">
+                                                <span class="rounded-3" id="icon">
+                                                    <i class="ti ti-x"></i>
+                                                </span>
+                                            </a>
+                                        @endcan
+                                    </td>
+                                    @can('LDR', 'SPV', 'MGR')
+                                        <td class="text-center">
+                                            @if ($history->is_done === '0')
                                                 <button class="btn btn-success approve"
                                                     data-history-id="{{ $history['id'] }}">
                                                     <span class="rounded-3">
                                                         <i class="ti ti-checks"></i>
                                                     </span>
                                                 </button>
-                                            </td>
-                                        @endcan
-                                    @else
-                                        <td class="text-center">{{ $history->troubleshoot->troubleshoot }}</td>
-                                        <td>
-                                            <span class="mb-1 badge bg-light-success text-success">
-                                                Approved by {{ $history->approver }}
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <button class="btn btn-secondary view-employee" data-bs-toggle="modal"
-                                                data-bs-target="">
-                                                <span class="rounded-3" id="icon">
-                                                    <i class="ti ti-search"></i>
-                                                </span>
-                                            </button>
-                                            @can('JP')
-                                                <button class="btn btn-warning troubleshoot"
-                                                    data-history-id="{{ $history['id'] }}">
-                                                    <span class="rounded-3" id="icon">
-                                                        <i class="ti ti-edit"></i>
-                                                    </span>
-                                                </button>
-                                                <a href="#" class="btn btn-danger delete-employee" data-employee-id="">
-                                                    <span class="rounded-3" id="icon">
-                                                        <i class="ti ti-x"></i>
-                                                    </span>
-                                                </a>
-                                            @endcan
-                                        </td>
-                                        @can('LDR', 'SPV', 'MGR')
-                                            <td class="text-center">
+                                            @else
                                                 <button class="btn btn-success approve"
                                                     data-history-id="{{ $history['id'] }}" disabled>
                                                     <span class="rounded-3">
                                                         <i class="ti ti-checks"></i>
                                                     </span>
                                                 </button>
-                                            </td>
-                                        @endcan
-                                    @endif
+                                            @endif
+                                        </td>
+                                    @endcan
                                 @endif
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
+
         </div>
     </div>
 
@@ -723,7 +694,7 @@
                             <div class="accordion accordion-flush position-relative overflow-hidden mt-2"
                                 id="accordionFlushExample">
                                 <div class="row">
-                                    <div class="col-12">
+                                    <div class="col-lg-6 col-md-12">
                                         <div class="accordion-item mb-3 border rounded-top rounded-bottom">
                                             <h2 class="accordion-header" id="flush-headingOne">
                                                 <button
@@ -741,9 +712,9 @@
                                                     <div class="text-center mb-2">
                                                         <h6 class="fw-semibold">Abnormality Inspection Report</h6>
                                                         <div class="form-check form-check-inline">
+                                                            <label class="form-check-label" for="need">Need</label>
                                                             <input class="form-check-input" type="radio"
                                                                 name="inspection" id="need" value="need">
-                                                            <label class="form-check-label" for="need">Need</label>
                                                         </div>
                                                         <div class="form-check form-check-inline">
                                                             <input class="form-check-input" type="radio"
@@ -798,7 +769,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-12">
+                                    <div class="col-lg-6 col-md-12">
                                         <div class="accordion-item mb-3 border rounded-top rounded-bottom">
                                             <h2 class="accordion-header" id="flush-headingThree">
                                                 <button

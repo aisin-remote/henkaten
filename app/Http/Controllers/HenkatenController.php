@@ -22,6 +22,11 @@ class HenkatenController extends Controller
         $shifts = Shift::all();
         $shiftId = null;
 
+        $statusMappings = [
+            'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
+            'stop' => ['priority' => 2, 'overall' => 'stop'],
+        ];
+
         foreach ($shifts as $shift) {
             if ($currentTime->between($shift->time_start, $shift->time_end)) {
                 $shiftId = $shift->id;
@@ -32,6 +37,58 @@ class HenkatenController extends Controller
         try {
             DB::beginTransaction();
 
+            $otherStats = Henkaten::select('status')
+                ->where('is_done', '0')
+                ->where('line_id', $request->line)
+                ->where('4M', $request->type)
+                ->get();
+
+            if ($otherStats->isEmpty()) {
+                try {
+                    DB::beginTransaction();
+
+                    // change line status
+                    Line::where('id', $request->line)->update([
+                        'status_' . $request->type => $request->status,
+                    ]);
+
+                    DB::commit();
+                } catch (\Throwable $th) {
+                    DB::rollBack();
+                    return redirect()
+                        ->back()
+                        ->with('error', 'Data gagal disimpan!');
+                }
+            }
+
+            if ($request->status === 'stop') {
+                // Leveling priority
+                foreach ($otherStats as $otherStat) {
+                    if (isset($statusMappings[$otherStat->status])) {
+                        $priority = $statusMappings[$otherStat->status]['priority'];
+                        // If the priority is 2 (which is the biggest priority) we can immediately break the loop
+                        if ($priority !== 2) {
+                            // Insert into line table
+                            try {
+                                DB::beginTransaction();
+
+                                // change line status
+                                Line::where('id', $request->line)->update([
+                                    'status_' . $request->type => $request->status,
+                                ]);
+
+                                DB::commit();
+                            } catch (\Throwable $th) {
+                                DB::rollBack();
+                                return redirect()
+                                    ->back()
+                                    ->with('error', 'Data gagal disimpan!');
+                            }
+                        }
+                    }
+                }
+            }
+
             Henkaten::create([
                 '4M' => $request->type,
                 'status' => $request->status,
@@ -41,21 +98,23 @@ class HenkatenController extends Controller
                 'henkaten_management_id' => $request->henkatenManagement,
                 'abnormality' => $request->abnormality,
                 'date' => Carbon::now(),
-                'is_done' => '0'
-            ]);
-
-            // change line status
-            Line::where('id', $request->line)->update([
-                'status_' . $request->type => $request->status
+                'is_done' => '0',
             ]);
 
             DB::commit();
+            return redirect()
+                ->back()
+                ->with('success', 'Data berhasil disimpan!');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->back()->with('error', $th->getMessage());
+            return redirect()
+                ->back()
+                ->with('error', $th->getMessage());
         }
 
-        return redirect()->back()->with('success', 'Data berhasil disimpan');
+        return redirect()
+            ->back()
+            ->with('success', 'Data berhasil disimpan');
     }
 
     public function troubleshootHenkaten(Request $request)
@@ -67,6 +126,7 @@ class HenkatenController extends Controller
 
         try {
             DB::beginTransaction();
+
             if ($request->{"4M"} == 'man') {
                 for ($i = 0; $i < count($request->after); $i++) {
                     if ($request->after !== '0') {
@@ -108,7 +168,9 @@ class HenkatenController extends Controller
                     ->get();
 
                 if ($otherStats->isEmpty()) {
-                    return redirect()->back()->with('success', 'Data berhasil disimpan!');
+                    return redirect()
+                        ->back()
+                        ->with('success', 'Data berhasil disimpan!');
                 }
 
                 // Leveling priority
@@ -120,50 +182,111 @@ class HenkatenController extends Controller
                         if ($priority === 2) {
                             // Insert into line table
                             Line::where('id', $request->line)->update([
-                                'status_' . $request->{"4M"} => $otherStat->status
+                                'status_' . $request->{"4M"} => $otherStat->status,
                             ]);
 
                             DB::commit();
-                            return redirect()->back()->with('success', 'Data berhasil disimpan!');
+                            return redirect()
+                                ->back()
+                                ->with('success', 'Data berhasil disimpan!');
                         }
                     }
                 }
             }
 
             DB::commit();
-            return redirect()->back()->with('success', 'Data berhasil disimpan!');
+            return redirect()
+                ->back()
+                ->with('success', 'Data berhasil disimpan!');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Data gagal disimpan!');
+            return redirect()
+                ->back()
+                ->with('error', 'Data gagal disimpan!');
         }
     }
 
-    
     public function troubleShootApproval(Request $request)
     {
+        $statusMappings = [
+            'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
+            'stop' => ['priority' => 2, 'overall' => 'stop'],
+        ];
+
+        $worstPriority = 0;
+
         try {
             DB::beginTransaction();
 
             // change approver and is_done status
             Henkaten::where('id', $request->henkaten_id)->update([
                 'is_done' => '1',
-                'approver' => auth()->user()->name
+                'approver' => auth()->user()->name,
             ]);
 
-            // change line status if status before is 'stop'
-            if($request->status){
-                Line::where('id', $request->line)->update([
-                    'status_' . $request->{"4M"} => 'running'
-                ]);
+            $otherStats = Henkaten::select('status')
+                ->where('is_done', '0')
+                ->where('line_id', $request->line)
+                ->where('4M', $request->{"4M"})
+                ->get();
+
+
+            if ($otherStats->isEmpty()) {
+                try {
+                    DB::beginTransaction();
+
+                    // change line status if status before is 'stop'
+                    if ($request->status) {
+                        Line::where('id', $request->line)->update([
+                            'status_' . $request->{"4M"} => 'running',
+                        ]);
+                    }
+
+                    DB::commit();
+                } catch (\Throwable $th) {
+                    DB::rollBack();
+                    return redirect()
+                        ->back()
+                        ->with('error', 'Data gagal disimpan!');
+                }
+            }
+
+            // Leveling priority
+            foreach ($otherStats as $otherStat) {
+                if (isset($statusMappings[$otherStat->status])) {
+                    $priority = $statusMappings[$otherStat->status]['priority'];
+                    // If the priority is 2 (which is the biggest priority) we can immediately break the loop
+                    if ($priority > $worstPriority) {
+                        $worstPriority = $priority;
+                        // Insert into line table
+                        try {
+                            DB::beginTransaction();
+                            // change line status
+                            Line::where('id', $request->line)->update([
+                                'status_' . $request->{"4M"} => $otherStat->status,
+                            ]);
+
+                            DB::commit();
+                        } catch (\Throwable $th) {
+                            DB::rollBack();
+                            return redirect()
+                                ->back()
+                                ->with('error', 'Data gagal disimpan!');
+                        }
+                    }
+                }
             }
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Berhasil diapprove!');
+            return redirect()
+                ->back()
+                ->with('success', 'Berhasil diapprove!');
         } catch (\Throwable $th) {
             DB::rollback();
-            return redirect()->back()->with('error', 'Gagal diapprove!');
+            return redirect()
+                ->back()
+                ->with('error', 'Gagal diapprove!');
         }
-        
     }
 }
