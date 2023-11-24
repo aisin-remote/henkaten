@@ -205,13 +205,13 @@ class EmployeeController extends Controller
         if(!$shift){
             return response()->json([
                 'status' => 'error',
-                'mesasge' => 'belum memilih shift!'
+                'message' => 'belum memilih shift!'
             ]);
         }
         if(!$line){
             return response()->json([
                 'status' => 'error',
-                'mesasge' => 'belum memilih line!'
+                'message' => 'belum memilih line!'
             ]);
         }
 
@@ -223,7 +223,7 @@ class EmployeeController extends Controller
         if(!$pic){
             return response()->json([
                 'status' => 'error',
-                'mesasge' => 'belum memiliki pic!'
+                'message' => 'belum memiliki pic!'
             ]);
         }
 
@@ -251,10 +251,36 @@ class EmployeeController extends Controller
 
     public function getSkillPos(Request $request)
     {
+        $line = $request->line;
+        $pos = $request->pos;
+        $employee = $request->employee;
+        
+        if(!$line){
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Pilih line!'
+            ]);
+        }
+        
+        if(!$employee || !$employee === '0' || $employee === null){
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Pilih karyawan!'
+            ]);
+        }
+        
+        if(!$pos || $pos === '0' || $pos === null){
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Pilih pos!'
+            ]);
+        }
+        
         $skills = MinimumSkill::with('skill')
             ->where('line_id', $request->line)
             ->where('pos', $request->pos)
             ->get();
+            
         if (!$skills) {
             return response()->json([
                 'status' => 'error',
