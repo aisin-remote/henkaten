@@ -379,6 +379,15 @@
             localStorage.setItem('line', $(this).val());
         });
 
+        $('.repeater-mp-container').on('change', '.pos', function() {
+            localStorage.setItem('pos', $(this).closest('.repeater-mp-container').find(
+                '.pos option:selected').val());
+        });
+        $('.repeater-mp-container').on('change', '.employee_name', function() {
+            localStorage.setItem('employee', $(this).closest('.repeater-mp-container').find(
+                '.employee_name option:selected').val())
+        });
+
         let skillCount = 0;
         let minimumSkillCount = 0;
         // get employee skill when changed
@@ -400,7 +409,8 @@
                         skillCount = skills.length;
                         skills.forEach((item, index) => {
                             localStorage.setItem(
-                                `${item.skill.name}_${employee_name}`, item
+                                `${item.skill.name}_${selectedOption.val()}`,
+                                item
                                 .skill.level);
                         });
                     }
@@ -427,11 +437,12 @@
                 _token: "{{ csrf_token() }}",
                 dataType: 'json',
                 data: {
-                    pos: pos,
-                    employee: employeeId,
+                    pos: localStorage.getItem('pos'),
+                    employee: localStorage.getItem('employee'),
                     line: localStorage.getItem('line')
                 },
                 success: function(data) {
+                    console.log(data);
                     let flag = 0
                     if (data.status == 'success') {
                         let minimumSkills = data.data;
@@ -448,17 +459,27 @@
                         }
 
                         minimumSkills.forEach((item, index) => {
+                            let foundSkills = [];
                             // compare with skill id at local storage
                             for (let i = 0; i < localStorage.length; i++) {
                                 let key = localStorage.key(i);
-                                if (key.startsWith(item.skill.name)) {
+                                if (key.startsWith(item.skill.name) && key.endsWith(
+                                        `_${localStorage.getItem('employee')}`)) {
                                     let employeeSkill = localStorage.getItem(key);
                                     let minimumSkills = item.skill.level;
                                     if (employeeSkill < minimumSkills) {
                                         console.log('level skill kurang')
                                         flag++;
                                     }
+                                    foundSkills.push(item.skill
+                                    .name); // Add the found skill to the array
                                 }
+                            }
+                            // Check if all required skills are present
+                            if (foundSkills.length === 0) {
+                                localStorage.setItem('pass', false)
+                                $(".submit-planning").prop("disabled", true);
+                                notif('error', 'Skill tidak memenuhi kriteria pos!')
                             }
                         });
 
@@ -472,14 +493,19 @@
                             notif('success', 'Skill memenuhi kriteria pos!')
                         }
                     } else {
+                        localStorage.setItem('pass', false)
+                        $(".submit-planning").prop("disabled", true);
                         notif(data.status, data.message);
                     }
                 },
                 error: function(xhr) {
                     if (xhr.status == 0) {
+                        localStorage.setItem('pass', false)
                         notif("error", 'Connection Error');
                         return;
                     }
+                    localStorage.setItem('pass', false)
+                    $(".submit-planning").prop("disabled", true);
                     notif("error", 'Internal Server Error');
                 }
             });
