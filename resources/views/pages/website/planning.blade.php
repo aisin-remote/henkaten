@@ -472,11 +472,11 @@
                                         flag++;
                                     }
                                     foundSkills.push(item.skill
-                                    .name); // Add the found skill to the array
+                                        .name); // Add the found skill to the array
                                 }
                             }
                             // Check if all required skills are present
-                            if (foundSkills.length === 0) {
+                            if (foundSkills.length < minimumSkillCount) {
                                 localStorage.setItem('pass', false)
                                 $(".submit-planning").prop("disabled", true);
                                 notif('error', 'Skill tidak memenuhi kriteria pos!')
