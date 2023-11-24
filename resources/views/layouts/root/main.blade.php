@@ -186,11 +186,13 @@
     <script src={{ asset('dist/libs/jquery/dist/jquery.min.js') }}></script>
     <script src={{ asset('dist/libs/jquery-ui/dist/jquery-ui.min.js') }}></script>
     <script src={{ asset('dist/libs/simplebar/dist/simplebar.min.js') }}></script>
+    <script src={{ asset('dist/libs/jquery-repeater/jquery.repeater.min.js') }}></script>
     <script src={{ asset('dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}></script>
     <!--  core files -->
     <script src={{ asset('dist/js/app.min.js') }}></script>
     <script src={{ asset('dist/js/app.horizontal.init.js') }}></script>
     <script src={{ asset('dist/js/sidebarmenu.js') }}></script>
+    <script src={{ asset('dist/js/repeater-init.js') }}></script>
     <script src={{ asset('dist/js/custom.js') }}></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap4.min.js"></script>
