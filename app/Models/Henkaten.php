@@ -34,4 +34,9 @@ class Henkaten extends Model
     {
         return $this->belongsTo(Employee::class);
     }
+    
+    public function henkatenManagement()
+    {
+        return $this->belongsTo(HenkatenManagement::class);
+    }
 }

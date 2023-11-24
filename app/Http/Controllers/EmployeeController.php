@@ -290,7 +290,7 @@ class EmployeeController extends Controller
         for ($i = 0; $i < count($skills); $i++) {
             $skillId = Skill::select('id')->where('name', $skills[$i])->where('level', $levels[$i])->first();
             if (!$skillId) {
-                return redirect()->back()->with('error', 'Skill atau level berlum terdaftar!');
+                return redirect()->back()->with('error', 'Skill atau level belum terdaftar!');
             }
 
             array_push($arraySkill, $skillId);
@@ -345,7 +345,7 @@ class EmployeeController extends Controller
             EmployeeSkill::where('employee_id', $employee->id)->whereIn('skill_id', $skillsToDelete)->delete();
 
             DB::commit();
-            return redirect('employee/register')->with('success', 'Karyawan berhasil diperbarui!');
+            return redirect()->back()->with('success', 'Karyawan berhasil diperbarui!');
         } catch (\Throwable $th) {
             DB::rollback();
             return redirect()->back()->with('error', 'Karyawan gagal diperbarui!');

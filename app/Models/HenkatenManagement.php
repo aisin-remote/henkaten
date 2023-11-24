@@ -14,4 +14,9 @@ class HenkatenManagement extends Model
     protected $table = 'henkaten_managements';
 
     protected $guarded = ['id'];
+
+    public function henkaten()
+    {
+        return $this->hasMany(Henkaten::class);
+    }
 }

@@ -492,14 +492,6 @@
                             </h6>
                         </h4>
                     </div>
-                    <div class="col-2 text-end">
-                        <button class="btn btn-primary px-4 py-2">
-                            <span class="rounded-3 pe-2">
-                                <i class="ti ti-file-export"></i>
-                            </span>
-                            <span class="d-none d-sm-inline-block">Export</span>
-                        </button>
-                    </div>
                 </div>
             </div>
             <div class="card-body p-3">
@@ -518,7 +510,7 @@
                             @endcan
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody style="font-size: 15px">
                         @foreach ($histories as $history)
                             @php
                                 $statusColor = [
@@ -548,8 +540,8 @@
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        <button class="btn btn-secondary view-employee" data-bs-toggle="modal"
-                                            data-bs-target="">
+                                        <button class="btn btn-secondary view-employee detail" data-bs-toggle="modal"
+                                            data-bs-target="" data-history-id="{{ $history['id'] }}">
                                             <span class="rounded-3" id="icon">
                                                 <i class="ti ti-search"></i>
                                             </span>
@@ -561,11 +553,11 @@
                                                     <i class="ti ti-edit"></i>
                                                 </span>
                                             </button>
-                                            <a href="#" class="btn btn-danger delete-employee" data-employee-id="">
+                                            {{-- <a href="#" class="btn btn-danger delete-employee" data-employee-id="">
                                                 <span class="rounded-3" id="icon">
                                                     <i class="ti ti-x"></i>
                                                 </span>
-                                            </a>
+                                            </a> --}}
                                         @endcan
                                     </td>
                                     @can('LDR', 'SPV', 'MGR')
@@ -591,24 +583,24 @@
                                         @endif
                                     </td>
                                     <td class="text-center">
-                                        <button class="btn btn-secondary view-employee" data-bs-toggle="modal"
-                                            data-bs-target="">
+                                        <button class="btn btn-secondary view-employee detail" data-bs-toggle="modal"
+                                            data-bs-target="" data-history-id="{{ $history['id'] }}">
                                             <span class="rounded-3" id="icon">
                                                 <i class="ti ti-search"></i>
                                             </span>
                                         </button>
                                         @can('JP')
                                             <button class="btn btn-warning troubleshoot"
-                                                data-history-id="{{ $history['id'] }}">
+                                                data-history-id="{{ $history['id'] }}" disabled>
                                                 <span class="rounded-3" id="icon">
                                                     <i class="ti ti-edit"></i>
                                                 </span>
                                             </button>
-                                            <a href="#" class="btn btn-danger delete-employee" data-employee-id="">
+                                            {{-- <a href="#" class="btn btn-danger delete-employee" data-employee-id="">
                                                 <span class="rounded-3" id="icon">
                                                     <i class="ti ti-x"></i>
                                                 </span>
-                                            </a>
+                                            </a> --}}
                                         @endcan
                                     </td>
                                     @can('LDR', 'SPV', 'MGR')
@@ -642,6 +634,12 @@
 
     {{-- modal troubleshoot --}}
     @foreach ($histories as $history)
+        @php
+            // Generate unique IDs based on $history['id']
+            $accordionId = 'accordion-' . $history['id'];
+            $collapseOneId = 'collapseOne-' . $history['id'];
+            $collapseThreeId = 'collapseThree-' . $history['id'];
+        @endphp
         <div class="modal fade modal-lg troubleshootModal" id="{{ $history['id'] }}Troubleshoot" tabindex="-1"
             aria-labelledby="bs-example-modal-xl" style="display: none;" aria-hidden="true">
             <div class="modal-dialog">
@@ -716,21 +714,21 @@
                                 @endforeach
                             @endif
                             <div class="accordion accordion-flush position-relative overflow-hidden mt-2"
-                                id="accordionFlushExample">
+                                id="{{ $accordionId }}">
                                 <div class="row">
-                                    <div class="col-lg-6 col-md-12">
+                                    <div class="col-12">
                                         <div class="accordion-item mb-3 border rounded-top rounded-bottom">
                                             <h2 class="accordion-header" id="flush-headingOne">
                                                 <button
                                                     class="accordion-button fs-4 fw-bolder px-3 py-6 lh-base border-0 rounded-top collapsed"
                                                     type="button" data-bs-toggle="collapse"
-                                                    data-bs-target="#flush-collapseOne" aria-expanded="false"
-                                                    aria-controls="flush-collapseOne">
+                                                    data-bs-target="#{{ $collapseOneId }}" aria-expanded="false"
+                                                    aria-controls="{{ $collapseOneId }}">
                                                     Quality Inspections
                                                 </button>
                                             </h2>
-                                            <div id="flush-collapseOne" class="accordion-collapse collapse"
-                                                aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample"
+                                            <div id="{{ $collapseOneId }}" class="accordion-collapse collapse"
+                                                aria-labelledby="flush-headingOne" data-bs-parent="#{{ $accordionId }}"
                                                 style="">
                                                 <div class="accordion-body px-3 fw-normal">
                                                     <div class="text-center mb-2">
@@ -793,20 +791,20 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6 col-md-12">
+                                    <div class="col-12">
                                         <div class="accordion-item mb-3 border rounded-top rounded-bottom">
                                             <h2 class="accordion-header" id="flush-headingThree">
                                                 <button
                                                     class="accordion-button fs-4 fw-semibold px-3 py-6 lh-base border-0 rounded-bottom collapsed"
                                                     type="button" data-bs-toggle="collapse"
-                                                    data-bs-target="#flush-collapseThree" aria-expanded="false"
-                                                    aria-controls="flush-collapseThree">
+                                                    data-bs-target="#{{ $collapseThreeId }}" aria-expanded="false"
+                                                    aria-controls="{{ $collapseThreeId }}">
                                                     Safety
                                                 </button>
                                             </h2>
-                                            <div id="flush-collapseThree" class="accordion-collapse collapse"
+                                            <div id="{{ $collapseThreeId }}" class="accordion-collapse collapse"
                                                 aria-labelledby="flush-headingThree"
-                                                data-bs-parent="#accordionFlushExample" style="">
+                                                data-bs-parent="#{{ $accordionId }}" style="">
                                                 <div class="accordion-body px-3 fw-normal">
                                                     <div class="row">
                                                         <div class="col-12 mb-3">
@@ -893,6 +891,178 @@
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    @endforeach
+    {{-- end of modal --}}
+
+    {{-- modal detail --}}
+    @foreach ($histories as $history)
+        @php
+            if ($history->status === 'henkaten') {
+                $color = 'warning';
+                $shape = 'henkaten.svg';
+            } else {
+                $color = 'danger';
+                $shape = 'stop.svg';
+            }
+        @endphp
+        <div class="modal fade modal-md" id="{{ $history['id'] }}Detail" tabindex="-1"
+            aria-labelledby="bs-example-modal-xl" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header d-flex align-items-center">
+                        <h4 class="modal-title" id="myLargeModalLabel">
+                            Detail
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card-group mb-4">
+                            <!-- Column -->
+                            <div class="card bg-{{ $color }}">
+                                <div class="card-body text-center text-white">
+                                    <div class="pt-2">
+                                        <h4 class="fw-bolder text-white">{{ strtoupper($history->status) }}
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Column -->
+                        </div>
+                        <div class="card-body">
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-pills nav-fill mt-4" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link active" data-bs-toggle="tab"
+                                        href="#{{ $history['id'] }}Abnormal" role="tab" aria-selected="true">
+                                        <span>Abnormality</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#{{ $history['id'] }}Trouble"
+                                        role="tab" aria-selected="true" tabindex="-1">
+                                        <span>Troubleshoot</span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content border mt-2">
+                                <div class="tab-pane p-3 active" id="{{ $history['id'] }}Abnormal" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control fw-bolder" id="tb-fname"
+                                                    placeholder="Enter Name here"
+                                                    value="{{ strtoupper($history['4M']) }}" disabled>
+                                                <label for="tb-fname">4M</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control fw-bolder" id="tb-fname"
+                                                    placeholder="Enter Name here"
+                                                    value="{{ strtoupper($history['category']) }}" disabled>
+                                                <label for="tb-fname">Category</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control fw-bolder" id="tb-fname"
+                                                    placeholder="Enter Name here"
+                                                    value="{{ $history->henkatenManagement->henkaten_item }} [Table no: {{ $history->henkatenManagement->id }}]"
+                                                    disabled>
+                                                <label for="tb-fname">Hankaten Table No.</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control fw-bolder" id="tb-fname"
+                                                    placeholder="Enter Name here"
+                                                    value="{{ strtoupper($history['abnormality']) }}" disabled>
+                                                <label for="tb-fname">Abnormality Content</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control fw-bolder" id="tb-fname"
+                                                    placeholder="Enter Name here"
+                                                    value="{{ Carbon\Carbon::parse($history['date'])->format('j F Y,  H:i:s') }}"
+                                                    disabled>
+                                                <label for="tb-fname">Time</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane p-3" id="{{ $history['id'] }}Trouble" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-12 text-center">
+                                            @if ($history->troubleshoot === null)
+                                                <span class="badge bg-danger">
+                                                    Belum dilakukan penanganan
+                                                </span>
+                                            @else
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control fw-bolder" id="tb-fname"
+                                                        placeholder="Enter Name here"
+                                                        value="{{ strtoupper($history->troubleshoot->troubleshoot) }}"
+                                                        disabled>
+                                                    <label for="tb-fname">Troubleshoot</label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control fw-bolder" id="tb-fname"
+                                                        placeholder="Enter Name here"
+                                                        value="{{ strtoupper($history->troubleshoot->result_check) }}"
+                                                        disabled>
+                                                    <label for="tb-fname">Result Check</label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control fw-bolder" id="tb-fname"
+                                                        placeholder="Enter Name here"
+                                                        value="{{ strtoupper($history->troubleshoot->inspection_report) }}"
+                                                        disabled>
+                                                    <label for="tb-fname">Inspection Report</label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control fw-bolder" id="tb-fname"
+                                                        placeholder="Enter Name here"
+                                                        value="{{ strtoupper($history->troubleshoot->part) }}" disabled>
+                                                    <label for="tb-fname">Part</label>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control fw-bolder"
+                                                                id="tb-fname" placeholder="Enter Name here"
+                                                                value="{{ strtoupper($history->troubleshoot->before_treatment) }}"
+                                                                disabled>
+                                                            <label for="tb-fname">Before Treatment</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control fw-bolder"
+                                                                id="tb-fname" placeholder="Enter Name here"
+                                                                value="{{ strtoupper($history->troubleshoot->after_treatment) }}"
+                                                                disabled>
+                                                            <label for="tb-fname">After Treatment</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control fw-bolder" id="tb-fname"
+                                                        placeholder="Enter Name here"
+                                                        value="{{ strtoupper($history->troubleshoot->employee->name) }}"
+                                                        disabled>
+                                                    <label for="tb-fname">Done By</label>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                            class="btn btn-light-danger text-danger font-medium waves-effect text-start"
+                            data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1005,6 +1175,11 @@
         $('.approve').on('click', function() {
             const historyId = $(this).data('history-id');
             $(`#${historyId}Approve`).modal('show');
+        })
+
+        $('.detail').on('click', function() {
+            const historyId = $(this).data('history-id');
+            $(`#${historyId}Detail`).modal('show');
         })
 
         var errorMessage = "{!! session('error') !!}";

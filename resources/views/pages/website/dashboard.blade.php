@@ -510,7 +510,7 @@
                             <div class="col-12">
                                 <div class="card p-4 py-4">
                                     <div class="card-body p-3 align-items-center"
-                                        style="max-height: 11em; width: 100%; overflow:scroll; overflow-x: hidden">
+                                        style="max-height: 20em; width: 100%; overflow:scroll; overflow-x: hidden">
                                         @if (!$histories->isEmpty())
                                             <div class="accordion" id="accordionExample">
                                                 @foreach ($histories as $history)
@@ -521,17 +521,22 @@
                                                                 data-bs-target="#history-{{ $loop->index }}"
                                                                 aria-expanded="false" aria-controls="collapseOne">
                                                                 <span
-                                                                    class="mb-1 badge bg-dark me-2">{{ $history['line'] }}</span>
-                                                                @if ($history['status'] == 'henkaten')
+                                                                    class="mb-1 badge bg-dark me-2">{{ $history->line->name }}</span>
+                                                                @if ($history->status == 'henkaten')
                                                                     <span
-                                                                        class="mb-1 badge bg-warning">{{ $history['status'] }}</span>
+                                                                        class="mb-1 badge bg-info me-2">{{ $history->{"4M"} }}
+                                                                    </span>
+                                                                    <span
+                                                                        class="mb-1 badge bg-warning">{{ $history->status }}
+                                                                    </span>
                                                                 @else
                                                                     <span
-                                                                        class="mb-1 badge bg-danger">{{ $history['status'] }}</span>
+                                                                        class="mb-1 badge bg-info me-2">{{ $history->{"4M"} }}
+                                                                    </span>
+                                                                    <span
+                                                                        class="mb-1 badge bg-danger">{{ $history->status }}
+                                                                    </span>
                                                                 @endif
-                                                                <span class="ps-3">
-                                                                    {{ $history['problem'] }}
-                                                                </span>
                                                             </button>
                                                         </h2>
                                                         <div id="history-{{ $loop->index }}"
@@ -539,7 +544,8 @@
                                                             aria-labelledby="headingOne"
                                                             data-bs-parent="#accordionExample" style="">
                                                             <div class="accordion-body">
-                                                                <strong>{{ $history['description'] }}</strong>
+                                                                <strong>{{ $history->abnormality }} :
+                                                                    {{ $history->category }}</strong>
                                                             </div>
                                                         </div>
                                                     </div>

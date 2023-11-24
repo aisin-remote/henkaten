@@ -233,7 +233,7 @@ class HenkatenController extends Controller
             // search other henkaten where status henkaten
             $otherStats = Henkaten::with('shift')
                 ->where('date', 'LIKE' , $currentDate . '%')
-                ->where('status', 'henkaten')
+                ->where('is_done', '0')
                 ->where('line_id', $request->line)
                 ->where('4M', $request->{"4M"})
                 ->whereHas('shift', function ($query) use ($currentTime) {

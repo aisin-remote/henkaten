@@ -41,48 +41,50 @@
                     </thead>
                     <tbody>
                         @foreach ($henkatenHistory as $henkaten)
-                            <tr>
-                                <td>{{ Carbon\Carbon::parse($henkaten->date)->format('Y-m-d') }}</td>
-                                <td>{{ $henkaten->line->name }}</td>
-                                <td>{{ Carbon\Carbon::parse($henkaten->date)->format('H:i:s') }}</td>
-                                <td>{{ $henkaten->abnormality }}</td>
-                                <td>{{ $henkaten->category }}</td>
-                                <td>{{ $henkaten->henkaten_management_id }}</td>
-                                @php
-                                    if ($henkaten->troubleshoot->before_treatment == 'ng') {
-                                        $colorBefore = 'danger';
-                                    } else {
-                                        $colorBefore = 'success';
-                                    }
+                            @if ($henkaten->troubleshoot !== null)
+                                <tr>
+                                    <td>{{ Carbon\Carbon::parse($henkaten->date)->format('Y-m-d') }}</td>
+                                    <td>{{ $henkaten->line->name }}</td>
+                                    <td>{{ Carbon\Carbon::parse($henkaten->date)->format('H:i:s') }}</td>
+                                    <td>{{ $henkaten->abnormality }}</td>
+                                    <td>{{ $henkaten->category }}</td>
+                                    <td class="text-center">{{ $henkaten->henkaten_management_id }}</td>
+                                    @php
+                                        if ($henkaten->troubleshoot->before_treatment == 'ng') {
+                                            $colorBefore = 'danger';
+                                        } else {
+                                            $colorBefore = 'success';
+                                        }
 
-                                    if ($henkaten->troubleshoot->after_treatment == 'ng') {
-                                        $colorAfter = 'danger';
-                                    } else {
-                                        $colorAfter = 'success';
-                                    }
+                                        if ($henkaten->troubleshoot->after_treatment == 'ng') {
+                                            $colorAfter = 'danger';
+                                        } else {
+                                            $colorAfter = 'success';
+                                        }
 
-                                    if ($henkaten->troubleshoot->result_check == 'ng') {
-                                        $colorResult = 'danger';
-                                    } else {
-                                        $colorResult = 'success';
-                                    }
-                                @endphp
-                                <td>{{ $henkaten->troubleshoot ? $henkaten->troubleshoot->troubleshoot : 'N/A' }}</td>
-                                <td><span
-                                        class="badge bg-{{ $colorResult }}">{{ $henkaten->troubleshoot->result_check }}</span>
-                                </td>
-                                <td>{{ $henkaten->troubleshoot->inspection_report }}</td>
-                                <td>{{ $henkaten->troubleshoot->part }}</td>
-                                <td><span
-                                        class="badge bg-{{ $colorBefore }}">{{ $henkaten->troubleshoot->before_treatment }}</span>
-                                </td>
-                                <td><span
-                                        class="badge bg-{{ $colorAfter }}">{{ $henkaten->troubleshoot->after_treatment }}</span>
-                                </td>
-                                <td>{{ $henkaten->troubleshoot->employee->name }}</td>
-                                <td>{{ $henkaten->approver !== null ? 'approved by ' . $henkaten->approver : 'Waiting...' }}
-                                </td>
-                            </tr>
+                                        if ($henkaten->troubleshoot->result_check == 'ng') {
+                                            $colorResult = 'danger';
+                                        } else {
+                                            $colorResult = 'success';
+                                        }
+                                    @endphp
+                                    <td>{{ $henkaten->troubleshoot ? $henkaten->troubleshoot->troubleshoot : 'N/A' }}</td>
+                                    <td><span
+                                            class="badge bg-{{ $colorResult }}">{{ $henkaten->troubleshoot->result_check }}</span>
+                                    </td>
+                                    <td>{{ $henkaten->troubleshoot->inspection_report }}</td>
+                                    <td>{{ $henkaten->troubleshoot->part }}</td>
+                                    <td><span
+                                            class="badge bg-{{ $colorBefore }}">{{ $henkaten->troubleshoot->before_treatment }}</span>
+                                    </td>
+                                    <td><span
+                                            class="badge bg-{{ $colorAfter }}">{{ $henkaten->troubleshoot->after_treatment }}</span>
+                                    </td>
+                                    <td>{{ $henkaten->troubleshoot->employee->name }}</td>
+                                    <td>{{ $henkaten->approver !== null ? 'approved by ' . $henkaten->approver : 'Waiting...' }}
+                                    </td>
+                                </tr>
+                            @endif
                         @endforeach
                     </tbody>
                 </table>

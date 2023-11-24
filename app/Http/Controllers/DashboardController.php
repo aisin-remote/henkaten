@@ -63,7 +63,7 @@ class DashboardController extends Controller
         $currentTime = Carbon::now()->format('H:i:s');
 
         // get all history
-        $histories = Henkaten::with('troubleshoot')->where('line_id', $lineId->id)->get();
+        $histories = Henkaten::with(['troubleshoot.employee', 'henkatenManagement'])->where('line_id', $lineId->id)->get();
         
         // get man power at spesific line and range of time
         $activeEmployees = EmployeeActive::with('shift')
