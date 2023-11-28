@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Route;
 use App\Models\Theme;
 use Illuminate\Http\Request;
-use Route;
 use Illuminate\Support\Facades\DB;
 
 class themeController extends Controller
@@ -17,25 +17,50 @@ class themeController extends Controller
 
     public function regist(Request $request)
     {
-        // dd($request);
         $theme = $request->input('repeater-group');
+        
+        // Extract the lowercase "name" values from each inner array
+        $names = array_map('strtoupper', array_column($theme, 'name'));
+
+        // Count occurrences of each name
+        $nameCounts = array_count_values($names);
+        
+        // Check for duplicates
+        $duplicates = [];
+        foreach ($nameCounts as $name => $count) {
+            if ($count > 1) {
+                $duplicates[] = $name;
+            }
+        }
+
+        // Check if there are duplicates
+        if (!empty($duplicates)) {
+            // Handle the case where duplicates are found
+            return redirect()->back()->with('error', 'Theme cant be same!');
+        }
+
+        foreach($names as $name){
+            // error handling when theme already exists in database
+            $existingTheme = Theme::whereRaw('UPPER(name) = ?', $name)->first();
+            if($existingTheme){
+                return redirect()->back()->with('error', 'Theme already exist!');
+            }
+        }
 
         try {
             DB::beginTransaction();
 
             foreach ($theme as $theme) {
-                for ($i = 1; $i <= 1; $i++) {
-                    Theme::create([
-                        'name' => $theme['name']
-                    ]);
-                }
+                Theme::create([
+                    'name' => $theme['name']
+                ]);
             }
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Theme berhasil ditambah!');
+            return redirect()->back()->with('success', 'Theme created successfully');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Theme gagal ditambah!');
+            return redirect()->back()->with('error', 'Theme creation failed!');
         }
     }
 

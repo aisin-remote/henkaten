@@ -60,41 +60,57 @@
                         <div class="repeater-mp-container">
                             <div class="row mb-3">
                                 <div class="col-lg-9 col-sm-12">
-                                    <select class="select2 form-select select2-hidden-accessible employee_name"
+                                    <select class="select2 form-select select2-hidden-accessible employee_id"
                                         style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
-                                        name="employee_name[]" required>
+                                        name="employee_id[]" required>
                                         <option value="0">Select Employee</option>
                                         @foreach ($employees as $employee)
                                             <option value="{{ $employee->id }}">{{ $employee->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-lg-2 col-sm-12">
-                                    <select class="form-select mr-sm-2 pos" id="inlineFormCustomSelect" name="pos[]">
-                                        <option value="0">-- select pos --</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
+                                <div class="col-lg-3 col-sm-12 align-items-center">
+                                    <div class="mb-4 row align-items-center">
+                                        <label for="exampleInputPassword1"
+                                            class="form-label fw-semibold col-sm-3 col-form-label">Pos</label>
+                                        <div class="col-9">
+                                            <input type="text" class="form-control" placeholder="Employee Name"
+                                                name="pos[]" value="Pos 1" disabled>
+                                            <input type="hidden" class="form-control" placeholder="Employee Name"
+                                                name="pos[]" value="1">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-lg-9 col-sm-12">
+                                    <select class="select2 form-select select2-hidden-accessible employee_id"
+                                        style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
+                                        name="employee_id[]" required>
+                                        <option value="0">Select Employee</option>
+                                        @foreach ($employees as $employee)
+                                            <option value="{{ $employee->id }}">{{ $employee->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
-                                <div class="col-lg-1 col-sm-12">
-                                    <button data-repeater-delete=""
-                                        class="btn btn-danger waves-effect waves-light remove-mp-row" type="button">
-                                        <i class="ti ti-circle-x fs-5"></i>
-                                    </button>
+                                <div class="col-lg-3 col-sm-12">
+                                    <div class="mb-4 row align-items-center">
+                                        <label for="exampleInputPassword1"
+                                            class="form-label fw-semibold col-sm-3 col-form-label">Pos</label>
+                                        <div class="col-9">
+                                            <input type="text" class="form-control" placeholder="Employee Name"
+                                                name="pos[]" value="Pos 2" disabled>
+                                            <input type="hidden" class="form-control" placeholder="Employee Name"
+                                                name="pos[]" value="2">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <button type="button" data-repeater-create="" class="btn btn-info waves-effect waves-light mb-3"
-                            id="addMp">
-                            <div class="d-flex align-items-center">
-                                Add MP
-                                <i class="ti ti-circle-plus ms-1 fs-5"></i>
-                            </div>
-                        </button>
                         <div class="mt-3 mb-3">
                             <label for="" class="pb-1 text-muted">Active from</label>
-                            <input type="date" class="form-control" placeholder="Designation" name="active_from" required
-                                min="{{ date('Y-m-d') }}">
+                            <input type="date" class="form-control" placeholder="Designation" name="active_from"
+                                required min="{{ date('Y-m-d') }}">
                         </div>
                         <div class="mb-3">
                             <button
@@ -300,74 +316,6 @@
             });
         });
 
-        $('#addMp').on('click', function() {
-            var newRow = `<div class="row mb-3">
-                                <div class="col-lg-9 col-sm-12">
-                                    <select class="select2 form-select select2-hidden-accessible employee_name"
-                                        style="width: 100%; height: 36px"
-                                        tabindex="-1" aria-hidden="true" name="employee_name[]" required>
-                                        <option>Select Employee</option>
-                                        @foreach ($employees as $employee)
-                                            <option value="{{ $employee->id }}">{{ $employee->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-lg-2 col-sm-12">
-                                    <select class="form-select mr-sm-2 pos" id="inlineFormCustomSelect" name="pos[]">
-                                        <option value="default">-- select pos --</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                    </select>
-                                </div>
-                                <div class="col-lg-1 col-sm-12">
-                                    <button data-repeater-delete=""
-                                        class="btn btn-danger waves-effect waves-light remove-mp-row" type="button">
-                                        <i class="ti ti-circle-x fs-5"></i>
-                                    </button>
-                                </div>
-                            </div>`;
-
-            // Append the new row
-            $('.repeater-mp-container').append(newRow);
-
-            // Initialize Select2 for the Select elements in the new row
-            $('.repeater-mp-container').find('.select2').select2();
-        });
-
-        $('.repeater-mp-container').on('click', '.remove-mp-row', function() {
-            if (confirm("Are you sure you want to remove this item?")) {
-                $(this).closest('.row.mb-3').remove();
-            }
-        });
-
-        // PIC
-        $('#addPic').on('click', function() {
-            var newRow = `<div class="row mb-3">
-                                <div class="col-lg-11 col-sm-12">
-                                    <select class="select2 form-select select2-hidden-accessible pic"
-                                        style="width: 100%; height: 36px"
-                                        tabindex="-1" aria-hidden="true" id="pic_name" name="pic_name[]" required>
-                                        <option value="0">Select PIC</option>
-                                        @foreach ($pics as $pic)
-                                            <option value="{{ $pic->id }}">{{ $pic->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-lg-1 col-sm-12">
-                                    <button data-repeater-delete="" class="btn btn-danger waves-effect waves-light remove-pic-row"
-                                        type="button">
-                                        <i class="ti ti-circle-x fs-5"></i>
-                                    </button>
-                                </div>
-                            </div>`;
-
-            // Append the new row
-            $('.repeater-pic-container').append(newRow);
-
-            // Initialize Select2 for the Select elements in the new row
-            $('.repeater-pic-container').find('.select2').select2();
-        });
-
         $('.repeater-pic-container').on('click', '.remove-pic-row', function() {
             if (confirm("Are you sure you want to remove this item?")) {
                 $(this).closest('.row.mb-3').remove();
@@ -510,79 +458,6 @@
                 }
             });
         }
-
-        // Bind the named function to multiple change events
-        $('.repeater-mp-container').on('change', '.pos', handleInputChange);
-        $('.repeater-mp-container').on('change', '.employee_name', handleInputChange);
-        $('#line').on('change', handleInputChange);
-
-
-        // get pic when line changed changed
-        $('.shift').on('change', function() {
-            let line = $('#line').val();
-            let shift = $(this).val();
-            $.ajax({
-                type: 'get',
-                url: "{{ url('employee/getPic') }}",
-                _token: "{{ csrf_token() }}",
-                dataType: 'json',
-                data: {
-                    shift: shift,
-                    line: line,
-                },
-                success: function(data) {
-                    if (data.status == 'success') {
-                        $('.pic').val(data.employee);
-                        $('.repeater-pic-container').append(
-                            `<input type="hidden" name="pic_name" value="${data.employee}">`
-                        )
-                        $('.pic').trigger('change');
-                        $('.pic').prop("disabled", true);
-                    } else if (data.status == 'error') {
-                        console.log(data.message);
-                        $('.pic').val('0');
-                        $('.pic').trigger('change');
-                        $('.pic').removeAttr("disabled");
-                    }
-                },
-                error: function(xhr) {
-                    console.log(xhr.status);
-                }
-            });
-        })
-
-        $('#line').on('change', function() {
-            let line = $(this).val();
-            let shift = $('.shift').val();
-            $.ajax({
-                type: 'get',
-                url: "{{ url('employee/getPic') }}",
-                _token: "{{ csrf_token() }}",
-                dataType: 'json',
-                data: {
-                    shift: shift,
-                    line: line,
-                },
-                success: function(data) {
-                    if (data.status == 'success') {
-                        $('.pic').val(data.employee);
-                        $('.repeater-pic-container').append(
-                            `<input type="hidden" name="pic_name" value="${data.employee}">`
-                        )
-                        $('.pic').trigger('change');
-                        $('.pic').prop("disabled", true);
-                    } else if (data.status == 'error') {
-                        console.log(data.message);
-                        $('.pic').val('0');
-                        $('.pic').trigger('change');
-                        $('.pic').removeAttr("disabled");
-                    }
-                },
-                error: function(xhr) {
-                    console.log(xhr.status);
-                }
-            });
-        })
 
         $('#addPlanning').on('click', function() {
             $("#addPlanningCard").toggle();

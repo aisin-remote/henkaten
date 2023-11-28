@@ -49,4 +49,9 @@ class Employee extends Model
     {
         return $this->hasMany(Troubleshoot::class);
     }
+    
+    public function employeeSkill()
+    {
+        return $this->hasMany(EmployeeSkill::class);
+    }
 }

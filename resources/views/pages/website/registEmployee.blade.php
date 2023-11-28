@@ -15,6 +15,14 @@
                 <strong>Error - </strong> {{ session('error') }}
             </div>
         @endif
+
+        @if (session()->has('warning'))
+            <div class="alert alert-warning alert-dismissible bg-warning text-white border-0 fade show" role="alert">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"
+                    aria-label="Close"></button>
+                <strong>Warning - </strong> {{ session('warning') }}
+            </div>
+        @endif
         <div class="card shadow" id="addEmployeeCard" style="display: none">
             <div class="border-bottom title-part-padding">
                 <h3 class="card-title mb-0">Add New Employee</h3>
@@ -26,13 +34,16 @@
                     <div class="">
                         <div class="row">
                             <div class="col-lg-3 col-sm-12">
+                                <label class="mb-1">Employee</label>
                                 <input type="text" class="form-control" placeholder="Employee Name" name="name"
                                     required>
                             </div>
                             <div class="col-lg-2 col-sm-12">
+                                <label class="mb-1">NPK</label>
                                 <input type="text" class="form-control" placeholder="NPK" name="npk" required>
                             </div>
                             <div class="col-lg-3 col-sm-12">
+                                <label class="mb-1">Role</label>
                                 <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="role" required>
                                     <option selected>-- select role --</option>
                                     <option value="Operator">Operator</option>
@@ -42,6 +53,7 @@
                                 </select>
                             </div>
                             <div class="col-lg-4 col-sm-12">
+                                <label class="mb-1">Employee Photo</label>
                                 <input class="form-control" type="file" id="photo" name="photo" required>
                                 <small class="text-danger">*Foto Karyawan</small>
                             </div>
@@ -54,18 +66,20 @@
                         <div class="repeater-container">
                             <div class="row mb-3">
                                 <div class="col-lg-9 col-sm-12">
+                                    <label class="mb-1">Skill</label>
                                     <select class="select2 form-select select2-hidden-accessible"
                                         style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
                                         name="skill_name[]">
-                                        <option>Select</option>
+                                        <option value="0">Select</option>
                                         @foreach ($skills as $skill)
                                             <option value="{{ $skill->name }}">{{ $skill->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-lg-2 col-sm-12">
+                                    <label class="mb-1">Level</label>
                                     <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="level[]">
-                                        <option selected>-- select level --</option>
+                                        <option value="0">-- select level --</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
@@ -74,6 +88,7 @@
                                     </select>
                                 </div>
                                 <div class="col-lg-1 col-sm-12">
+                                    <div class="mb-2" style="color: white">sss</div>
                                     <button class="btn btn-danger waves-effect waves-light remove-row" type="button">
                                         <i class="ti ti-circle-x fs-5"></i>
                                     </button>
@@ -215,9 +230,13 @@
                                                             $employeeSkills = $allSkills->whereIn('id', $employeeSkillIds);
                                                         @endphp
                                                     @endforeach
-                                                    @foreach ($employeeSkills as $skill)
-                                                        <h4 class="mb-0 fs-5">{{ $skill->name }}</h4>
-                                                    @endforeach
+                                                    @if (!$employeeSkills->isEmpty())
+                                                        @foreach ($employeeSkills as $skill)
+                                                            <h4 class="mb-0 fs-5">{{ $skill->name }}</h4>
+                                                        @endforeach
+                                                    @else
+                                                        <span class="badge bg-warning">Tidak Memiliki Skill</span>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -225,16 +244,20 @@
                                             <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
                                                 <div class="ms-2 text-start">
                                                     <h6 class="fw-normal text-muted mb-2">Level</h6>
-                                                    @foreach ($employeeSkills as $skill)
-                                                        <div class="progress mb-2" style="height: 15px; width: 10vw">
-                                                            <div class="progress-bar" role="progressbar"
-                                                                style="width: {{ $skill->level * 20 }}%;"
-                                                                aria-valuenow="{{ $skill->level }}" aria-valuemin="0"
-                                                                aria-valuemax="5">
-                                                                {{ $skill->level }}
+                                                    @if (!$employeeSkills->isEmpty())
+                                                        @foreach ($employeeSkills as $skill)
+                                                            <div class="progress mb-2" style="height: 15px; width: 10vw">
+                                                                <div class="progress-bar" role="progressbar"
+                                                                    style="width: {{ $skill->level * 20 }}%;"
+                                                                    aria-valuenow="{{ $skill->level }}" aria-valuemin="0"
+                                                                    aria-valuemax="5">
+                                                                    {{ $skill->level }}
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    @endforeach
+                                                        @endforeach
+                                                    @else
+                                                        <span class="badge bg-warning">Tidak Memiliki Skill</span>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>

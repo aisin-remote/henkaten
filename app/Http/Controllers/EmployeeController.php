@@ -40,22 +40,39 @@ class EmployeeController extends Controller
         $levels = $request->level;
         $arraySkill = [];
 
-        // mapping each skill
-        for ($i = 0; $i < count($skills); $i++) {
-            $skillId = Skill::select('id')->where('name', $skills[$i])->where('level', $levels[$i])->first();
-            if (!$skillId) {
-                return redirect()->back()->with('error', 'Skill atau level berlum terdaftar!');
+        if($skills !== null){
+            // mapping each skill
+            for ($i = 0; $i < count($skills); $i++) {            // check if any data empty
+                if($skills[$i] == 0){
+                    return redirect()->back()->with('warning', 'Belum input skill');
+                }
+                
+                if($levels[$i] == 0){
+                    return redirect()->back()->with('warning', 'Belum input level');
+                }
+                
+                
+                $skillId = Skill::select('id')->where('name', $skills[$i])->where('level', $levels[$i])->first();
+                if (!$skillId) {
+                    return redirect()->back()->with('error', 'Skill atau level berlum terdaftar!');
+                }
+    
+                array_push($arraySkill, $skillId);
             }
-
-            array_push($arraySkill, $skillId);
         }
 
         $validatedData =  $request->validate([
             'name' => 'required|max:255|min:3',
             'npk' => 'required|max:6|min:6',
             'role' => 'required',
-            'photo' => 'required|max:2048'
+            'photo' => 'required|max:3072'
         ]);
+
+        // npk exist
+        $existingNpk = Employee::where('npk', $validatedData['npk'])->first();
+        if ($existingNpk){
+            return redirect()->back()->with('error', 'Npk sudah terdaftar!');
+        }
 
         if ($request->has('photo')) {
             $doc = $request->file('photo');
@@ -72,19 +89,21 @@ class EmployeeController extends Controller
             // insert into employee table
             $employee = Employee::create($validatedData);
 
-            // insert into employee skill
-            foreach ($arraySkill as $skill) {
-                EmployeeSkill::create([
-                    'employee_id' => $employee->id,
-                    'skill_id' => $skill->id,
-                ]);
+            if($skills !== null){
+                // insert into employee skill
+                foreach ($arraySkill as $skill) {
+                    EmployeeSkill::create([
+                        'employee_id' => $employee->id,
+                        'skill_id' => $skill->id,
+                    ]);
+                }
             }
 
             DB::commit();
             return redirect()->back()->with('success', 'Karyawan berhasil ditambah!');
         } catch (\Throwable $th) {
             DB::rollback();
-            return redirect()->back()->with('error', 'Karyawan gagal ditambah!');
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 
@@ -125,18 +144,68 @@ class EmployeeController extends Controller
     }
 
     public function employeePlanningStore(Request $request)
-    {
+    {   
         $request->validate([
             'shift' => 'required',
             'line' => 'required',
             'pic_name' => 'required',
-            'employee_name' => 'required',
+            'employee_id' => 'required',
             'active_from' => 'required',
         ]);
-
-        $employees = $request->employee_name;
+        $employees = $request->employee_id;
         $pic = $request->pic_name;
         $pos = $request->pos;
+
+        if($employees[0] === 0){
+            return redirect()->back()->with('error', 'Isi karyawan pos 1!');
+        }else if($employees[1] == '0'){
+            return redirect()->back()->with('error', 'Isi karyawan pos 2!');
+        }
+
+        // count same value of input
+        $nameCounts = array_count_values(array_map('strtoupper', $employees));
+        
+        // Check for duplicates
+        $duplicates = [];
+        foreach ($nameCounts as $value => $count) {
+            if ($count > 1) {
+                $duplicates[] = $value;
+            }
+        }
+        
+        // Check if there are duplicates
+        if (!empty($duplicates)) {
+            return redirect()->back()->with('error', 'Karyawan tidak boleh sama!');
+        }
+
+
+        // get all employee skill
+        for($i = 0; $i < count($employees); $i++){
+            $employeeSkills = EmployeeSkill::with(['skill','employee'])->where('employee_id', $employees[$i])->get();
+
+            // if no skill
+            if(count($employeeSkills) === 0){
+                return redirect()->back()->with('error', 'Karyawan tidak memiliki skill!');
+            }
+            
+            $minimumSkills = MinimumSkill::with('skill')
+                    ->where('line_id', $request->line)
+                    ->where('pos', $pos[$i])
+                    ->get();
+            
+            // if employee skill lower than minimum skill required
+            if(count($employeeSkills) < count($minimumSkills)){
+                return redirect()->back()->with('error', 'Tidak memiliki semua skill yang dibutuhkan!');
+            }
+                
+            foreach($minimumSkills as $minimumSkill){
+                foreach($employeeSkills as $employeeSkill){
+                    if($employeeSkill->skill->level < $minimumSkill->skill->level){
+                        return redirect()->back()->with('error', 'Level skill karyawan : ' . $employeeSkill->employee->name . ' kurang dari ketentuan!');
+                    }
+                }
+            }
+        }
 
         // current date
         $currentDate = Carbon::parse($request->active_from);
@@ -167,7 +236,6 @@ class EmployeeController extends Controller
         
         try {
             DB::beginTransaction();
-
             for ($i = 0; $i < count($employees); $i++) {
                 EmployeeActive::create([
                     'employee_id' => $employees[$i],
@@ -309,25 +377,64 @@ class EmployeeController extends Controller
     public function employeeUpdate(Request $request,  $id)
     {
         $skills = $request->skill_name;
+        
+        // count same value of input
+        $nameCounts = array_count_values(array_map('strtoupper', $skills));
+        
+        // Check for duplicates
+        $duplicates = [];
+        foreach ($nameCounts as $value => $count) {
+            if ($count > 1) {
+                $duplicates[] = $value;
+            }
+        }
+        
+        // Check if there are duplicates
+        if (!empty($duplicates)) {
+            return redirect()->back()->with('error', 'Skill cant be same!');
+        }
+
         $levels = $request->level;
         $arraySkill = [];
 
-        // mapping each skill
-        for ($i = 0; $i < count($skills); $i++) {
-            $skillId = Skill::select('id')->where('name', $skills[$i])->where('level', $levels[$i])->first();
-            if (!$skillId) {
-                return redirect()->back()->with('error', 'Skill atau level belum terdaftar!');
-            }
+        if($skills !== null){
+            // mapping each skill
+            for ($i = 0; $i < count($skills); $i++) {
+                if($skills[$i] == 0){
+                    return redirect()->back()->with('warning', 'Belum input skill');
+                }
+                
+                if($levels[$i] == 0){
+                    return redirect()->back()->with('warning', 'Belum input level');
+                }
 
-            array_push($arraySkill, $skillId);
+                $skillId = Skill::select('id')->where('name', $skills[$i])->where('level', $levels[$i])->first();
+                if (!$skillId) {
+                    return redirect()->back()->with('error', 'Skill atau level belum terdaftar!');
+                }
+    
+                array_push($arraySkill, $skillId);
+            }
         }
 
         $validatedData =  $request->validate([
             'name' => 'required|max:255|min:3',
             'npk' => 'required|max:6|min:6',
             'role' => 'required',
-            'photo' => 'nullable|max:2048'
+            'photo' => 'nullable|max:3072'
         ]);
+
+
+        // get npk of user
+        $currentNpk = Employee::where('id', $id)->first();
+        if ($currentNpk->npk !== $validatedData['npk']){
+            // npk exist
+            $existingNpk = Employee::where('npk', $validatedData['npk'])->first();
+            if ($existingNpk){
+                return redirect()->back()->with('error', 'Npk sudah terdaftar!');
+            }
+        }
+        
 
         if ($request->has('photo')) {
             $doc = $request->file('photo');
@@ -351,16 +458,18 @@ class EmployeeController extends Controller
                     ->where('skill_id', $skill->id)
                     ->first();
 
-                if ($employeeSkill) {
-                    $employeeSkill->update([
-                        'employee_id' => $employee->id,
-                        'skill_id' => $skill->id,
-                    ]);
-                } else {
-                    EmployeeSkill::create([
-                        'employee_id' => $employee->id,
-                        'skill_id' => $skill->id,
-                    ]);
+                if($skills !== null){
+                    if ($employeeSkill) {
+                        $employeeSkill->update([
+                            'employee_id' => $employee->id,
+                            'skill_id' => $skill->id,
+                        ]);
+                    } else {
+                        EmployeeSkill::create([
+                            'employee_id' => $employee->id,
+                            'skill_id' => $skill->id,
+                        ]);
+                    }
                 }
             }
 
@@ -371,10 +480,10 @@ class EmployeeController extends Controller
             EmployeeSkill::where('employee_id', $employee->id)->whereIn('skill_id', $skillsToDelete)->delete();
 
             DB::commit();
-            return redirect()->back()->with('success', 'Karyawan berhasil diperbarui!');
+            return redirect('employee')->with('success', 'Karyawan berhasil diperbarui!');
         } catch (\Throwable $th) {
             DB::rollback();
-            return redirect()->back()->with('error', 'Karyawan gagal diperbarui!');
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 

@@ -71,6 +71,12 @@
                     <ul aria-expanded="false" class="collapse first-level">
                         <li class="sidebar-item">
                             <a href="/employee" class="sidebar-link">
+                                <i class="ti ti-book"></i>
+                                <span class="hide-menu">Henkaten Management</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="/employee" class="sidebar-link">
                                 <i class="ti ti-user"></i>
                                 <span class="hide-menu">Employee</span>
                             </a>

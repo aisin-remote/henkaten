@@ -19,4 +19,9 @@ class EmployeeSkill extends Model
     {
         return $this->belongsTo(Skill::class);
     }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
 }

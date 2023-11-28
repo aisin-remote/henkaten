@@ -36,6 +36,34 @@ class skillController extends Controller
     {
         $skills = $request->input('repeater-group');
 
+        // Extract the lowercase "name" values from each inner array
+        $names = array_map('strtoupper', array_column($skills, 'name'));
+
+        // Count occurrences of each name
+        $nameCounts = array_count_values($names);
+        
+        // Check for duplicates
+        $duplicates = [];
+        foreach ($nameCounts as $name => $count) {
+            if ($count > 1) {
+                $duplicates[] = $name;
+            }
+        }
+
+        // Check if there are duplicates
+        if (!empty($duplicates)) {
+            // Handle the case where duplicates are found
+            return redirect()->back()->with('error', 'Skill cant be same!');
+        }
+
+        foreach($names as $name){
+            // error handling when theme already exists in database
+            $existingSkill = Skill::whereRaw('UPPER(name) = ?', $name)->first();
+            if($existingSkill){
+                return redirect()->back()->with('error', 'Skill already exist!');
+            }
+        }
+
         try {
             DB::beginTransaction();
 
@@ -50,14 +78,15 @@ class skillController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Skill berhasil ditambah!');
+            return redirect()->back()->with('success', 'Skill created successfully!');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Skill gagal ditambah!');
+            return redirect()->back()->with('error', 'Skill creation failed!');
         }
     }
 
     public function minimumRegist(Request $request)
     {
+        $create = null;
         $validatedData = $request->validate([
             'skill' => 'required',
             'pos' => 'required',
@@ -69,6 +98,24 @@ class skillController extends Controller
             DB::beginTransaction();
 
             for ($i = 0; $i < count($validatedData['skill']); $i++) {
+                
+                // check if any data empty
+                if($request->line[$i] == 0){
+                    return redirect()->back()->with('warning', 'Belum input skill');
+                }
+                
+                if($request->pos[$i] == 0){
+                    return redirect()->back()->with('warning', 'Belum input pos');
+                }
+                
+                if($request->skill[$i] == 0){
+                    return redirect()->back()->with('warning', 'Belum input skill');
+                }
+                
+                if($request->level[$i] == 0){
+                    return redirect()->back()->with('warning', 'Belum input level');
+                }
+                
                 $skill = Skill::where('name', $validatedData['skill'][$i])
                     ->where('level', $validatedData['level'][$i])
                     ->firstOrFail();
@@ -88,20 +135,18 @@ class skillController extends Controller
                     ]);
                 }
             }
-
             // Commit the transaction
             DB::commit();
 
-            if ($create) {
+            if ($create !== null) {
                 return redirect()->back()->with('success', 'Minimum skill berhasil ditambah!');
-            } else {
-                return redirect()->back()->with('warning', 'Data yang diinput sudah ada.');
+            } else if($create === null) {
+                return redirect()->back()->with('error', 'Data yang di input sudah ada.');
             }
         } catch (\Throwable $th) {
             // Rollback the transaction in case of an exception
             DB::rollBack();
-            // return redirect()->back()->with('error', $th->getMessage());
-            return redirect()->back()->with('error', 'Data gagal diinput');
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 
@@ -148,25 +193,26 @@ class skillController extends Controller
 
     public function minimumRegistUpdate(Request $request, $id)
     {
-        $skills = [];
+        // Check if the MinimumSkill record already exists
+        $existingMinimumSkill = MinimumSkill::join('skills', 'minimum_skills.skill_id', '=', 'skills.id')
+                ->where('minimum_skills.pos', $request->pos)
+                ->where('minimum_skills.line_id', $request->line)
+                ->where('skills.name', $request->skill)
+                ->get();
 
-        for ($i = 0; $i < count($request->skill); $i++) {
-            $skillId = Skill::select('id')
-                ->where('name', $request->skill[$i])
-                ->where('level', $request->level[$i])
-                ->first();
-            array_push($skills, $skillId->id);
+        if($existingMinimumSkill){
+            return redirect('skill/minimum')->with('error', 'Data yang di input sudah ada atau sama!');
         }
 
         try {
             DB::beginTransaction();
-            for ($i = 0; $i < count($request->skill); $i++) {
-                MinimumSkill::where('id', $id)->update([
-                    'skill_id' => $skills[$i],
-                    'pos' => $request->pos[$i],
-                    'line_id' => $request->line[$i],
-                ]);
-            }
+
+            // update skill
+            MinimumSkill::where('id', $id)->update([
+                'skill_id' => $request->skill   ,
+                'pos' => $request->pos,
+                'line_id' => $request->line,
+            ]);
 
             DB::commit();
 
