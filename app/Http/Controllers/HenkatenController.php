@@ -36,6 +36,18 @@ class HenkatenController extends Controller
             }
         }
 
+        if(!$request->status){
+            return redirect()->back()->with('error', 'Belum memilih status HENKATEN atau STOP!');
+        }
+
+        if($request->category === '0'){
+            return redirect()->back()->with('error', 'Belum memilih kategori!');
+        }
+
+        if($request->henkatenManagement === '0'){
+            return redirect()->back()->with('error', 'Belum memilih tabel henkaten management!');
+        }
+
         try {
             DB::beginTransaction();
 
@@ -125,6 +137,26 @@ class HenkatenController extends Controller
             'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
             'stop' => ['priority' => 2, 'overall' => 'stop'],
         ];
+
+        if(!$request->part){
+            return redirect()->back()->with('error', 'Belum mengisi kolom part!');
+        }
+
+        if($request->beforeTreatment === '0'){
+            return redirect()->back()->with('error', 'Belum memilih status before treatment!');
+        }
+        
+        if($request->afterTreatment === '0'){
+            return redirect()->back()->with('error', 'Belum memilih status after treatment!');
+        }
+        
+        if($request->resultCheck === '0'){
+            return redirect()->back()->with('error', 'Belum memilih status result check!');
+        }
+
+        if($request->doneBy === '0'){
+            return redirect()->back()->with('error', 'Belum memilih PIC penanganan!');
+        }
 
         try {
             DB::beginTransaction();

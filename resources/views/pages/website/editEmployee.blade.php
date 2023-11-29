@@ -35,14 +35,17 @@
                     <div class="">
                         <div class="row">
                             <div class="col-lg-3 col-sm-12">
+                                <label class="mb-1">Employee</label>
                                 <input type="text" class="form-control" placeholder="Employee Name" name="name"
                                     value="{{ $employee->name }}" required>
                             </div>
                             <div class="col-lg-2 col-sm-12">
+                                <label class="mb-1">NPK</label>
                                 <input type="text" class="form-control" placeholder="NPK" name="npk"
                                     value="{{ $employee->npk }}" required>
                             </div>
                             <div class="col-lg-3 col-sm-12">
+                                <label class="mb-1">Role</label>
                                 <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="role" required>
                                     <option value="Operator" {{ $employee->role === 'Operator' ? 'selected' : '' }}>Operator
                                     </option>
@@ -53,6 +56,7 @@
                                 </select>
                             </div>
                             <div class="col-lg-4 col-sm-12">
+                                <label class="mb-1">Photo</label>
                                 <input class="form-control" type="file" id="photo" name="photo"
                                     value="{{ $employee->photo }}">
                                 <small class="text-danger">*Update if you want to change the employee's photo</small>
@@ -67,6 +71,7 @@
                             @foreach ($skills as $skill)
                                 <div class="row mb-3">
                                     <div class="col-lg-9 col-sm-12">
+                                        <label class="mb-1">Skill</label>
                                         <select class="select2 form-select select2-hidden-accessible"
                                             style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
                                             name="skill_name[]">
@@ -87,6 +92,7 @@
                                         </select>
                                     </div>
                                     <div class="col-lg-2 col-sm-12">
+                                        <label class="mb-1">Level</label>
                                         <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="level[]">
                                             <option value="" disabled> Select </option>
                                             <option value="1" {{ $level === '1' ? 'selected' : '' }}>1</option>
@@ -97,6 +103,7 @@
                                         </select>
                                     </div>
                                     <div class="col-lg-1 col-sm-12">
+                                        <div class="mb-2" style="color: white">sdad</div>
                                         <button data-repeater-delete=""
                                             class="btn btn-danger waves-effect waves-light remove-row" type="button">
                                             <i class="ti ti-circle-x fs-5"></i>
