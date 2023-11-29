@@ -59,16 +59,6 @@
                         </div>
                         <div class="repeater-mp-container">
                             <div class="row mb-3">
-                                <div class="col-lg-9 col-sm-12">
-                                    <select class="select2 form-select select2-hidden-accessible employee_id"
-                                        style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
-                                        name="employee_id[]" required>
-                                        <option value="0">Select Employee</option>
-                                        @foreach ($employees as $employee)
-                                            <option value="{{ $employee->id }}">{{ $employee->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
                                 <div class="col-lg-3 col-sm-12 align-items-center">
                                     <div class="mb-4 row align-items-center">
                                         <label for="exampleInputPassword1"
@@ -81,8 +71,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row mb-3">
                                 <div class="col-lg-9 col-sm-12">
                                     <select class="select2 form-select select2-hidden-accessible employee_id"
                                         style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
@@ -93,6 +81,8 @@
                                         @endforeach
                                     </select>
                                 </div>
+                            </div>
+                            <div class="row mb-3">
                                 <div class="col-lg-3 col-sm-12">
                                     <div class="mb-4 row align-items-center">
                                         <label for="exampleInputPassword1"
@@ -104,6 +94,16 @@
                                                 name="pos[]" value="2">
                                         </div>
                                     </div>
+                                </div>
+                                <div class="col-lg-9 col-sm-12">
+                                    <select class="select2 form-select select2-hidden-accessible employee_id"
+                                        style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
+                                        name="employee_id[]" required>
+                                        <option value="0">Select Employee</option>
+                                        @foreach ($employees as $employee)
+                                            <option value="{{ $employee->id }}">{{ $employee->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -155,60 +155,48 @@
                 <table class="table text-nowrap align-middle mb-0" id="henkatenHistory" style="width:100%">
                     <thead>
                         <tr>
-                            <th>Name</th>
                             <th>Line</th>
                             <th>Shift</th>
-                            <th>Pos</th>
-                            <th>role</th>
                             <th>Planning Date</th>
-                            {{-- <th>Henkaten History</th> --}}
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($activeEmployees as $emp)
+                        @foreach ($groupedArray as $groupKey => $employees)
                             @php
-                                if ($emp->employee->role == 'JP') {
-                                    $color = 'danger';
-                                } else {
-                                    $color = 'warning';
-                                }
+                                // Split the group key to get shift, line, and week
+                                [$shift, $line, $start, $end] = explode('|', $groupKey);
+                                $modalId = Str::slug($shift . $line . $start . $end);
                             @endphp
                             <tr>
-                                <td class="ps-0 text-truncate ps-3">
-                                    <img src="{{ asset('uploads/doc/' . $emp->employee->photo) }}"
-                                        class="rounded img-fluid me-2" width="40" alt="{{ $emp->employee->name }}">
-                                    <span class="ps-2 fw-semibold">{{ $emp->employee->name }}</span>
-                                </td>
-                                <td>{{ $emp->line->name }}</td>
-                                <td>{{ $emp->shift->name }}</td>
-                                <td>POS {{ $emp->pos }}</td>
-                                <td>
-                                    <span class="badge rounded-pill bg-{{ $color }} p-2 px-3">
-                                        {{ $emp->employee->role }}
-                                    </span>
-                                </td>
-                                <td>{{ Carbon\Carbon::parse($emp->active_from)->format('j F Y') }} -
-                                    {{ Carbon\Carbon::parse($emp->expired_at)->format('j F Y') }}
-                                </td>
+                                <td>{{ $line }}</td>
+                                <td>{{ $shift }}</td>
+                                <td>{{ Carbon\Carbon::parse($start)->format('j F Y') }} -
+                                    {{ Carbon\Carbon::parse($end)->format('j F Y') }}</td>
                                 <td class="text-center">
-                                    <a class="btn btn-warning" href="#">
-                                        <span class="rounded-3" id="icon">
-                                            <i class="ti ti-pencil"></i>
-                                        </span>
-                                    </a>
-                                    <button class="btn btn-secondary view-employee" data-bs-toggle="modal"
-                                        data-bs-target="#employeeModal{{ $emp->id }}">
+                                    <a class="btn btn-secondary view-employee mb-1" data-bs-toggle="modal"
+                                        data-bs-target="#{{ $modalId }}EmployeeDetail">
                                         <span class="rounded-3" id="icon">
                                             <i class="ti ti-search"></i>
                                         </span>
-                                    </button>
-                                    <a class="btn btn-danger delete-planning" href="#"
-                                        data-min-id="{{ $emp->id }}">
-                                        <span class="rounded-3" id="icon">
-                                            <i class="ti ti-x"></i>
-                                        </span>
                                     </a>
+                                    <form
+                                        action="{{ route('employee.planning.destroy', [
+                                            'first_id' => $employees[0]->employee_id,
+                                            'second_id' => $employees[1]->employee_id,
+                                            'shift' => $employees[0]->shift_id,
+                                            'line' => $employees[0]->line_id,
+                                            'active_from' => $start,
+                                        ]) }}"
+                                        method="post" class="delete-button">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">
+                                            <span class="rounded-3" id="icon">
+                                                <i class="ti ti-x"></i>
+                                            </span>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach
@@ -218,66 +206,101 @@
         </div>
     </div>
 
-    @foreach ($activeEmployees as $emp)
-        <div class="modal fade" id="employeeModal{{ $emp->id }}" tabindex="-1" role="dialog"
-            aria-labelledby="employeeModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+    {{-- modal confirmation --}}
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content modal-filled bg-light-warning">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center text-warning">
+                        <i class="ti ti-alert-octagon fs-7"></i>
+                        <p class="mt-3">
+                            Are you sure you want to delete this record?
+                        </p>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- end of modal --}}
+
+    @foreach ($groupedArray as $groupKey => $employees)
+        @php
+            // Split the group key to get shift, line, and week
+            [$shift, $line, $start, $end] = explode('|', $groupKey);
+            $modalId = Str::slug($shift . $line . $start . $end);
+        @endphp
+        <div class="modal fade" id="{{ $modalId }}EmployeeDetail" tabindex="-1" role="dialog"
+            aria-labelledby="employeeModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content p-3">
                     <div class="modal-body">
                         <div class="row justify-content-center">
-                            <div class="col-lg-12 col-md-12">
-                                <div class="text-center">
-                                    <img src="{{ asset('uploads/doc/' . $emp->employee->photo) }}"
-                                        class="rounded-1 img-fluid" width="150">
-                                    <div class="mt-n2">
-                                        <span class="badge bg-primary">{{ $emp->employee->role }}</span>
-                                        <h3 class="card-title mt-3">{{ $emp->employee->name }}</h3>
-                                        <h6 class="card-subtitle">{{ $emp->line->name }} ({{ $emp->shift->name }})</h6>
-                                        <h6 class="card-subtitle">
-                                            {{ Carbon\Carbon::parse($emp->active_from)->format('j F Y') }} -
-                                            {{ Carbon\Carbon::parse($emp->expired_at)->format('j F Y') }}
-                                        </h6>
-                                    </div>
-                                    <div class="row mt-3 justify-content-center">
-                                        <div class="col-6">
-                                            <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
-                                                <div class="ms-2 text-start">
-                                                    <h6 class="fw-normal text-muted mb-2">Skill</h6>
-                                                    @foreach ($skills as $skill)
-                                                        @php
-                                                            $employeeSkillIds = $empSkills
-                                                                ->where('employee_id', $emp->employee_id)
-                                                                ->pluck('skill_id')
-                                                                ->all();
-                                                            $employeeSkills = $allSkills->whereIn('id', $employeeSkillIds);
-                                                        @endphp
-                                                    @endforeach
-                                                    @foreach ($employeeSkills as $skill)
-                                                        <h4 class="mb-0 fs-5">{{ $skill->name }}</h4>
-                                                    @endforeach
+                            @foreach ($employees as $emp)
+                                <div class="col-lg-6 col-md-12">
+                                    <div class="text-center">
+                                        <img src="{{ asset('uploads/doc/' . $emp->photo) }}" class="rounded-1 img-fluid"
+                                            width="150">
+                                        <div class="mt-n2">
+                                            <span class="badge bg-primary">{{ $emp->role }}</span>
+                                            <h3 class="card-title mt-3">{{ $emp->name }}</h3>
+                                            <h6 class="card-subtitle mt-1">{{ $emp->npk }}
+                                            </h6>
+                                            <div class="row mt-4">
+                                                <div class="col-12">
+                                                    <button class="btn btn-light-danger text-danger"
+                                                        style="width: 100% !important">POS
+                                                        {{ strtoupper($emp->pos) }}</button>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-6">
-                                            <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
-                                                <div class="ms-2 text-start">
-                                                    <h6 class="fw-normal text-muted mb-2">Level</h6>
-                                                    @foreach ($employeeSkills as $skill)
-                                                        <div class="progress mb-2" style="height: 15px; width: 10vw">
-                                                            <div class="progress-bar" role="progressbar"
-                                                                style="width: {{ $skill->level * 20 }}%;"
-                                                                aria-valuenow="{{ $skill->level }}" aria-valuemin="0"
-                                                                aria-valuemax="5">
-                                                                {{ $skill->level }}
+                                        <div class="row mt-3 justify-content-center">
+                                            <div class="col-6">
+                                                <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
+                                                    <div class="ms-2 text-start">
+                                                        <h6 class="fw-normal text-muted mb-2">Skill</h6>
+                                                        @foreach ($skills as $skill)
+                                                            @php
+                                                                $employeeSkillIds = $empSkills
+                                                                    ->where('employee_id', $emp->employee_id)
+                                                                    ->pluck('skill_id')
+                                                                    ->all();
+                                                                $employeeSkills = $allSkills->whereIn('id', $employeeSkillIds);
+                                                            @endphp
+                                                        @endforeach
+                                                        @foreach ($employeeSkills as $skill)
+                                                            <h4 class="mb-0 fs-5">{{ $skill->name }}</h4>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
+                                                    <div class="ms-2 text-start">
+                                                        <h6 class="fw-normal text-muted mb-2">Level</h6>
+                                                        @foreach ($employeeSkills as $skill)
+                                                            <div class="progress mb-2" style="height: 15px; width: 8vw">
+                                                                <div class="progress-bar" role="progressbar"
+                                                                    style="width: {{ $skill->level * 20 }}%;"
+                                                                    aria-valuenow="{{ $skill->level }}" aria-valuemin="0"
+                                                                    aria-valuemax="5">
+                                                                    {{ $skill->level }}
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    @endforeach
+                                                        @endforeach
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -465,31 +488,43 @@
             $("#icon").html($("#addPlanningCard").is(":visible") ? '<i class="ti ti-minus"></i>' :
                 '<i class="ti ti-plus"></i>');
         })
-    });
 
-    $(document).ready(function() {
-        $('.delete-planning').on('click', function(e) {
-            e.preventDefault();
+        // Handle click on delete button
+        $('.delete-button').on('click', function() {
+            // Show the confirmation modal
+            $('#confirmationModal').modal('show');
 
-            var employeeId = $(this).data('min-id');
+            // Get the form action URL from the delete button's data attribute
+            var actionUrl = $(this).data('action');
 
-            if (confirm('Are you sure you want to delete this planning?')) {
-                $.ajax({
-                    url: `{{ url('/employee/planning/${employeeId}') }}`,
-                    type: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        // Handle success, e.g., redirect or update UI
-                        window.location.reload();
-                    },
-                    error: function(error) {
-                        console.error('Error deleting planning:', error);
-                        window.location.reload();
-                    }
-                });
+            // Set the action attribute of the confirmation form
+            $('#confirmationForm').attr('action', actionUrl);
+        });
+
+        // Handle click on confirm delete button
+        $('#confirmDelete').on('click', function() {
+            // Submit the form for deletion
+            $('#confirmationForm').submit();
+        });
+
+        var deleteForm; // Variable to store the form to be submitted
+
+        // Handle click on delete button
+        $('.delete-button').on('click', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Store the form associated with the delete button
+            deleteForm = $(this).closest('form');
+
+            // Show the confirmation modal
+            $('#confirmationModal').modal('show');
+        });
+
+        // Handle click on confirm delete button
+        $('#confirmDelete').on('click', function() {
+            if (deleteForm) {
+                // Submit the stored form for deletion
+                deleteForm.submit();
             }
         });
     });

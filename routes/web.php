@@ -5,12 +5,12 @@ use App\Models\Employee;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\skillController;
+use App\Http\Controllers\themeController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\HenkatenController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\themeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,7 +77,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{id}/detail', [EmployeeController::class, 'employeeDetail'])->name('detailEmployee');
 
         Route::delete('/{id}', [EmployeeController::class, 'destroy'])->name('employee.destroy');
-        Route::delete('/planning/{id}', [EmployeeController::class, 'destroyPlanning'])->name('employee.planning.destroy');
+        // Route::delete('/planning/{id}', [EmployeeController::class, 'destroyPlanning'])->name('employee.planning.destroy');
+        Route::delete('/planning/destroy', [EmployeeController::class, 'destroyPlanning'])->name('employee.planning.destroy');
     });
 
     // regist employee skill
@@ -98,7 +99,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/theme', [themeController::class, 'index'])->name('theme');
     Route::post('/themeStore', [themeController::class, 'regist'])->name('theme.regist');
     Route::post('/theme/{id}', [themeController::class, 'destroy'])->name('theme.destroy');
-
+    
+    Route::get('/henkatenManagement', [HenkatenController::class, 'henkatenManagementIndex'])->name('henkatenManagement.index');
+    Route::post('/henkatenManagement/store', [HenkatenController::class, 'henkatenManagementStore'])->name('henkatenManagement.store');
+    
     Route::get('/mappingAllLine', function () {
         return view('welcome');
     });

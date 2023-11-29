@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Models\HenkatenMethod;
 use App\Models\HenkatenMachine;
 use App\Models\HenkatenMaterial;
+use App\Models\HenkatenManagement;
 use Illuminate\Support\Facades\DB;
 
 class HenkatenController extends Controller
@@ -310,5 +311,81 @@ class HenkatenController extends Controller
         return view('pages.website.history', [
             'henkatenHistory' => $henkatenHistory,
         ]);
+    }
+
+    public function henkatenManagementIndex()
+    {
+        $henkatenManagement = HenkatenManagement::all();
+        return view('pages.website.henkatenManagement', ['henkatenManagements' => $henkatenManagement]);
+    }
+
+    public function henkatenManagementStore(Request $request)
+    {
+        $henkatenManagement = $request->input('repeater-group');
+        
+        // Initialize an array to store counts for each combination of fields
+        $fieldCombinationCounts = [];
+
+        // Loop through each entry and count occurrences of each combination of fields
+        foreach ($henkatenManagement as $entry) {
+            $fieldCombination = [
+                strtoupper($entry['henkaten_item']),
+                strtoupper($entry['table_no']),
+                strtoupper($entry['4M']),
+            ];
+            
+            $fieldCombinationString = implode('|', $fieldCombination);
+
+            if (!isset($fieldCombinationCounts[$fieldCombinationString])) {
+                $fieldCombinationCounts[$fieldCombinationString] = 1;
+            } else {
+                $fieldCombinationCounts[$fieldCombinationString]++;
+            }
+        }
+
+        // Check for duplicates
+        $duplicates = [];
+        foreach ($fieldCombinationCounts as $fieldCombinationString => $count) {
+            if ($count > 1) {
+                $fields = explode('|', $fieldCombinationString);
+                $duplicates[] = [
+                    'henkaten_item' => $fields[0],
+                    'table_no' => $fields[1],
+                    '4M' => $fields[2],
+                ];
+            }
+        }
+        
+        // Check if there are duplicates
+        if (!empty($duplicates)) {
+            // Handle the case where duplicates are found
+            return redirect()->back()->with('error', 'Data tidak boleh sama!');
+        }   
+
+        foreach($henkatenManagement as $name){
+            // error handling when theme already exists in database
+            $existingTheme = HenkatenManagement::where('table_no', $name['table_no'])->first();
+            if($existingTheme){
+                return redirect()->back()->with('error', 'Henkaten management already exist!');
+            }
+        }
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($henkatenManagement as $entry) {
+                HenkatenManagement::create([
+                    'table_no' => $entry['table_no'],
+                    'henkaten_item' => $entry['henkaten_item'],
+                    '4M' => $entry['4M'],
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Henkaten Management created successfully');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'Henkaten Management creation failed!');
+        }
     }
 }

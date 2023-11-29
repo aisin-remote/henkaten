@@ -115,11 +115,21 @@ class EmployeeController extends Controller
         $lastDay = $currentDate->endOfWeek(Carbon::SUNDAY)->format('Y-m-d');
 
         // get active employee at this period of time (this week)
-        $activeEmployees = EmployeeActive::with('shift')
-            ->with('employee')
-            ->with('line')
-            ->whereBetween('active_from', [$firstDay, $lastDay])
-            ->get();
+        $activeEmployees = DB::table('employee_active')
+                ->join('shifts', 'employee_active.shift_id', '=', 'shifts.id')
+                ->join('lines', 'employee_active.line_id', '=', 'lines.id')
+                ->join('employees', 'employee_active.employee_id', '=', 'employees.id')
+                ->select('shifts.name as shift_name', 'shifts.id as shift_id' , 'lines.id as line_id','lines.name as line_name', 'employee_active.active_from', 'employee_active.expired_at', 'employees.name', 'employees.photo','employees.npk', 'employees.role', 'employee_active.pos', 'employees.id as employee_id')
+                ->whereBetween('employee_active.active_from', [$firstDay, $lastDay])
+                ->get();
+    
+        // Manually group by shift, line, and week
+        $groupedEmployees = $activeEmployees->groupBy(function ($employee) {
+            return $employee->shift_name . '|' . $employee->line_name . '|' . Carbon::parse($employee->active_from)->format('Y-m-d') . '|' . Carbon::parse($employee->expired_at)->format('Y-m-d');
+        });
+        
+        // Convert the grouped collection to a standard array
+        $groupedArray = $groupedEmployees->toArray();
 
         $allSkills = Skill::select('id', 'name', 'level')->get();
         $nameSkills = Skill::select('name')->groupBy('name')->get();
@@ -136,7 +146,7 @@ class EmployeeController extends Controller
             'lines' => Line::select('id', 'name')->get(),
 
             'skills' => Skill::select('name')->groupBy('name')->get(),
-            'activeEmployees' => $activeEmployees,
+            'groupedArray' => $groupedArray,
             'allSkills' => $allSkills,
             'empSkills' => $empSkills,
             'nameSkills' => $nameSkills
@@ -155,6 +165,10 @@ class EmployeeController extends Controller
         $employees = $request->employee_id;
         $pic = $request->pic_name;
         $pos = $request->pos;
+
+        if($pic[0] === 0){
+            return redirect()->back()->with('error', 'Isi PIC!');
+        }
 
         if($employees[0] === 0){
             return redirect()->back()->with('error', 'Isi karyawan pos 1!');
@@ -231,8 +245,17 @@ class EmployeeController extends Controller
             }
         }
 
-        // check if pic already exists
-        $picActive = PicActive::where('employee_id', $pic)->first();
+        // // check if pic already exists
+        // $picActive = PicActive::select('active_from')
+        //             ->where('employee_id', $pic[0])
+        //             ->first();
+        
+        // // if the "active_from" date isnt outside the range or the data is empty, you cant create new records
+        // if ($picActive) {
+        //     if (Carbon::parse($request->active_from)->between(Carbon::parse($picActive->active_from)->startOfWeek(), $endDate)) {
+        //         return redirect()->back()->with('error', 'Planning gagal dibuat, karyawan (' . $pic[0] . ') sudah pernah didaftarkan!');
+        //     }
+        // }
         
         try {
             DB::beginTransaction();
@@ -247,15 +270,13 @@ class EmployeeController extends Controller
                 ]);
             }
             
-            if(!$picActive){
-                PicActive::create([
-                    'employee_id' => $pic[0],
-                    'shift_id' => $request->shift,
-                    'line_id' => $request->line,
-                    'active_from' => $request->active_from,
-                    'expired_at' => $endDate
-                ]);
-            }
+            PicActive::create([
+                'employee_id' => $pic[0],
+                'shift_id' => $request->shift,
+                'line_id' => $request->line,
+                'active_from' => $request->active_from,
+                'expired_at' => $endDate
+            ]);
 
             DB::commit();
             return redirect()->back()->with('success', 'Planning berhasil dibuat!');
@@ -512,16 +533,25 @@ class EmployeeController extends Controller
         }
     }
 
-    public function destroyPlanning($id)
+    public function destroyPlanning(Request $request)
     {
-        if (request()->isMethod('delete')) {
-            $employee = EmployeeActive::findOrFail($id);
-            $employee->delete();
+        try {
+            DB::beginTransaction();
 
-            return redirect('/employee')->with('success', 'Employee deleted successfully!');
-        } else {
-            // Handle unsupported methods
-            return response()->json(['error' => 'Method not allowed'], 405);
+            // delete first employee
+            EmployeeActive::where('employee_id', $request->first_id)->where('active_from', $request->active_from)->delete();
+            
+            // delete second employee
+            EmployeeActive::where('employee_id', $request->second_id)->where('active_from', $request->active_from)->delete();
+
+            // delete pic
+            PicActive::where('shift_id', $request->shift)->where('line_id', $request->line)->delete();
+
+            DB::commit();
+            return redirect('/employee/planning')->with('success', 'Planning deleted successfully!');
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect('/employee/planning')->with('error', $th->getMessage());
         }
     }
 }

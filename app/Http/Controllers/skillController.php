@@ -13,7 +13,6 @@ class skillController extends Controller
 {
     public function index()
     {
-
         $masterSkills = Skill::select('name', DB::raw('GROUP_CONCAT(level) as levels'))
             ->groupBy('name')
             ->get();
