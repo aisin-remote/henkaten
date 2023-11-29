@@ -256,9 +256,23 @@
                             </ol>
                         </nav>
                     </div>
-                    <div class="col-3">
-                        <div class="text-center mb-n5">
-                            <img src="../../dist/images/breadcrumb/ChatBc.png" alt="" class="img-fluid mb-n4">
+                    <div class="col-lg-3 align-item-center" style="margin-bottom: -28px">
+                        <div class="card bg-{{ $color_status }} overflow-hidden card-hover">
+                            <div class="d-flex">
+                                <div class="p-3 ps-4 pt-4 text-center">
+                                    <h3 class="text-white mb-0 fs-6 fw-bolder">
+                                        {{ $overall_status }}
+                                    </h3>
+                                </div>
+                                <div class="align-self-center me-3 ms-auto">
+                                    <h2 class="fs-7 text-success mb-0"></h2>
+                                </div>
+                                <div class="p-4 bg-{{ $color_status }}">
+                                    <h3 class="text-white box mb-0 fw-bolder">
+                                        <i class="ti ti-{{ $shape_status }}"></i>
+                                    </h3>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -967,7 +981,7 @@
                                             <div class="form-floating mb-3">
                                                 <input type="text" class="form-control fw-bolder" id="tb-fname"
                                                     placeholder="Enter Name here"
-                                                    value="{{ $history->henkatenManagement->henkaten_item }} [Table no: {{ $history->henkatenManagement->id }}]"
+                                                    value="{{ $history->henkatenManagement->henkaten_item }} [Table no: {{ $history->henkatenManagement->table_no }}]"
                                                     disabled>
                                                 <label for="tb-fname">Hankaten Table No.</label>
                                             </div>
