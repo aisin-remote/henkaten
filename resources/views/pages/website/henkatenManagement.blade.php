@@ -58,7 +58,7 @@
                         </div>
                         <button type="button" data-repeater-create="" class="btn btn-info waves-effect waves-light mb-3">
                             <div class="d-flex align-items-center">
-                                Add Skill
+                                Add Content
                                 <i class="ti ti-circle-plus ms-1 fs-5"></i>
                             </div>
                         </button>

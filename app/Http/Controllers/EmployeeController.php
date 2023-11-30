@@ -137,10 +137,10 @@ class EmployeeController extends Controller
 
         return view('pages.website.planning', [
             'employees' => Employee::select('id', 'name')
-                ->whereIn('role', ['Operator', 'JP'])
+                ->whereIn('role', ['Operator'])
                 ->get(),
             'pics' =>  Employee::select('id', 'name')
-                ->whereNotIn('role', ['Operator', 'JP'])
+                ->whereNotIn('role', ['Operator'])
                 ->get(),
             'shifts' => Shift::select('id', 'name')->get(),
             'lines' => Line::select('id', 'name')->get(),
