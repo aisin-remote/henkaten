@@ -159,27 +159,27 @@ class HenkatenController extends Controller
         }
 
         $employeeAfter = $request->after;
-        
-        // count same value of input
-        $nameCounts = array_count_values($employeeAfter);
-        
-        // Check for duplicates
-        $duplicates = [];
-        foreach ($nameCounts as $value => $count) {
-            if ($count > 1) {
-                $duplicates[] = $value;
-            }
-        }
-        
-        // Check if there are duplicates
-        if (!empty($duplicates)) {
-            return redirect()->back()->with('error', 'Employee cant be same!');
-        }
 
         try {
             DB::beginTransaction();
 
             if ($request->{"4M"} == 'man') {
+                // count same value of input
+                $nameCounts = array_count_values($employeeAfter);
+                
+                // Check for duplicates
+                $duplicates = [];
+                foreach ($nameCounts as $value => $count) {
+                    if ($count > 1) {
+                        $duplicates[] = $value;
+                    }
+                }
+                
+                // Check if there are duplicates
+                if (!empty($duplicates)) {
+                    return redirect()->back()->with('error', 'Employee cant be same!');
+                }
+
                 for ($i = 0; $i < count($request->after); $i++) {
                     if ($request->after !== '0') {
                         Troubleshoot::create([
