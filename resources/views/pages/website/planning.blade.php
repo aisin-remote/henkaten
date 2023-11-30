@@ -158,6 +158,8 @@
                             <th>Line</th>
                             <th>Shift</th>
                             <th>Planning Date</th>
+                            <th><span class="badge bg-warning">POS 1</span></th>
+                            <th><span class="badge bg-danger">POS 2</span></th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
@@ -173,6 +175,9 @@
                                 <td>{{ $shift }}</td>
                                 <td>{{ Carbon\Carbon::parse($start)->format('j F Y') }} -
                                     {{ Carbon\Carbon::parse($end)->format('j F Y') }}</td>
+                                @foreach ($employees as $employee)
+                                    <td>{{ $employee->name }}</td>
+                                @endforeach
                                 <td class="text-center">
                                     <a class="btn btn-secondary view-employee mb-1" data-bs-toggle="modal"
                                         data-bs-target="#{{ $modalId }}EmployeeDetail">

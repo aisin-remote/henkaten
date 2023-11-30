@@ -158,6 +158,24 @@ class HenkatenController extends Controller
             return redirect()->back()->with('error', 'Belum memilih PIC penanganan!');
         }
 
+        $employeeAfter = $request->after;
+        
+        // count same value of input
+        $nameCounts = array_count_values($employeeAfter);
+        
+        // Check for duplicates
+        $duplicates = [];
+        foreach ($nameCounts as $value => $count) {
+            if ($count > 1) {
+                $duplicates[] = $value;
+            }
+        }
+        
+        // Check if there are duplicates
+        if (!empty($duplicates)) {
+            return redirect()->back()->with('error', 'Employee cant be same!');
+        }
+
         try {
             DB::beginTransaction();
 

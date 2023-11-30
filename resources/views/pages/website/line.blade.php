@@ -379,7 +379,7 @@
                             data-bs-target="{{ $target }}">
                             <div class="d-flex flex-row">
                                 <div class="p-3 text-start">
-                                    <h3 class="text-{{ $modal['color'] }} mb-0 fs-6 fw-bolder pb-2">{{ $modal['title'] }}
+                                    <h3  class="text-{{ $modal['color'] }} mb-0 fs-6 fw-bolder pb-2">{{ $modal['title'] }}
                                     </h3>
                                     <span class="text-muted">{{ $modal['status'] }}</span>
                                 </div>

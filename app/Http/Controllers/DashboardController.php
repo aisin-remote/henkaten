@@ -102,7 +102,7 @@ class DashboardController extends Controller
         
         return view('pages.website.line', [
             'line' => Line::findOrFail($lineId->id),
-            'employees' => Employee::all(),
+            'employees' => Employee::doesntHave('employeeActive')->get(),
             'activeEmployees' => $activeEmployees,
             'activePic' => $activePic,
             'histories' => $histories,
