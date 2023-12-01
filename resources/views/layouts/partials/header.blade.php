@@ -103,7 +103,7 @@
                                 @endif
                             </div>
                             <div class="py-6 px-7 mb-1">
-                                <button class="btn btn-outline-primary w-100"> See All Abnormality </button>
+                                <a href="/history" class="btn btn-outline-primary w-100"> See All Abnormality </a>
                             </div>
                         </div>
                     </li>

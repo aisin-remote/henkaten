@@ -509,8 +509,8 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="card p-4 py-4">
-                                    <div class="card-body p-3 align-items-center"
-                                        style="max-height: 20em; width: 100%; overflow:scroll; overflow-x: hidden">
+                                    <div class="card-body p-3 align-items-center" style="max-height: 18em; width: 100%;"
+                                        data-simplebar>
                                         @if (!$histories->isEmpty())
                                             <div class="accordion" id="accordionExample">
                                                 @foreach ($histories as $history)
@@ -1064,10 +1064,6 @@
 
             $('#secondPic').attr('data-bs-target', '#secondPicModal');
         });
-
-        $('#shift').on('click', function() {
-            alert('test');
-        })
 
         $('.dc-card').on('click', function() {
             let idCard = $(this).attr('id');

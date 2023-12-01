@@ -27,6 +27,7 @@ class DashboardController extends Controller
     public function index()
     {
         // get current pivot
+        $currentTime = Carbon::now()->format('H:i:s');
         $current_date = Carbon::now()->toDateString();
         $pivot = Pivot::with('theme')
             ->with('firstPic')
@@ -35,7 +36,19 @@ class DashboardController extends Controller
             ->first();
 
         // get henkaten where status still active
-        $activeProblem = Henkaten::where('is_done', '0')->get();
+        $activeProblems = Henkaten::with('shift')
+            ->whereHas('shift', function ($query) use ($currentTime) {
+                $query->where('time_start', '<=', $currentTime)
+                    ->where('time_end', '>=', $currentTime);
+            })
+            ->where('date', 'LIKE', $current_date . '%')
+            ->where(function ($query) {
+                $query->where('status', 'henkaten')
+                    ->orWhere(function ($query) {
+                        $query->where('status', 'stop')->where('is_done', '0');
+                    });
+            })
+            ->get();
 
         // in this page we will get all line status
         return view('pages.website.dashboard', [
@@ -45,7 +58,7 @@ class DashboardController extends Controller
                 ->whereIn('role', ['Leader', 'JP'])
                 ->get(),
             'lines' => Line::all(),
-            'histories' => $activeProblem
+            'histories' => $activeProblems
         ]);
     }
     

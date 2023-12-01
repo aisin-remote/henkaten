@@ -360,6 +360,7 @@ class HenkatenController extends Controller
 
         return view('pages.website.history', [
             'henkatenHistory' => $henkatenHistory,
+            'lines' => Line::all(),
         ]);
     }
 
