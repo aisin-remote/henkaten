@@ -132,7 +132,7 @@
                 <div class="row">
                     <div class="col-10">
                         <h4 class="fw-4">
-                            Employee Planning List
+                            Employee Planning List This Week
                             <h6 class="text-muted">
                                 {{ Carbon\Carbon::now()->format('l, j F Y') }}
                             </h6>
