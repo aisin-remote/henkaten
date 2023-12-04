@@ -792,6 +792,7 @@
 <script src="https://code.jquery.com/jquery-3.6.3.min.js"
     integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script>
+    let pivot = @json($pivot);
     $(document).ready(function() {
         var themeSelect = document.getElementById('themeSelect');
         var customThemeInput = document.getElementById('customThemeInput');
@@ -814,6 +815,10 @@
     });
 
     function initApp() {
+        if (pivot.first_pic) {
+            localStorage.setItem('firstPic', 'set');
+        }
+
         if (!localStorage.getItem('firstPic')) {
             $('#firstPicContainer').html('');
             $('#firstPicContainer').html(`
