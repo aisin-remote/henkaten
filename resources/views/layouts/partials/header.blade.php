@@ -47,7 +47,7 @@
                         <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="ti ti-bell-ringing"></i>
-                            @if (!$henkatens->isEmpty())
+                            @if ($newHenkatens !== 0)
                                 <div class="notification bg-primary rounded-circle"></div>
                             @endif
                         </a>
@@ -55,8 +55,8 @@
                             aria-labelledby="drop2">
                             <div class="d-flex align-items-center justify-content-between py-3 px-7">
                                 <h5 class="mb-0 fs-5 fw-semibold">Notifications</h5>
-                                @if (!$henkatens->isEmpty())
-                                    <span class="badge bg-primary rounded-4 px-3 py-1 lh-sm">{{ $henkatenItems }}
+                                @if ($newHenkatens !== 0)
+                                    <span class="badge bg-primary rounded-4 px-3 py-1 lh-sm">{{ $newHenkatens }}
                                         New</span>
                                 @endif
                             </div>
@@ -81,7 +81,7 @@
                                             }
                                         @endphp
                                         <div class="d-flex align-items-center justify-content-between">
-                                            <a href="javascript:void(0)"
+                                            <a href="{{ url('/dashboard/' . $henkaten->line->id) }}"
                                                 class="py-6 px-7 d-flex align-items-center dropdown-item">
                                                 <span class="badge bg-{{ $color }} me-3">
                                                     <h3 class="text-white box mb-0 fw-bolder">
@@ -103,7 +103,7 @@
                                 @endif
                             </div>
                             <div class="py-6 px-7 mb-1">
-                                <a href="/history" class="btn btn-outline-primary w-100"> See All Abnormality </a>
+                                <a href="/history   " class="btn btn-outline-primary w-100"> See All Abnormality </a>
                             </div>
                         </div>
                     </li>

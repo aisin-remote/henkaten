@@ -62,7 +62,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow" aria-expanded="false">
+                    <a href="/henkatenManagement" class="sidebar-link has-arrow" aria-expanded="false">
                         <span>
                             <i class="ti ti-box"></i>
                         </span>

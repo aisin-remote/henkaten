@@ -36,13 +36,13 @@ class AppServiceProvider extends ServiceProvider
             $henkatens = Henkaten::with('line')
                         ->with('shift')
                         ->where('is_done', '0')
-                        ->where('date', 'LIKE', '%' . $currentDate .'%')
                         ->take(5)
                         ->latest()
                         ->get();
 
             $view->with([
                 'henkatens' => $henkatens,
+                'newHenkatens' => count($henkatens->where('date', 'LIKE', '%' . $currentDate .'%')),
                 'henkatenItems' => count($henkatens)
             ]);
         });
