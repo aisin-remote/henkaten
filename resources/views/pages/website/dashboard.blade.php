@@ -792,7 +792,7 @@
 <script src="https://code.jquery.com/jquery-3.6.3.min.js"
     integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script>
-    let pivot = pivot ? @json($pivot) : null;
+    let pivot = @json($pivot);
     $(document).ready(function() {
         var themeSelect = document.getElementById('themeSelect');
         var customThemeInput = document.getElementById('customThemeInput');
@@ -815,7 +815,8 @@
     });
 
     function initApp() {
-        if (pivot.first_pic) {
+        let first_pic = pivot ? pivot.first_pic : null;
+        if (first_pic) {
             localStorage.setItem('firstPic', 'set');
         }
 
