@@ -792,7 +792,7 @@
 <script src="https://code.jquery.com/jquery-3.6.3.min.js"
     integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script>
-    let pivot = @json($pivot);
+    let pivot = pivot ? @json($pivot) : null;
     $(document).ready(function() {
         var themeSelect = document.getElementById('themeSelect');
         var customThemeInput = document.getElementById('customThemeInput');
