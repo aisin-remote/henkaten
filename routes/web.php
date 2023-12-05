@@ -59,6 +59,8 @@ Route::middleware(['auth'])->group(function () {
         // regist employees
         Route::post('/store', [EmployeeController::class, 'employeeStore'])->name('employee.store');
 
+        Route::delete('/destroy/{id}', [EmployeeController::class, 'destroyEmployee'])->name('employee.destroy');
+
         // planning employees
         Route::get('/planning', [EmployeeController::class, 'employeePlanning'])->name('employeePlanning.index');
         Route::post('/planning/store', [EmployeeController::class, 'employeePlanningStore'])->name('employeePlanning.store');
@@ -75,9 +77,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{id}/update', [EmployeeController::class, 'employeeUpdate'])->name('employee.update');
 
         Route::get('/{id}/detail', [EmployeeController::class, 'employeeDetail'])->name('detailEmployee');
-
-        Route::delete('/{id}', [EmployeeController::class, 'destroy'])->name('employee.destroy');
-        // Route::delete('/planning/{id}', [EmployeeController::class, 'destroyPlanning'])->name('employee.planning.destroy');
         Route::delete('/planning/destroy', [EmployeeController::class, 'destroyPlanning'])->name('employee.planning.destroy');
     });
 

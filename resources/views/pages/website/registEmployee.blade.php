@@ -28,7 +28,8 @@
                 <h3 class="card-title mb-0">Add New Employee</h3>
             </div>
             <div class="card-body">
-                <form action="{{ route('employee.store') }}" method="POST" enctype="multipart/form-data" class="mt-4">
+                <form action="{{ route('employee.store') }}" method="POST" enctype="multipart/form-data" class="mt-4"
+                    id="employee-form">
                     @csrf
                     @method('POST')
                     <div class="">
@@ -174,23 +175,28 @@
                                     {{ $emp->status }}
                                 </td>
                                 <td class="text-center">
-                                    <a class="btn btn-warning" href="{{ route('editEmployee', ['id' => $emp->id]) }}">
+                                    <button class="btn btn-warning"
+                                        href="{{ route('editEmployee', ['id' => $emp->id]) }}">
                                         <span class="rounded-3" id="icon">
                                             <i class="ti ti-pencil"></i>
                                         </span>
-                                    </a>
+                                    </button>
                                     <button class="btn btn-secondary view-employee" data-bs-toggle="modal"
                                         data-bs-target="#employeeModal{{ $emp->id }}">
                                         <span class="rounded-3" id="icon">
                                             <i class="ti ti-search"></i>
                                         </span>
                                     </button>
-                                    <a href="#" class="btn btn-danger delete-employee"
-                                        data-employee-id="{{ $emp->id }}">
-                                        <span class="rounded-3" id="icon">
-                                            <i class="ti ti-x"></i>
-                                        </span>
-                                    </a>
+                                    <form action="{{ route('employee.destroy', ['id' => $emp->id]) }}" method="post"
+                                        style="display: inline-block !important" class="delete-button" id="form-delete">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">
+                                            <span class="rounded-3" id="icon">
+                                                <i class="ti ti-x"></i>
+                                            </span>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach
@@ -199,6 +205,30 @@
             </div>
         </div>
     </div>
+
+    {{-- modal confirmation --}}
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content modal-filled bg-light-warning">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center text-warning">
+                        <i class="ti ti-alert-octagon fs-7"></i>
+                        <p class="mt-3">
+                            Are you sure you want to delete this employee?
+                        </p>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- end of modal --}}
 
     @foreach ($masterEmployee as $emp)
         <div class="modal fade" id="employeeModal{{ $emp->id }}" tabindex="-1" role="dialog"
@@ -352,7 +382,7 @@
             }
         });
 
-        $('form').submit(function(event) {
+        $('#employee-form').submit(function(event) {
             if ($('input[name="npk"]').val().length < 6) {
                 event.preventDefault();
                 $('input[name="npk"]').addClass('is-invalid');
@@ -369,31 +399,27 @@
             $("#icon").html($("#addEmployeeCard").is(":visible") ? '<i class="ti ti-minus"></i>' :
                 '<i class="ti ti-plus"></i>');
         })
-    });
 
-    $(document).ready(function() {
-        $('.delete-employee').on('click', function(e) {
-            e.preventDefault();
+        let deleteForm; // Variable to store the form to be submitted
 
-            var employeeId = $(this).data('employee-id');
+        // Handle click on delete button
+        $('.delete-button').on('click', function(event) {
+            event.preventDefault(); // Prevent the default form submission
 
-            if (confirm('Are you sure you want to delete this employee?')) {
-                $.ajax({
-                    url: `{{ url('/employee/${employeeId}') }}`,
-                    type: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        // Handle success, e.g., redirect or update UI
-                        window.location.reload();
-                    },
-                    error: function(error) {
-                        console.error('Error deleting employee:', error);
-                        window.location.reload();
-                    }
-                });
+            // Store the form associated with the delete button
+            deleteForm = $(this).closest('form');
+
+            // Show the confirmation modal
+            $('#confirmationModal').modal('show');
+        });
+
+        // Handle click on confirm delete button
+        $('#confirmDelete').on('click', function(event) {
+            if (deleteForm) {
+                // Submit the stored form for deletion
+                console.log('Before submit');
+                deleteForm.submit();
+                console.log('After submit');
             }
         });
     });

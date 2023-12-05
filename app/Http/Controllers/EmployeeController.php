@@ -18,8 +18,7 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-        $masterEmployees = Employee::select('id', 'name', 'npk', 'role', 'status', 'photo')
-            ->get();
+        $masterEmployees = Employee::all();
 
         $allSkills = Skill::select('id', 'name', 'level')->get();
         $nameSkills = Skill::select('name')->groupBy('name')->get();
@@ -233,29 +232,17 @@ class EmployeeController extends Controller
 
         // get all active from date
         for ($i = 0; $i < count($employees); $i++) {
-            $startDate = EmployeeActive::select('active_from')
+            $startDate = EmployeeActive::select('active_from', 'expired_at')
                 ->where('employee_id', $employees[$i])
                 ->first();
                 
             // if the "active_from" date isnt outside the range or the data is empty, you cant create new records
             if ($startDate) {
-                if (Carbon::parse($request->active_from)->between(Carbon::parse($startDate->active_from)->startOfWeek(), $endDate)) {
+                if (Carbon::parse($request->active_from)->between(Carbon::parse($startDate->active_from)->startOfWeek(), $startDate->expired_at)) {
                     return redirect()->back()->with('error', 'Planning gagal dibuat, karyawan (' . $employees[$i] . ') sudah pernah didaftarkan dirange waktu ini!');
                 }
             }
         }
-
-        // // check if pic already exists
-        // $picActive = PicActive::select('active_from')
-        //             ->where('employee_id', $pic[0])
-        //             ->first();
-        
-        // // if the "active_from" date isnt outside the range or the data is empty, you cant create new records
-        // if ($picActive) {
-        //     if (Carbon::parse($request->active_from)->between(Carbon::parse($picActive->active_from)->startOfWeek(), $endDate)) {
-        //         return redirect()->back()->with('error', 'Planning gagal dibuat, karyawan (' . $pic[0] . ') sudah pernah didaftarkan!');
-        //     }
-        // }
         
         try {
             DB::beginTransaction();
@@ -552,6 +539,22 @@ class EmployeeController extends Controller
         } catch (\Throwable $th) {
             DB::rollback();
             return redirect('/employee/planning')->with('error', $th->getMessage());
+        }
+    }
+    
+    public function destroyEmployee($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            // delete first employee
+            Employee::where('id', $id)->delete();
+
+            DB::commit();
+            return redirect('/employee')->with('success', 'Employee deleted successfully!');
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect('/employee')->with('error', $th->getMessage());
         }
     }
 }
