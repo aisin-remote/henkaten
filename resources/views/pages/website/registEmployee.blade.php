@@ -175,12 +175,11 @@
                                     {{ $emp->status }}
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-warning"
-                                        href="{{ route('editEmployee', ['id' => $emp->id]) }}">
+                                    <a class="btn btn-warning" href="{{ route('editEmployee', ['id' => $emp->id]) }}">
                                         <span class="rounded-3" id="icon">
                                             <i class="ti ti-pencil"></i>
                                         </span>
-                                    </button>
+                                    </a>
                                     <button class="btn btn-secondary view-employee" data-bs-toggle="modal"
                                         data-bs-target="#employeeModal{{ $emp->id }}">
                                         <span class="rounded-3" id="icon">
