@@ -303,10 +303,10 @@
 
                                 // set photo
                                 if ($pos == '1') {
-                                    $top = 50;
+                                    $top = 60;
                                     $left = 28;
                                 } else {
-                                    $top = 61;
+                                    $top = 70;
                                     $left = 44;
                                 }
                             @endphp
@@ -315,10 +315,10 @@
                                 @php
                                     // set pos
                                     if ($emp->pos == '1') {
-                                        $top = 50;
+                                        $top = 60;
                                         $left = 28;
                                     } else {
-                                        $top = 61;
+                                        $top = 70;
                                         $left = 44;
                                     }
                                     $photo = $emp->employee->photo;
@@ -346,10 +346,10 @@
                     @php
                         // set pos
                         if ($emp->pos == '1') {
-                            $top = 50;
+                            $top = 60;
                             $left = 28;
                         } else {
-                            $top = 61;
+                            $top = 70;
                             $left = 44;
                         }
                         $photo = $emp->employee->photo;
@@ -379,7 +379,7 @@
                             data-bs-target="{{ $target }}">
                             <div class="d-flex flex-row">
                                 <div class="p-3 text-start">
-                                    <h3  class="text-{{ $modal['color'] }} mb-0 fs-6 fw-bolder pb-2">{{ $modal['title'] }}
+                                    <h3 class="text-{{ $modal['color'] }} mb-0 fs-6 fw-bolder pb-2">{{ $modal['title'] }}
                                     </h3>
                                     <span class="text-muted">{{ $modal['status'] }}</span>
                                 </div>
