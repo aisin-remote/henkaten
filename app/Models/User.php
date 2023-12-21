@@ -40,4 +40,9 @@ class User extends Authenticatable
     ];
 
     public $incrementing = false;
+
+    public function origin()
+    {
+        return $this->belongsTo(Origin::class);
+    }
 }

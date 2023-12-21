@@ -38,6 +38,8 @@
                                 <label class="mb-1">Employee</label>
                                 <input type="text" class="form-control" placeholder="Employee Name" name="name"
                                     required>
+                                <input type="hidden" class="form-control" placeholder="Employee Name" name="origin_id"
+                                    value="{{ auth()->user()->origin_id }}">
                             </div>
                             <div class="col-lg-2 col-sm-12">
                                 <label class="mb-1">NPK</label>
@@ -181,7 +183,8 @@
                                         </span>
                                     </a>
                                     <button class="btn btn-secondary view-employee" data-bs-toggle="modal"
-                                        data-bs-target="#employeeModal{{ $emp->id }}">
+                                        data-bs-target="#employeeModal{{ $emp->id }}"
+                                        data-emp="{{ $emp->id }}" data-chart-id="chart{{ $loop->iteration }}">
                                         <span class="rounded-3" id="icon">
                                             <i class="ti ti-search"></i>
                                         </span>
@@ -232,11 +235,11 @@
     @foreach ($masterEmployee as $emp)
         <div class="modal fade" id="employeeModal{{ $emp->id }}" tabindex="-1" role="dialog"
             aria-labelledby="employeeModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+            <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
                 <div class="modal-content p-3">
                     <div class="modal-body">
                         <div class="row justify-content-center">
-                            <div class="col-lg-12 col-md-12">
+                            <div class="col-lg-6 col-md-12 mt-5">
                                 <div class="text-center">
                                     <img src="{{ asset('uploads/doc/' . $emp->photo) }}" class="rounded-1 img-fluid"
                                         width="150">
@@ -261,7 +264,7 @@
                                                     @endforeach
                                                     @if (!$employeeSkills->isEmpty())
                                                         @foreach ($employeeSkills as $skill)
-                                                            <h4 class="mb-0 fs-5">{{ $skill->name }}</h4>
+                                                            <h4 class="mb-0 fs-4">{{ $skill->name }}</h4>
                                                         @endforeach
                                                     @else
                                                         <span class="badge bg-warning">Tidak Memiliki Skill</span>
@@ -275,7 +278,7 @@
                                                     <h6 class="fw-normal text-muted mb-2">Level</h6>
                                                     @if (!$employeeSkills->isEmpty())
                                                         @foreach ($employeeSkills as $skill)
-                                                            <div class="progress mb-2" style="height: 15px; width: 10vw">
+                                                            <div class="progress mb-2" style="height: 15px; width: 8vw">
                                                                 <div class="progress-bar" role="progressbar"
                                                                     style="width: {{ $skill->level * 20 }}%;"
                                                                     aria-valuenow="{{ $skill->level }}" aria-valuemin="0"
@@ -293,6 +296,9 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-lg-6 col-md-12">
+                                <div class="chart"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -302,6 +308,11 @@
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.3.min.js"
     integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 <script>
     $(document).ready(function() {
         $('.view-employee').on('click', function() {
@@ -380,6 +391,94 @@
                 $(this).siblings('.error-message').remove();
             }
         });
+
+        window.myCharts = {};
+
+        $('.chart').each(function(index) {
+            var chartId = 'chart' + (index + 1);
+            window.myCharts[chartId] = Highcharts.chart(this, {
+                chart: {
+                    polar: true,
+                    type: 'line'
+                },
+
+                title: false,
+
+                pane: {
+                    size: '80%'
+                },
+
+                xAxis: {
+                    categories: [],
+                    tickmarkPlacement: 'on',
+                    lineWidth: 0
+                },
+
+                yAxis: {
+                    gridLineInterpolation: 'polygon',
+                    lineWidth: 0,
+                    min: 0
+                },
+
+                tooltip: {
+                    shared: true,
+                    pointFormat: '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}</b><br/>'
+                },
+
+                series: [{
+                    name: 'Skill Level',
+                    data: [50000, 39000, 42000, 31000, 26000, 14000],
+                    pointPlacement: 'on'
+                }],
+
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 400
+                        },
+                        chartOptions: {
+                            pane: {
+                                size: '70%'
+                            }
+                        }
+                    }]
+                }
+            })
+        });
+
+        $('.view-employee').on('click', function() {
+            var employeeId = $(this).data('emp');
+            let empId = $(this).data('emp-id');
+            let chartId = $(this).data('chart-id');
+            console.log(chartId);
+
+            $.ajax({
+                type: 'get',
+                url: "{{ url('employee/getSkill') }}",
+                _token: "{{ csrf_token() }}",
+                dataType: 'json',
+                data: {
+                    employeeId: employeeId,
+                },
+                success: function(data) {
+                    if (data.status == 'success') {
+                        let chart = window.myCharts[chartId];
+                        chart.xAxis[0].setCategories(data.x, true);
+                        var numericData = data.y.map(function(item) {
+                            return parseInt(item, 10);
+                        });
+                        chart.series[0].setData(numericData);
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status == 0) {
+                        notif("error", 'Connection Error');
+                        return;
+                    }
+                    notif("error", 'Internal Server Error');
+                }
+            });
+        })
 
         $('#employee-form').submit(function(event) {
             if ($('input[name="npk"]').val().length < 6) {

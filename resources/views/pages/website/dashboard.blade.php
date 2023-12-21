@@ -433,8 +433,20 @@
                                                 <h1 class="fw-bolder text-center pt-3"
                                                     style="font-size: 1em; display:block; font-weight:900 !important; font-size:80px !important">
                                                     OVERALL
-                                                    <br> DIE
-                                                    CASTING
+                                                    <br>
+                                                    @php
+                                                        $origin = '';
+                                                        if (auth()->user()->origin->name == 'DC') {
+                                                            $origin = 'DIE CASTING';
+                                                        } elseif (auth()->user()->origin->name == 'MA') {
+                                                            $origin = 'MACHINING';
+                                                        } elseif (auth()->user()->origin->name == 'ASSY') {
+                                                            $origin = 'ASSEMBLING';
+                                                        } else {
+                                                            $origin = 'ELECTRIC';
+                                                        }
+                                                    @endphp
+                                                    {{ $origin }}
                                                 </h1>
                                             </div>
                                             <div class="col-lg-3 text-center" id="overallShape">

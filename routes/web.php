@@ -69,6 +69,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/getSkillEmp', [EmployeeController::class, 'getSkillEmp'])->name('employee.getSkillEmp');
         Route::get('/getSkillPos', [EmployeeController::class, 'getSkillPos'])->name('employee.getSkillPos');
 
+        // get skill for skill matrix
+        Route::get('/getSkill', [EmployeeController::class, 'getSkill'])->name('employee.getSkill');
+
         // get PIC
         Route::get('/getPic', [EmployeeController::class, 'getPic'])->name('employee.getPic');
 

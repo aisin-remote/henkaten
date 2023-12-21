@@ -3,6 +3,9 @@
 namespace App\Console;
 
 use App\Models\Line;
+use App\Models\Shift;
+use App\Models\Employee;
+use App\Models\EmployeeActive;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -75,6 +78,42 @@ class Kernel extends ConsoleKernel
                 ->orWhereIn('status_machine', [$currentStatus])
                 ->update($columnsToUpdate);
         })->dailyAt('06:00:00');
+
+        // auto update 
+        $schedule->call(function () {
+            $currentShifts = EmployeeActive::select('employee_id', 'shift_id','line_id','pos')->get();
+    
+            $newShifts = $currentShifts->map(function ($employee) {
+                $nextShiftUuid = $this->getNextShiftUuid($employee->shift_id); // Implement this method to determine the next shift
+            
+                return [
+                    'employee_id' => $employee->employee_id,
+                    'shift_id' => $nextShiftUuid,
+                    'line_id' => $employee->line_id,
+                    'pos' => $employee->pos,
+                    'active_from' => now()->startOfWeek(),
+                    'expired_at' => now()->endOfWeek(),
+                ];
+            });
+
+            EmployeeActive::create($newShifts->toArray());
+        })->weeklyOn(0, '23:59');
+    }
+
+    private function getNextShiftUuid($currentShiftUuid) {
+    // Assuming Shift is your model name and it has 'name' and 'id' columns
+        $shifts = \App\Models\Shift::whereIn('name', ['shift 1', 'shift 2', 'shift 3'])
+                                ->get()
+                                ->keyBy('name');
+
+        // Map the shift names to their IDs
+        $shiftsMap = [
+            $shifts['shift 1']->id => $shifts['shift 3']->id,
+            $shifts['shift 2']->id => $shifts['shift 1']->id,
+            $shifts['shift 3']->id => $shifts['shift 2']->id,
+        ];
+
+        return $shiftsMap[$currentShiftUuid] ?? null; // Return null or handle invalid UUID
     }
 
     /**

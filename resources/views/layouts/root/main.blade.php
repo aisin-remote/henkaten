@@ -24,10 +24,13 @@
     <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css"
         rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/owl.carousel@2.3.4/dist/assets/owl.carousel.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
     <link rel="stylesheet" href={{ asset('dist/libs/select2/dist/css/select2.min.css') }}>
     <!-- Core Css -->
     <link id="themeColors" rel="stylesheet" href={{ asset('dist/css/style.min.css') }} />
-
+    <script src="https://code.highcharts.com/highcharts.js"></script>
     <style>
         .vertical-carousel {
             overflow: hidden;
@@ -152,6 +155,7 @@
     <script src={{ asset('dist/js/custom.js') }}></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/owl.carousel@2.3.4/dist/owl.carousel.min.js"></script>
     <!--  current page js files -->
     <script src={{ asset('dist/js/dashboard.js') }}></script>
     <script src={{ asset('dist/js/plugins/toastr-init.js') }}></script>

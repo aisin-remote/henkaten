@@ -7,6 +7,7 @@ use App\Models\Line;
 use App\Models\Shift;
 use App\Models\Skill;
 use App\Models\Employee;
+use App\Models\Position;
 use App\Models\PicActive;
 use App\Models\MinimumSkill;
 use Illuminate\Http\Request;
@@ -18,7 +19,9 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-        $masterEmployees = Employee::all();
+        // get origin id
+        $empOrigin = auth()->user()->origin_id;
+        $masterEmployees = Employee::where('origin_id', $empOrigin)->get();
 
         $allSkills = Skill::select('id', 'name', 'level')->get();
         $nameSkills = Skill::select('name')->groupBy('name')->get();
@@ -35,6 +38,9 @@ class EmployeeController extends Controller
 
     public function employeeStore(Request $request)
     {
+        // get origin id
+        $empOrigin = auth()->user()->origin_id;
+        
         $skills = $request->skill_name;
         $levels = $request->level;
         $arraySkill = [];
@@ -64,8 +70,12 @@ class EmployeeController extends Controller
             'name' => 'required|max:255|min:3',
             'npk' => 'required|max:6|min:6',
             'role' => 'required',
-            'photo' => 'required|max:3072'
+            'photo' => 'required|max:3072',
+            'origin_id' => 'required'
         ]);
+
+        // set origin id for new employee
+        $validated['origin_id'] = $empOrigin;
 
         // npk exist
         $existingNpk = Employee::where('npk', $validatedData['npk'])->first();
@@ -108,6 +118,9 @@ class EmployeeController extends Controller
 
     public function employeePlanning()
     {
+        // get origin
+        $empOrigin = auth()->user()->origin_id;
+        
         // get current date
         $currentDate = Carbon::now();
         $firstDay = $currentDate->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
@@ -115,10 +128,15 @@ class EmployeeController extends Controller
 
         // get active employee at this period of time (this week)
         $activeEmployees = DB::table('employee_active')
+                ->join('positions', 'employee_active.pos_id', '=', 'positions.id')
                 ->join('shifts', 'employee_active.shift_id', '=', 'shifts.id')
                 ->join('lines', 'employee_active.line_id', '=', 'lines.id')
+                ->join('origins', 'lines.origin_id', '=', 'origins.id')
                 ->join('employees', 'employee_active.employee_id', '=', 'employees.id')
-                ->select('shifts.name as shift_name', 'shifts.id as shift_id' , 'lines.id as line_id','lines.name as line_name', 'employee_active.active_from', 'employee_active.expired_at', 'employees.name', 'employees.photo','employees.npk', 'employees.role', 'employee_active.pos', 'employees.id as employee_id')
+                ->select('shifts.name as shift_name', 'shifts.id as shift_id' , 'lines.id as line_id','lines.name as line_name', 'employee_active.active_from', 'employee_active.expired_at', 'employees.name', 'employees.photo','employees.npk', 'employees.role', 'employees.id as employee_id', 'positions.pos')
+                ->where(function ($query) use ($empOrigin) {
+                    $query->where('lines.origin_id', $empOrigin);
+                })
                 ->whereBetween('employee_active.active_from', [$firstDay, $lastDay])
                 ->get();
     
@@ -135,15 +153,16 @@ class EmployeeController extends Controller
         $empSkills = EmployeeSkill::select()->get();
 
         return view('pages.website.planning', [
-            'employees' => Employee::select('id', 'name')
+            'operators' => Employee::select('id', 'name')
                 ->whereIn('role', ['Operator'])
+                ->where('origin_id', $empOrigin)
                 ->get(),
             'pics' =>  Employee::select('id', 'name')
                 ->whereNotIn('role', ['Operator'])
+                ->where('origin_id', $empOrigin)
                 ->get(),
             'shifts' => Shift::select('id', 'name')->get(),
-            'lines' => Line::select('id', 'name')->get(),
-
+            'lines' => Line::select('id', 'name')->where('origin_id', $empOrigin)->get(),
             'skills' => Skill::select('name')->groupBy('name')->get(),
             'groupedArray' => $groupedArray,
             'allSkills' => $allSkills,
@@ -165,14 +184,39 @@ class EmployeeController extends Controller
         $pic = $request->pic_name;
         $pos = $request->pos;
 
+        // get line name
+        $lineName = Line::select('name')->where('id', $request->line)->first();
+
         if($pic[0] === 0){
             return redirect()->back()->with('error', 'Isi PIC!');
         }
 
-        if($employees[0] === 0){
-            return redirect()->back()->with('error', 'Isi karyawan pos 1!');
-        }else if($employees[1] == '0'){
-            return redirect()->back()->with('error', 'Isi karyawan pos 2!');
+        if(auth()->user()->origin->name !== 'ELECTRIC'){
+            if($employees[0] === 0){
+                return redirect()->back()->with('error', 'Isi karyawan pos 1!');
+            }else if($employees[1] == '0'){
+                return redirect()->back()->with('error', 'Isi karyawan pos 2!');
+            }
+        }else{
+            if($lineName == 'ASAN01' || $lineName == 'ASAN02'){
+                if($employees[0] === 0){
+                    return redirect()->back()->with('error', 'Isi karyawan pos 1!');
+                }else if($employees[1] == '0'){
+                    return redirect()->back()->with('error', 'Isi karyawan pos 2!');
+                }else if($employees[2] == '0'){
+                    return redirect()->back()->with('error', 'Isi karyawan pos 3!');
+                }else if($employees[3] == '0'){
+                    return redirect()->back()->with('error', 'Isi karyawan pos 4!');
+                }else if($employees[4] == '0'){
+                    return redirect()->back()->with('error', 'Isi karyawan pos 5!');
+                }else if($employees[5] == '0'){
+                    return redirect()->back()->with('error', 'Isi karyawan pos 6!');
+                }
+            }else{
+                if($employees[0] === 0){
+                    return redirect()->back()->with('error', 'Isi karyawan pos 1!');
+                }
+            }
         }
 
         // count same value of input
@@ -190,7 +234,6 @@ class EmployeeController extends Controller
         if (!empty($duplicates)) {
             return redirect()->back()->with('error', 'Karyawan tidak boleh sama!');
         }
-
 
         // get all employee skill
         for($i = 0; $i < count($employees); $i++){
@@ -234,8 +277,12 @@ class EmployeeController extends Controller
         for ($i = 0; $i < count($employees); $i++) {
             $startDate = EmployeeActive::select('active_from', 'expired_at')
                 ->where('employee_id', $employees[$i])
+                ->whereBetween('active_from', [
+                    Carbon::now()->startOfWeek(),
+                    Carbon::now()->endOfWeek()
+                ])
                 ->first();
-                
+                            
             // if the "active_from" date isnt outside the range or the data is empty, you cant create new records
             if ($startDate) {
                 if (Carbon::parse($request->active_from)->between(Carbon::parse($startDate->active_from)->startOfWeek(), $startDate->expired_at)) {
@@ -247,11 +294,16 @@ class EmployeeController extends Controller
         try {
             DB::beginTransaction();
             for ($i = 0; $i < count($employees); $i++) {
+                $positionId = Position::select('id')
+                                    ->where('line_id', $request->line)
+                                    ->where('pos', $pos[$i])
+                                    ->first();
+                                    
                 EmployeeActive::create([
                     'employee_id' => $employees[$i],
                     'shift_id' => $request->shift,
                     'line_id' => $request->line,
-                    'pos' => $pos[$i],
+                    'pos_id' => $positionId->id,
                     'active_from' => $request->active_from,
                     'expired_at' => $endDate
                 ]);
@@ -269,7 +321,7 @@ class EmployeeController extends Controller
             return redirect()->back()->with('success', 'Planning berhasil dibuat!');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Planning gagal dibuat!');
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 
@@ -380,6 +432,23 @@ class EmployeeController extends Controller
 
         // Mengirim data karyawan ke view edit
         return view('pages.website.editEmployee', compact('employee', 'skills', 'allSkills', 'nameSkills'));
+    }
+
+    public function getSkill(Request $request)
+    {
+        $employeeId = $request->employeeId;
+
+        $skills = EmployeeSkill::with('skill')->where('employee_id', $employeeId)->get();
+        
+        // get xAxis (skill Name)
+        $skillsName = $skills->pluck('skill.name');
+        $skillsLevel = $skills->pluck('skill.level');
+    
+        return response()->json([
+            'status' => 'success',
+            'x' => $skillsName,
+            'y' => $skillsLevel 
+        ]);
     }
 
     public function employeeUpdate(Request $request,  $id)
@@ -525,11 +594,10 @@ class EmployeeController extends Controller
         try {
             DB::beginTransaction();
 
-            // delete first employee
-            EmployeeActive::where('employee_id', $request->first_id)->where('active_from', $request->active_from)->delete();
-            
-            // delete second employee
-            EmployeeActive::where('employee_id', $request->second_id)->where('active_from', $request->active_from)->delete();
+            for($i = 0; $i < count($request->employees_id); $i++){
+                // delete employee
+                EmployeeActive::where('employee_id', $request->employees_id[$i])->where('active_from', $request->active_from)->delete();
+            }
 
             // delete pic
             PicActive::where('shift_id', $request->shift)->where('line_id', $request->line)->delete();

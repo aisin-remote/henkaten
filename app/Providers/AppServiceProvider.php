@@ -31,10 +31,14 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.partials.header', function ($view) {
 
             $currentDate = Carbon::now()->format('Y-m-d');
+            $empOrigin = auth()->user()->origin_id;
             
             // get all data from henaktens table that dont have troubleshoot
-            $henkatens = Henkaten::with('line')
+            $henkatens = Henkaten::with('line.origin')
                         ->with('shift')
+                        ->whereHas('line', function ($query) use ($empOrigin){
+                            $query->where('origin_id', $empOrigin);
+                        })
                         ->where('is_done', '0')
                         ->take(5)
                         ->latest()

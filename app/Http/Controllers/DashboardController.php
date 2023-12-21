@@ -9,6 +9,7 @@ use App\Models\Shift;
 use App\Models\Theme;
 use App\Models\Employee;
 use App\Models\Henkaten;
+use App\Models\Position;
 use App\Models\PicActive;
 use App\Models\HenkatenMan;
 use Illuminate\Support\Str;
@@ -26,6 +27,9 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // get origin id
+        $empOrigin = auth()->user()->origin_id;
+        
         // get current pivot
         $currentTime = Carbon::now()->format('H:i:s');
         $current_date = Carbon::now()->toDateString();
@@ -33,10 +37,14 @@ class DashboardController extends Controller
             ->with('firstPic')
             ->with('secondPic')
             ->where('active_date', $current_date)
+            ->where('origin_id', $empOrigin)
             ->first();
 
         // get henkaten where status still active
-        $activeProblems = Henkaten::with('shift')
+        $activeProblems = Henkaten::with(['shift','line.origin'])
+            ->whereHas('line', function ($query) use ($empOrigin){
+                $query->where('origin_id', $empOrigin);
+            })
             ->whereHas('shift', function ($query) use ($currentTime) {
                 $query->where('time_start', '<=', $currentTime)
                     ->where('time_end', '>=', $currentTime);
@@ -55,23 +63,30 @@ class DashboardController extends Controller
             'pivot' => $pivot,
             'themes' => Theme::all(),
             'employees' => Employee::select('id', 'name')
+                ->where('origin_id', $empOrigin)
                 ->whereIn('role', ['Leader', 'JP'])
                 ->get(),
-            'lines' => Line::all(),
+            'lines' => Line::where('origin_id', $empOrigin)->get(),
             'histories' => $activeProblems
         ]);
     }
     
     public function indexLine()
     {
+        // get origin id
+        $empOrigin = auth()->user()->origin_id;
+        
         // in this page we will get all line status
         return view('pages.website.lineDashboard', [
-            'lines' => Line::all(),
+            'lines' => Line::where('origin_id', $empOrigin)->get(),
         ]);
     }
 
     public function dashboardLine(Line $lineId)
     {
+        // get origin id
+        $empOrigin = auth()->user()->origin_id;
+        
         $currentDate = Carbon::now()->format('Y-m-d');
         $currentTime = Carbon::now()->format('H:i:s');
 
@@ -81,6 +96,7 @@ class DashboardController extends Controller
         // get man power at spesific line and range of time
         $activeEmployees = EmployeeActive::with('shift')
             ->with('employee')
+            ->with('pos')
             ->where('active_from', '<=', $currentDate)
             ->where('expired_at', '>=', $currentDate)
             ->where('line_id', $lineId->id)
@@ -104,28 +120,33 @@ class DashboardController extends Controller
 
         // get man henkaten
         $manHenkaten = Troubleshoot::with(['henkaten.shift', 'manAfter', 'manBefore'])
-            ->whereHas('henkaten', function ($query) use ($lineId, $currentTime) {
-                $query->where('line_id', $lineId->id)
+            ->whereHas('henkaten', function ($query) use ($lineId, $currentDate, $currentTime) {
+                $query->where('date', 'LIKE', $currentDate . '%')
+                ->where('line_id', $lineId->id)
                     ->whereHas('shift', function ($subQuery) use ($currentTime) {
                         $subQuery->where('time_start', '<=', $currentTime)
                             ->where('time_end', '>=', $currentTime);
                     });
             })
-            ->get();     
+            ->get();
         
         return view('pages.website.line', [
             'line' => Line::findOrFail($lineId->id),
-            'employees' => Employee::doesntHave('employeeActive')->get(),
+            'lineMap' => Line::where('id', $lineId->id)->first(),
+            'employees' => Employee::doesntHave('employeeActive')->where('origin_id', $empOrigin)->get(),
             'activeEmployees' => $activeEmployees,
             'activePic' => $activePic,
             'histories' => $histories,
             'manHenkaten' => $manHenkaten,
-            'henkatenManagements' => HenkatenManagement::all()
+            'henkatenManagements' => HenkatenManagement::all(),
         ]);
     }
 
     public function selectTheme(Request $request)
     {
+        // get origin id
+        $empOrigin = auth()->user()->origin_id;
+        
         // get theme name
         $parts = explode("/", $request->path());
         $customTheme = explode("-", $parts[2]);
@@ -141,6 +162,7 @@ class DashboardController extends Controller
                     DB::beginTransaction();
                     // insert new data if pivot table is empty
                     Pivot::create([
+                        'origin_id' => $empOrigin,
                         'custom_theme' => urldecode($customTheme[0]),
                         'active_date' => $current_date
                     ]);
@@ -159,6 +181,7 @@ class DashboardController extends Controller
 
                     // insert new data if pivot table is empty
                     Pivot::create([
+                        'origin_id' => $empOrigin,
                         'theme_id' => $parts[2],
                         'active_date' => $current_date
                     ]);
@@ -233,6 +256,9 @@ class DashboardController extends Controller
 
     public function selectFirstPic($id)
     {
+        // get origin id
+        $empOrigin = auth()->user()->origin_id;
+        
         $pic = $id;
         if ($pic == 0) {
             return response()->json([
@@ -273,6 +299,7 @@ class DashboardController extends Controller
 
                 // insert new data if pivot table is empty
                 Pivot::create([
+                    'origin_id' => $empOrigin,
                     'first_pic_id' => $pic,
                     'active_date' => $current_date
                 ]);
@@ -318,6 +345,9 @@ class DashboardController extends Controller
 
     public function selectSecondPic($id)
     {
+        // get origin id
+        $empOrigin = auth()->user()->origin_id;
+        
         $pic = $id;
         if ($pic == 0) {
             return response()->json([
@@ -358,6 +388,7 @@ class DashboardController extends Controller
 
                 // insert new data if pivot table is empty
                 Pivot::create([
+                    'origin_id' => $empOrigin,
                     'second_pic_id' => $pic,
                     'active_date' => $current_date
                 ]);

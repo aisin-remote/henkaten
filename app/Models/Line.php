@@ -19,9 +19,19 @@ class Line extends Model
     {
         return $this->hasMany(Henkaten::class, 'line_id');
     }
+    
+    public function position()
+    {
+        return $this->hasMany(Position::class);
+    }
 
     public function employeeActive()
     {
         return $this->hasMany(EmployeeActive::class);
+    }
+
+    public function origin()
+    {
+        return $this->belongsTo(Origin::class);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Origin;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
@@ -10,7 +11,9 @@ class RegisterController extends Controller
 {
     public function index()
     {
-        return view('pages.auth.register');
+        return view('pages.auth.register',[
+            'origins' => Origin::all(),
+        ]);
     }
 
     public function store(Request $request)
@@ -20,6 +23,7 @@ class RegisterController extends Controller
             'name' => 'required|string|max:255',
             'npk' => 'required|string|max:255|unique:users', // Pastikan npk adalah unik dalam tabel users
             'role' => 'required|string|max:255',
+            'origin_id' => 'required|string|max:255',
             'password' => 'required|string|min:6|confirmed', // 'confirmed' memastikan cocok dengan konfirmasi password
             'password_confirmation' => 'required|string|min:6|same:password',
         ]);
@@ -29,6 +33,7 @@ class RegisterController extends Controller
         $user->id = Str::uuid(); // Generate UUID sebagai ID
         $user->name = $request->input('name');
         $user->role = $request->input('role');
+        $user->origin_id = $request->input('origin_id');
         $user->npk = $request->input('npk');
         $user->password = bcrypt($request->input('password')); // Mengenkripsi password
         $user->save();

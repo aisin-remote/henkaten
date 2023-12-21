@@ -170,7 +170,7 @@ class HenkatenController extends Controller
                 // Check for duplicates
                 $duplicates = [];
                 foreach ($nameCounts as $value => $count) {
-                    if ($count > 1) {
+                    if ($count > 1 && $value != 0) {
                         $duplicates[] = $value;
                     }
                 }
@@ -181,7 +181,7 @@ class HenkatenController extends Controller
                 }
 
                 for ($i = 0; $i < count($request->after); $i++) {
-                    if ($request->after !== '0') {
+                    if ($request->after[$i] !== '0') {
                         Troubleshoot::create([
                             'henkaten_id' => $request->henkaten_id,
                             'troubleshoot' => $request->troubleshoot,
@@ -255,9 +255,10 @@ class HenkatenController extends Controller
                 ->with('success', 'Data berhasil disimpan!');
         } catch (\Throwable $th) {
             DB::rollBack();
+            dd($th);
             return redirect()
                 ->back()
-                ->with('error', 'Data gagal disimpan!');
+                ->with('error', $th->getMessage());
         }
     }
 
@@ -356,11 +357,17 @@ class HenkatenController extends Controller
 
     public function history()
     {
-        $henkatenHistory = Henkaten::all();
+        // get origin id
+        $empOrigin = auth()->user()->origin_id;
+        
+        $henkatenHistory = Henkaten::with('line.origin')
+                            ->whereHas('line', function ($query) use ($empOrigin){
+                                $query->where('origin_id', $empOrigin);
+                            });
 
         return view('pages.website.history', [
-            'henkatenHistory' => $henkatenHistory,
-            'lines' => Line::all(),
+            'henkatenHistory' => $henkatenHistory->get(),
+            'lines' => Line::where('origin_id', $empOrigin)->get(),
         ]);
     }
 

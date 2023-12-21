@@ -29,4 +29,9 @@ class Pivot extends Model
     {
         return $this->belongsTo(Employee::class, 'second_pic_id');
     }
+
+    public function origin()
+    {
+        return $this->belongsTo(Origin::class);
+    }
 }

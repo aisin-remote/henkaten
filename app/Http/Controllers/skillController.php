@@ -24,10 +24,12 @@ class skillController extends Controller
 
     public function minimumIndex()
     {
+        $empOrigin = auth()->user()->origin_id;
+        
         return view('pages.website.minimumSkill', [
             'minimumSkills' => MinimumSkill::all(),
             'skills' => Skill::selectRaw('MAX(id) as id, name')->groupBy('name')->get(),
-            'lines' => Line::all()
+            'lines' => Line::where('origin_id', $empOrigin)->get()
         ]);
     }
 

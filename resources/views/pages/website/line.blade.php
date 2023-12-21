@@ -281,83 +281,35 @@
     </div>
     <div class="row">
         <div class="col-lg-6 col-md-12">
-            <img src="{{ asset('assets/images/mapping-per-line.png') }}" alt="" class="mw-100"
-                usemap="#roomMap" width="980vh">
+            <img src="{{ asset('assets/images/' . $lineMap->photo) }}" alt="" class="mw-100" usemap="#roomMap"
+                width="980vh">
             @if (!$manHenkaten->isEmpty())
+                @php
+                    $photoMap = $manHenkaten
+                        ->where('henkaten.is_done', '1')
+                        ->pluck('manAfter.photo', 'employee_before_id')
+                        ->all();
+                @endphp
+
                 @foreach ($activeEmployees as $emp)
                     @php
-                        $photo = null; // Initialize $photo to null
+                        $photo = $photoMap[$emp->employee_id] ?? $emp->employee->photo;
                     @endphp
-                    @foreach ($manHenkaten as $man)
-                        @if ($man->henkaten->is_done === '1')
-                            @php
-                                $henkatenEmployeeId = $man->employee_before_id;
-                                $activeEmployeeId = $emp->employee_id;
 
-                                if ($activeEmployeeId == $henkatenEmployeeId) {
-                                    $photo = $man->manAfter->photo;
-                                    $pos = $emp->pos;
-                                } else {
-                                    $pos = $emp->pos;
-                                }
-
-                                // set photo
-                                if ($pos == '1') {
-                                    $top = 60;
-                                    $left = 28;
-                                } else {
-                                    $top = 70;
-                                    $left = 44;
-                                }
-                            @endphp
-                        @else
-                            @foreach ($activeEmployees as $emp)
-                                @php
-                                    // set pos
-                                    if ($emp->pos == '1') {
-                                        $top = 60;
-                                        $left = 28;
-                                    } else {
-                                        $top = 70;
-                                        $left = 44;
-                                    }
-                                    $photo = $emp->employee->photo;
-                                @endphp
-                                <!-- Displaying the employee photo with default position -->
-                                <div
-                                    style="position: absolute; top: {{ $top }}vh; left: {{ $left }}vh;">
-                                    <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
-                                        style="width: 80px; height: 80px;" class="rounded-1" />
-                                </div>
-                            @endforeach
-                        @endif
-                    @endforeach
-
-                    <!-- Display the employee photo with the new one from "henkaten" -->
-                    <div>
-                        <div style="position: absolute; top: {{ $top }}vh; left: {{ $left }}vh;">
-                            <img src="{{ asset('uploads/doc/' . ($photo ?? $emp->employee->photo)) }}"
-                                alt="Employee Photo" style="width: 80px; height: 80px;" class="rounded-1" />
-                        </div>
+                    <div style="position: absolute; top: {{ $emp->pos->top }}vh; left: {{ $emp->pos->left }}vh;">
+                        <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
+                            style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};" class="rounded-1" />
                     </div>
                 @endforeach
             @else
                 @foreach ($activeEmployees as $emp)
                     @php
-                        // set pos
-                        if ($emp->pos == '1') {
-                            $top = 60;
-                            $left = 28;
-                        } else {
-                            $top = 70;
-                            $left = 44;
-                        }
                         $photo = $emp->employee->photo;
                     @endphp
                     <!-- Displaying the employee photo with default position -->
-                    <div style="position: absolute; top: {{ $top }}vh; left: {{ $left }}vh;">
+                    <div style="position: absolute; top: {{ $emp->pos->top }}vh; left: {{ $emp->pos->left }}vh;">
                         <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
-                            style="width: 80px; height: 80px;" class="rounded-1" />
+                            style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};" class="rounded-1" />
                     </div>
                 @endforeach
             @endif
@@ -399,75 +351,93 @@
             <h5 class="text-muted mb-2 fw-bolder">Man Power</h5>
             <div class="row">
                 @if (!$activeEmployees->isEmpty())
-                    @foreach ($activeEmployees as $emp)
-                        @php
-                            $photo = $emp->employee->photo;
-                            $role = $emp->employee->role;
-                            $name = $emp->employee->name;
-                            $npk = $emp->employee->npk;
+                    <div class="col-lg-8 col-md-12">
+                        <div class="owl-carousel owl-theme" id="carousel">
+                            <div class="row temp-row">
+                                @foreach ($activeEmployees as $emp)
+                                    @php
+                                        $photo = $emp->employee->photo;
+                                        $role = $emp->employee->role;
+                                        $name = $emp->employee->name;
+                                        $npk = $emp->employee->npk;
 
-                            foreach ($manHenkaten as $man) {
-                                if ($man->henkaten->is_done === '1') {
-                                    $henkatenEmployeeId = $man->employee_before_id;
-                                    $activeEmployeeId = $emp->employee_id;
+                                        foreach ($manHenkaten as $man) {
+                                            if ($man->henkaten->is_done === '1') {
+                                                $henkatenEmployeeId = $man->employee_before_id;
+                                                $activeEmployeeId = $emp->employee_id;
 
-                                    if ($activeEmployeeId == $henkatenEmployeeId) {
-                                        $photo = $man->manAfter->photo;
-                                        $role = $man->manAfter->role;
-                                        $name = $man->manAfter->name;
-                                        $npk = $man->manAfter->npk;
-                                    }
-                                }
-                            }
+                                                if ($activeEmployeeId == $henkatenEmployeeId) {
+                                                    $photo = $man->manAfter->photo;
+                                                    $role = $man->manAfter->role;
+                                                    $name = $man->manAfter->name;
+                                                    $npk = $man->manAfter->npk;
+                                                }
+                                            }
+                                        }
 
-                            if (!function_exists('mapRoleToColor')) {
-                                function mapRoleToColor($role)
-                                {
-                                    switch ($role) {
-                                        case 'JP':
-                                            return 'danger';
-                                        case 'Operator':
-                                            return 'warning';
-                                        case 'Leader':
-                                            return 'dark';
-                                        default:
-                                            return 'dark';
-                                    }
-                                }
-                            }
+                                        if (!function_exists('mapRoleToColor')) {
+                                            function mapRoleToColor($role)
+                                            {
+                                                switch ($role) {
+                                                    case 'JP':
+                                                        return 'danger';
+                                                    case 'Operator':
+                                                        return 'warning';
+                                                    case 'Leader':
+                                                        return 'dark';
+                                                    default:
+                                                        return 'dark';
+                                                }
+                                            }
+                                        }
 
-                            $color = mapRoleToColor($role);
-                        @endphp
-                        <div class="col-lg-4 col-md-6">
-                            <div class="card text-center">
-                                <div class="card-body">
-                                    <img src="{{ asset('uploads/doc/' . $photo) }}" class="rounded-1" width="100"
-                                        height="100">
-                                    <div class="mt-n2">
-                                        <span class="badge bg-{{ $color }}">{{ strtoupper($role) }}</span>
-                                        <h3 class="card-title mt-3">{{ ucwords($name) }}</h3>
-                                        <h6 class="card-subtitle">{{ $npk }}</h6>
-                                    </div>
-                                    <div class="row mt-4">
-                                        <div class="col-12">
-                                            <button class="btn btn-light-danger text-danger"
-                                                style="width: 100% !important">POS
-                                                {{ strtoupper($emp->pos) }}</button>
+                                        $color = mapRoleToColor($role);
+                                        $picColor = mapRoleToColor($activePic->employee->role);
+
+                                        if ($line->name === 'ASAN01' || $line->name === 'ASAN02' || $line->name === 'ASIP01' || $line->name === 'ASMP01' || $line->name === 'ASVP01') {
+                                            $col = '12';
+                                        } else {
+                                            $col = '6';
+                                        }
+                                    @endphp
+                                    <div class="col-lg-{{ $col }} col-md-12">
+                                        <div class="item">
+                                            <div class="card text-center">
+                                                <div class="card-body">
+                                                    <img src="{{ asset('uploads/doc/' . $photo) }}"
+                                                        class="rounded-1 center" height="100"
+                                                        style="width: 100px !important; margin-left: auto;
+                                                    margin-right: auto;">
+                                                    <div class="mt-n2">
+                                                        <span
+                                                            class="badge bg-{{ $color }}">{{ strtoupper($role) }}</span>
+                                                        <h3 class="card-title mt-3">{{ ucwords($name) }}</h3>
+                                                        <h6 class="card-subtitle">{{ $npk }}</h6>
+                                                    </div>
+                                                    <div class="row mt-4">
+                                                        <div class="col-12">
+                                                            <button class="btn btn-light-danger text-danger"
+                                                                style="width: 100% !important">POS
+                                                                {{ strtoupper($emp->pos->pos) }}</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                @endforeach
                             </div>
                         </div>
-                    @endforeach
+                    </div>
                     @if ($activePic !== null)
-                        <div class="col-lg-4 col-md-6">
+                        <div class="col-lg-4 col-md-12">
                             <div class="card text-center">
                                 <div class="card-body">
                                     <img src="{{ asset('uploads/doc/' . $activePic->employee->photo) }}"
                                         class="rounded-1" width="100" height="100">
                                     <div class="mt-n2">
                                         <span
-                                            class="badge bg-{{ $color }}">{{ strtoupper($activePic->employee->role) }}</span>
+                                            class="badge bg-{{ $picColor }}">{{ strtoupper($activePic->employee->role) }}</span>
                                         <h3 class="card-title mt-3">{{ ucwords($activePic->employee->name) }}</h3>
                                         <h6 class="card-subtitle">{{ $activePic->employee->npk }}</h6>
                                     </div>
@@ -652,6 +622,7 @@
             // Generate unique IDs based on $history['id']
             $accordionId = 'accordion-' . $history['id'];
             $collapseOneId = 'collapseOne-' . $history['id'];
+            $collapseTwoId = 'collapseTwo-' . $history['id'];
             $collapseThreeId = 'collapseThree-' . $history['id'];
         @endphp
         <div class="modal fade modal-lg troubleshootModal" id="{{ $history['id'] }}Troubleshoot" tabindex="-1"
@@ -682,51 +653,6 @@
                                     </div>
                                 </div>
                             </div>
-                            @if ($history->{"4M"} === 'man')
-                                @foreach ($activeEmployees as $emp)
-                                    <div class="row mt-1">
-                                        <div class="col-lg-1">
-                                            <label for="exampleInputPassword1" class="form-label fw-semibold"
-                                                style="color: white">Pos</label>
-                                            <p class="mt-2 text-center badge bg-danger rounded-pill">Pos
-                                                {{ $emp->pos }}</p>
-                                        </div>
-                                        <div class="col-lg-5">
-                                            <div class="mb-4">
-                                                <label for="exampleInputPassword1" class="form-label fw-semibold">Current
-                                                    Employee</label>
-                                                <input type="text" class="form-control" id="employeeBefore"
-                                                    placeholder="John" value="{{ $emp->employee->name }}" disabled>
-
-                                                <input type="hidden" class="form-control employeeBefore" name="before[]"
-                                                    placeholder="John" value="{{ $emp->employee->id }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-1">
-                                            <label for="exampleInputPassword1" class="form-label fw-semibold"
-                                                style="color: white">Last</label>
-                                            <p class="text-center mt-1">- to -</p>
-                                        </div>
-                                        <div class="col-lg-5">
-                                            <div class="mb-4">
-                                                <label for="exampleInputPassword1"
-                                                    class="form-label fw-semibold">Replacement
-                                                    Employee</label>
-                                                <select
-                                                    class="select2 form-select select2-hidden-accessible employeeReplacement"
-                                                    style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
-                                                    name="after[]" id="{{ $history['id'] }}After" required>
-                                                    <option value="0">Select Employee</option>
-                                                    @foreach ($employees as $employee)
-                                                        <option value="{{ $employee->id }}">{{ $employee->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            @endif
                             <div class="accordion accordion-flush position-relative overflow-hidden mt-2"
                                 id="{{ $accordionId }}">
                                 <div class="row">
@@ -840,6 +766,83 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="accordion-item mb-3 border rounded-top rounded-bottom">
+                                            @if ($history->{"4M"} === 'man')
+                                                <h2 class="accordion-header" id="flush-headingOne">
+                                                    <button
+                                                        class="accordion-button fs-4 fw-bolder px-3 py-6 lh-base border-0 rounded-top collapsed"
+                                                        type="button" data-bs-toggle="collapse"
+                                                        data-bs-target="#{{ $collapseTwoId }}" aria-expanded="false"
+                                                        aria-controls="{{ $collapseTwoId }}">
+                                                        Man Henkaten <small class="text-danger ps-1"> *Jika
+                                                            ada
+                                                            perubahan</small>
+                                                    </button>
+                                                </h2>
+                                                <div id="{{ $collapseTwoId }}" class="accordion-collapse collapse"
+                                                    aria-labelledby="flush-headingOne"
+                                                    data-bs-parent="#{{ $accordionId }}" style="">
+                                                    <div class="accordion-body px-3 fw-normal">
+                                                        @foreach ($activeEmployees as $emp)
+                                                            <div class="row mt-1">
+                                                                <div class="col-lg-1">
+                                                                    <label for="exampleInputPassword1"
+                                                                        class="form-label fw-semibold"
+                                                                        style="color: white">Pos</label>
+                                                                    <p
+                                                                        class="mt-2 text-center badge bg-danger rounded-pill">
+                                                                        Pos
+                                                                        {{ $emp->pos->pos }}</p>
+                                                                </div>
+                                                                <div class="col-lg-5">
+                                                                    <div class="mb-4">
+                                                                        <label for="exampleInputPassword1"
+                                                                            class="form-label fw-semibold">Current
+                                                                            Employee</label>
+                                                                        <input type="text" class="form-control"
+                                                                            id="employeeBefore" placeholder="John"
+                                                                            value="{{ $emp->employee->name }}" disabled>
+
+                                                                        <input type="hidden"
+                                                                            class="form-control employeeBefore"
+                                                                            name="before[]" placeholder="John"
+                                                                            value="{{ $emp->employee->id }}">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-lg-1">
+                                                                    <label for="exampleInputPassword1"
+                                                                        class="form-label fw-semibold"
+                                                                        style="color: white">Last</label>
+                                                                    <p class="text-center mt-1">- to -</p>
+                                                                </div>
+                                                                <div class="col-lg-5">
+                                                                    <div class="mb-4">
+                                                                        <label for="exampleInputPassword1"
+                                                                            class="form-label fw-semibold">Replacement
+                                                                            Employee</label>
+                                                                        <select
+                                                                            class="select2 form-select select2-hidden-accessible employeeReplacement"
+                                                                            style="width: 100%; height: 36px"
+                                                                            tabindex="-1" aria-hidden="true"
+                                                                            name="after[]" required>
+                                                                            <option value="0">Select
+                                                                                Employee</option>
+                                                                            @foreach ($employees as $employee)
+                                                                                <option value="{{ $employee->id }}">
+                                                                                    {{ $employee->name }}
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="col-12 mt-4">
@@ -1110,6 +1113,21 @@
     }
 
     $(document).ready(function() {
+        var lineName = "{{ $line->name }}";
+
+        if (lineName === 'ASAN01' || lineName === 'ASAN02') {
+            $('.temp-row').children().unwrap();
+            $('.owl-carousel').owlCarousel({
+                margin: 25,
+                autoplay: true,
+                loop: true,
+                autoWidth: false,
+                items: 2
+            })
+        } else {
+            $('#carousel').removeClass('owl-carousel')
+            $('#carousel').removeClass('owl-theme')
+        }
         // set shift to local storage
         localStorage.setItem('shift', $('#shift').html());
 

@@ -35,13 +35,22 @@
                     <!-- Tambahkan name="npk" -->
                 </div>
                 <div class="form-group mb-4">
-                    <label class="mr-sm-2" for="inlineFormCustomSelect">Role</label>
+                    <label class="mr-sm-2 form-label" for="inlineFormCustomSelect">Role</label>
                     <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="role">
                         <option selected>-- select --</option>
                         <option value="Operator">Operator</option>
                         <option value="JP">JP</option>
                         <option value="Leader">Leader</option>
                         <option value="SPV">SPV</option>
+                    </select>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="mr-sm-2 form-label" for="inlineFormCustomSelect">Origin</label>
+                    <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="origin_id">
+                        <option selected>-- select --</option>
+                        @foreach ($origins as $origin)
+                            <option value="{{ $origin->id }}">{{ $origin->name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="mb-3">

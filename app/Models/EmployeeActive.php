@@ -25,6 +25,11 @@ class EmployeeActive extends Model
         return $this->belongsTo(Employee::class);
     }
     
+    public function pos()
+    {
+        return $this->belongsTo(Position::class);
+    }
+    
     public function line()
     {
         return $this->belongsTo(Line::class);

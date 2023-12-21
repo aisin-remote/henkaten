@@ -54,4 +54,9 @@ class Employee extends Model
     {
         return $this->hasMany(EmployeeSkill::class);
     }
+
+    public function origin()
+    {
+        return $this->belongsTo(Origin::class);
+    }
 }

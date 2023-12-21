@@ -23,7 +23,12 @@
                 <form action="{{ route('employeePlanning.store') }}" method="POST" class="mt-4">
                     @csrf
                     @method('POST')
-                    <div class="">
+                    @php
+                        $flag = false;
+                        $empOrigin = auth()->user();
+                        $flag = $empOrigin->origin->name === 'ELECTRIC' ? true : false;
+                    @endphp
+                    <div class="row">
                         <div class="col-12 mb-3">
                             <select class="select2 form-select select2-hidden-accessible shift"
                                 style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" id="shift"
@@ -58,59 +63,39 @@
                             </div>
                         </div>
                         <div class="repeater-mp-container">
-                            <div class="row mb-3">
-                                <div class="col-lg-3 col-sm-12 align-items-center">
-                                    <div class="mb-4 row align-items-center">
-                                        <label for="exampleInputPassword1"
-                                            class="form-label fw-semibold col-sm-3 col-form-label">Pos</label>
-                                        <div class="col-9">
-                                            <input type="text" class="form-control" placeholder="Employee Name"
-                                                name="pos[]" value="Pos 1" disabled>
-                                            <input type="hidden" class="form-control" placeholder="Employee Name"
-                                                name="pos[]" value="1">
+                            @if ($flag === false)
+                                @for ($i = 1; $i <= 2; $i++)
+                                    <div class="row mb-3">
+                                        <div class="col-lg-3 col-sm-12">
+                                            <div class="mb-4 row align-items-center">
+                                                <label for="exampleInputPassword1"
+                                                    class="form-label fw-semibold col-sm-3 col-form-label">Pos</label>
+                                                <div class="col-9">
+                                                    <input type="text" class="form-control" placeholder="Employee Name"
+                                                        name="pos[]" value="Pos {{ $i }}" disabled>
+                                                    <input type="hidden" class="form-control" placeholder="Employee Name"
+                                                        name="pos[]" value="{{ $i }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-9 col-sm-12">
+                                            <select class="select2 form-select select2-hidden-accessible employee_id"
+                                                style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
+                                                name="employee_id[]" required>
+                                                <option value="0">Select Employee</option>
+                                                @foreach ($operators as $employee)
+                                                    <option value="{{ $employee->id }}">{{ $employee->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-lg-9 col-sm-12">
-                                    <select class="select2 form-select select2-hidden-accessible employee_id"
-                                        style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
-                                        name="employee_id[]" required>
-                                        <option value="0">Select Employee</option>
-                                        @foreach ($employees as $employee)
-                                            <option value="{{ $employee->id }}">{{ $employee->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-lg-3 col-sm-12">
-                                    <div class="mb-4 row align-items-center">
-                                        <label for="exampleInputPassword1"
-                                            class="form-label fw-semibold col-sm-3 col-form-label">Pos</label>
-                                        <div class="col-9">
-                                            <input type="text" class="form-control" placeholder="Employee Name"
-                                                name="pos[]" value="Pos 2" disabled>
-                                            <input type="hidden" class="form-control" placeholder="Employee Name"
-                                                name="pos[]" value="2">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-9 col-sm-12">
-                                    <select class="select2 form-select select2-hidden-accessible employee_id"
-                                        style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true"
-                                        name="employee_id[]" required>
-                                        <option value="0">Select Employee</option>
-                                        @foreach ($employees as $employee)
-                                            <option value="{{ $employee->id }}">{{ $employee->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
+                                @endfor
+                            @endif
                         </div>
                         <div class="mt-3 mb-3">
                             <label for="" class="pb-1 text-muted">Active from</label>
-                            <input type="date" class="form-control" placeholder="Designation" name="active_from"
-                                required min="{{ date('Y-m-d') }}">
+                            <input type="date" class="form-control" placeholder="Designation" name="active_from" required
+                                min="{{ date('Y-m-d') }}">
                         </div>
                         <div class="mb-3">
                             <button
@@ -125,7 +110,6 @@
             </div>
         </div>
     </div>
-
     <div class="row">
         <div class="card shadow p-3">
             <div class="card-header" style="background-color: white;">
@@ -158,8 +142,12 @@
                             <th>Line</th>
                             <th>Shift</th>
                             <th>Planning Date</th>
-                            <th><span class="badge bg-warning">POS 1</span></th>
-                            <th><span class="badge bg-danger">POS 2</span></th>
+                            @if (auth()->user()->origin->name !== 'ELECTRIC')
+                                <th><span class="badge bg-warning">POS 1</span></th>
+                                <th><span class="badge bg-danger">POS 2</span></th>
+                            @else
+                                <th><span class="badge bg-info">Employee List</span></th>
+                            @endif
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
@@ -175,9 +163,46 @@
                                 <td>{{ $shift }}</td>
                                 <td>{{ Carbon\Carbon::parse($start)->format('j F Y') }} -
                                     {{ Carbon\Carbon::parse($end)->format('j F Y') }}</td>
-                                @foreach ($employees as $employee)
-                                    <td>{{ $employee->name }}</td>
-                                @endforeach
+                                @if (auth()->user()->origin->name !== 'ELECTRIC')
+                                    @foreach ($employees as $employee)
+                                        <td>{{ $employee->name }}</td>
+                                    @endforeach
+                                @else
+                                    @if ($line === 'ASAN01' || $line === 'ASAN02')
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <ul class="list-group">
+                                                        @foreach (array_slice($employees, 0, 4) as $employee)
+                                                            <li class="list-group-item">
+                                                                {{ $employee->name }}
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                                <div class="col-6">
+                                                    <ul class="list-group">
+                                                        @foreach (array_slice($employees, 4, 3) as $employee)
+                                                            <li class="list-group-item">
+                                                                {{ $employee->name }}
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    @else
+                                        @foreach ($employees as $employee)
+                                            <td>
+                                                <ul class="list-group">
+                                                    <li class="list-group-item">
+                                                        {{ $employee->name }}
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        @endforeach
+                                    @endif
+                                @endif
                                 <td class="text-center">
                                     <a class="btn btn-secondary view-employee mb-1" data-bs-toggle="modal"
                                         data-bs-target="#{{ $modalId }}EmployeeDetail">
@@ -185,15 +210,20 @@
                                             <i class="ti ti-search"></i>
                                         </span>
                                     </a>
-                                    <form
-                                        action="{{ route('employee.planning.destroy', [
-                                            'first_id' => $employees[0]->employee_id,
-                                            'second_id' => $employees[1]->employee_id,
+                                    @php
+                                        $employeeData = [];
+                                        foreach ($employees as $employee) {
+                                            array_push($employeeData, $employee->employee_id);
+                                        }
+                                        $data = [
+                                            'employees_id' => $employeeData,
                                             'shift' => $employees[0]->shift_id,
                                             'line' => $employees[0]->line_id,
                                             'active_from' => $start,
-                                        ]) }}"
-                                        method="post" class="delete-button">
+                                        ];
+                                    @endphp
+                                    <form action="{{ route('employee.planning.destroy', $data) }}" method="post"
+                                        class="delete-button">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger">
@@ -240,72 +270,78 @@
             // Split the group key to get shift, line, and week
             [$shift, $line, $start, $end] = explode('|', $groupKey);
             $modalId = Str::slug($shift . $line . $start . $end);
+
         @endphp
         <div class="modal fade" id="{{ $modalId }}EmployeeDetail" tabindex="-1" role="dialog"
             aria-labelledby="employeeModalLabel" aria-hidden="true" style="display: none;">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-dialog modal-dialog-centered modal-md" role="document">
                 <div class="modal-content p-3">
                     <div class="modal-body">
                         <div class="row justify-content-center">
-                            @foreach ($employees as $emp)
-                                <div class="col-lg-6 col-md-12">
-                                    <div class="text-center">
-                                        <img src="{{ asset('uploads/doc/' . $emp->photo) }}" class="rounded-1 img-fluid"
-                                            width="150">
-                                        <div class="mt-n2">
-                                            <span class="badge bg-primary">{{ $emp->role }}</span>
-                                            <h3 class="card-title mt-3">{{ $emp->name }}</h3>
-                                            <h6 class="card-subtitle mt-1">{{ $emp->npk }}
-                                            </h6>
-                                            <div class="row mt-4">
-                                                <div class="col-12">
-                                                    <button class="btn btn-light-danger text-danger"
-                                                        style="width: 100% !important">POS
-                                                        {{ strtoupper($emp->pos) }}</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mt-3 justify-content-center">
-                                            <div class="col-6">
-                                                <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
-                                                    <div class="ms-2 text-start">
-                                                        <h6 class="fw-normal text-muted mb-2">Skill</h6>
-                                                        @foreach ($skills as $skill)
-                                                            @php
-                                                                $employeeSkillIds = $empSkills
-                                                                    ->where('employee_id', $emp->employee_id)
-                                                                    ->pluck('skill_id')
-                                                                    ->all();
-                                                                $employeeSkills = $allSkills->whereIn('id', $employeeSkillIds);
-                                                            @endphp
-                                                        @endforeach
-                                                        @foreach ($employeeSkills as $skill)
-                                                            <h4 class="mb-0 fs-5">{{ $skill->name }}</h4>
-                                                        @endforeach
+                            <div class="owl-carousel owl-theme" id="carousel">
+                                @foreach ($employees as $emp)
+                                    <div class="item">
+                                        <div class="text-center">
+                                            <img src="{{ asset('uploads/doc/' . $emp->photo) }}" class="rounded-1 img"
+                                                width="150"
+                                                style="width: 150px !important; margin-left: auto;
+                                                margin-right: auto;">
+                                            <div class="mt-n2">
+                                                <span class="badge bg-primary">{{ $emp->role }}</span>
+                                                <h3 class="card-title mt-3">{{ $emp->name }}</h3>
+                                                <h6 class="card-subtitle mt-1">{{ $emp->npk }}
+                                                </h6>
+                                                <div class="row mt-4">
+                                                    <div class="col-12">
+                                                        <button class="btn btn-light-danger text-danger"
+                                                            style="width: 100% !important">POS
+                                                            {{ strtoupper($emp->pos) }}</button>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-6">
-                                                <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
-                                                    <div class="ms-2 text-start">
-                                                        <h6 class="fw-normal text-muted mb-2">Level</h6>
-                                                        @foreach ($employeeSkills as $skill)
-                                                            <div class="progress mb-2" style="height: 15px; width: 8vw">
-                                                                <div class="progress-bar" role="progressbar"
-                                                                    style="width: {{ $skill->level * 20 }}%;"
-                                                                    aria-valuenow="{{ $skill->level }}" aria-valuemin="0"
-                                                                    aria-valuemax="5">
-                                                                    {{ $skill->level }}
+                                            <div class="row mt-3 justify-content-center">
+                                                <div class="col-6">
+                                                    <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
+                                                        <div class="ms-2 text-start">
+                                                            <h6 class="fw-normal text-muted mb-2">Skill</h6>
+                                                            @foreach ($skills as $skill)
+                                                                @php
+                                                                    $employeeSkillIds = $empSkills
+                                                                        ->where('employee_id', $emp->employee_id)
+                                                                        ->pluck('skill_id')
+                                                                        ->all();
+                                                                    $employeeSkills = $allSkills->whereIn('id', $employeeSkillIds);
+                                                                @endphp
+                                                            @endforeach
+                                                            @foreach ($employeeSkills as $skill)
+                                                                <h4 class="mb-0 fs-5">{{ $skill->name }}</h4>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
+                                                        <div class="ms-2 text-start">
+                                                            <h6 class="fw-normal text-muted mb-2">Level</h6>
+                                                            @foreach ($employeeSkills as $skill)
+                                                                <div class="progress mb-2"
+                                                                    style="height: 15px; width: 8vw">
+                                                                    <div class="progress-bar" role="progressbar"
+                                                                        style="width: {{ $skill->level * 20 }}%;"
+                                                                        aria-valuenow="{{ $skill->level }}"
+                                                                        aria-valuemin="0" aria-valuemax="5">
+                                                                        {{ $skill->level }}
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        @endforeach
+                                                            @endforeach
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -315,8 +351,15 @@
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.3.min.js"
     integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 <script>
     // toast
+    let employees = @json($operators);
+
     function notif(status, message) {
         if (status == 'success') {
             toastr.success(message, "Success!", {
@@ -334,6 +377,16 @@
     }
 
     $(document).ready(function() {
+        let owl = $('.owl-carousel');
+        owl.owlCarousel({
+            margin: 20,
+            autoplay: true,
+            loop: owl.children().length > 1,
+            autoWidth: false,
+            touchDrag: true,
+            nav: true,
+            items: 1
+        })
         // clear all local storage when page load
         localStorage.clear();
 
@@ -486,6 +539,87 @@
                 }
             });
         }
+
+        $('#line').on('change', function() {
+            let line = $('#line option:selected').text();
+            if (line === 'ASAN01' || line === 'ASAN02') {
+                // Add form
+                let html = '';
+                for (let i = 1; i <= 7; i++) {
+                    html += `
+                    <div class="row mb-3">
+                        <div class="col-lg-3 col-sm-12">
+                            <div class="mb-4 row align-items-center">
+                                <label for="exampleInputPassword1" class="form-label fw-semibold col-sm-3 col-form-label">Pos</label>
+                                <div class="col-9">
+                                    <input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="Pos ${i}" disabled>
+                                    <input type="hidden" class="form-control" placeholder="Employee Name" name="pos[]" value="${i}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-9 col-sm-12">
+                            <select class="select2 form-select select2-hidden-accessible employee_id" style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" name="employee_id[]" required>
+                                <option value="0">Select Employee</option>`;
+
+                    // Assuming employees is a JavaScript array
+                    employees.forEach(employee => {
+                        html += `<option value="${employee.id}">${employee.name}</option>`;
+                    });
+
+                    html += `
+                            </select>
+                        </div>
+                    </div>`;
+                }
+                // Check if the container element exists
+                let container = $('.repeater-mp-container');
+                if (container.length) {
+                    container.html(html);
+                    // Re-initialize select2
+                    container.find('.select2').select2();
+                } else {
+                    console.error("Container element not found");
+                }
+            } else if (line === 'ASIP01' || line === 'ASVP01' || line === 'ASMP01') {
+                // Add form
+                let html = '';
+                for (let i = 1; i <= 1; i++) {
+                    html += `
+                    <div class="row mb-3">
+                        <div class="col-lg-3 col-sm-12">
+                            <div class="mb-4 row align-items-center">
+                                <label for="exampleInputPassword1" class="form-label fw-semibold col-sm-3 col-form-label">Pos</label>
+                                <div class="col-9">
+                                    <input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="Pos ${i}" disabled>
+                                    <input type="hidden" class="form-control" placeholder="Employee Name" name="pos[]" value="${i}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-9 col-sm-12">
+                            <select class="select2 form-select select2-hidden-accessible employee_id" style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" name="employee_id[]" required>
+                                <option value="0">Select Employee</option>`;
+
+                    // Assuming employees is a JavaScript array
+                    employees.forEach(employee => {
+                        html += `<option value="${employee.id}">${employee.name}</option>`;
+                    });
+
+                    html += `
+                            </select>
+                        </div>
+                    </div>`;
+                }
+                // Check if the container element exists
+                let container = $('.repeater-mp-container');
+                if (container.length) {
+                    container.html(html);
+                    // Re-initialize select2
+                    container.find('.select2').select2();
+                } else {
+                    console.error("Container element not found");
+                }
+            }
+        });
 
         $('#addPlanning').on('click', function() {
             $("#addPlanningCard").toggle();

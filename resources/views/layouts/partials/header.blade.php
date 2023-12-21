@@ -112,7 +112,7 @@
                             aria-expanded="false">
                             <div class="d-flex align-items-center">
                                 <div class="user-profile-img">
-                                    <img src="../../dist/images/profile/{{ auth()->user()->photo }}"
+                                    <img src="{{ asset('dist/images/profile/' . auth()->user()->photo) }}"
                                         class="rounded-circle" width="35" height="35" alt="" />
                                 </div>
                             </div>
@@ -124,7 +124,7 @@
                                     <h5 class="mb-0 fs-5 fw-semibold">User Profile</h5>
                                 </div>
                                 <div class="d-flex align-items-center py-9 mx-7 border-bottom">
-                                    <img src="../../dist/images/profile/{{ auth()->user()->photo }}"
+                                    <img src="{{ asset('dist/images/profile/' . auth()->user()->photo) }}"
                                         class="rounded-circle" width="80" height="80" alt="" />
                                     <div class="ms-3">
                                         <h5 class="mb-1 fs-3">{{ auth()->user()->name }}</h5>
@@ -166,56 +166,61 @@
 
 <script>
     function updateShift() {
-        // Dapatkan elemen dengan ID "shift"
         var shiftElement = document.getElementById("shift");
-
-        // Dapatkan jam saat ini
         var currentDate = new Date();
         var currentHour = currentDate.getHours();
         var currentMinute = currentDate.getMinutes();
         var currentSecond = currentDate.getSeconds();
 
-        // Aturan pergeseran berdasarkan jam
+        // Define shifts with start and end times
         var shifts = [{
-                hours: 6,
-                minutes: 0,
-                seconds: 0
-            },
+                startHour: 6,
+                startMinute: 0,
+                endHour: 14,
+                endMinute: 10
+            }, // Shift 1
             {
-                hours: 14,
-                minutes: 10,
-                seconds: 0
-            },
+                startHour: 14,
+                startMinute: 10,
+                endHour: 22,
+                endMinute: 10
+            }, // Shift 2
             {
-                hours: 22,
-                minutes: 10,
-                seconds: 0
-            }
+                startHour: 22,
+                startMinute: 10,
+                endHour: 6,
+                endMinute: 0
+            } // Shift 3
         ];
 
-        // Tentukan shift berdasarkan aturan jam
+        // Determine the current shift
         var shift;
         for (var i = 0; i < shifts.length; i++) {
-            var shiftStartHour = shifts[i].hours;
-            var shiftEndHour = (i < shifts.length - 1) ? shifts[i + 1].hours : 24;
+            var isShift = false;
+            var shiftStart = shifts[i].startHour * 60 + shifts[i].startMinute;
+            var shiftEnd = shifts[i].endHour * 60 + shifts[i].endMinute;
+            var currentTime = currentHour * 60 + currentMinute;
 
-            if (currentHour >= shiftStartHour && currentHour < shiftEndHour) {
+            if (shifts[i].startHour <= shifts[i].endHour) {
+                // For shifts that don't cross midnight
+                isShift = currentTime >= shiftStart && currentTime < shiftEnd;
+            } else {
+                // For shifts that cross midnight (like Shift 3)
+                isShift = currentTime >= shiftStart || currentTime < shiftEnd;
+            }
+
+            if (isShift) {
                 shift = "Shift " + (i + 1);
                 break;
             }
         }
 
-        // Jika tidak ada shift yang sesuai, tetapkan Shift 1 sebagai default
-        shift = shift || "Shift 1";
-
-        // Perbarui nilai pada elemen shift
-        shiftElement.innerHTML = shift ||
-            "Shift 1"; // Jika tidak ada shift yang sesuai, tetapkan Shift 1 sebagai default
+        shift = shift || "Shift 1"; // Default to Shift 1 if no other shift is matched
+        shiftElement.innerHTML = shift;
     }
 
-    // Panggil fungsi updateShift saat halaman dimuat dan atur interval pembaruan (misalnya setiap 1 detik)
     document.addEventListener("DOMContentLoaded", function() {
-        updateShift(); // Panggil fungsi saat halaman dimuat
-        setInterval(updateShift, 1000); // Atur interval pembaruan ke 1 detik (1000 milidetik)
+        updateShift();
+        setInterval(updateShift, 1000);
     });
 </script>
