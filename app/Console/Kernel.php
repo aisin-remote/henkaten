@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use Carbon\Carbon;
 use App\Models\Line;
 use App\Models\Shift;
 use App\Models\Employee;
@@ -81,7 +82,7 @@ class Kernel extends ConsoleKernel
 
         // auto update 
         $schedule->call(function () {
-            $currentShifts = EmployeeActive::select('employee_id', 'shift_id','line_id','pos')->get();
+            $currentShifts = EmployeeActive::select('employee_id', 'shift_id','line_id','pos_id')->get();
     
             $newShifts = $currentShifts->map(function ($employee) {
                 $nextShiftUuid = $this->getNextShiftUuid($employee->shift_id); // Implement this method to determine the next shift
@@ -90,9 +91,9 @@ class Kernel extends ConsoleKernel
                     'employee_id' => $employee->employee_id,
                     'shift_id' => $nextShiftUuid,
                     'line_id' => $employee->line_id,
-                    'pos' => $employee->pos,
-                    'active_from' => now()->startOfWeek(),
-                    'expired_at' => now()->endOfWeek(),
+                    'pos_id' => $employee->pos_id,
+                    'active_from' => Carbon::now()->startOfWeek(),
+                    'expired_at' => Carbon::now()->endOfWeek(),
                 ];
             });
 
@@ -102,15 +103,15 @@ class Kernel extends ConsoleKernel
 
     private function getNextShiftUuid($currentShiftUuid) {
     // Assuming Shift is your model name and it has 'name' and 'id' columns
-        $shifts = \App\Models\Shift::whereIn('name', ['shift 1', 'shift 2', 'shift 3'])
+        $shifts = \App\Models\Shift::whereIn('name', ['Shift 1', 'Shift 2', 'Shift 3'])
                                 ->get()
                                 ->keyBy('name');
 
         // Map the shift names to their IDs
         $shiftsMap = [
-            $shifts['shift 1']->id => $shifts['shift 3']->id,
-            $shifts['shift 2']->id => $shifts['shift 1']->id,
-            $shifts['shift 3']->id => $shifts['shift 2']->id,
+            $shifts['Shift 1']->id => $shifts['Shift 3']->id,
+            $shifts['Shift 2']->id => $shifts['Shift 1']->id,
+            $shifts['Shift 3']->id => $shifts['Shift 2']->id,
         ];
 
         return $shiftsMap[$currentShiftUuid] ?? null; // Return null or handle invalid UUID
