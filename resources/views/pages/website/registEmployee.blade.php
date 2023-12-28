@@ -446,7 +446,7 @@
             })
         });
 
-        $('.view-employee').on('click', function() {
+        $('#masterSkill').on('click', '.view-employee', function() {
             var employeeId = $(this).data('emp');
             let empId = $(this).data('emp-id');
             let chartId = $(this).data('chart-id');
