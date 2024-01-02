@@ -593,6 +593,7 @@
                                         'running' => ['priority' => 1, 'overall' => 'RUNNING', 'shape' => 'circle', 'color' => 'success'],
                                         'henkaten' => ['priority' => 2, 'overall' => 'HENKATEN', 'shape' => 'triangle', 'color' => 'warning'],
                                         'stop' => ['priority' => 3, 'overall' => 'STOP', 'shape' => 'x', 'color' => 'danger'],
+                                        'off' => ['priority' => 4, 'overall' => 'OFF', 'shape' => 'zzz', 'color' => 'dark'],
                                     ];
 
                                     // summaery all line
@@ -644,7 +645,7 @@
                                                 case 'stop':
                                                     return 'x';
                                                 default:
-                                                    return '';
+                                                    return 'zzz';
                                             }
                                         }
                                     }
@@ -659,8 +660,9 @@
                                                     return 'warning';
                                                 case 'stop':
                                                     return 'danger';
-                                                default:
+                                                case 'off':
                                                     return 'dark';
+                                                
                                             }
                                         }
                                     }
@@ -884,8 +886,6 @@
                 case 'STOP':
                     return `<img src="{{ asset('assets/images/stop.svg') }}" class="dark-logo"
                                                     width="240" alt="" />`;
-                default:
-                    return 'dark';
             }
         }
 
