@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::prefix('dashboard')->group(function () {
         Route::get('{lineId}', [DashboardController::class, 'dashboardLine'])->name('dashboard.line');
+        Route::get('updateStatus/{lineId}', [DashboardController::class, 'updateLineStatus'])->name('dashboard.line.status');
         Route::get('selectTheme/{theme}', [DashboardController::class, 'selectTheme'])->name('dashboard.theme');
         Route::get('selectFirstPic/{id}', [DashboardController::class, 'selectFirstPic'])->name('dashboard.firstPic');
         Route::get('selectSecondPic/{id}', [DashboardController::class, 'selectSecondPic'])->name('dashboard.SecondPic');

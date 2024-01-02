@@ -29,7 +29,7 @@ class DashboardController extends Controller
     {
         // get origin id
         $empOrigin = auth()->user()->origin_id;
-        
+
         // get current pivot
         $currentTime = Carbon::now()->format('H:i:s');
         $current_date = Carbon::now()->toDateString();
@@ -41,8 +41,8 @@ class DashboardController extends Controller
             ->first();
 
         // get henkaten where status still active
-        $activeProblems = Henkaten::with(['shift','line.origin'])
-            ->whereHas('line', function ($query) use ($empOrigin){
+        $activeProblems = Henkaten::with(['shift', 'line.origin'])
+            ->whereHas('line', function ($query) use ($empOrigin) {
                 $query->where('origin_id', $empOrigin);
             })
             ->whereHas('shift', function ($query) use ($currentTime) {
@@ -70,12 +70,12 @@ class DashboardController extends Controller
             'histories' => $activeProblems
         ]);
     }
-    
+
     public function indexLine()
     {
         // get origin id
         $empOrigin = auth()->user()->origin_id;
-        
+
         // in this page we will get all line status
         return view('pages.website.lineDashboard', [
             'lines' => Line::where('origin_id', $empOrigin)->get(),
@@ -86,13 +86,13 @@ class DashboardController extends Controller
     {
         // get origin id
         $empOrigin = auth()->user()->origin_id;
-        
+
         $currentDate = Carbon::now()->format('Y-m-d');
         $currentTime = Carbon::now()->format('H:i:s');
 
         // get all history
         $histories = Henkaten::with(['troubleshoot.employee', 'henkatenManagement'])->where('line_id', $lineId->id)->get();
-        
+
         // get man power at spesific line and range of time
         $activeEmployees = EmployeeActive::with('shift')
             ->with('employee')
@@ -122,14 +122,85 @@ class DashboardController extends Controller
         $manHenkaten = Troubleshoot::with(['henkaten.shift', 'manAfter', 'manBefore'])
             ->whereHas('henkaten', function ($query) use ($lineId, $currentDate, $currentTime) {
                 $query->where('date', 'LIKE', $currentDate . '%')
-                ->where('line_id', $lineId->id)
+                    ->where('line_id', $lineId->id)
                     ->whereHas('shift', function ($subQuery) use ($currentTime) {
                         $subQuery->where('time_start', '<=', $currentTime)
                             ->where('time_end', '>=', $currentTime);
                     });
             })
             ->get();
-        
+
+        return view('pages.website.line', [
+            'line' => Line::findOrFail($lineId->id),
+            'lineMap' => Line::where('id', $lineId->id)->first(),
+            'employees' => Employee::doesntHave('employeeActive')->where('origin_id', $empOrigin)->get(),
+            'activeEmployees' => $activeEmployees,
+            'activePic' => $activePic,
+            'histories' => $histories,
+            'manHenkaten' => $manHenkaten,
+            'henkatenManagements' => HenkatenManagement::all(),
+        ]);
+    }
+
+    public function updateLineStatus(Line $lineId, Request $request)
+    {
+        $onOffSwitch = $request->onOffSwitch;
+
+        $line = Line::findOrFail($lineId->id);
+
+        $line->update([
+            'status_man' => $onOffSwitch,
+            'status_method' => $onOffSwitch,
+            'status_machine' => $onOffSwitch,
+            'status_material' => $onOffSwitch,
+        ]);
+
+        // get origin id
+        $empOrigin = auth()->user()->origin_id;
+
+        $currentDate = Carbon::now()->format('Y-m-d');
+        $currentTime = Carbon::now()->format('H:i:s');
+
+        // get all history
+        $histories = Henkaten::with(['troubleshoot.employee', 'henkatenManagement'])->where('line_id', $lineId->id)->get();
+
+        // get man power at spesific line and range of time
+        $activeEmployees = EmployeeActive::with('shift')
+            ->with('employee')
+            ->with('pos')
+            ->where('active_from', '<=', $currentDate)
+            ->where('expired_at', '>=', $currentDate)
+            ->where('line_id', $lineId->id)
+            ->whereHas('shift', function ($query) use ($currentTime) {
+                $query->where('time_start', '<=', $currentTime)
+                    ->where('time_end', '>=', $currentTime);
+            })
+            ->get();
+
+        // get active pic
+        $activePic = PicActive::with('shift')
+            ->with('employee')
+            ->where('active_from', '<=', $currentDate)
+            ->where('expired_at', '>=', $currentDate)
+            ->where('line_id', $lineId->id)
+            ->whereHas('shift', function ($query) use ($currentTime) {
+                $query->where('time_start', '<=', $currentTime)
+                    ->where('time_end', '>=', $currentTime);
+            })
+            ->first();
+
+        // get man henkaten
+        $manHenkaten = Troubleshoot::with(['henkaten.shift', 'manAfter', 'manBefore'])
+            ->whereHas('henkaten', function ($query) use ($lineId, $currentDate, $currentTime) {
+                $query->where('date', 'LIKE', $currentDate . '%')
+                    ->where('line_id', $lineId->id)
+                    ->whereHas('shift', function ($subQuery) use ($currentTime) {
+                        $subQuery->where('time_start', '<=', $currentTime)
+                            ->where('time_end', '>=', $currentTime);
+                    });
+            })
+            ->get();
+
         return view('pages.website.line', [
             'line' => Line::findOrFail($lineId->id),
             'lineMap' => Line::where('id', $lineId->id)->first(),
@@ -146,7 +217,7 @@ class DashboardController extends Controller
     {
         // get origin id
         $empOrigin = auth()->user()->origin_id;
-        
+
         // get theme name
         $parts = explode("/", $request->path());
         $customTheme = explode("-", $parts[2]);
@@ -258,7 +329,7 @@ class DashboardController extends Controller
     {
         // get origin id
         $empOrigin = auth()->user()->origin_id;
-        
+
         $pic = $id;
         if ($pic == 0) {
             return response()->json([
@@ -347,7 +418,7 @@ class DashboardController extends Controller
     {
         // get origin id
         $empOrigin = auth()->user()->origin_id;
-        
+
         $pic = $id;
         if ($pic == 0) {
             return response()->json([
