@@ -101,7 +101,7 @@ class Kernel extends ConsoleKernel
         })->weeklyOn(0, '23:59');
     }
 
-    private function getNextShiftUuid($currentShiftUuid) {
+    public function getNextShiftUuid($currentShiftUuid) {
     // Assuming Shift is your model name and it has 'name' and 'id' columns
         $shifts = \App\Models\Shift::whereIn('name', ['Shift 1', 'Shift 2', 'Shift 3'])
                                 ->get()
