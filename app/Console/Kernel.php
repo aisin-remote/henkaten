@@ -97,7 +97,7 @@ class Kernel extends ConsoleKernel
                 ];
             });
 
-            EmployeeActive::create($newShifts->toArray());
+            EmployeeActive::insert($newShifts->toArray());
         })->weeklyOn(0, '23:59');
     }
 
