@@ -98,7 +98,7 @@ class Kernel extends ConsoleKernel
             });
 
             EmployeeActive::insert($newShifts->toArray());
-        })->weeklyOn(0, '23:59');
+        })->weeklyOn(1, '05:00');
     }
 
     public function getNextShiftUuid($currentShiftUuid) {
