@@ -22,6 +22,7 @@ use App\Http\Controllers\DashboardController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/auto-update', [HenkatenController::class, 'autoUpdate'])->name('auto-update');
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/', function () {
@@ -33,8 +34,6 @@ Route::middleware(['guest'])->group(function () {
 
     Route::get('/register', [RegisterController::class, 'index'])->name('register.index');
     Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
-    
-    Route::get('/auto-update', [HenkatenController::class, 'autoUpdate'])->name('auto-update');
 });
 
 Route::middleware(['auth'])->group(function () {
