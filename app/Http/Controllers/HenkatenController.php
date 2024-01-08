@@ -487,14 +487,14 @@ class HenkatenController extends Controller
 
     public function autoUpdate()
     {
-        $currentWeekStart = Carbon::now()->startOfWeek();
-        $currentWeekEnd = Carbon::now()->endOfWeek();
+        $currentWeekStart = Carbon::now()->startOfWeek()->format('Y-m-d');
+        $currentWeekEnd = Carbon::now()->endOfWeek()->format('Y-m-d');
 
         $currentShifts = EmployeeActive::select('employee_id', 'shift_id', 'line_id', 'pos_id')
             ->where('active_from', '<=', $currentWeekStart)
             ->where('expired_at', '>=', $currentWeekEnd)
             ->get();
-
+            
         $newShifts = $currentShifts->map(function ($employee) {
             $nextShiftUuid = $this->getNextShiftUuid($employee->shift_id); // Implement this method to determine the next shift
 
@@ -503,11 +503,27 @@ class HenkatenController extends Controller
                 'shift_id' => $nextShiftUuid,
                 'line_id' => $employee->line_id,
                 'pos_id' => $employee->pos_id,
-                'active_from' => Carbon::now()->startOfWeek(),
-                'expired_at' => Carbon::now()->endOfWeek(),
+                'active_from' => Carbon::now()->startOfWeek()->format('Y-m-d'),
+                'expired_at' => Carbon::now()->endOfWeek()->format('Y-m-d'),
             ];
         });
 
-        EmployeeActive::insert($newShifts->toArray());
+        $newShifts = $newShifts->toArray();
+        
+        try {
+            DB::beginTransaction();
+            
+            foreach($newShifts as $newShift) {
+                EmployeeActive::create($newShift);
+            }
+
+            DB::commit();
+            return ['success'];
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return [
+                'error' => $th->getMessage(),
+            ];
+        }
     }
 }
