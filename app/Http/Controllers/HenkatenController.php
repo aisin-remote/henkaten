@@ -10,6 +10,7 @@ use App\Models\Henkaten;
 use App\Models\HenkatenMan;
 use App\Models\Troubleshoot;
 use Illuminate\Http\Request;
+use App\Models\EmployeeActive;
 use App\Models\HenkatenMethod;
 use App\Models\HenkatenMachine;
 use App\Models\HenkatenMaterial;
@@ -36,16 +37,22 @@ class HenkatenController extends Controller
             }
         }
 
-        if(!$request->status){
-            return redirect()->back()->with('error', 'Belum memilih status HENKATEN atau STOP!');
+        if (!$request->status) {
+            return redirect()
+                ->back()
+                ->with('error', 'Belum memilih status HENKATEN atau STOP!');
         }
 
-        if($request->category === '0'){
-            return redirect()->back()->with('error', 'Belum memilih kategori!');
+        if ($request->category === '0') {
+            return redirect()
+                ->back()
+                ->with('error', 'Belum memilih kategori!');
         }
 
-        if($request->henkatenManagement === '0'){
-            return redirect()->back()->with('error', 'Belum memilih tabel henkaten management!');
+        if ($request->henkatenManagement === '0') {
+            return redirect()
+                ->back()
+                ->with('error', 'Belum memilih tabel henkaten management!');
         }
 
         try {
@@ -138,24 +145,34 @@ class HenkatenController extends Controller
             'stop' => ['priority' => 2, 'overall' => 'stop'],
         ];
 
-        if(!$request->part){
-            return redirect()->back()->with('error', 'Belum mengisi kolom part!');
+        if (!$request->part) {
+            return redirect()
+                ->back()
+                ->with('error', 'Belum mengisi kolom part!');
         }
 
-        if($request->beforeTreatment === '0'){
-            return redirect()->back()->with('error', 'Belum memilih status before treatment!');
-        }
-        
-        if($request->afterTreatment === '0'){
-            return redirect()->back()->with('error', 'Belum memilih status after treatment!');
-        }
-        
-        if($request->resultCheck === '0'){
-            return redirect()->back()->with('error', 'Belum memilih status result check!');
+        if ($request->beforeTreatment === '0') {
+            return redirect()
+                ->back()
+                ->with('error', 'Belum memilih status before treatment!');
         }
 
-        if($request->doneBy === '0'){
-            return redirect()->back()->with('error', 'Belum memilih PIC penanganan!');
+        if ($request->afterTreatment === '0') {
+            return redirect()
+                ->back()
+                ->with('error', 'Belum memilih status after treatment!');
+        }
+
+        if ($request->resultCheck === '0') {
+            return redirect()
+                ->back()
+                ->with('error', 'Belum memilih status result check!');
+        }
+
+        if ($request->doneBy === '0') {
+            return redirect()
+                ->back()
+                ->with('error', 'Belum memilih PIC penanganan!');
         }
 
         $employeeAfter = $request->after;
@@ -166,7 +183,7 @@ class HenkatenController extends Controller
             if ($request->{"4M"} == 'man') {
                 // count same value of input
                 $nameCounts = array_count_values($employeeAfter);
-                
+
                 // Check for duplicates
                 $duplicates = [];
                 foreach ($nameCounts as $value => $count) {
@@ -174,10 +191,12 @@ class HenkatenController extends Controller
                         $duplicates[] = $value;
                     }
                 }
-                
+
                 // Check if there are duplicates
                 if (!empty($duplicates)) {
-                    return redirect()->back()->with('error', 'Employee cant be same!');
+                    return redirect()
+                        ->back()
+                        ->with('error', 'Employee cant be same!');
                 }
 
                 for ($i = 0; $i < count($request->after); $i++) {
@@ -268,7 +287,7 @@ class HenkatenController extends Controller
             'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
             'stop' => ['priority' => 2, 'overall' => 'stop'],
         ];
-        
+
         $currentDate = Carbon::now()->format('Y-m-d');
         $currentTime = Carbon::now()->format('H:i:s');
         $worstPriority = 0;
@@ -284,13 +303,12 @@ class HenkatenController extends Controller
 
             // search other henkaten where status henkaten
             $otherStats = Henkaten::with('shift')
-                ->where('date', 'LIKE' , $currentDate . '%')
+                ->where('date', 'LIKE', $currentDate . '%')
                 ->where('is_done', '0')
                 ->where('line_id', $request->line)
                 ->where('4M', $request->{"4M"})
                 ->whereHas('shift', function ($query) use ($currentTime) {
-                    $query->where('time_start', '<=', $currentTime)
-                        ->where('time_end', '>=', $currentTime);
+                    $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
                 })
                 ->get();
 
@@ -359,11 +377,10 @@ class HenkatenController extends Controller
     {
         // get origin id
         $empOrigin = auth()->user()->origin_id;
-        
-        $henkatenHistory = Henkaten::with('line.origin')
-                            ->whereHas('line', function ($query) use ($empOrigin){
-                                $query->where('origin_id', $empOrigin);
-                            });
+
+        $henkatenHistory = Henkaten::with('line.origin')->whereHas('line', function ($query) use ($empOrigin) {
+            $query->where('origin_id', $empOrigin);
+        });
 
         return view('pages.website.history', [
             'henkatenHistory' => $henkatenHistory->get(),
@@ -380,18 +397,14 @@ class HenkatenController extends Controller
     public function henkatenManagementStore(Request $request)
     {
         $henkatenManagement = $request->input('repeater-group');
-        
+
         // Initialize an array to store counts for each combination of fields
         $fieldCombinationCounts = [];
 
         // Loop through each entry and count occurrences of each combination of fields
         foreach ($henkatenManagement as $entry) {
-            $fieldCombination = [
-                strtoupper($entry['henkaten_item']),
-                strtoupper($entry['table_no']),
-                strtoupper($entry['4M']),
-            ];
-            
+            $fieldCombination = [strtoupper($entry['henkaten_item']), strtoupper($entry['table_no']), strtoupper($entry['4M'])];
+
             $fieldCombinationString = implode('|', $fieldCombination);
 
             if (!isset($fieldCombinationCounts[$fieldCombinationString])) {
@@ -413,18 +426,22 @@ class HenkatenController extends Controller
                 ];
             }
         }
-        
+
         // Check if there are duplicates
         if (!empty($duplicates)) {
             // Handle the case where duplicates are found
-            return redirect()->back()->with('error', 'Data tidak boleh sama!');
-        }   
+            return redirect()
+                ->back()
+                ->with('error', 'Data tidak boleh sama!');
+        }
 
-        foreach($henkatenManagement as $name){
+        foreach ($henkatenManagement as $name) {
             // error handling when theme already exists in database
             $existingTheme = HenkatenManagement::where('table_no', $name['table_no'])->first();
-            if($existingTheme){
-                return redirect()->back()->with('error', 'Henkaten management already exist!');
+            if ($existingTheme) {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Henkaten management already exist!');
             }
         }
 
@@ -441,9 +458,56 @@ class HenkatenController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Henkaten Management created successfully');
+            return redirect()
+                ->back()
+                ->with('success', 'Henkaten Management created successfully');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Henkaten Management creation failed!');
+            return redirect()
+                ->back()
+                ->with('error', 'Henkaten Management creation failed!');
         }
+    }
+
+    public function getNextShiftUuid($currentShiftUuid)
+    {
+        // Assuming Shift is your model name and it has 'name' and 'id' columns
+        $shifts = \App\Models\Shift::whereIn('name', ['Shift 1', 'Shift 2', 'Shift 3'])
+            ->get()
+            ->keyBy('name');
+
+        // Map the shift names to their IDs
+        $shiftsMap = [
+            $shifts['Shift 1']->id => $shifts['Shift 3']->id,
+            $shifts['Shift 2']->id => $shifts['Shift 1']->id,
+            $shifts['Shift 3']->id => $shifts['Shift 2']->id,
+        ];
+
+        return $shiftsMap[$currentShiftUuid] ?? null; // Return null or handle invalid UUID
+    }
+
+    public function autoUpdate()
+    {
+        $currentWeekStart = Carbon::now()->startOfWeek();
+        $currentWeekEnd = Carbon::now()->endOfWeek();
+
+        $currentShifts = EmployeeActive::select('employee_id', 'shift_id', 'line_id', 'pos_id')
+            ->where('active_from', '<=', $currentWeekStart)
+            ->where('expired_at', '>=', $currentWeekEnd)
+            ->get();
+
+        $newShifts = $currentShifts->map(function ($employee) {
+            $nextShiftUuid = $this->getNextShiftUuid($employee->shift_id); // Implement this method to determine the next shift
+
+            return [
+                'employee_id' => $employee->employee_id,
+                'shift_id' => $nextShiftUuid,
+                'line_id' => $employee->line_id,
+                'pos_id' => $employee->pos_id,
+                'active_from' => Carbon::now()->startOfWeek(),
+                'expired_at' => Carbon::now()->endOfWeek(),
+            ];
+        });
+
+        EmployeeActive::insert($newShifts->toArray());
     }
 }

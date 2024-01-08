@@ -33,6 +33,8 @@ Route::middleware(['guest'])->group(function () {
 
     Route::get('/register', [RegisterController::class, 'index'])->name('register.index');
     Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+    
+    Route::get('/auto-update', [HenkatenController::class, 'autoUpdate'])->name('auto-update');
 });
 
 Route::middleware(['auth'])->group(function () {
