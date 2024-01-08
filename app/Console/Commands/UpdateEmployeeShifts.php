@@ -40,7 +40,7 @@ class UpdateEmployeeShifts extends Command
         $this->info('Employee shifts updated successfully.');
     }
 
-    private function getNextShiftUuid($currentShiftUuid)
+    public function getNextShiftUuid($currentShiftUuid)
     {
         $shifts = \App\Models\Shift::whereIn('name', ['Shift 1', 'Shift 2', 'Shift 3'])
                                 ->get()
