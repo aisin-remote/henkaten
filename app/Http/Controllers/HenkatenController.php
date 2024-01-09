@@ -16,6 +16,7 @@ use App\Models\HenkatenMachine;
 use App\Models\HenkatenMaterial;
 use App\Models\HenkatenManagement;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class HenkatenController extends Controller
 {
@@ -269,6 +270,27 @@ class HenkatenController extends Controller
             }
 
             DB::commit();
+
+            // send whatsapp notification
+            $token = "v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1";
+            $phone = '081280613890';
+            $message = sprintf("test");
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => 'token='.$token.'&number='.$phone.'&message='.$message,
+            ));
+            
+            $response = curl_exec($curl);
+            curl_close($curl);
+            
             return redirect()
                 ->back()
                 ->with('success', 'Data berhasil disimpan!');
@@ -492,7 +514,7 @@ class HenkatenController extends Controller
             ->startOfWeek()
             ->subWeek()
             ->format('Y-m-d');
-            
+
         // Set the time to the end of that week
         $previousWeekEnd = Carbon::now()
             ->startOfWeek()
