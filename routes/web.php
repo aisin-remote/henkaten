@@ -11,6 +11,7 @@ use App\Http\Controllers\HenkatenController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OplController;
 
 /*
 |--------------------------------------------------------------------------
@@ -106,6 +107,9 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/henkatenManagement', [HenkatenController::class, 'henkatenManagementIndex'])->name('henkatenManagement.index');
     Route::post('/henkatenManagement/store', [HenkatenController::class, 'henkatenManagementStore'])->name('henkatenManagement.store');
+
+    Route::get('/opl', [OplController::class, 'index']);
+    Route::post('/submit-form', [OplController::class, 'handleFormSubmission'])->name('form.submit');
     
     Route::get('/mappingAllLine', function () {
         return view('welcome');

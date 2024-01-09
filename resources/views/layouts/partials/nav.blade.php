@@ -99,6 +99,12 @@
                                 <span class="hide-menu">Theme</span>
                             </a>
                         </li>
+                        <li class="sidebar-item">
+                            <a href="/opl" class="sidebar-link">
+                                <i class="ti ti-file-import"></i>
+                                <span class="hide-menu">OPL</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>
