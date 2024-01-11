@@ -38,10 +38,11 @@
                     <label class="mr-sm-2 form-label" for="inlineFormCustomSelect">Role</label>
                     <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="role">
                         <option selected>-- select --</option>
-                        <option value="Operator">Operator</option>
+                        <option value="OPR">Operator</option>
                         <option value="JP">JP</option>
-                        <option value="Leader">Leader</option>
+                        <option value="LDR">Leader</option>
                         <option value="SPV">SPV</option>
+                        <option value="MGR">Manager</option>
                     </select>
                 </div>
                 <div class="form-group mb-4">
