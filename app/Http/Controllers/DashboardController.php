@@ -7,6 +7,7 @@ use App\Models\Line;
 use App\Models\Pivot;
 use App\Models\Shift;
 use App\Models\Theme;
+use App\Models\Approval;
 use App\Models\Employee;
 use App\Models\Henkaten;
 use App\Models\Position;
@@ -87,11 +88,18 @@ class DashboardController extends Controller
         // get origin id
         $empOrigin = auth()->user()->origin_id;
 
+        // get user role
+        $role = auth()->user()->role;
+
         $currentDate = Carbon::now()->format('Y-m-d');
         $currentTime = Carbon::now()->format('H:i:s');
 
         // get all history
-        $histories = Henkaten::with(['troubleshoot.employee', 'henkatenManagement'])->where('line_id', $lineId->id)->get();
+        $histories = Approval::with(['henkaten.troubleshoot.employee', 'henkaten.henkatenManagement'])
+            ->whereHas('henkaten', function ($query) use ($lineId) {
+                $query->where('line_id', $lineId->id);
+            })
+            ->get();
 
         // get man power at spesific line and range of time
         $activeEmployees = EmployeeActive::with('shift')

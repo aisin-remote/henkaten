@@ -493,9 +493,9 @@
                             <th class="text-center">Troubleshoot</th>
                             <th>Status</th>
                             <th class="text-center">Action</th>
-                            @can('LDR')
-                                <th class="text-center">Approve</th>
-                            @endcan
+                            @if (auth()->user()->role !== 'JP')
+                                <th class="text-center">Approval</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody style="font-size: 15px">
@@ -507,18 +507,29 @@
                                     'stop' => 'danger',
                                     'default' => 'dark',
                                 ];
-                                $color = $statusColor[$history->status] ?? $statusColor['default'];
+                                $color = $statusColor[$history->henkaten->status] ?? $statusColor['default'];
+
+                                $userRole = auth()->user()->role;
+                                $isLeader = $userRole === 'LDR';
+                                $isSupervisor = $userRole === 'SPV';
+                                $isManager = $userRole === 'MGR';
+
+                                $ldrApproved = $history->ldr !== null;
+                                $spvApproved = $history->spv !== null;
+                                $mgrApproved = $history->mgr !== null;
+
+                                $currentStatus = $history->status ?? null;
                             @endphp
                             <tr>
                                 <td>
                                     <span class="mb-1 badge bg-{{ $color }} rounded-pill">
-                                        {{ $history->status }}
+                                        {{ $history->henkaten->status }}
                                     </span>
                                 </td>
-                                <td>{{ strtoupper($history->{"4M"}) }}</td>
-                                <td>{{ $history->abnormality }}</td>
-                                <td>{{ Carbon\Carbon::parse($history->date)->format('j F Y, H:i:s') }}</td>
-                                @if (!$history->troubleshoot)
+                                <td>{{ strtoupper($history->henkaten->{"4M"}) }}</td>
+                                <td>{{ $history->henkaten->abnormality }}</td>
+                                <td>{{ Carbon\Carbon::parse($history->henkaten->date)->format('j F Y, H:i:s') }}</td>
+                                @if (!$history->henkaten->troubleshoot)
                                     <td class="text-center">
                                         <span class="badge bg-danger">Belum ditangani</span>
                                     </td>
@@ -529,28 +540,24 @@
                                     </td>
                                     <td class="text-center">
                                         <button class="btn btn-secondary view-employee detail" data-bs-toggle="modal"
-                                            data-bs-target="" data-history-id="{{ $history['id'] }}">
+                                            data-bs-target="" data-history-id="{{ $history->henkaten->id }}">
                                             <span class="rounded-3" id="icon">
                                                 <i class="ti ti-search"></i>
                                             </span>
                                         </button>
                                         @can('JP')
                                             <button class="btn btn-warning troubleshoot"
-                                                data-history-id="{{ $history['id'] }}">
+                                                data-history-id="{{ $history->henkaten->id }}">
                                                 <span class="rounded-3" id="icon">
                                                     <i class="ti ti-edit"></i>
                                                 </span>
                                             </button>
-                                            {{-- <a href="#" class="btn btn-danger delete-employee" data-employee-id="">
-                                                <span class="rounded-3" id="icon">
-                                                    <i class="ti ti-x"></i>
-                                                </span>
-                                            </a> --}}
                                         @endcan
                                     </td>
                                     @can('LDR')
                                         <td class="text-center">
-                                            <button class="btn btn-success" data-history-id="{{ $history['id'] }}" disabled>
+                                            <button class="btn btn-success" data-history-id="{{ $history->henkaten->id }}"
+                                                disabled>
                                                 <span class="rounded-3" id="icon">
                                                     <i class="ti ti-checks"></i>
                                                 </span>
@@ -559,7 +566,8 @@
                                     @endcan
                                     @can('SPV')
                                         <td class="text-center">
-                                            <button class="btn btn-success" data-history-id="{{ $history['id'] }}" disabled>
+                                            <button class="btn btn-success" data-history-id="{{ $history->henkaten->id }}"
+                                                disabled>
                                                 <span class="rounded-3" id="icon">
                                                     <i class="ti ti-checks"></i>
                                                 </span>
@@ -568,7 +576,8 @@
                                     @endcan
                                     @can('MGR')
                                         <td class="text-center">
-                                            <button class="btn btn-success" data-history-id="{{ $history['id'] }}" disabled>
+                                            <button class="btn btn-success" data-history-id="{{ $history->henkaten->id }}"
+                                                disabled>
                                                 <span class="rounded-3" id="icon">
                                                     <i class="ti ti-checks"></i>
                                                 </span>
@@ -576,111 +585,126 @@
                                         </td>
                                     @endcan
                                 @else
-                                    <td class="text-center">{{ $history->troubleshoot->troubleshoot }}</td>
+                                    <td class="text-center">{{ $history->henkaten->troubleshoot->troubleshoot }}</td>
                                     <td>
-                                        @if ($history->is_done === '0')
-                                            <span class="mb-1 badge bg-light-warning text-warning">
-                                                Waiting Approval
-                                            </span>
+                                        @if ($history->henkaten->is_done === '0')
+                                            @if ($currentStatus === 'Leader')
+                                                <span class="mb-1 badge bg-light-warning text-warning">
+                                                    Waiting Approval SPV
+                                                </span>
+                                            @elseif($currentStatus === null)
+                                                <span class="mb-1 badge bg-light-warning text-warning">
+                                                    Waiting Approval LDR
+                                                </span>
+                                            @elseif($currentStatus === 'Supervisor')
+                                                <span class="mb-1 badge bg-light-warning text-warning">
+                                                    Waiting Approval MGR
+                                                </span>
+                                            @endif
                                         @else
                                             <span class="mb-1 badge bg-light-success text-success">
-                                                Approved by {{ $history->approver }}
+                                                Done Approval
                                             </span>
                                         @endif
                                     </td>
                                     <td class="text-center">
                                         <button class="btn btn-secondary view-employee detail" data-bs-toggle="modal"
-                                            data-bs-target="" data-history-id="{{ $history['id'] }}">
+                                            data-bs-target="" data-history-id="{{ $history->henkaten->id }}">
                                             <span class="rounded-3" id="icon">
                                                 <i class="ti ti-search"></i>
                                             </span>
                                         </button>
                                         @can('JP')
                                             <button class="btn btn-warning troubleshoot"
-                                                data-history-id="{{ $history['id'] }}" disabled>
+                                                data-history-id="{{ $history->henkaten->id }}" disabled>
                                                 <span class="rounded-3" id="icon">
                                                     <i class="ti ti-edit"></i>
                                                 </span>
                                             </button>
                                         @endcan
                                     </td>
-                                    @can('LDR')
-                                        <td class="text-center">
-                                            @if ($history->is_done === '0')
+                                    @if ($isLeader)
+                                        @if (!$ldrApproved)
+                                            <td class="text-center">
                                                 <button class="btn btn-success approve"
-                                                    data-history-id="{{ $history['id'] }}">
-                                                    <span class="rounded-3">
-                                                        <i class="ti ti-checks"></i>
-                                                    </span>
+                                                    data-history-id="{{ $history->henkaten->id }}">
+                                                    <span class="rounded-3"><i class="ti ti-checks"></i></span>
                                                 </button>
-                                            @else
+                                            </td>
+                                        @else
+                                            <td class="text-center">
                                                 <button class="btn btn-success approve"
-                                                    data-history-id="{{ $history['id'] }}" disabled>
-                                                    <span class="rounded-3">
-                                                        <i class="ti ti-checks"></i>
-                                                    </span>
+                                                    data-history-id="{{ $history->henkaten->id }}" disabled>
+                                                    <span class="rounded-3"><i class="ti ti-checks"></i></span>
                                                 </button>
-                                            @endif
-                                        </td>
-                                    @endcan
-                                    @can('SPV')
-                                        <td class="text-center">
-                                            @if ($history->is_done === '0')
+                                            </td>
+                                        @endif
+                                    @elseif ($isSupervisor)
+                                        @if (!$ldrApproved)
+                                            <td class="text-center">
                                                 <button class="btn btn-success approve"
-                                                    data-history-id="{{ $history['id'] }}">
-                                                    <span class="rounded-3">
-                                                        <i class="ti ti-checks"></i>
-                                                    </span>
+                                                    data-history-id="{{ $history->henkaten->id }}" disabled>
+                                                    <span class="rounded-3"><i class="ti ti-checks"></i></span>
                                                 </button>
-                                            @else
+                                            </td>
+                                        @elseif (!$spvApproved)
+                                            <td class="text-center">
                                                 <button class="btn btn-success approve"
-                                                    data-history-id="{{ $history['id'] }}" disabled>
-                                                    <span class="rounded-3">
-                                                        <i class="ti ti-checks"></i>
-                                                    </span>
+                                                    data-history-id="{{ $history->henkaten->id }}">
+                                                    <span class="rounded-3"><i class="ti ti-checks"></i></span>
                                                 </button>
-                                            @endif
-                                        </td>
-                                    @endcan
-                                    @can('MGR')
-                                        <td class="text-center">
-                                            @if ($history->is_done === '0')
+                                            </td>
+                                        @else
+                                            <td class="text-center">
                                                 <button class="btn btn-success approve"
-                                                    data-history-id="{{ $history['id'] }}">
-                                                    <span class="rounded-3">
-                                                        <i class="ti ti-checks"></i>
-                                                    </span>
+                                                    data-history-id="{{ $history->henkaten->id }}" disabled>
+                                                    <span class="rounded-3"><i class="ti ti-checks"></i></span>
                                                 </button>
-                                            @else
+                                            </td>
+                                        @endif
+                                    @elseif ($isManager)
+                                        @if (!$spvApproved)
+                                            <td class="text-center">
                                                 <button class="btn btn-success approve"
-                                                    data-history-id="{{ $history['id'] }}" disabled>
-                                                    <span class="rounded-3">
-                                                        <i class="ti ti-checks"></i>
-                                                    </span>
+                                                    data-history-id="{{ $history->henkaten->id }}" disabled>
+                                                    <span class="rounded-3"><i class="ti ti-checks"></i></span>
                                                 </button>
-                                            @endif
-                                        </td>
-                                    @endcan
+                                            </td>
+                                        @elseif (!$mgrApproved)
+                                            <td class="text-center">
+                                                <button class="btn btn-success approve"
+                                                    data-history-id="{{ $history->henkaten->id }}">
+                                                    <span class="rounded-3"><i class="ti ti-checks"></i></span>
+                                                </button>
+                                            </td>
+                                        @else
+                                            <td class="text-center">
+                                                <button class="btn btn-success approve"
+                                                    data-history-id="{{ $history->henkaten->id }}" disabled>
+                                                    <span class="rounded-3"><i class="ti ti-checks"></i></span>
+                                                </button>
+                                            </td>
+                                        @endif
+                                    @endif
                                 @endif
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-
         </div>
     </div>
 
     {{-- modal troubleshoot --}}
     @foreach ($histories as $history)
         @php
-            // Generate unique IDs based on $history['id']
-            $accordionId = 'accordion-' . $history['id'];
-            $collapseOneId = 'collapseOne-' . $history['id'];
-            $collapseTwoId = 'collapseTwo-' . $history['id'];
-            $collapseThreeId = 'collapseThree-' . $history['id'];
+            // Generate unique IDs based on $history->henkaten->id
+            $accordionId = 'accordion-' . $history->henkaten->id;
+            $collapseOneId = 'collapseOne-' . $history->henkaten->id;
+            $collapseTwoId = 'collapseTwo-' . $history->henkaten->id;
+            $collapseThreeId = 'collapseThree-' . $history->henkaten->id;
         @endphp
-        <div class="modal fade modal-lg troubleshootModal" id="{{ $history['id'] }}Troubleshoot" tabindex="-1"
+        <div class="modal fade modal-lg troubleshootModal" id="{{ $history->henkaten->id }}Troubleshoot" tabindex="-1"
             aria-labelledby="bs-example-modal-xl" style="display: none;" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -696,10 +720,10 @@
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col-12 mb-1">
-                                    <input type="hidden" name="henkaten_id" value="{{ $history->id }}">
-                                    <input type="hidden" name="4M" value="{{ $history->{"4M"} }}">
-                                    <input type="hidden" name="status" value="{{ $history->status }}">
-                                    <input type="hidden" name="line" value="{{ $history->line_id }}">
+                                    <input type="hidden" name="henkaten_id" value="{{ $history->henkaten->id }}">
+                                    <input type="hidden" name="4M" value="{{ $history->henkaten->{"4M"} }}">
+                                    <input type="hidden" name="status" value="{{ $history->henkaten->status }}">
+                                    <input type="hidden" name="line" value="{{ $history->henkaten->line_id }}">
                                     <div class="form-group mt-3 mb-3 description" style="display: none;">
                                         <label class="form-label fw-semibold">Troubleshoot</label>
                                         <input class="form-control" rows="3" placeholder="Troubleshoot..."
@@ -757,7 +781,7 @@
                                                                     class="select2 form-control select2-hidden-accessible beforeTreatment"
                                                                     style="width: 100%; height: 36px" tabindex="-1"
                                                                     aria-hidden="true"
-                                                                    id="{{ $history['id'] }}BeforeTreatment"
+                                                                    id="{{ $history->henkaten->id }}BeforeTreatment"
                                                                     name="beforeTreatment" required>
                                                                     <option value="0">-- Select --</option>
                                                                     <option value="ok">OK</option>
@@ -773,7 +797,7 @@
                                                                     class="select2 form-control select2-hidden-accessible"
                                                                     style="width: 100%; height: 36px" tabindex="-1"
                                                                     aria-hidden="true"
-                                                                    id="{{ $history['id'] }}AfterTreatment"
+                                                                    id="{{ $history->henkaten->id }}AfterTreatment"
                                                                     name="afterTreatment" required>
                                                                     <option value="0">-- Select --</option>
                                                                     <option value="ok">OK</option>
@@ -810,7 +834,7 @@
                                                                     class="select2 form-control select2-hidden-accessible"
                                                                     style="width: 100%; height: 36px" tabindex="-1"
                                                                     aria-hidden="true"
-                                                                    id="{{ $history['id'] }}ResultCheck"
+                                                                    id="{{ $history->henkaten->id }}ResultCheck"
                                                                     name="resultCheck" required>
                                                                     <option value="0">-- Select --</option>
                                                                     <option value="ok">OK</option>
@@ -825,7 +849,7 @@
                                     </div>
                                     <div class="col-12">
                                         <div class="accordion-item mb-3 border rounded-top rounded-bottom">
-                                            @if ($history->{"4M"} === 'man')
+                                            @if ($history->henkaten->{"4M"} === 'man')
                                                 <h2 class="accordion-header" id="flush-headingOne">
                                                     <button
                                                         class="accordion-button fs-4 fw-bolder px-3 py-6 lh-base border-0 rounded-top collapsed"
@@ -904,7 +928,7 @@
                                     <div class="col-12 mt-4">
                                         <label class="form-label fw-semibold">Done By</label>
                                         <select class="select2 form-control" style="width: 100%; height: 36px"
-                                            tabindex="-1" aria-hidden="true" id="{{ $history['id'] }}DoneBy"
+                                            tabindex="-1" aria-hidden="true" id="{{ $history->henkaten->id }}DoneBy"
                                             name="doneBy" required>
                                             <option value="0">-- Select Employee--</option>
                                             @foreach ($employees as $employee)
@@ -935,7 +959,7 @@
 
     {{-- modal approve --}}
     @foreach ($histories as $history)
-        <div class="modal fade modal-md" id="{{ $history['id'] }}Approve" tabindex="-1"
+        <div class="modal fade modal-md" id="{{ $history->henkaten->id }}Approve" tabindex="-1"
             aria-labelledby="bs-example-modal-xl" style="display: none;" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -949,10 +973,10 @@
                         @csrf
                         @method('POST')
                         <div class="modal-body">
-                            <input type="hidden" name="henkaten_id" value="{{ $history->id }}">
-                            <input type="hidden" name="line" value="{{ $history->line_id }}">
-                            <input type="hidden" name="4M" value="{{ $history->{"4M"} }}">
-                            <input type="hidden" name="status" value="{{ $history->status }}">
+                            <input type="hidden" name="henkaten_id" value="{{ $history->henkaten->id }}">
+                            <input type="hidden" name="line" value="{{ $history->henkaten->line_id }}">
+                            <input type="hidden" name="4M" value="{{ $history->henkaten->{"4M"} }}">
+                            <input type="hidden" name="status" value="{{ $history->henkaten->status }}">
                             Do you really want to approve?
                         </div>
                         <div class="modal-footer">
@@ -973,7 +997,7 @@
     {{-- modal detail --}}
     @foreach ($histories as $history)
         @php
-            if ($history->status === 'henkaten') {
+            if ($history->henkaten->status === 'henkaten') {
                 $color = 'warning';
                 $shape = 'henkaten.svg';
             } else {
@@ -981,7 +1005,7 @@
                 $shape = 'stop.svg';
             }
         @endphp
-        <div class="modal fade modal-md" id="{{ $history['id'] }}Detail" tabindex="-1"
+        <div class="modal fade modal-md" id="{{ $history->henkaten->id }}Detail" tabindex="-1"
             aria-labelledby="bs-example-modal-xl" style="display: none;" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -997,7 +1021,7 @@
                             <div class="card bg-{{ $color }}">
                                 <div class="card-body text-center text-white">
                                     <div class="pt-2">
-                                        <h4 class="fw-bolder text-white">{{ strtoupper($history->status) }}
+                                        <h4 class="fw-bolder text-white">{{ strtoupper($history->henkaten->status) }}
                                         </h4>
                                     </div>
                                 </div>
@@ -1009,61 +1033,64 @@
                             <ul class="nav nav-pills nav-fill mt-4" role="tablist">
                                 <li class="nav-item" role="presentation">
                                     <a class="nav-link active" data-bs-toggle="tab"
-                                        href="#{{ $history['id'] }}Abnormal" role="tab" aria-selected="true">
+                                        href="#{{ $history->henkaten->id }}Abnormal" role="tab"
+                                        aria-selected="true">
                                         <span>Abnormality</span>
                                     </a>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#{{ $history['id'] }}Trouble"
-                                        role="tab" aria-selected="true" tabindex="-1">
+                                    <a class="nav-link" data-bs-toggle="tab"
+                                        href="#{{ $history->henkaten->id }}Trouble" role="tab" aria-selected="true"
+                                        tabindex="-1">
                                         <span>Troubleshoot</span>
                                     </a>
                                 </li>
                             </ul>
                             <!-- Tab panes -->
                             <div class="tab-content border mt-2">
-                                <div class="tab-pane p-3 active" id="{{ $history['id'] }}Abnormal" role="tabpanel">
+                                <div class="tab-pane p-3 active" id="{{ $history->henkaten->id }}Abnormal"
+                                    role="tabpanel">
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="form-floating mb-3">
                                                 <input type="text" class="form-control fw-bolder" id="tb-fname"
                                                     placeholder="Enter Name here"
-                                                    value="{{ strtoupper($history['4M']) }}" disabled>
+                                                    value="{{ strtoupper($history->henkaten->{'4M'}) }}" disabled>
                                                 <label for="tb-fname">4M</label>
                                             </div>
                                             <div class="form-floating mb-3">
                                                 <input type="text" class="form-control fw-bolder" id="tb-fname"
                                                     placeholder="Enter Name here"
-                                                    value="{{ strtoupper($history['category']) }}" disabled>
+                                                    value="{{ strtoupper($history->henkaten->category) }}" disabled>
                                                 <label for="tb-fname">Category</label>
                                             </div>
                                             <div class="form-floating mb-3">
                                                 <input type="text" class="form-control fw-bolder" id="tb-fname"
                                                     placeholder="Enter Name here"
-                                                    value="{{ $history->henkatenManagement->henkaten_item }} [Table no: {{ $history->henkatenManagement->table_no }}]"
+                                                    value="{{ $history->henkaten->henkatenManagement->henkaten_item }} [Table no: {{ $history->henkaten->henkatenManagement->table_no }}]"
                                                     disabled>
                                                 <label for="tb-fname">Hankaten Table No.</label>
                                             </div>
                                             <div class="form-floating mb-3">
                                                 <input type="text" class="form-control fw-bolder" id="tb-fname"
                                                     placeholder="Enter Name here"
-                                                    value="{{ strtoupper($history['abnormality']) }}" disabled>
+                                                    value="{{ strtoupper($history->henkaten->abnormality) }}" disabled>
                                                 <label for="tb-fname">Abnormality Content</label>
                                             </div>
                                             <div class="form-floating mb-3">
                                                 <input type="text" class="form-control fw-bolder" id="tb-fname"
                                                     placeholder="Enter Name here"
-                                                    value="{{ Carbon\Carbon::parse($history['date'])->format('j F Y,  H:i:s') }}"
+                                                    value="{{ Carbon\Carbon::parse($history->henkaten->date)->format('j F Y,  H:i:s') }}"
                                                     disabled>
                                                 <label for="tb-fname">Time</label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="tab-pane p-3" id="{{ $history['id'] }}Trouble" role="tabpanel">
+                                <div class="tab-pane p-3" id="{{ $history->henkaten->id }}Trouble" role="tabpanel">
                                     <div class="row">
                                         <div class="col-12 text-center">
-                                            @if ($history->troubleshoot === null)
+                                            @if ($history->henkaten->troubleshoot === null)
                                                 <span class="badge bg-danger">
                                                     Belum dilakukan penanganan
                                                 </span>
@@ -1071,28 +1098,29 @@
                                                 <div class="form-floating mb-3">
                                                     <input type="text" class="form-control fw-bolder" id="tb-fname"
                                                         placeholder="Enter Name here"
-                                                        value="{{ strtoupper($history->troubleshoot->troubleshoot) }}"
+                                                        value="{{ strtoupper($history->henkaten->troubleshoot->troubleshoot) }}"
                                                         disabled>
                                                     <label for="tb-fname">Troubleshoot</label>
                                                 </div>
                                                 <div class="form-floating mb-3">
                                                     <input type="text" class="form-control fw-bolder" id="tb-fname"
                                                         placeholder="Enter Name here"
-                                                        value="{{ strtoupper($history->troubleshoot->result_check) }}"
+                                                        value="{{ strtoupper($history->henkaten->troubleshoot->result_check) }}"
                                                         disabled>
                                                     <label for="tb-fname">Result Check</label>
                                                 </div>
                                                 <div class="form-floating mb-3">
                                                     <input type="text" class="form-control fw-bolder" id="tb-fname"
                                                         placeholder="Enter Name here"
-                                                        value="{{ strtoupper($history->troubleshoot->inspection_report) }}"
+                                                        value="{{ strtoupper($history->henkaten->troubleshoot->inspection_report) }}"
                                                         disabled>
                                                     <label for="tb-fname">Inspection Report</label>
                                                 </div>
                                                 <div class="form-floating mb-3">
                                                     <input type="text" class="form-control fw-bolder" id="tb-fname"
                                                         placeholder="Enter Name here"
-                                                        value="{{ strtoupper($history->troubleshoot->part) }}" disabled>
+                                                        value="{{ strtoupper($history->henkaten->troubleshoot->part) }}"
+                                                        disabled>
                                                     <label for="tb-fname">Part</label>
                                                 </div>
                                                 <div class="row">
@@ -1100,7 +1128,7 @@
                                                         <div class="form-floating mb-3">
                                                             <input type="text" class="form-control fw-bolder"
                                                                 id="tb-fname" placeholder="Enter Name here"
-                                                                value="{{ strtoupper($history->troubleshoot->before_treatment) }}"
+                                                                value="{{ strtoupper($history->henkaten->troubleshoot->before_treatment) }}"
                                                                 disabled>
                                                             <label for="tb-fname">Before Treatment</label>
                                                         </div>
@@ -1109,7 +1137,7 @@
                                                         <div class="form-floating mb-3">
                                                             <input type="text" class="form-control fw-bolder"
                                                                 id="tb-fname" placeholder="Enter Name here"
-                                                                value="{{ strtoupper($history->troubleshoot->after_treatment) }}"
+                                                                value="{{ strtoupper($history->henkaten->troubleshoot->after_treatment) }}"
                                                                 disabled>
                                                             <label for="tb-fname">After Treatment</label>
                                                         </div>
@@ -1118,7 +1146,7 @@
                                                 <div class="form-floating mb-3">
                                                     <input type="text" class="form-control fw-bolder" id="tb-fname"
                                                         placeholder="Enter Name here"
-                                                        value="{{ strtoupper($history->troubleshoot->employee->name) }}"
+                                                        value="{{ strtoupper($history->henkaten->troubleshoot->employee->name) }}"
                                                         disabled>
                                                     <label for="tb-fname">Done By</label>
                                                 </div>

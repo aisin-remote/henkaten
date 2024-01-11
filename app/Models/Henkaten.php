@@ -39,4 +39,9 @@ class Henkaten extends Model
     {
         return $this->belongsTo(HenkatenManagement::class);
     }
+
+    public function approval()
+    {
+        return $this->hasOne(Approval::class);
+    }
 }

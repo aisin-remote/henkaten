@@ -64,7 +64,7 @@
                             <th class="text-center">Safety</th>
                             <th colspan="4" class="text-center">Quality Inspection</th>
                             <th rowspan="2" class="align-middle">Done by</th>
-                            <th rowspan="2" class="align-middle text-center">Approval</th>
+                            <th colspan="3" class="align-middle text-center">Approval</th>
                         </tr>
                         <tr>
                             <th>Result Check</th>
@@ -72,6 +72,9 @@
                             <th>Part</th>
                             <th>Before</th>
                             <th>After</th>
+                            <th class="text-center">Leader</th>
+                            <th class="text-center">Supervisor</th>
+                            <th class="text-center">Manager</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -119,9 +122,17 @@
                                     </td>
                                     <td class="text-center">{{ $henkaten->troubleshoot->employee->name }}</td>
                                     <td class="text-center">
-                                        {{ $henkaten->approver !== null ? 'approved by ' . $henkaten->approver : 'Waiting...' }}
+                                        {{ $henkaten->approval->ldr !== null ? 'Approved by ' . $henkaten->approval->ldr : 'Waiting...' }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $henkaten->approval->spv !== null ? 'Approved by ' . $henkaten->approval->spv : 'Waiting...' }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $henkaten->approval->mgr !== null ? 'Approved by ' . $henkaten->approval->mgr : 'Waiting...' }}
                                     </td>
                                 @else
+                                    <td class="text-center text-danger">N/A</td>
+                                    <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">N/A</td>
