@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Line;
 use App\Models\User;
+use App\Models\Pivot;
 use App\Models\Shift;
 use App\Models\Approval;
 use App\Models\Employee;
@@ -24,9 +25,28 @@ class HenkatenController extends Controller
 {
     public function storeHenkaten(Request $request)
     {
+        // get origin id
+        $empOrigin = auth()->user()->origin_id;
+        
         $currentTime = Carbon::now();
         $shifts = Shift::all();
         $shiftId = null;
+
+        // get name 
+        $line = Line::select('name')->where('id', $request->line)->first();
+        
+        // get pic
+        $current_date = Carbon::now()->toDateString();
+        $pivot = Pivot::with('firstPic')
+            ->where('active_date', $current_date)
+            ->where('origin_id', $empOrigin)
+            ->first();
+            
+        if(!$pivot){
+            $pivot = 'unknown';
+        }else{
+            $pivot = $pivot->firstPic->name;
+        }
 
         $statusMappings = [
             'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
@@ -112,8 +132,8 @@ class HenkatenController extends Controller
                     }
                 }
             }
-            
-            $henkaten =  Henkaten::create([
+
+            $henkaten = Henkaten::create([
                 '4M' => $request->type,
                 'status' => $request->status,
                 'shift_id' => $shiftId,
@@ -127,7 +147,7 @@ class HenkatenController extends Controller
 
             // create approval
             Approval::create([
-                'henkaten_id' => $henkaten->id
+                'henkaten_id' => $henkaten->id,
             ]);
 
             DB::commit();
@@ -152,11 +172,16 @@ class HenkatenController extends Controller
         $empOrigin = auth()->user()->origin_id;
 
         // get phone number
-        $empPhone = User::select('phone_number')->where('origin_id', $empOrigin)->where('role', 'LDR')->get();
+        $empPhone = User::select('phone_number')
+            ->where('origin_id', $empOrigin)
+            ->where('role', 'LDR')
+            ->get();
 
         // get all henkaten info
-        $henkatenInfo = Henkaten::with(['shift', 'line', 'henkatenManagement'])->where('id', $request->henkaten_id)->get();
-        
+        $henkatenInfo = Henkaten::with(['shift', 'line', 'henkatenManagement'])
+            ->where('id', $request->henkaten_id)
+            ->get();
+
         $statusMappings = [
             'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
             'stop' => ['priority' => 2, 'overall' => 'stop'],
@@ -294,12 +319,12 @@ class HenkatenController extends Controller
             $time = Carbon::parse($henkatenInfo->date)->format('l, j F Y');
 
             // send whatsapp notification
-            foreach ($empPhone as $empPhone){
-                $token = "v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1";
+            foreach ($empPhone as $empPhone) {
+                $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
                 $phone = $empPhone->phone_number;
                 $message = sprintf("```---- ``` *HENKATEN ALERT* ``` ----%cLINE          : $lineName %cLINE STATUS       : $request->status %c4M     : $request->{'4M'} %cSHIFT   : $shiftName %cABNORMALITY : $abnormality %cTIME      :  $time %c-------------------------``` *TROUBLESHOOTS* ``` %cTROUBLESHOOT          : $troubleshoot", 10, 10, 10, 10, 10, 10, 10, 10);
                 $curl = curl_init();
-                curl_setopt_array($curl, array(
+                curl_setopt_array($curl, [
                     CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => '',
@@ -308,13 +333,13 @@ class HenkatenController extends Controller
                     CURLOPT_FOLLOWLOCATION => true,
                     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                     CURLOPT_CUSTOMREQUEST => 'POST',
-                    CURLOPT_POSTFIELDS => 'token='.$token.'&number='.$phone.'&message='.$message,
-                ));
-                
+                    CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
+                ]);
+
                 $response = curl_exec($curl);
                 curl_close($curl);
             }
-            
+
             return redirect()
                 ->back()
                 ->with('success', 'Data berhasil disimpan!');
@@ -341,24 +366,21 @@ class HenkatenController extends Controller
             DB::beginTransaction();
 
             // make the approval sequential
-            if(auth()->user()->role === 'LDR'){
-                Approval::where('henkaten_id', $request->henkaten_id)
-                        ->update([
-                            'ldr' => auth()->user()->name,
-                            'status' => 'Leader'
-                        ]);
-            }else if(auth()->user()->role === 'SPV'){
-                Approval::where('henkaten_id', $request->henkaten_id)
-                        ->update([
-                            'spv' => auth()->user()->name,
-                            'status' => 'Supervisor'
-                        ]);
-            }else{
-                Approval::where('henkaten_id', $request->henkaten_id)
-                        ->update([
-                            'mgr' => auth()->user()->name,
-                            'status' => 'Manager'
-                        ]);
+            if (auth()->user()->role === 'LDR') {
+                Approval::where('henkaten_id', $request->henkaten_id)->update([
+                    'ldr' => auth()->user()->name,
+                    'status' => 'Leader',
+                ]);
+            } elseif (auth()->user()->role === 'SPV') {
+                Approval::where('henkaten_id', $request->henkaten_id)->update([
+                    'spv' => auth()->user()->name,
+                    'status' => 'Supervisor',
+                ]);
+            } else {
+                Approval::where('henkaten_id', $request->henkaten_id)->update([
+                    'mgr' => auth()->user()->name,
+                    'status' => 'Manager',
+                ]);
 
                 // change approver and is_done status
                 Henkaten::where('id', $request->henkaten_id)->update([
@@ -443,7 +465,7 @@ class HenkatenController extends Controller
         // get origin id
         $empOrigin = auth()->user()->origin_id;
 
-        $henkatenHistory = Henkaten::with(['line.origin','approval'])->whereHas('line', function ($query) use ($empOrigin) {
+        $henkatenHistory = Henkaten::with(['line.origin', 'approval'])->whereHas('line', function ($query) use ($empOrigin) {
             $query->where('origin_id', $empOrigin);
         });
 

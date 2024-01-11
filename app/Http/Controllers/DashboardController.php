@@ -47,15 +47,21 @@ class DashboardController extends Controller
                 $query->where('origin_id', $empOrigin);
             })
             ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)
-                    ->where('time_end', '>=', $currentTime);
+                $query->where(function ($q) use ($currentTime) {
+                    // Time condition for non 'stop' status or 'stop' status but 'is_done' is 1
+                    $q->where('time_start', '<=', $currentTime)
+                        ->where('time_end', '>=', $currentTime)
+                        ->orWhere(function ($q) {
+                            // Include 'stop' status with 'is_done' is 0 regardless of time
+                            $q->where('status', 'stop')->where('is_done', '0');
+                        });
+                });
             })
             ->where('date', 'LIKE', $current_date . '%')
             ->where(function ($query) {
-                $query->where('status', 'henkaten')
-                    ->orWhere(function ($query) {
-                        $query->where('status', 'stop')->where('is_done', '0');
-                    });
+                $query->where('status', 'henkaten')->orWhere(function ($query) {
+                    $query->where('status', 'stop')->where('is_done', '0');
+                });
             })
             ->get();
 
@@ -68,7 +74,7 @@ class DashboardController extends Controller
                 ->whereIn('role', ['Leader', 'JP'])
                 ->get(),
             'lines' => Line::where('origin_id', $empOrigin)->get(),
-            'histories' => $activeProblems
+            'histories' => $activeProblems,
         ]);
     }
 
@@ -109,8 +115,7 @@ class DashboardController extends Controller
             ->where('expired_at', '>=', $currentDate)
             ->where('line_id', $lineId->id)
             ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)
-                    ->where('time_end', '>=', $currentTime);
+                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
             })
             ->get();
 
@@ -121,19 +126,18 @@ class DashboardController extends Controller
             ->where('expired_at', '>=', $currentDate)
             ->where('line_id', $lineId->id)
             ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)
-                    ->where('time_end', '>=', $currentTime);
+                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
             })
             ->first();
 
         // get man henkaten
         $manHenkaten = Troubleshoot::with(['henkaten.shift', 'manAfter', 'manBefore'])
             ->whereHas('henkaten', function ($query) use ($lineId, $currentDate, $currentTime) {
-                $query->where('date', 'LIKE', $currentDate . '%')
+                $query
+                    ->where('date', 'LIKE', $currentDate . '%')
                     ->where('line_id', $lineId->id)
                     ->whereHas('shift', function ($subQuery) use ($currentTime) {
-                        $subQuery->where('time_start', '<=', $currentTime)
-                            ->where('time_end', '>=', $currentTime);
+                        $subQuery->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
                     });
             })
             ->get();
@@ -141,7 +145,9 @@ class DashboardController extends Controller
         return view('pages.website.line', [
             'line' => Line::findOrFail($lineId->id),
             'lineMap' => Line::where('id', $lineId->id)->first(),
-            'employees' => Employee::doesntHave('employeeActive')->where('origin_id', $empOrigin)->get(),
+            'employees' => Employee::doesntHave('employeeActive')
+                ->where('origin_id', $empOrigin)
+                ->get(),
             'activeEmployees' => $activeEmployees,
             'activePic' => $activePic,
             'histories' => $histories,
@@ -170,7 +176,9 @@ class DashboardController extends Controller
         $currentTime = Carbon::now()->format('H:i:s');
 
         // get all history
-        $histories = Henkaten::with(['troubleshoot.employee', 'henkatenManagement'])->where('line_id', $lineId->id)->get();
+        $histories = Henkaten::with(['troubleshoot.employee', 'henkatenManagement'])
+            ->where('line_id', $lineId->id)
+            ->get();
 
         // get man power at spesific line and range of time
         $activeEmployees = EmployeeActive::with('shift')
@@ -180,8 +188,7 @@ class DashboardController extends Controller
             ->where('expired_at', '>=', $currentDate)
             ->where('line_id', $lineId->id)
             ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)
-                    ->where('time_end', '>=', $currentTime);
+                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
             })
             ->get();
 
@@ -192,19 +199,18 @@ class DashboardController extends Controller
             ->where('expired_at', '>=', $currentDate)
             ->where('line_id', $lineId->id)
             ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)
-                    ->where('time_end', '>=', $currentTime);
+                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
             })
             ->first();
 
         // get man henkaten
         $manHenkaten = Troubleshoot::with(['henkaten.shift', 'manAfter', 'manBefore'])
             ->whereHas('henkaten', function ($query) use ($lineId, $currentDate, $currentTime) {
-                $query->where('date', 'LIKE', $currentDate . '%')
+                $query
+                    ->where('date', 'LIKE', $currentDate . '%')
                     ->where('line_id', $lineId->id)
                     ->whereHas('shift', function ($subQuery) use ($currentTime) {
-                        $subQuery->where('time_start', '<=', $currentTime)
-                            ->where('time_end', '>=', $currentTime);
+                        $subQuery->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
                     });
             })
             ->get();
@@ -212,7 +218,9 @@ class DashboardController extends Controller
         return view('pages.website.line', [
             'line' => Line::findOrFail($lineId->id),
             'lineMap' => Line::where('id', $lineId->id)->first(),
-            'employees' => Employee::doesntHave('employeeActive')->where('origin_id', $empOrigin)->get(),
+            'employees' => Employee::doesntHave('employeeActive')
+                ->where('origin_id', $empOrigin)
+                ->get(),
             'activeEmployees' => $activeEmployees,
             'activePic' => $activePic,
             'histories' => $histories,
@@ -227,32 +235,37 @@ class DashboardController extends Controller
         $empOrigin = auth()->user()->origin_id;
 
         // get theme name
-        $parts = explode("/", $request->path());
-        $customTheme = explode("-", $parts[2]);
+        $parts = explode('/', $request->path());
+        $customTheme = explode('-', $parts[2]);
 
-        $theme_name = Theme::select('name')->where('id', $parts[2])->first();
+        $theme_name = Theme::select('name')
+            ->where('id', $parts[2])
+            ->first();
 
         // get current pivot
         $current_date = Carbon::now()->toDateString();
         $pivot = Pivot::where('active_date', $current_date)->first();
         if (!$pivot) {
-            if (($theme_name == null)) {
+            if ($theme_name == null) {
                 try {
                     DB::beginTransaction();
                     // insert new data if pivot table is empty
                     Pivot::create([
                         'origin_id' => $empOrigin,
                         'custom_theme' => urldecode($customTheme[0]),
-                        'active_date' => $current_date
+                        'active_date' => $current_date,
                     ]);
 
                     DB::commit();
                 } catch (\Throwable $th) {
                     DB::rollBack();
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => $th
-                    ], 500);
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'message' => $th,
+                        ],
+                        500,
+                    );
                 }
             } else {
                 try {
@@ -262,36 +275,42 @@ class DashboardController extends Controller
                     Pivot::create([
                         'origin_id' => $empOrigin,
                         'theme_id' => $parts[2],
-                        'active_date' => $current_date
+                        'active_date' => $current_date,
                     ]);
 
                     DB::commit();
                 } catch (\Throwable $th) {
                     DB::rollBack();
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => $th
-                    ], 500);
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'message' => $th,
+                        ],
+                        500,
+                    );
                 }
             }
         } else {
-            if (($theme_name == null)) {
+            if ($theme_name == null) {
                 try {
                     DB::beginTransaction();
 
                     // insert new data if pivot table is empty
                     $pivot->update([
                         'custom_theme' => urldecode($customTheme[0]),
-                        'theme_id' => null
+                        'theme_id' => null,
                     ]);
 
                     DB::commit();
                 } catch (\Throwable $th) {
                     DB::rollBack();
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => $th
-                    ], 500);
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'message' => $th,
+                        ],
+                        500,
+                    );
                 }
             } else {
                 try {
@@ -300,21 +319,26 @@ class DashboardController extends Controller
                     // insert new data if pivot table is empty
                     $pivot->update([
                         'custom_theme' => null,
-                        'theme_id' => $parts[2]
+                        'theme_id' => $parts[2],
                     ]);
 
                     DB::commit();
                 } catch (\Throwable $th) {
                     DB::rollBack();
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => $th
-                    ], 500);
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'message' => $th,
+                        ],
+                        500,
+                    );
                 }
             }
         }
 
-        $custom_theme = Pivot::select('custom_theme')->where('custom_theme', urldecode($customTheme[0]))->first();
+        $custom_theme = Pivot::select('custom_theme')
+            ->where('custom_theme', urldecode($customTheme[0]))
+            ->first();
 
         $theme_name_final = '';
         if (isset($custom_theme)) {
@@ -325,12 +349,15 @@ class DashboardController extends Controller
         }
 
         // Mengembalikan respons JSON tanpa if-else
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Tema berhasil ditambahkan!',
-            'theme_id' => $parts[2],
-            'theme_name' => $theme_name_final,
-        ], 200);
+        return response()->json(
+            [
+                'status' => 'success',
+                'message' => 'Tema berhasil ditambahkan!',
+                'theme_id' => $parts[2],
+                'theme_name' => $theme_name_final,
+            ],
+            200,
+        );
     }
 
     public function selectFirstPic($id)
@@ -342,13 +369,12 @@ class DashboardController extends Controller
         if ($pic == 0) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Pilih karyawan yang tersedia!'
+                'message' => 'Pilih karyawan yang tersedia!',
             ]);
         }
 
         $existingPics = Pivot::where(function ($query) use ($pic) {
-            $query->where('first_pic_id', $pic)
-                ->orWhere('second_pic_id', $pic);
+            $query->where('first_pic_id', $pic)->orWhere('second_pic_id', $pic);
         })
             ->whereDate('active_date', '=', now()->toDateString()) // Menggunakan toDateString() untuk mendapatkan tanggal saja
             ->first();
@@ -356,7 +382,7 @@ class DashboardController extends Controller
         if ($existingPics) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Karyawan ini sudah menjadi PIC 1 atau PIC 2.'
+                'message' => 'Karyawan ini sudah menjadi PIC 1 atau PIC 2.',
             ]);
         }
 
@@ -366,10 +392,13 @@ class DashboardController extends Controller
 
         $employee = Employee::where('id', $pic)->first();
         if (!$employee) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'karyawan tidak terdaftar!'
-            ], 404);
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => 'karyawan tidak terdaftar!',
+                ],
+                404,
+            );
         }
 
         if (!$pivot) {
@@ -380,7 +409,7 @@ class DashboardController extends Controller
                 Pivot::create([
                     'origin_id' => $empOrigin,
                     'first_pic_id' => $pic,
-                    'active_date' => $current_date
+                    'active_date' => $current_date,
                 ]);
 
                 DB::commit();
@@ -389,37 +418,46 @@ class DashboardController extends Controller
                 session(['selected_pic1' => $pic]);
             } catch (\Throwable $th) {
                 DB::rollBack();
-                return response()->json([
-                    'status' => 'error',
-                    'message' => $th
-                ], 500);
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'message' => $th,
+                    ],
+                    500,
+                );
             }
         } else {
             try {
                 DB::beginTransaction();
 
                 $pivot->update([
-                    'first_pic_id' => $pic
+                    'first_pic_id' => $pic,
                 ]);
 
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();
-                return response()->json([
-                    'status' => 'error',
-                    'message' => $th
-                ], 500);
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'message' => $th,
+                    ],
+                    500,
+                );
             }
         }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'PIC berhasil ditambahkan!',
-            'name' => $employee->name,
-            'photo' => $employee->photo,
-            'role' => $employee->role,
-            'npk' => $employee->npk
-        ], 200);
+        return response()->json(
+            [
+                'status' => 'success',
+                'message' => 'PIC berhasil ditambahkan!',
+                'name' => $employee->name,
+                'photo' => $employee->photo,
+                'role' => $employee->role,
+                'npk' => $employee->npk,
+            ],
+            200,
+        );
     }
 
     public function selectSecondPic($id)
@@ -431,13 +469,12 @@ class DashboardController extends Controller
         if ($pic == 0) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Pilih karyawan yang tersedia!'
+                'message' => 'Pilih karyawan yang tersedia!',
             ]);
         }
 
         $existingPics = Pivot::where(function ($query) use ($pic) {
-            $query->where('first_pic_id', $pic)
-                ->orWhere('second_pic_id', $pic);
+            $query->where('first_pic_id', $pic)->orWhere('second_pic_id', $pic);
         })
             ->whereDate('active_date', '=', now()->toDateString()) // Menggunakan toDateString() untuk mendapatkan tanggal saja
             ->first();
@@ -445,7 +482,7 @@ class DashboardController extends Controller
         if ($existingPics) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Karyawan ini sudah menjadi PIC 1 atau PIC 2.'
+                'message' => 'Karyawan ini sudah menjadi PIC 1 atau PIC 2.',
             ]);
         }
 
@@ -455,10 +492,13 @@ class DashboardController extends Controller
 
         $employee = Employee::where('id', $pic)->first();
         if (!$employee) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'karyawan tidak terdaftar!'
-            ], 404);
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => 'karyawan tidak terdaftar!',
+                ],
+                404,
+            );
         }
 
         if (!$pivot) {
@@ -469,7 +509,7 @@ class DashboardController extends Controller
                 Pivot::create([
                     'origin_id' => $empOrigin,
                     'second_pic_id' => $pic,
-                    'active_date' => $current_date
+                    'active_date' => $current_date,
                 ]);
 
                 DB::commit();
@@ -478,36 +518,45 @@ class DashboardController extends Controller
                 session(['selected_pic2' => $pic]);
             } catch (\Throwable $th) {
                 DB::rollBack();
-                return response()->json([
-                    'status' => 'error',
-                    'message' => $th
-                ], 500);
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'message' => $th,
+                    ],
+                    500,
+                );
             }
         } else {
             try {
                 DB::beginTransaction();
 
                 $pivot->update([
-                    'second_pic_id' => $pic
+                    'second_pic_id' => $pic,
                 ]);
 
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();
-                return response()->json([
-                    'status' => 'error',
-                    'message' => $th
-                ], 500);
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'message' => $th,
+                    ],
+                    500,
+                );
             }
         }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'PIC berhasil ditambahkan!',
-            'name' => $employee->name,
-            'photo' => $employee->photo,
-            'role' => $employee->role,
-            'npk' => $employee->npk
-        ], 200);
+        return response()->json(
+            [
+                'status' => 'success',
+                'message' => 'PIC berhasil ditambahkan!',
+                'name' => $employee->name,
+                'photo' => $employee->photo,
+                'role' => $employee->role,
+                'npk' => $employee->npk,
+            ],
+            200,
+        );
     }
 }
