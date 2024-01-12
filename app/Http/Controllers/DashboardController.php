@@ -43,25 +43,21 @@ class DashboardController extends Controller
 
         // get henkaten where status still active
         $activeProblems = Henkaten::with(['shift', 'line.origin'])
-            ->whereHas('line', function ($query) use ($empOrigin) {
-                $query->where('origin_id', $empOrigin);
-            })
-            ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where(function ($q) use ($currentTime) {
-                    // Time condition for non 'stop' status or 'stop' status but 'is_done' is 1
-                    $q->where('time_start', '<=', $currentTime)
-                        ->where('time_end', '>=', $currentTime)
-                        ->orWhere(function ($q) {
-                            // Include 'stop' status with 'is_done' is 0 regardless of time
-                            $q->where('status', 'stop')->where('is_done', '0');
+            ->where(function ($query) use ($empOrigin, $currentTime, $current_date) {
+                $query
+                    ->whereHas('line', function ($q) use ($empOrigin) {
+                        $q->where('origin_id', $empOrigin);
+                    })
+                    ->whereHas('shift', function ($q) use ($currentTime) {
+                        $q->where(function ($subQuery) use ($currentTime) {
+                            $subQuery->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
                         });
-                });
+                    })
+                    ->where('date', 'LIKE', $current_date . '%')
+                    ->where('status', 'henkaten');
             })
-            ->where('date', 'LIKE', $current_date . '%')
-            ->where(function ($query) {
-                $query->where('status', 'henkaten')->orWhere(function ($query) {
-                    $query->where('status', 'stop')->where('is_done', '0');
-                });
+            ->orWhere(function ($query) {
+                $query->where('status', 'stop')->where('is_done', '0');
             })
             ->get();
 
