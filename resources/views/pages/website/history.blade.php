@@ -60,7 +60,7 @@
                             <th rowspan="2" class="align-middle">Abnormality</th>
                             <th rowspan="2" class="align-middle">Category</th>
                             <th rowspan="2" class="align-middle">Table Henkaten No.</th>
-                            <th rowspan="2" class="align-middle">Troubleshoot</th>
+                            <th rowspan="2" class="align-middle text-center">Troubleshoot</th>
                             <th class="text-center">Safety</th>
                             <th colspan="4" class="text-center">Quality Inspection</th>
                             <th rowspan="2" class="align-middle">Done by</th>
