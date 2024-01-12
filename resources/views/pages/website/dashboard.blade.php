@@ -541,6 +541,9 @@
                                                                     <span
                                                                         class="mb-1 badge bg-warning">{{ $history->status }}
                                                                     </span>
+                                                                    <p class="ps-2">
+                                                                        {{ Carbon\Carbon::parse($history->date)->format('l, j F Y') }}
+                                                                    </p>
                                                                 @else
                                                                     <span
                                                                         class="mb-1 badge bg-info me-2">{{ $history->{"4M"} }}
@@ -548,6 +551,9 @@
                                                                     <span
                                                                         class="mb-1 badge bg-danger">{{ $history->status }}
                                                                     </span>
+                                                                    <p class="ps-2">
+                                                                        {{ Carbon\Carbon::parse($history->date)->format('l, j F Y') }}
+                                                                    </p>
                                                                 @endif
                                                             </button>
                                                         </h2>
@@ -662,7 +668,6 @@
                                                     return 'danger';
                                                 case 'off':
                                                     return 'dark';
-                                                
                                             }
                                         }
                                     }
