@@ -541,8 +541,8 @@
                                                                     <span
                                                                         class="mb-1 badge bg-warning">{{ $history->status }}
                                                                     </span>
-                                                                    <p class="ps-2">
-                                                                        {{ Carbon\Carbon::parse($history->date)->format('l, j F Y') }}
+                                                                    <p class="ps-2 pt-1">
+                                                                        {{ Carbon\Carbon::parse($history->date)->format('l, j F Y H:i:s') }}
                                                                     </p>
                                                                 @else
                                                                     <span
@@ -551,8 +551,8 @@
                                                                     <span
                                                                         class="mb-1 badge bg-danger">{{ $history->status }}
                                                                     </span>
-                                                                    <p class="ps-2">
-                                                                        {{ Carbon\Carbon::parse($history->date)->format('l, j F Y') }}
+                                                                    <p class="ps-2 pt-1">
+                                                                        {{ Carbon\Carbon::parse($history->date)->format('l, j F Y H:i:s') }}
                                                                     </p>
                                                                 @endif
                                                             </button>
