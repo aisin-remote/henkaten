@@ -1190,7 +1190,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="align-item-center">
-                        <p>Status is :</p>
+                        <p>Current status is :</p>
                         <div class="card bg-{{ $color_status }} overflow-hidden card-hover">
                             <div class="d-flex">
                                 <div class="p-3 ps-4 pt-4 text-center">
