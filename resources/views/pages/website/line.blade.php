@@ -1211,12 +1211,12 @@
                     </div>
 
                     <form id="statusForm">
-                        <div class="form-check mt-3">
-                            <input class="form-check-input" type="radio" id="OffSwitch" name="switchStatus"
-                                value="off">
-                            <label class="form-check-label" for="OffSwitch">Turn Off</label>
-                        </div>
-                        @if ($overall_status === 'off')
+                        @if ($overall_status === 'off' || $overall_status === 'running')
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="radio" id="OffSwitch" name="switchStatus"
+                                    value="off">
+                                <label class="form-check-label" for="OffSwitch">Turn Off</label>
+                            </div>
                             <div class="form-check mt-3">
                                 <input class="form-check-input" type="radio" id="RunningSwitch" name="switchStatus"
                                     value="running">
@@ -1227,7 +1227,10 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" onclick="submitLineForm()">Save changes</button>
+                        @if ($overall_status === 'off' || $overall_status === 'running')
+                            <button type="submit" class="btn btn-primary" onclick="submitLineForm()">Save
+                                changes</button>
+                        @endif
                     </div>
                 </div>
             </div>
