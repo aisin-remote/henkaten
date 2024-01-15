@@ -629,7 +629,7 @@
                                     @if ($isLeader)
                                         @if (!$ldrApproved)
                                             <td class="text-center">
-                                                <button class="btn btn-success approve"
+                                                <button class="btn btn-danger approve"
                                                     data-history-id="{{ $history->henkaten->id }}">
                                                     <span class="rounded-3"><i class="ti ti-checks"></i></span>
                                                 </button>
@@ -645,14 +645,14 @@
                                     @elseif ($isSupervisor)
                                         @if (!$ldrApproved)
                                             <td class="text-center">
-                                                <button class="btn btn-success approve"
+                                                <button class="btn btn-danger approve"
                                                     data-history-id="{{ $history->henkaten->id }}" disabled>
                                                     <span class="rounded-3"><i class="ti ti-checks"></i></span>
                                                 </button>
                                             </td>
                                         @elseif (!$spvApproved)
                                             <td class="text-center">
-                                                <button class="btn btn-success approve"
+                                                <button class="btn btn-danger approve"
                                                     data-history-id="{{ $history->henkaten->id }}">
                                                     <span class="rounded-3"><i class="ti ti-checks"></i></span>
                                                 </button>
@@ -666,16 +666,23 @@
                                             </td>
                                         @endif
                                     @elseif ($isManager)
-                                        @if (!$spvApproved)
+                                        @if (!$ldrApproved)
                                             <td class="text-center">
-                                                <button class="btn btn-success approve"
+                                                <button class="btn btn-danger approve"
+                                                    data-history-id="{{ $history->henkaten->id }}" disabled>
+                                                    <span class="rounded-3"><i class="ti ti-checks"></i></span>
+                                                </button>
+                                            </td>
+                                        @elseif (!$spvApproved)
+                                            <td class="text-center">
+                                                <button class="btn btn-danger approve"
                                                     data-history-id="{{ $history->henkaten->id }}" disabled>
                                                     <span class="rounded-3"><i class="ti ti-checks"></i></span>
                                                 </button>
                                             </td>
                                         @elseif (!$mgrApproved)
                                             <td class="text-center">
-                                                <button class="btn btn-success approve"
+                                                <button class="btn btn-danger approve"
                                                     data-history-id="{{ $history->henkaten->id }}">
                                                     <span class="rounded-3"><i class="ti ti-checks"></i></span>
                                                 </button>

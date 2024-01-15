@@ -667,12 +667,36 @@ class HenkatenController extends Controller
             ->endOfWeek()
             ->format('Y-m-d');
 
-        $currentShifts = PicActive::select('employee_id', 'shift_id', 'line_id')
+        // for employee
+        $currentShifts = EmployeeActive::select('employee_id', 'shift_id', 'line_id', 'pos_id')
+            ->where('active_from', '<=', $previousWeekEnd)
+            ->where('expired_at', '>=', $previousWeekStart)
+            ->get();
+        
+        // for pic or jp
+        $currentShiftsPic = PicActive::select('employee_id', 'shift_id', 'line_id')
             ->where('active_from', '<=', $previousWeekEnd)
             ->where('expired_at', '>=', $previousWeekStart)
             ->get();
 
         $newShifts = $currentShifts->map(function ($employee) {
+            $nextShiftUuid = $this->getNextShiftUuid($employee->shift_id); // Implement this method to determine the next shift
+
+            return [
+                'employee_id' => $employee->employee_id,
+                'shift_id' => $nextShiftUuid,
+                'line_id' => $employee->line_id,
+                'pos_id' => $employee->pos_id,
+                'active_from' => Carbon::now()
+                    ->startOfWeek()
+                    ->format('Y-m-d'),
+                'expired_at' => Carbon::now()
+                    ->endOfWeek()
+                    ->format('Y-m-d'),
+            ];
+        });
+        
+        $newShiftsPic = $currentShiftsPic->map(function ($employee) {
             $nextShiftUuid = $this->getNextShiftUuid($employee->shift_id); // Implement this method to determine the next shift
 
             return [
@@ -689,12 +713,17 @@ class HenkatenController extends Controller
         });
 
         $newShifts = $newShifts->toArray();
+        $newShiftsPic = $newShifts->toArray();
 
         try {
             DB::beginTransaction();
 
             foreach ($newShifts as $newShift) {
-                PicActive::create($newShift);
+                EmployeeActive::create($newShift);
+            }
+            
+            foreach ($newShiftsPic as $newShiftPic) {
+                PicActive::create($newShiftPic);
             }
 
             DB::commit();
