@@ -10,6 +10,7 @@ use App\Models\Shift;
 use App\Models\Approval;
 use App\Models\Employee;
 use App\Models\Henkaten;
+use App\Models\PicActive;
 use App\Models\HenkatenMan;
 use App\Models\Troubleshoot;
 use Illuminate\Http\Request;
@@ -666,7 +667,7 @@ class HenkatenController extends Controller
             ->endOfWeek()
             ->format('Y-m-d');
 
-        $currentShifts = EmployeeActive::select('employee_id', 'shift_id', 'line_id', 'pos_id')
+        $currentShifts = PicActive::select('employee_id', 'shift_id', 'line_id')
             ->where('active_from', '<=', $previousWeekEnd)
             ->where('expired_at', '>=', $previousWeekStart)
             ->get();
@@ -678,7 +679,6 @@ class HenkatenController extends Controller
                 'employee_id' => $employee->employee_id,
                 'shift_id' => $nextShiftUuid,
                 'line_id' => $employee->line_id,
-                'pos_id' => $employee->pos_id,
                 'active_from' => Carbon::now()
                     ->startOfWeek()
                     ->format('Y-m-d'),
@@ -694,7 +694,7 @@ class HenkatenController extends Controller
             DB::beginTransaction();
 
             foreach ($newShifts as $newShift) {
-                EmployeeActive::create($newShift);
+                PicActive::create($newShift);
             }
 
             DB::commit();
