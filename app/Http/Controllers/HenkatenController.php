@@ -713,7 +713,7 @@ class HenkatenController extends Controller
         });
 
         $newShifts = $newShifts->toArray();
-        $newShiftsPic = $newShifts->toArray();
+        $newShiftsPic = $newShiftsPic->toArray();
 
         try {
             DB::beginTransaction();
