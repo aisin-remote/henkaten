@@ -396,7 +396,6 @@
                                         }
 
                                         $color = mapRoleToColor($role);
-                                        $picColor = mapRoleToColor($activePic->employee->role);
 
                                         if ($line->name === 'ASAN01' || $line->name === 'ASAN02' || $line->name === 'ASIP01' || $line->name === 'ASMP01' || $line->name === 'ASVP01') {
                                             $col = '12';
@@ -434,6 +433,10 @@
                         </div>
                     </div>
                     @if ($activePic !== null)
+                        @php
+                            $picColor = mapRoleToColor($activePic->employee->role);
+
+                        @endphp
                         <div class="col-lg-4 col-md-12">
                             <div class="card text-center">
                                 <div class="card-body">

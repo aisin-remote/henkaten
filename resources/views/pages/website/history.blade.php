@@ -69,7 +69,7 @@
                         <tr>
                             <th>Result Check</th>
                             <th>Report Abnormality</th>
-                            <th>Part</th>
+                            <th class="text-center">Part</th>
                             <th>Before</th>
                             <th>After</th>
                             <th class="text-center">Leader</th>

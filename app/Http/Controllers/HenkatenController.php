@@ -27,24 +27,26 @@ class HenkatenController extends Controller
     {
         // get origin id
         $empOrigin = auth()->user()->origin_id;
-        
+
         $currentTime = Carbon::now();
         $shifts = Shift::all();
         $shiftId = null;
 
-        // get name 
-        $line = Line::select('name')->where('id', $request->line)->first();
-        
+        // get name
+        $line = Line::select('name')
+            ->where('id', $request->line)
+            ->first();
+
         // get pic
         $current_date = Carbon::now()->toDateString();
         $pivot = Pivot::with('firstPic')
             ->where('active_date', $current_date)
             ->where('origin_id', $empOrigin)
             ->first();
-            
-        if(!$pivot){
+
+        if (!$pivot) {
             $pivot = 'unknown';
-        }else{
+        } else {
             $pivot = $pivot->firstPic->name;
         }
 
@@ -150,26 +152,36 @@ class HenkatenController extends Controller
                 'henkaten_id' => $henkaten->id,
             ]);
 
-            // send WA notif
-            $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
-            $phone = '081280613890';
-            $message = sprintf("---- ``` AIIA HENKATEN ALERT ``` ---- %c%cLINE                      : $line->name %cLINE STATUS       : $request->status %c4M                         : $request->type %cCategory               : $request->category %cABNORMALITY    : $request->abnormality %cTROUBLESHOOT  :  TBC  %cPIC                         : $pivot %c%c ---------------- BY AISIN BISA ----------------", 10, 10, 10, 10, 10, 10, 10,10,10,10);
-            
-            $curl = curl_init();
-            curl_setopt_array($curl, [
-                CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
-            ]);
+            $status = strtoupper($request->status);
+            $date = Carbon::parse($henkaten->date)->format('j F Y, g:i A');
 
-            $response = curl_exec($curl);
-            curl_close($curl);
+            // get user notifications
+            $userNotif = User::select('phone_number')
+                ->where('notification', '1')
+                ->get();
+
+            // send WA notif
+            foreach ($userNotif as $userNotif) {
+                $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
+                $phone = $userNotif->phone_number;
+                $message = sprintf("```---- ```*AIIA HENKATEN ALERT*``` ---- %cLINE          : ```*$line->name*``` %cLINE STATUS   : ```*$status*``` %c4M            : $request->type %cCategory      : $request->category %cABNORMALITY   : $request->abnormality %cTIME          : $date %cPIC           : $pivot %c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+
+                $curl = curl_init();
+                curl_setopt_array($curl, [
+                    CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'POST',
+                    CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
+                ]);
+
+                $response = curl_exec($curl);
+                curl_close($curl);
+            }
 
             DB::commit();
             return redirect()
@@ -198,10 +210,20 @@ class HenkatenController extends Controller
             ->where('role', 'LDR')
             ->get();
 
-        // get all henkaten info
+        // get henkaten info
         $henkatenInfo = Henkaten::with(['shift', 'line', 'henkatenManagement'])
             ->where('id', $request->henkaten_id)
-            ->get();
+            ->first();
+
+        // get first pic
+        $firstPic = Pivot::with('firstPic')
+            ->where('active_date', Carbon::parse($henkatenInfo->date)->format('Y-m-d'))
+            ->first();
+        if (!$firstPic) {
+            $firstPic = 'unknown';
+        } else {
+            $firstPic = $firstPic->firstPic->name;
+        }
 
         $statusMappings = [
             'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
@@ -295,6 +317,27 @@ class HenkatenController extends Controller
                 DB::commit();
             }
 
+            // get employee
+            $doneBy = Employee::select('name')
+                ->where('id', $request->doneBy)
+                ->first();
+
+            // get all troubleshoot value
+            $lineName = $henkatenInfo->line->name;
+            $status = $henkatenInfo->status;
+            $type = $henkatenInfo->{'4M'};
+            $category = $henkatenInfo->category;
+            $abnormality = $henkatenInfo->abnormality;
+            $time = Carbon::parse($henkatenInfo->date)->format('j F Y, g:i A');
+            $troubleshoot = $request->troubleshoot;
+            $resultCheck = $request->resultCheck;
+            $inspectionCheck = $request->inspection;
+            $part = $request->part;
+            $beforeTreatment = $request->beforeTreatment;
+            $afterTreatment = $request->afterTreatment;
+            $doneBy = $doneBy->name;
+            $troubleshootTime = Carbon::now()->format('j F Y, g:i A');
+
             if ($request->status === 'stop') {
                 // Check if there is any problem not solved yet (stop content only)
                 $otherStats = Henkaten::doesntHave('troubleshoot')
@@ -322,6 +365,27 @@ class HenkatenController extends Controller
                                 'status_' . $request->{"4M"} => $otherStat->status,
                             ]);
 
+                            foreach ($empPhone as $empPhone) {
+                                $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
+                                $phone = $empPhone->phone_number;
+                                $message = sprintf("```---- ```*AIIA HENKATEN ALERT*``` ---- %cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+                                $curl = curl_init();
+                                curl_setopt_array($curl, [
+                                    CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
+                                    CURLOPT_RETURNTRANSFER => true,
+                                    CURLOPT_ENCODING => '',
+                                    CURLOPT_MAXREDIRS => 10,
+                                    CURLOPT_TIMEOUT => 0,
+                                    CURLOPT_FOLLOWLOCATION => true,
+                                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                                    CURLOPT_CUSTOMREQUEST => 'POST',
+                                    CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
+                                ]);
+
+                                $response = curl_exec($curl);
+                                curl_close($curl);
+                            }
+
                             DB::commit();
                             return redirect()
                                 ->back()
@@ -333,17 +397,11 @@ class HenkatenController extends Controller
 
             DB::commit();
 
-            $lineName = $henkatenInfo->line->name;
-            $shiftName = $henkatenInfo->shift->name;
-            $abnormality = $henkatenInfo->abnormality;
-            $troubleshoot = $henkatenInfo->troubleshoot;
-            $time = Carbon::parse($henkatenInfo->date)->format('l, j F Y');
-
             // send whatsapp notification
             foreach ($empPhone as $empPhone) {
                 $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
                 $phone = $empPhone->phone_number;
-                $message = sprintf("```---- ``` *HENKATEN ALERT* ``` ----%cLINE          : $lineName %cLINE STATUS       : $request->status %c4M     : $request->{'4M'} %cSHIFT   : $shiftName %cABNORMALITY : $abnormality %cTIME      :  $time %c-------------------------``` *TROUBLESHOOTS* ``` %cTROUBLESHOOT          : $troubleshoot", 10, 10, 10, 10, 10, 10, 10, 10);
+                $message = sprintf("```---- ```*AIIA HENKATEN ALERT*``` ---- %cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
                 $curl = curl_init();
                 curl_setopt_array($curl, [
                     CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
