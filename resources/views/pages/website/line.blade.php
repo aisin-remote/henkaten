@@ -1216,11 +1216,13 @@
                                 value="off">
                             <label class="form-check-label" for="OffSwitch">Turn Off</label>
                         </div>
-                        <div class="form-check mt-3">
-                            <input class="form-check-input" type="radio" id="RunningSwitch" name="switchStatus"
-                                value="running">
-                            <label class="form-check-label" for="RunningSwitch">Running</label>
-                        </div>
+                        @if ($overall_status !== 'off')
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="radio" id="RunningSwitch" name="switchStatus"
+                                    value="running">
+                                <label class="form-check-label" for="RunningSwitch">Running</label>
+                            </div>
+                        @endif
                     </form>
 
                     <div class="modal-footer">
