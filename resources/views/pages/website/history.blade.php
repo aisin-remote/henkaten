@@ -63,7 +63,7 @@
                             <th rowspan="2" class="align-middle text-center">Troubleshoot</th>
                             <th class="text-center">Safety</th>
                             <th colspan="4" class="text-center">Quality Inspection</th>
-                            <th rowspan="2" class="align-middle">Done by</th>
+                            <th rowspan="2" class="align-middle text-center">Done by</th>
                             <th colspan="3" class="align-middle text-center">Approval</th>
                         </tr>
                         <tr>
