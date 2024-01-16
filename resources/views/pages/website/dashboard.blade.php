@@ -297,7 +297,7 @@
                     <div>
                         <h5 class="fw-semibold mb-0">Tema Safety</h5>
                         <span
-                            class="fs-2 d-flex align-items-center py-1 d-inline">{{ Carbon\Carbon::now()->format('l, j F Y') }}
+                            class="fs-2 d-flex align-items-center py-1 d-inline">{{ Carbon\Carbon::now()->format('j F Y') }}
                             <span id="time" class="fs-2 px-2"></span></span>
                     </div>
                     @php
