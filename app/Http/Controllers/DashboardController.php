@@ -211,6 +211,9 @@ class DashboardController extends Controller
             })
             ->get();
 
+        // push to websocket
+        $this->pushData(true);
+
         return view('pages.website.line', [
             'line' => Line::findOrFail($lineId->id),
             'lineMap' => Line::where('id', $lineId->id)->first(),
@@ -344,6 +347,9 @@ class DashboardController extends Controller
             $theme_name_final = $theme_name->name;
         }
 
+        // push to websocket
+        $this->pushData(true);
+
         // Mengembalikan respons JSON tanpa if-else
         return response()->json(
             [
@@ -442,6 +448,9 @@ class DashboardController extends Controller
                 );
             }
         }
+
+        // push to websocket
+        $this->pushData(true);
 
         return response()->json(
             [
@@ -542,6 +551,9 @@ class DashboardController extends Controller
                 );
             }
         }
+
+        // push to websocket
+        $this->pushData(true);
 
         return response()->json(
             [

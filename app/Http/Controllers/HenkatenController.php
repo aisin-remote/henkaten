@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use Pusher\Pusher;
 use App\Models\Line;
 use App\Models\User;
 use App\Models\Pivot;
@@ -24,6 +25,26 @@ use Illuminate\Support\Facades\Http;
 
 class HenkatenController extends Controller
 {
+    public function pushData($is_updated){
+        // connection to pusher
+        $options = array(
+            'cluster' => 'ap1',
+            'encrypted' => true
+        );
+
+        $pusher = new Pusher(
+            '8ee9e8a15df964407aec',
+            '36cee438943f3d49da89',
+            '1741472',
+            $options
+        );
+
+        // sending data
+        $result = $pusher->trigger('henkaten' , 'DashboardUpdated', $is_updated);
+
+        return $result;
+    }
+    
     public function storeHenkaten(Request $request)
     {
         // get origin id
@@ -183,6 +204,9 @@ class HenkatenController extends Controller
                 $response = curl_exec($curl);
                 curl_close($curl);
             }
+
+            // push to websocket
+            $this->pushData(true);
 
             DB::commit();
             return redirect()
@@ -642,6 +666,9 @@ class HenkatenController extends Controller
             }
 
             DB::commit();
+
+            // push to websocket
+            $this->pushData(true);
 
             return redirect()
                 ->back()

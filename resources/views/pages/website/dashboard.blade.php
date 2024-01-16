@@ -812,9 +812,23 @@
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.3.min.js"
     integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script>
     let pivot = @json($pivot);
     $(document).ready(function() {
+
+        // reload page based on websocket signal
+        var pusher = new Pusher('8ee9e8a15df964407aec', {
+            cluster: 'ap1',
+            forceTLS: true
+        });
+
+        // websocket
+        pusher.subscribe('henkaten').bind('DashboardUpdated', function(data) {
+            // reload the page
+            window.location.reload();
+        });
+
         var themeSelect = document.getElementById('themeSelect');
         var customThemeInput = document.getElementById('customThemeInput');
         $('#themeSelect').on('change', function() {

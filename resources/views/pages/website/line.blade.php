@@ -1211,7 +1211,7 @@
                     </div>
 
                     <form id="statusForm">
-                        @if ($overall_status === 'off' || $overall_status === 'running')
+                        @if ($overall_status === 'OFF' || $overall_status === 'RUNNING')
                             <div class="form-check mt-3">
                                 <input class="form-check-input" type="radio" id="OffSwitch" name="switchStatus"
                                     value="off">
@@ -1227,7 +1227,7 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        @if ($overall_status === 'off' || $overall_status === 'running')
+                        @if ($overall_status === 'OFF' || $overall_status === 'RUNNING')
                             <button type="submit" class="btn btn-primary" onclick="submitLineForm()">Save
                                 changes</button>
                         @endif
