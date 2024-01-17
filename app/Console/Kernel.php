@@ -79,26 +79,6 @@ class Kernel extends ConsoleKernel
                 ->orWhereIn('status_machine', [$currentStatus])
                 ->update($columnsToUpdate);
         })->dailyAt('06:00:00');
-
-        // auto update 
-        $schedule->call(function () {
-            $currentShifts = EmployeeActive::select('employee_id', 'shift_id','line_id','pos_id')->get();
-    
-            $newShifts = $currentShifts->map(function ($employee) {
-                $nextShiftUuid = $this->getNextShiftUuid($employee->shift_id); // Implement this method to determine the next shift
-            
-                return [
-                    'employee_id' => $employee->employee_id,
-                    'shift_id' => $nextShiftUuid,
-                    'line_id' => $employee->line_id,
-                    'pos_id' => $employee->pos_id,
-                    'active_from' => Carbon::now()->startOfWeek(),
-                    'expired_at' => Carbon::now()->endOfWeek(),
-                ];
-            });
-
-            EmployeeActive::insert($newShifts->toArray());
-        })->weeklyOn(1, '05:00');
     }
 
     public function getNextShiftUuid($currentShiftUuid) {
