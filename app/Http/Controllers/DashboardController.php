@@ -26,6 +26,26 @@ use Illuminate\Support\Facades\Redis;
 
 class DashboardController extends Controller
 {
+    public function pushData($is_updated){
+        // connection to pusher
+        $options = array(
+            'cluster' => 'ap1',
+            'encrypted' => true
+        );
+
+        $pusher = new Pusher(
+            '8ee9e8a15df964407aec',
+            '36cee438943f3d49da89',
+            '1741472',
+            $options
+        );
+
+        // sending data
+        $result = $pusher->trigger('henkaten' , 'DashboardUpdated', $is_updated);
+
+        return $result;
+    }
+    
     public function index()
     {
         // get origin id
@@ -378,7 +398,7 @@ class DashboardController extends Controller
         $existingPics = Pivot::where(function ($query) use ($pic) {
             $query->where('first_pic_id', $pic)->orWhere('second_pic_id', $pic);
         })
-            ->whereDate('active_date', '=', Carbon::now()->format('Y-m-d')) // Menggunakan toDateString() untuk mendapatkan tanggal saja
+            ->whereDate('active_date', '=', now()->toDateString()) // Menggunakan toDateString() untuk mendapatkan tanggal saja
             ->first();
 
         if ($existingPics) {
