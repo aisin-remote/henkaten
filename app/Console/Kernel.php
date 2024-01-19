@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
                 ->orWhereIn('status_material', [$currentStatus])
                 ->orWhereIn('status_machine', [$currentStatus])
                 ->update($columnsToUpdate);
-        })->dailyAt('14:31:00');
+        })->dailyAt('14:10:00');
         
         // update at 22:10
         $schedule->call(function () {

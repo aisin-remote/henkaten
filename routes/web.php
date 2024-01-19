@@ -24,6 +24,7 @@ use App\Http\Controllers\DashboardController;
 |
 */
 Route::get('/auto-update', [HenkatenController::class, 'autoUpdate'])->name('auto-update');
+Route::get('/auto-update-status', [HenkatenController::class, 'autoUpdateStatus'])->name('auto-update-status');
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/', function () {
