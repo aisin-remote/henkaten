@@ -320,6 +320,17 @@ class HenkatenController extends Controller
                             'after_treatment' => $request->afterTreatment,
                             'done_by' => $request->doneBy,
                         ]);
+                    }else{
+                        Troubleshoot::create([
+                            'henkaten_id' => $request->henkaten_id,
+                            'troubleshoot' => $request->troubleshoot,
+                            'result_check' => $request->resultCheck,
+                            'inspection_report' => $request->inspection,
+                            'part' => $request->part,
+                            'before_treatment' => $request->beforeTreatment,
+                            'after_treatment' => $request->afterTreatment,
+                            'done_by' => $request->doneBy,
+                        ]);
                     }
                     DB::commit();
                 }
