@@ -9,6 +9,7 @@ use App\Models\Skill;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Models\PicActive;
+use App\Models\Attendance;
 use App\Models\MinimumSkill;
 use Illuminate\Http\Request;
 use App\Models\EmployeeSkill;
@@ -34,6 +35,112 @@ class EmployeeController extends Controller
             'empSkills' => $empSkills,
             'nameSkills' => $nameSkills
         ]);
+    }
+
+    public function attendance()
+    {
+        $currentDate = Carbon::now()->format('Y-m-d');
+        $currentTime = Carbon::now()->format('H:i:s');
+        
+        // get shift
+        $shift = Shift::where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime)->first();
+        
+        $activeEmployees = EmployeeActive::with('shift')
+            ->with('employee')
+            ->with('pos')
+            ->where('active_from', '<=', $currentDate)
+            ->where('expired_at', '>=', $currentDate)
+            ->whereHas('shift', function ($query) use ($currentTime) {
+                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
+            })
+            ->get();
+            
+        return view('pages.website.attendance', [
+            'employees' => $activeEmployees,
+            'shift' => $shift
+        ]);
+    }
+
+    public function storeAttendance(Request $request)
+    {
+        $npk = $request->npk;
+        $currentDate = Carbon::now()->format('Y-m-d');
+        $currentTime = Carbon::now()->format('H:i:s');
+
+        // get shift
+        $shift = Shift::where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime)->first();
+        
+        // cek if employee exist
+        $employee = Employee::where('npk', $npk)->first();
+        if (!$employee){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Karyawan tidak terdaftar'
+            ]);
+        }
+        
+        // cek if employee already planned
+        $employeePlanned = EmployeeActive::with('employee')
+            ->whereHas('employee', function ($query) use ($npk){
+                $query->where('npk', $npk);    
+            })
+            ->first();
+        if (!$employeePlanned){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Karyawan belum masuk planning!'
+            ]);
+        }
+
+        $activeEmployee = EmployeeActive::with('shift')
+            ->with('employee')
+            ->with('pos')
+            ->where('active_from', '<=', $currentDate)
+            ->where('expired_at', '>=', $currentDate)
+            ->whereHas('shift', function ($query) use ($currentTime) {
+                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
+            })
+            ->whereHas('employee', function ($query) use ($npk){
+                $query->where('npk', $npk);    
+            })
+            ->first();
+        if(!$activeEmployee){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Karyawan npk ' . $npk . ' bukan ' . $shift->name . '!'
+            ]);
+        }
+
+        $attendance = Attendance::where('employee_active_id', $activeEmployee->id)
+                    ->where('created_at', 'LIKE' , $currentDate . '%')
+                    ->first();
+        if($attendance){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Karyawan npk ' . $npk . ' sudah absen!'
+            ]);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // insert to attendance table
+            Attendance::create([
+                'employee_active_id' => $activeEmployee->id,
+                'time_in' => Carbon::now()->format('H:i:s'),
+            ]);
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data karyawan sudah tersimpan!'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ]);
+        }
     }
 
     public function employeeStore(Request $request)

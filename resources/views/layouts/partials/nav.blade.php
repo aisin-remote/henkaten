@@ -62,6 +62,14 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link" href="/attendance" aria-expanded="false">
+                        <span class="rounded-3">
+                            <i class="ti ti-scan"></i>
+                        </span>
+                        <span class="hide-menu">Attendance</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
                     <a href="/henkatenManagement" class="sidebar-link has-arrow" aria-expanded="false">
                         <span>
                             <i class="ti ti-box"></i>

@@ -34,4 +34,9 @@ class EmployeeActive extends Model
     {
         return $this->belongsTo(Line::class);
     }
+
+    public function attendance()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }

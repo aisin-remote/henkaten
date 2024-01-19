@@ -3,6 +3,7 @@
 use App\Models\Skill;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OplController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\skillController;
 use App\Http\Controllers\themeController;
@@ -11,7 +12,6 @@ use App\Http\Controllers\HenkatenController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\OplController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +40,9 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     // default routes
     Route::get('/', [DashboardController::class, 'index']);
+    
+    // attendance
+    Route::get('/attendance', [EmployeeController::class, 'attendance'])->name('attendance.index');
 
     // dashboard
     Route::get('/lineDashboard', [DashboardController::class, 'indexLine'])->name('dashboard.indexLine');
@@ -77,6 +80,9 @@ Route::middleware(['auth'])->group(function () {
 
         // get PIC
         Route::get('/getPic', [EmployeeController::class, 'getPic'])->name('employee.getPic');
+        
+        // store attendance
+        Route::get('/attendance', [EmployeeController::class, 'storeAttendance'])->name('attendance.store');
 
         // edit employees
         Route::get('/{id}/edit', [EmployeeController::class, 'employeeEdit'])->name('editEmployee');
