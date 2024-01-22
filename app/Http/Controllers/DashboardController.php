@@ -9,6 +9,7 @@ use App\Models\Pivot;
 use App\Models\Shift;
 use App\Models\Theme;
 use App\Models\Approval;
+use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\Henkaten;
 use App\Models\Position;
@@ -159,6 +160,9 @@ class DashboardController extends Controller
             })
             ->get();
 
+        $attendance = Attendance::whereDate('created_at', $currentDate)
+            ->first();
+
         return view('pages.website.line', [
             'line' => Line::findOrFail($lineId->id),
             'lineMap' => Line::where('id', $lineId->id)->first(),
@@ -169,6 +173,7 @@ class DashboardController extends Controller
             'activePic' => $activePic,
             'histories' => $histories,
             'manHenkaten' => $manHenkaten,
+            'attendance' => $attendance,
             'henkatenManagements' => HenkatenManagement::all(),
         ]);
     }

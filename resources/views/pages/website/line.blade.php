@@ -295,7 +295,7 @@
                         ->all();
                 @endphp
 
-                @foreach ($activeEmployees as $emp)
+                @foreach ($activeEmployees as $emp)                                   
                     @php
                         $photo = $photoMap[$emp->employee_id] ?? $emp->employee->photo;
                     @endphp
@@ -311,10 +311,15 @@
                         $photo = $emp->employee->photo;
                     @endphp
                     <!-- Displaying the employee photo with default position -->
+                    @if($attendance->employee_active_id == $emp->id)
+                    @php
+                    // dd($photo);
+                    @endphp
                     <div style="position: absolute; top: {{ $emp->pos->top }}vh; left: {{ $emp->pos->left }}vh;">
                         <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
                             style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};" class="rounded-1" />
                     </div>
+                    @endif
                 @endforeach
             @endif
         </div>
