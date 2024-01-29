@@ -175,8 +175,8 @@ class DashboardController extends Controller
 
     public function updateLineStatus(Line $lineId, Request $request)
     {
-        dd($request);
         $onOffSwitch = $request->onOffSwitch;
+        dd($onOffSwitch);
 
         $line = Line::findOrFail($lineId->id);
 
