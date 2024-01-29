@@ -233,7 +233,7 @@ class DashboardController extends Controller
             ->get();
 
         // push to websocket
-        $this->pushData(true);
+        // $this->pushData(true);
 
         return view('pages.website.line', [
             'line' => Line::findOrFail($lineId->id),
