@@ -598,10 +598,10 @@
                                 </div>
                                 @php
                                     $statusMappings = [
-                                        'running' => ['priority' => 1, 'overall' => 'RUNNING', 'shape' => 'circle', 'color' => 'success'],
-                                        'henkaten' => ['priority' => 2, 'overall' => 'HENKATEN', 'shape' => 'triangle', 'color' => 'warning'],
-                                        'stop' => ['priority' => 3, 'overall' => 'STOP', 'shape' => 'x', 'color' => 'danger'],
-                                        'off' => ['priority' => 4, 'overall' => 'OFF', 'shape' => 'zzz', 'color' => 'dark'],
+                                        'off' => ['priority' => 1, 'overall' => 'OFF', 'shape' => 'zzz', 'color' => 'dark'],
+                                        'running' => ['priority' => 2, 'overall' => 'RUNNING', 'shape' => 'circle', 'color' => 'success'],
+                                        'henkaten' => ['priority' => 3, 'overall' => 'HENKATEN', 'shape' => 'triangle', 'color' => 'warning'],
+                                        'stop' => ['priority' => 4, 'overall' => 'STOP', 'shape' => 'x', 'color' => 'danger'],
                                     ];
 
                                     // summaery all line
