@@ -175,6 +175,7 @@ class DashboardController extends Controller
 
     public function updateLineStatus(Line $lineId, Request $request)
     {
+        dd($request);
         $onOffSwitch = $request->onOffSwitch;
 
         $line = Line::findOrFail($lineId->id);
@@ -233,7 +234,7 @@ class DashboardController extends Controller
             ->get();
 
         // push to websocket
-        // $this->pushData(true);
+        $this->pushData(true);
 
         return view('pages.website.line', [
             'line' => Line::findOrFail($lineId->id),
