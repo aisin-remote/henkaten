@@ -1259,7 +1259,7 @@
                 success: function(data) {
                     console.log(data);
                     // Handle the response from the controller
-                    window.location.reload();
+                    // window.location.reload();
                 },
                 error: function(error) {
                     console.error('Error:', error);
