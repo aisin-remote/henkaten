@@ -189,9 +189,8 @@ class DashboardController extends Controller
                 'status_material' => $onOffSwitch,
             ]);
 
-            return ['status' => 'success'];
-
             DB::commit();
+            return ['status' => 'success'];
         } catch (\Throwable $th) {
             DB::rollBack();
             return [
