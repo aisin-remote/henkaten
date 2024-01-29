@@ -176,78 +176,26 @@ class DashboardController extends Controller
     public function updateLineStatus(Line $lineId, Request $request)
     {
         $onOffSwitch = $request->onOffSwitch;
-        dd($onOffSwitch);
 
         $line = Line::findOrFail($lineId->id);
 
-        $line->update([
-            'status_man' => $onOffSwitch,
-            'status_method' => $onOffSwitch,
-            'status_machine' => $onOffSwitch,
-            'status_material' => $onOffSwitch,
-        ]);
+        try {
+            DB::beginTransaction();
 
-        // get origin id
-        $empOrigin = auth()->user()->origin_id;
+            $line->update([
+                'status_man' => $onOffSwitch,
+                'status_method' => $onOffSwitch,
+                'status_machine' => $onOffSwitch,
+                'status_material' => $onOffSwitch,
+            ]);
 
-        $currentDate = Carbon::now()->format('Y-m-d');
-        $currentTime = Carbon::now()->format('H:i:s');
+            return ['success'];
 
-        // get all history
-        $histories = Henkaten::with(['troubleshoot.employee', 'henkatenManagement'])
-            ->where('line_id', $lineId->id)
-            ->get();
-
-        // get man power at spesific line and range of time
-        $activeEmployees = EmployeeActive::with('shift')
-            ->with('employee')
-            ->with('pos')
-            ->where('active_from', '<=', $currentDate)
-            ->where('expired_at', '>=', $currentDate)
-            ->where('line_id', $lineId->id)
-            ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
-            })
-            ->get();
-
-        // get active pic
-        $activePic = PicActive::with('shift')
-            ->with('employee')
-            ->where('active_from', '<=', $currentDate)
-            ->where('expired_at', '>=', $currentDate)
-            ->where('line_id', $lineId->id)
-            ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
-            })
-            ->first();
-
-        // get man henkaten
-        $manHenkaten = Troubleshoot::with(['henkaten.shift', 'manAfter', 'manBefore'])
-            ->whereHas('henkaten', function ($query) use ($lineId, $currentDate, $currentTime) {
-                $query
-                    ->where('date', 'LIKE', $currentDate . '%')
-                    ->where('line_id', $lineId->id)
-                    ->whereHas('shift', function ($subQuery) use ($currentTime) {
-                        $subQuery->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
-                    });
-            })
-            ->get();
-
-        // push to websocket
-        $this->pushData(true);
-
-        return view('pages.website.line', [
-            'line' => Line::findOrFail($lineId->id),
-            'lineMap' => Line::where('id', $lineId->id)->first(),
-            'employees' => Employee::doesntHave('employeeActive')
-                ->where('origin_id', $empOrigin)
-                ->get(),
-            'activeEmployees' => $activeEmployees,
-            'activePic' => $activePic,
-            'histories' => $histories,
-            'manHenkaten' => $manHenkaten,
-            'henkatenManagements' => HenkatenManagement::all(),
-        ]);
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return ['error' => $th->getMessage];
+        } 
     }
 
     public function selectTheme(Request $request)
