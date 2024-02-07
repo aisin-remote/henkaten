@@ -39,6 +39,9 @@ class EmployeeController extends Controller
 
     public function attendance()
     {
+        // get origin id
+        $empOrigin = auth()->user()->origin_id;
+        
         $currentDate = Carbon::now()->format('Y-m-d');
         $currentTime = Carbon::now()->format('H:i:s');
         
@@ -48,16 +51,26 @@ class EmployeeController extends Controller
         $activeEmployees = EmployeeActive::with('shift')
             ->with('employee')
             ->with('pos')
+            ->with('line')
             ->where('active_from', '<=', $currentDate)
             ->where('expired_at', '>=', $currentDate)
             ->whereHas('shift', function ($query) use ($currentTime) {
                 $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
             })
+            ->whereHas('employee', function($query) use ($empOrigin){
+                $query->where('origin_id', $empOrigin);
+            })
             ->get();
+
+            $activeEmployees = $activeEmployees->groupBy('line_id');
+            
+            // get line 
+            $lines = Line::select('name','id')->where('origin_id', $empOrigin)->get();
             
         return view('pages.website.attendance', [
             'employees' => $activeEmployees,
-            'shift' => $shift
+            'shift' => $shift,
+            'lines' => $lines,
         ]);
     }
 

@@ -13,7 +13,7 @@
                     <h1 class="modal-title fs-5" id="themeModalLabel">{{ $modalTitle }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form>
+                <form class="submitForm">
                     <div class="modal-body">
                         <div id="formModalTheme">
                             @php
@@ -52,13 +52,56 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="themeForm">Save changes</button>
+                        <button type="button" class="btn btn-primary submitButton" id="themeForm">Save changes</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
     {{-- end of modal --}}
+
+    @php
+        $modalTitle = $pivot && $pivot->supervisor ? 'Change Supervisor' : 'Add Supervisor';
+    @endphp
+
+    {{-- supervisor modal --}}
+    <div class="modal fade" id="supervisorModal" tabindex="-1" aria-labelledby="themeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">{{ $modalTitle }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form class="submitForm">
+                    <div class="modal-body">
+                        @if ($pivot && $pivot->supervisor)
+                            <div class="mb-3">
+                                <label class="mb-2">Current Supervisor</label>
+                                <input type="text" class="form-control" placeholder="" disabled
+                                    value="{{ $pivot->supervisor->name }}">
+                            </div>
+                        @endif
+                        <label class="mb-2">New Supervisor</label>
+                        <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
+                            data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true" id="supervisorSelect"
+                            required>
+                            <option data-select2-id="select2-data-3-t8ia" value="0">Select</option>
+                            @foreach ($supervisors as $supervisor)
+                                <option data-select2-id="select2-data-3-t8ia" value="{{ $supervisor->id }}">
+                                    {{ $supervisor->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary submitButton" id="supervisorForm">Save
+                            changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     @php
         $modalTitle = $pivot && $pivot->firstPic ? 'Change PIC' : 'Add PIC';
@@ -72,7 +115,7 @@
                     <h1 class="modal-title fs-5" id="exampleModalLabel">{{ $modalTitle }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form>
+                <form class="submitForm">
                     <div class="modal-body">
                         @if ($pivot && $pivot->firstPic)
                             <div class="mb-3">
@@ -96,7 +139,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="firstPicForm">Save changes</button>
+                        <button type="button" class="btn btn-primary submitButton" id="firstPicForm">Save
+                            changes</button>
                     </div>
                 </form>
             </div>
@@ -116,7 +160,7 @@
                     <h1 class="modal-title fs-5" id="exampleModalLabel">{{ $modalTitle }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form>
+                <form class="submitForm">
                     <div class="modal-body">
                         @if ($pivot && $pivot->secondPic)
                             <div class="mb-3">
@@ -140,7 +184,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="secondPicForm">Save changes</button>
+                        <button type="button" class="btn btn-primary submitButton" id="secondPicForm">Save
+                            changes</button>
                     </div>
                 </form>
             </div>
@@ -160,7 +205,7 @@
                     <h1 class="modal-title fs-5" id="themeModalLabel">{{ $modalTitle }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form>
+                <form class="submitForm">
                     <div class="modal-body">
                         @if ($pivot && $pivot->theme)
                             <div class="mb-3">
@@ -194,7 +239,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="themeForm">Save changes</button>
+                        <button type="button" class="btn btn-primary submitButton" id="themeForm">Save changes</button>
                     </div>
                 </form>
             </div>
@@ -214,7 +259,7 @@
                     <h1 class="modal-title fs-5" id="exampleModalLabel">{{ $modalTitle }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form>
+                <form class="submitForm">
                     <div class="modal-body">
                         @if ($pivot && $pivot->firstPic)
                             <div class="mb-3">
@@ -238,7 +283,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="firstPicForm">Save changes</button>
+                        <button type="button" class="btn btn-primary submitButton" id="firstPicForm">Save
+                            changes</button>
                     </div>
                 </form>
             </div>
@@ -258,7 +304,7 @@
                     <h1 class="modal-title fs-5" id="exampleModalLabel">{{ $modalTitle }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form>
+                <form class="submitForm">
                     <div class="modal-body">
                         @if ($pivot && $pivot->secondPic)
                             <div class="mb-3">
@@ -282,7 +328,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="secondPicForm">Save changes</button>
+                        <button type="button" class="btn btn-primary submitButton" id="secondPicForm">Save
+                            changes</button>
                     </div>
                 </form>
             </div>
@@ -291,7 +338,7 @@
     {{-- end of modal --}}
 
     <div class="row" style="margin-top: -30px">
-        <div class="col-lg-6 col-md-12 col-12">
+        <div class="col-lg-5 col-md-12 col-12">
             <div class="card shadow-md card-hover">
                 <div class="card-body p-3 d-flex align-items-center gap-3" id="themeContainer">
                     <div>
@@ -316,19 +363,45 @@
             </div>
         </div>
 
-        @php
-            $firstPic = $pivot ? $pivot->firstPic : null;
+        <div class="col-lg-1 col-sm-12">
+            <div class="card shadow-md card-hover" id="firstPic">
+                <div class="card-body p-4 d-flex align-items-center gap-1">
+                    <h2 class="fw-bolder">{{ $activeEmployees }}</h2>
+                    <small class="me-3">MP</small>
+                </div>
+            </div>
+        </div>
 
-            if ($pivot && $firstPic) {
-                if ($firstPic->role == 'JP') {
-                    $color = 'warning';
-                } else {
-                    $color = 'danger';
-                }
-            }
+        @php
+            $supervisor = $pivot ? $pivot->supervisor : null;
         @endphp
 
-        <div class="col-lg-3 col-sm-12" id="firstPicContainer">
+        <div class="col-lg-2 col-sm-12" id="supervisorContainer">
+            <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#supervisorModal"
+                id="supervisor">
+                @if ($supervisor)
+                    <div class="card-body p-3 d-flex align-items-center gap-3">
+                        <img src="{{ $supervisor->photo ? asset('uploads/doc/' . $supervisor->photo) : asset('path_to_default_image') }}"
+                            alt="" class="rounded-circle" width="60" height="60">
+                        <div>
+                            <h6 class="fw-semibold mb-0">{{ $supervisor->name }}</h6>
+                            <span class="fs-2 d-flex align-items-center py-1"><i
+                                    class="ti ti-map-pin text-dark fs-3 me-1"></i>{{ $supervisor->npk }}</span>
+                        </div>
+                    </div>
+                @else
+                    <form action="#" class="dropzone dz-clickable p-3 rounded-1">
+                        <p class="text-center pt-3">Add Supervisor</p>
+                    </form>
+                @endif
+            </div>
+        </div>
+
+        @php
+            $firstPic = $pivot ? $pivot->firstPic : null;
+        @endphp
+
+        <div class="col-lg-2 col-sm-12" id="firstPicContainer">
             <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#firstPicModal"
                 id="firstPic">
                 @if ($firstPic)
@@ -340,7 +413,6 @@
                             <span class="fs-2 d-flex align-items-center py-1"><i
                                     class="ti ti-map-pin text-dark fs-3 me-1"></i>{{ $firstPic->npk }}</span>
                         </div>
-                        <button class="btn btn-{{ $color }} py-1 px-3 ms-auto">{{ $firstPic->role }}</button>
                     </div>
                 @else
                     <form action="#" class="dropzone dz-clickable p-3 rounded-1">
@@ -352,17 +424,9 @@
 
         @php
             $secondPic = $pivot ? $pivot->secondPic : null;
-
-            if ($pivot && $secondPic) {
-                if ($secondPic->role == 'JP') {
-                    $color = 'warning';
-                } else {
-                    $color = 'danger';
-                }
-            }
         @endphp
 
-        <div class="col-lg-3 col-sm-12" id="secondPicContainer">
+        <div class="col-lg-2 col-sm-12" id="secondPicContainer">
             <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="" id="secondPic">
                 @if ($secondPic)
                     <div class="card-body p-3 d-flex align-items-center gap-3">
@@ -373,7 +437,6 @@
                             <span class="fs-2 d-flex align-items-center py-1"><i
                                     class="ti ti-map-pin text-dark fs-3 me-1"></i>{{ $secondPic->npk }}</span>
                         </div>
-                        <button class="btn btn-{{ $color }} py-1 px-3 ms-auto">{{ $secondPic->role }}</button>
                     </div>
                 @else
                     <form action="#" class="dropzone dz-clickable p-3 rounded-1">
@@ -847,6 +910,15 @@
                 themeSelect.disabled = false;
             }
         });
+
+        $('.submitForm').submit(function() {
+            // Disable the submit button to prevent multiple form submissions
+            $('.submitButton').prop('disabled', true);
+
+            setTimeout(function() {
+                $('.submitButton').prop('disabled', false);
+            }, 5000);
+        });
     });
 
     function initApp() {
@@ -922,12 +994,66 @@
             dropdownParent: $('#modalTheme')
         });
 
+        $('#supervisorSelect').select2({
+            dropdownParent: $('#supervisorModal')
+        });
+
         $('#firstPicSelect').select2({
             dropdownParent: $('#firstPicModal')
         });
 
         $('#secondPicSelect').select2({
             dropdownParent: $('#secondPicModal')
+        });
+
+        // submit supervisor 1
+        $('#supervisorForm').on('click', function() {
+            let pic = $('#supervisorSelect').val();
+            $.ajax({
+                type: 'get',
+                url: `{{ url('dashboard/selectSupervisor/${pic}') }}`,
+                _token: "{{ csrf_token() }}",
+                dataType: 'json',
+                success: function(data) {
+                    if (data.status == 'success') {
+                        // set local storage
+                        localStorage.setItem('supervisor', 'set');
+
+                        $('#supervisorModal').modal('hide');
+
+                        setTimeout(() => {
+                            notif('success', data.message);
+                        }, 500);
+
+                        let color = data.role == 'Leader' ? 'danger' : 'warning';
+                        let photo = data.photo;
+
+                        $('#superviosrContainer').html('');
+                        $('#superviosrContainer').html(`
+                        <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#supervisorModal" id="suprvisor">
+                            <div class="card-body p-3 d-flex align-items-center gap-3">
+                                <img src="{{ asset('uploads/doc/${photo}') }}"
+                                    alt="" class="rounded-circle" width="60" height="60">
+                                <div>
+                                    <h6 class="fw-semibold mb-0">${data.name}</h6>
+                                    <span class="fs-2 d-flex align-items-center py-1"><i
+                                            class="ti ti-map-pin text-dark fs-3 me-1"></i>${data.npk}</span>
+                                </div>
+                            </div>
+                        </div>
+                        `);
+                    } else {
+                        notif('error', data.message);
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status == 0) {
+                        notif("error", 'Connection Error');
+                        return;
+                    }
+                    notif("error", 'Internal Server Error');
+                }
+            });
         });
 
         // submit form 1
@@ -963,7 +1089,6 @@
                                     <span class="fs-2 d-flex align-items-center py-1"><i
                                             class="ti ti-map-pin text-dark fs-3 me-1"></i>${data.npk}</span>
                                 </div>
-                                <button class="btn btn-${color} py-1 px-3 ms-auto">${data.role}</button>
                             </div>
                         </div>
                         `);
@@ -1014,7 +1139,6 @@
                                     <span class="fs-2 d-flex align-items-center py-1"><i
                                             class="ti ti-map-pin text-dark fs-3 me-1"></i>${data.npk}</span>
                                 </div>
-                                <button class="btn btn-${color} py-1 px-3 ms-auto">${data.role}</button>
                             </div>
                         </div>
                         `);

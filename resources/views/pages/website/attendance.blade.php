@@ -1,29 +1,16 @@
 @extends('layouts.root.main')
 
 @section('main')
-    <div class="row mt-3">
-        <div class="col-md-6">
+    <div class="row mt-1">
+        <div class="col-md-2">
             <div class="card shadow" style="padding: 40px;border-radius:16px">
-                <div class="card bg-success">
+                <div class="card bg-warning">
                     <div class="row pb-4">
                         <div class="col-12 pt-4">
-                            <h2 id="shift" class="text-center fw-bolder mb-3 text-white">{{ $shift->name }}</h2>
-                            <div class="row">
-                                <div class="col-6">
-                                    <h4 class="text-center text-white">Jam Masuk</h4>
-                                    <h4 class="text-center text-white fw-bolder">
-                                        {{ Carbon\Carbon::parse($shift->time_start)->format('H:i') }}</h4>
-                                </div>
-                                <div class="col-6">
-                                    <h4 class="text-center text-white">Jam Pulang</h4>
-                                    <h4 class="text-center text-white fw-bolder">
-                                        {{ Carbon\Carbon::parse($shift->time_end)->format('H:i') }}</h4>
-                                </div>
-                            </div>
+                            <h2 id="shift" class="text-center fw-bolder mb-1 text-white">{{ $shift->name }}</h2>
                         </div>
                     </div>
                 </div>
-                <hr class="mb-4">
                 <div class="row">
                     <div class="col-12">
                         <div class="form-group">
@@ -37,58 +24,73 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card shadow-xs" style="padding: 40px; border-radius:16px">
-                <div class="row">
-                    <div class="col-12">
-                        <table class="table text-nowrap align-middle mb-0 table-bordered" id="masterSkill"
-                            style="width:100%; font-size: 12px">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="align-middle">Name</th>
-                                    <th class="align-middle">Shift</th>
-                                    <th class="align-middle">Time In</th>
-                                    <th class="text-center">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($employees as $employee)
-                                    @php
-                                        $currentDate = Carbon\Carbon::now()->format('Y-m-d');
+        <div class="col-md-10 col-sm-12">
+            <div class="row">
+                @foreach ($lines as $line)
+                    <div class="col-md-4">
+                        <div class="card shadow-xs" style="padding: 40px; border-radius:16px">
+                            <div class="row">
+                                <div class="card bg-secondary">
+                                    <div class="row pb-4">
+                                        <div class="col-12 pt-4">
+                                            <h2 id="shift" class="text-center fw-bolder mb-1 text-white">
+                                                {{ $line->name }}</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                @if ($employees->has($line->id))
+                                    @foreach ($employees[$line->id] as $employee)
+                                        @php
+                                            $currentDate = Carbon\Carbon::now()->format('Y-m-d');
+                                            $attendance = $employee
+                                                ->with('attendance')
+                                                ->whereHas('attendance', function ($query) use ($employee, $currentDate) {
+                                                    $query->where('employee_active_id', $employee->id)->where('created_at', 'LIKE', $currentDate . '%');
+                                                })
+                                                ->has('attendance')
+                                                ->first();
 
-                                        $attendance = $employee
-                                            ->with('attendance')
-                                            ->whereHas('attendance', function ($query) use ($employee, $currentDate) {
-                                                $query->where('employee_active_id', $employee->id)->where('created_at', 'LIKE', $currentDate . '%');
-                                            })
-                                            ->has('attendance')
-                                            ->first();
-
-                                    @endphp
-                                    <tr>
-                                        <td>{{ $employee->employee->name }}</td>
-                                        <td>{{ $employee->shift->name }}</td>
-                                        @if ($attendance)
-                                            <td class="text-center">{{ $attendance->attendance[0]->time_in }}</td>
-                                            <td class="text-center">
-                                                <span class="mb-1 badge bg-light-success text-success">
-                                                    Hadir
-                                                </span>
-                                            </td>
-                                        @else
-                                            <td class="text-center">--:--</td>
-                                            <td class="text-center">
-                                                <span class="mb-1 badge bg-light-danger text-danger">
-                                                    Belum hadir
-                                                </span>
-                                            </td>
-                                        @endif
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                        @endphp
+                                        <div class="d-flex align-items-center justify-content-between mt-4">
+                                            <div class="d-flex">
+                                                <div
+                                                    class="p-8 bg-light-primary rounded-2 d-flex align-items-center justify-content-center me-6">
+                                                    <img src="{{ asset('uploads/doc/' . $employee->employee->photo) }}"
+                                                        alt="" class="img-fluid" width="24" height="24">
+                                                </div>
+                                                <div>
+                                                    @if ($employee->line->name == $line->name)
+                                                        <h6 class="mb-1 fs-4 fw-semibold">{{ $employee->employee->name }}
+                                                        </h6>
+                                                        <p class="fs-3 mb-0">POS {{ $employee->pos->pos }}</p>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="status-container">
+                                                @if ($attendance)
+                                                    <span
+                                                        class="badge bg-success text-light fs-2 rounded-4 py-1 px-2 lh-sm mt-3 fw-bold status">
+                                                        Hadir
+                                                    </span>
+                                                @else
+                                                    <span
+                                                        class="badge bg-danger text-light fs-2 rounded-4 py-1 px-2 lh-sm mt-3 fw-bold status">
+                                                        Belum hadir
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="text-muted text-center">
+                                        No active employees for this line.
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
                     </div>
-                </div>
+                @endforeach
+
             </div>
         </div>
     </div>
@@ -101,6 +103,10 @@
         var table = $('#masterSkill').DataTable({
             scrollX: true,
         });
+
+        $(document).on('click', function() {
+            $('#code').focus()
+        })
 
         // toast
         function notif(status, message) {

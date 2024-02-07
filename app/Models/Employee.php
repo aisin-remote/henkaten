@@ -15,6 +15,11 @@ class Employee extends Model
 
     protected $guarded = ['id'];
 
+    public function supervisorPivot()
+    {
+        return $this->hasMany(Pivot::class, 'supervisor_id');
+    }
+    
     public function firstPicPivot()
     {
         return $this->hasMany(Pivot::class, 'first_pic_id');

@@ -20,6 +20,11 @@ class Pivot extends Model
         return $this->belongsTo(Theme::class);
     }
     
+    public function supervisor()
+    {
+        return $this->belongsTo(Employee::class, 'supervisor_id');
+    }
+    
     public function firstPic()
     {
         return $this->belongsTo(Employee::class, 'first_pic_id');

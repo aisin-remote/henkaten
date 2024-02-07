@@ -62,6 +62,20 @@ class DashboardController extends Controller
             ->where('origin_id', $empOrigin)
             ->first();
 
+        // get active employee
+        $activeEmployees = EmployeeActive::with('shift')
+            ->with('employee')
+            ->with('pos')
+            ->where('active_from', '<=', $current_date)
+            ->where('expired_at', '>=', $current_date)
+            ->whereHas('shift', function ($query) use ($currentTime) {
+                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
+            })
+            ->whereHas('employee', function($query) use ($empOrigin){
+                $query->where('origin_id', $empOrigin);
+            })
+            ->count();
+
         // get henkaten where status still active
         $activeProblems = Henkaten::with(['shift', 'line.origin'])
             ->where(function ($query) use ($empOrigin, $currentTime, $current_date) {
@@ -85,10 +99,15 @@ class DashboardController extends Controller
         // in this page we will get all line status
         return view('pages.website.dashboard', [
             'pivot' => $pivot,
+            'activeEmployees' => $activeEmployees,
             'themes' => Theme::all(),
             'employees' => Employee::select('id', 'name')
                 ->where('origin_id', $empOrigin)
                 ->whereIn('role', ['Leader', 'JP'])
+                ->get(),
+            'supervisors' => Employee::select('id', 'name')
+                ->where('origin_id', $empOrigin)
+                ->where('role', 'SPV')
                 ->get(),
             'lines' => Line::where('origin_id', $empOrigin)->get(),
             'histories' => $activeProblems,
@@ -334,6 +353,92 @@ class DashboardController extends Controller
         );
     }
 
+    public function selectSupervisor($id)
+    {
+        // get origin id
+        $empOrigin = auth()->user()->origin_id;
+
+        $pic = $id;
+        if ($pic == 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Pilih karyawan yang tersedia!',
+            ]);
+        }
+
+        // get current pivot
+        $current_date = Carbon::now()->toDateString();
+        $pivot = Pivot::where('active_date', $current_date)->first();
+
+        $employee = Employee::where('id', $pic)->first();
+        if (!$employee) {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => 'karyawan tidak terdaftar!',
+                ],
+                404,
+            );
+        }
+
+        if (!$pivot) {
+            try {
+                DB::beginTransaction();
+
+                // insert new data if pivot table is empty
+                Pivot::create([
+                    'origin_id' => $empOrigin,
+                    'supervisor_id' => $pic,
+                    'active_date' => $current_date,
+                ]);
+
+                DB::commit();
+
+                // insert the value into session
+                session(['selected_supervisor' => $pic]);
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'message' => $th,
+                ],500,);
+            }
+        } else {
+            try {
+                DB::beginTransaction();
+
+                $pivot->update([
+                    'supervisor_id' => $pic,
+                ]);
+
+                DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'message' => $th,
+                ],500);
+            }
+        }
+
+        // push to websocket
+        $this->pushData(true);
+
+        return response()->json(
+            [
+                'status' => 'success',
+                'message' => 'Supervisor berhasil ditambahkan!',
+                'name' => $employee->name,
+                'photo' => $employee->photo,
+                'role' => $employee->role,
+                'npk' => $employee->npk,
+            ],
+            200,
+        );
+    }
+    
     public function selectFirstPic($id)
     {
         // get origin id

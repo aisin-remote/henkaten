@@ -142,7 +142,7 @@
                         </h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form class="mt-3" action="{{ route('dashboard.storeHenkaten') }}" method="POST">
+                    <form class="mt-3 henkatenForm" action="{{ route('dashboard.storeHenkaten') }}" method="POST">
                         @csrf
                         @method('POST')
                         <div class="modal-body">
@@ -203,7 +203,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-secondary" id="{{ $modal['modalId'] }}Submit">Save
+                            <button type="submit" class="btn btn-secondary henkatenSubmitButton"
+                                id="{{ $modal['modalId'] }}Submit">Save
                                 changes</button>
                             <button type="button"
                                 class="btn btn-light-danger text-danger font-medium waves-effect text-start"
@@ -1446,6 +1447,15 @@
                 $('#manProblem').removeAttr('disabled');
                 $('#manDescription').removeAttr('disabled');
             }
+        });
+
+        $('.henkatenForm').submit(function() {
+            // Disable the submit button to prevent multiple form submissions
+            $('.henkatenSubmitButton').prop('disabled', true);
+
+            setTimeout(function() {
+                $('.henkatenSubmitButton').prop('disabled', false);
+            }, 5000);
         });
 
         // Push the initial values to the array
