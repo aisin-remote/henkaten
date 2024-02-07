@@ -53,11 +53,8 @@
                                         @endphp
                                         <div class="d-flex align-items-center justify-content-between mt-4">
                                             <div class="d-flex">
-                                                <div
-                                                    class="p-8 bg-light-primary rounded-2 d-flex align-items-center justify-content-center me-6">
-                                                    <img src="{{ asset('uploads/doc/' . $employee->employee->photo) }}"
-                                                        alt="" class="img-fluid" width="24" height="24">
-                                                </div>
+                                                <img src="{{ asset('uploads/doc/' . $employee->employee->photo) }}"
+                                                    class="rounded-1 img-fluid" width="150">
                                                 <div>
                                                     @if ($employee->line->name == $line->name)
                                                         <h6 class="mb-1 fs-4 fw-semibold">{{ $employee->employee->name }}
