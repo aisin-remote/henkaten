@@ -1360,7 +1360,7 @@
             toggleFormElements($(this));
         });
 
-        $('.troubleshoot').on('click', function() {
+        $(document).on('click', '.troubleshoot', function() {
             const historyId = $(this).data('history-id');
             $(`#${historyId}Troubleshoot`).modal('show');
 
@@ -1385,12 +1385,12 @@
             });
         })
 
-        $('.approve').on('click', function() {
+        $(document).on('click', '.approve', function() {
             const historyId = $(this).data('history-id');
             $(`#${historyId}Approve`).modal('show');
         })
 
-        $('.detail').on('click', function() {
+        $(document).on('click', '.detail' ,function() {
             const historyId = $(this).data('history-id');
             $(`#${historyId}Detail`).modal('show');
         })
