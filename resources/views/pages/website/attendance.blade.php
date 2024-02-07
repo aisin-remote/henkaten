@@ -52,7 +52,7 @@
 
                                         @endphp
                                         <div class="d-flex align-items-center justify-content-between mt-4">
-                                            <div class="d-flex">
+                                            <div class="d-flex gap-2">
                                                 <img src="{{ asset('uploads/doc/' . $employee->employee->photo) }}"
                                                     class="rounded-1 img-fluid" width="40">
                                                 <div>
