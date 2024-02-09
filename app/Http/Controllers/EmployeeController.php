@@ -354,6 +354,11 @@ class EmployeeController extends Controller
             return redirect()->back()->with('error', 'Karyawan tidak boleh sama!');
         }
 
+        // filter employees
+        $employees =  array_filter($employees, function($item) {
+            return $item !== '0' && $item !== 0;
+        });
+
         // get all employee skill
         for($i = 0; $i < count($employees); $i++){
             $employeeSkills = EmployeeSkill::with(['skill','employee'])->where('employee_id', $employees[$i])->get();

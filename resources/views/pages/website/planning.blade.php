@@ -164,9 +164,14 @@
                                 <td>{{ Carbon\Carbon::parse($start)->format('j F Y') }} -
                                     {{ Carbon\Carbon::parse($end)->format('j F Y') }}</td>
                                 @if (auth()->user()->origin->name !== 'ELECTRIC')
-                                    @foreach ($employees as $employee)
-                                        <td>{{ $employee->name }}</td>
-                                    @endforeach
+                                    @if (count($employees) === 2)
+                                        @foreach ($employees as $employee)
+                                            <td>{{ $employee->name }}</td>
+                                        @endforeach
+                                    @else
+                                        <td>{{ $employees[0]->name }}</td>
+                                        <td></td>
+                                    @endif
                                 @else
                                     @if ($line === 'ASAN01' || $line === 'ASAN02')
                                         <td>
