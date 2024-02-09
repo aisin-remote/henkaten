@@ -300,6 +300,7 @@ class EmployeeController extends Controller
             'employee_id' => 'required',
             'active_from' => 'required',
         ]);
+        
         $employees = $request->employee_id;
         $pic = $request->pic_name;
         $pos = $request->pos;
@@ -312,10 +313,8 @@ class EmployeeController extends Controller
         }
 
         if(auth()->user()->origin->name !== 'ELECTRIC'){
-            if($employees[0] === 0){
-                return redirect()->back()->with('error', 'Isi karyawan pos 1!');
-            }else if($employees[1] == '0'){
-                return redirect()->back()->with('error', 'Isi karyawan pos 2!');
+            if($employees[0] === 0 && $employees[1] == '0'){
+                return redirect()->back()->with('error', 'Pos tidak boleh kosong!');
             }
         }else{
             if($lineName == 'ASAN01' || $lineName == 'ASAN02'){
