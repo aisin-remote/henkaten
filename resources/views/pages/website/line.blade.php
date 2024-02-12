@@ -1107,10 +1107,9 @@
                                                 </span>
                                             @else
                                                 <div class="form-floating mb-3">
-                                                    <input type="text" class="form-control fw-bolder" id="tb-fname"
-                                                        placeholder="Enter Name here"
-                                                        value="{{ strtoupper($history->henkaten->troubleshoot->troubleshoot) }}"
-                                                        disabled>
+                                                    <textarea class="form-control fw-bolder" id="tb-fname" placeholder="Enter Name here"
+                                                        value="{{ strtoupper($history->henkaten->troubleshoot->troubleshoot) }}" disabled>
+                                                    </textarea>
                                                     <label for="tb-fname">Troubleshoot</label>
                                                 </div>
                                                 <div class="form-floating mb-3">
@@ -1390,7 +1389,7 @@
             $(`#${historyId}Approve`).modal('show');
         })
 
-        $(document).on('click', '.detail' ,function() {
+        $(document).on('click', '.detail', function() {
             const historyId = $(this).data('history-id');
             $(`#${historyId}Detail`).modal('show');
         })
