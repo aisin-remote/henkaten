@@ -490,7 +490,6 @@ class HenkatenController extends Controller
 
         $currentDate = Carbon::now()->format('Y-m-d');
         $currentTime = Carbon::now()->format('H:i:s');
-        $worstPriority = 0;
 
         // get all henkaten data
         $lineName = $henkatenInfo->line->name;
@@ -650,8 +649,9 @@ class HenkatenController extends Controller
                     }
                 }
             }
-
+            
             // Leveling priority
+            $worstPriority = 0;
             foreach ($otherStats as $otherStat) {
                 if (isset($statusMappings[$otherStat->status])) {
                     $priority = $statusMappings[$otherStat->status]['priority'];
