@@ -541,10 +541,9 @@ class HenkatenController extends Controller
                         CURLOPT_CUSTOMREQUEST => 'POST',
                         CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
                     ]);
+                    $response = curl_exec($curl);
+                    curl_close($curl);
                 }
-
-                $response = curl_exec($curl);
-                curl_close($curl);
             } elseif (auth()->user()->role === 'SPV') {
                 Approval::where('henkaten_id', $request->henkaten_id)->update([
                     'spv' => auth()->user()->name,
@@ -574,10 +573,10 @@ class HenkatenController extends Controller
                         CURLOPT_CUSTOMREQUEST => 'POST',
                         CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
                     ]);
+                    $response = curl_exec($curl);
+                    curl_close($curl);
                 }
 
-                $response = curl_exec($curl);
-                curl_close($curl);
             } else {
                 Approval::where('henkaten_id', $request->henkaten_id)->update([
                     'mgr' => auth()->user()->name,
@@ -688,7 +687,9 @@ class HenkatenController extends Controller
                 ->with('success', 'Berhasil diapprove!');
         } catch (\Throwable $th) {
             DB::rollback();
-            dd($th->getMessage());
+            return redirect()
+                    ->back()
+                    ->with('error', 'Gagal diapprove!');
         }
     }
 
