@@ -1107,7 +1107,7 @@
                                                 </span>
                                             @else
                                                 <div class="form-floating mb-3">
-                                                    <textarea class="form-control fw-bolder" id="tb-fname" placeholder="Enter Name here" disabled>
+                                                    <textarea class="form-control fw-bolder" id="tb-fname" disabled>
                                                         {{ strtoupper($history->henkaten->troubleshoot->troubleshoot) }}
                                                     </textarea>
                                                     <label for="tb-fname">Troubleshoot</label>
