@@ -1107,9 +1107,7 @@
                                                 </span>
                                             @else
                                                 <div class="form-floating mb-3">
-                                                    <textarea class="form-control fw-bolder" id="tb-fname" disabled>
-                                                        {{ strtoupper($history->henkaten->troubleshoot->troubleshoot) }}
-                                                    </textarea>
+                                                    <textarea class="form-control fw-bolder" disabled>{{ strtoupper($history->henkaten->troubleshoot->troubleshoot) }}</textarea>
                                                     <label for="tb-fname">Troubleshoot</label>
                                                 </div>
                                                 <div class="form-floating mb-3">
