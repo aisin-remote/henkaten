@@ -684,7 +684,7 @@ class HenkatenController extends Controller
             DB::rollback();
             return redirect()
                 ->back()
-                ->with('error', $th);
+                ->with('error', 'Gagal diapprove!');
         }
     }
 
