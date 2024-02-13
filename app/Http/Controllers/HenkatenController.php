@@ -200,7 +200,6 @@ class HenkatenController extends Controller
                 $response = curl_exec($curl);
                 curl_close($curl);
             }
-
             // push to websocket
             $this->pushData(true);
 
@@ -287,6 +286,9 @@ class HenkatenController extends Controller
         try {
             DB::beginTransaction();
 
+            // Check if a record already exists
+            $existingRecord = Troubleshoot::where('henkaten_id', $request->henkaten_id)->first();
+            
             if ($request->{"4M"} == 'man') {
                 // count same value of input
                 $nameCounts = array_count_values($employeeAfter);
@@ -306,46 +308,78 @@ class HenkatenController extends Controller
                         ->with('error', 'Employee cant be same!');
                 }
 
-                for ($i = 0; $i < count($request->after); $i++) {
-                    if ($request->after[$i] !== '0') {
-                        Troubleshoot::create([
-                            'henkaten_id' => $request->henkaten_id,
-                            'troubleshoot' => $request->troubleshoot,
-                            'employee_before_id' => $request->before[$i],
-                            'employee_after_id' => $request->after[$i],
-                            'result_check' => $request->resultCheck,
-                            'inspection_report' => $request->inspection,
-                            'part' => $request->part,
-                            'before_treatment' => $request->beforeTreatment,
-                            'after_treatment' => $request->afterTreatment,
-                            'done_by' => $request->doneBy,
-                        ]);
-                    }else{
-                        Troubleshoot::create([
-                            'henkaten_id' => $request->henkaten_id,
-                            'troubleshoot' => $request->troubleshoot,
-                            'result_check' => $request->resultCheck,
-                            'inspection_report' => $request->inspection,
-                            'part' => $request->part,
-                            'before_treatment' => $request->beforeTreatment,
-                            'after_treatment' => $request->afterTreatment,
-                            'done_by' => $request->doneBy,
-                        ]);
+                if (!$existingRecord) {
+                    $troubleshootData = [
+                        'henkaten_id' => $request->henkaten_id,
+                        'troubleshoot' => $request->troubleshoot,
+                        'result_check' => $request->resultCheck,
+                        'inspection_report' => $request->inspection,
+                        'part' => $request->part,
+                        'before_treatment' => $request->beforeTreatment,
+                        'after_treatment' => $request->afterTreatment,
+                        'done_by' => $request->doneBy,
+                    ];
+
+                    for ($i = 0; $i < count($request->after); $i++) {
+                        $employeeBeforeId = $request->before[$i];
+                        $employeeAfterId = $request->after[$i];
+
+                        if ($employeeAfterId !== '0') {
+                            $troubleshootData['employee_before_id'] = $employeeBeforeId;
+                            $troubleshootData['employee_after_id'] = $employeeAfterId;
+                        }
+
+                        Troubleshoot::create($troubleshootData);
                     }
-                    DB::commit();
+                } else {
+                    $troubleshootData = [
+                        'troubleshoot' => $request->troubleshoot,
+                        'result_check' => $request->resultCheck,
+                        'inspection_report' => $request->inspection,
+                        'part' => $request->part,
+                        'before_treatment' => $request->beforeTreatment,
+                        'after_treatment' => $request->afterTreatment,
+                        'done_by' => $request->doneBy,
+                    ];
+
+                    for ($i = 0; $i < count($request->after); $i++) {
+                        $employeeBeforeId = $request->before[$i];
+                        $employeeAfterId = $request->after[$i];
+
+                        if ($employeeAfterId !== '0') {
+                            $troubleshootData['employee_before_id'] = $employeeBeforeId;
+                            $troubleshootData['employee_after_id'] = $employeeAfterId;
+                        }
+
+                        Troubleshoot::where('henkaten_id', $request->henkaten_id)->update($troubleshootData);
+                    }
                 }
+
+                DB::commit();
             } else {
-                // Insert troubleshoot for non-'man' case
-                Troubleshoot::create([
-                    'henkaten_id' => $request->henkaten_id,
-                    'troubleshoot' => $request->troubleshoot,
-                    'result_check' => $request->resultCheck,
-                    'inspection_report' => $request->inspection,
-                    'part' => $request->part,
-                    'before_treatment' => $request->beforeTreatment,
-                    'after_treatment' => $request->afterTreatment,
-                    'done_by' => $request->doneBy,
-                ]);
+                if (!$existingRecord) {
+                    // Insert troubleshoot for non-'man' case
+                    Troubleshoot::create([
+                        'henkaten_id' => $request->henkaten_id,
+                        'troubleshoot' => $request->troubleshoot,
+                        'result_check' => $request->resultCheck,
+                        'inspection_report' => $request->inspection,
+                        'part' => $request->part,
+                        'before_treatment' => $request->beforeTreatment,
+                        'after_treatment' => $request->afterTreatment,
+                        'done_by' => $request->doneBy,
+                    ]);
+                }else{
+                    Troubleshoot::where('henkaten_id', $request->henkaten_id)->update([
+                        'troubleshoot' => $request->troubleshoot,
+                        'result_check' => $request->resultCheck,
+                        'inspection_report' => $request->inspection,
+                        'part' => $request->part,
+                        'before_treatment' => $request->beforeTreatment,
+                        'after_treatment' => $request->afterTreatment,
+                        'done_by' => $request->doneBy,
+                    ]);
+                }
 
                 DB::commit();
             }

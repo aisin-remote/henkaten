@@ -620,7 +620,7 @@
                                         </button>
                                         @can('JP')
                                             <button class="btn btn-warning troubleshoot"
-                                                data-history-id="{{ $history->henkaten->id }}" disabled>
+                                                data-history-id="{{ $history->henkaten->id }}">
                                                 <span class="rounded-3" id="icon">
                                                     <i class="ti ti-edit"></i>
                                                 </span>
@@ -738,7 +738,9 @@
                                     <div class="form-group mt-3 mb-3 description" style="display: none;">
                                         <label class="form-label fw-semibold">Troubleshoot</label>
                                         <input class="form-control" rows="3" placeholder="Troubleshoot..."
-                                            name="troubleshoot" id="troubleshoot" required>
+                                            name="troubleshoot" id="troubleshoot"
+                                            value="{{ optional($history->henkaten->troubleshoot)->troubleshoot }}"
+                                            required>
                                         </input>
                                     </div>
                                 </div>
@@ -766,11 +768,13 @@
                                                         <div class="form-check form-check-inline">
                                                             <label class="form-check-label" for="need">Need</label>
                                                             <input class="form-check-input" type="radio"
-                                                                name="inspection" id="need" value="need">
+                                                                name="inspection" id="need" value="need"
+                                                                @if (optional($history->henkaten->troubleshoot)->inspection_report == 'need') checked @endif>
                                                         </div>
                                                         <div class="form-check form-check-inline">
                                                             <input class="form-check-input" type="radio"
-                                                                name="inspection" id="noNeed" value="no need">
+                                                                name="inspection" id="noNeed" value="no need"
+                                                                @if (optional($history->henkaten->troubleshoot)->inspection_report == 'no need') checked @endif>
                                                             <label class="form-check-label" for="noNeed">No Need
                                                             </label>
                                                         </div>
@@ -781,7 +785,8 @@
                                                                 <label for="part"
                                                                     class="form-label fw-semibold">Part</label>
                                                                 <input type="text" class="form-control" id="part"
-                                                                    name="part" placeholder="TCC d983">
+                                                                    name="part" placeholder="TCC d983"
+                                                                    value="{{ optional($history->henkaten->troubleshoot)->part }}">
                                                             </div>
                                                         </div>
                                                         <div class="col-12 mb-3">
@@ -795,8 +800,13 @@
                                                                     id="{{ $history->henkaten->id }}BeforeTreatment"
                                                                     name="beforeTreatment" required>
                                                                     <option value="0">-- Select --</option>
-                                                                    <option value="ok">OK</option>
-                                                                    <option value="ng">NG</option>
+                                                                    <option value="ok"
+                                                                        @if (optional($history->henkaten->troubleshoot)->before_treatment == 'ok') selected @endif>
+                                                                        OK
+                                                                    </option>
+                                                                    <option value="ng"
+                                                                        @if (optional($history->henkaten->troubleshoot)->before_treatment == 'ng') selected @endif>
+                                                                        NG</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -811,8 +821,12 @@
                                                                     id="{{ $history->henkaten->id }}AfterTreatment"
                                                                     name="afterTreatment" required>
                                                                     <option value="0">-- Select --</option>
-                                                                    <option value="ok">OK</option>
-                                                                    <option value="ng">NG</option>
+                                                                    <option value="ok"
+                                                                        @if (optional($history->henkaten->troubleshoot)->after_treatment == 'ok') selected @endif>
+                                                                        OK</option>
+                                                                    <option value="ng"
+                                                                        @if (optional($history->henkaten->troubleshoot)->after_treatment == 'ng') selected @endif>
+                                                                        NG</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -848,8 +862,12 @@
                                                                     id="{{ $history->henkaten->id }}ResultCheck"
                                                                     name="resultCheck" required>
                                                                     <option value="0">-- Select --</option>
-                                                                    <option value="ok">OK</option>
-                                                                    <option value="ng">NG</option>
+                                                                    <option value="ok"
+                                                                        @if (optional($history->henkaten->troubleshoot)->result_check == 'ok') selected @endif>
+                                                                        OK</option>
+                                                                    <option value="ng"
+                                                                        @if (optional($history->henkaten->troubleshoot)->result_check == 'ng') selected @endif>
+                                                                        NG</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -943,7 +961,8 @@
                                             name="doneBy" required>
                                             <option value="0">-- Select Employee--</option>
                                             @foreach ($employees as $employee)
-                                                <option value="{{ $employee->id }}">
+                                                <option value="{{ $employee->id }}"
+                                                    @if (optional($history->henkaten->troubleshoot)->done_by == $employee->id) selected @endif>
                                                     {{ $employee->name }}
                                                 </option>
                                             @endforeach
