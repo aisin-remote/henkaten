@@ -115,7 +115,9 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/henkatenManagement', [HenkatenController::class, 'henkatenManagementIndex'])->name('henkatenManagement.index');
     Route::post('/henkatenManagement/store', [HenkatenController::class, 'henkatenManagementStore'])->name('henkatenManagement.store');
-
+    
+    Route::get('/henkatenExport', [HenkatenController::class, 'henkatenExport'])->name('henkaten.export');
+    
     Route::get('/opl', [OplController::class, 'index']);
     Route::post('/submit-form', [OplController::class, 'handleFormSubmission'])->name('form.submit');
     

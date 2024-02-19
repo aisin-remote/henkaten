@@ -17,11 +17,13 @@ use App\Models\Troubleshoot;
 use Illuminate\Http\Request;
 use App\Models\EmployeeActive;
 use App\Models\HenkatenMethod;
+use App\Exports\HenkatenExport;
 use App\Models\HenkatenMachine;
 use App\Models\HenkatenMaterial;
 use App\Models\HenkatenManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Maatwebsite\Excel\Facades\Excel;
 
 class HenkatenController extends Controller
 {
@@ -935,10 +937,15 @@ class HenkatenController extends Controller
             'status_machine' => $newStatus,
         ];
 
-        Line::whereIn('status_man', [$currentStatus])
-            ->orWhereIn('status_method', [$currentStatus])
-            ->orWhereIn('status_material', [$currentStatus])
-            ->orWhereIn('status_machine', [$currentStatus])
+        Line::where('status_man', $currentStatus)
+            ->orWhere('status_method', $currentStatus)
+            ->orWhere('status_material', $currentStatus)
+            ->orWhere('status_machine', $currentStatus)
             ->update($columnsToUpdate);
+    }
+
+    public function henkatenExport()
+    {
+        return Excel::download(new HenkatenExport, 'henkaten.xlsx');
     }
 }

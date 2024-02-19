@@ -46,6 +46,9 @@
                             </h6>
                         </h4>
                     </div>
+                    {{-- <div class="col-2 text-end">
+                        <a href="{{ route('henkaten.export') }}" class="btn btn-primary">Export</a>
+                    </div> --}}
                 </div>
             </div>
             <div class="card-body p-3">
