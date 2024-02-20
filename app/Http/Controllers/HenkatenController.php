@@ -175,33 +175,26 @@ class HenkatenController extends Controller
             $status = strtoupper($request->status);
             $date = Carbon::parse($henkaten->date)->format('j F Y, g:i A');
 
-            // get user notifications
-            $userNotif = User::select('phone_number')
-                ->where('notification', '1')
-                ->get();
-
             // send WA notif
-            foreach ($userNotif as $userNotif) {
-                $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
-                $phone = $userNotif->phone_number;
-                $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$line->name*``` %cLINE STATUS   : ```*$status*``` %c4M            : $request->type %cCategory      : $request->category %cABNORMALITY   : $request->abnormality %cTIME          : $date %cPIC           : $pivot %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+            $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
+            $phone = '120363233997432617';
+            $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$line->name*``` %cLINE STATUS   : ```*$status*``` %c4M            : $request->type %cCategory      : $request->category %cABNORMALITY   : $request->abnormality %cTIME          : $date %cPIC           : $pivot %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+            $curl = curl_init();
+            curl_setopt_array($curl, [
+                CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
+            ]);
 
-                $curl = curl_init();
-                curl_setopt_array($curl, [
-                    CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => '',
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 0,
-                    CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => 'POST',
-                    CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
-                ]);
+            $response = curl_exec($curl);
+            curl_close($curl);
 
-                $response = curl_exec($curl);
-                curl_close($curl);
-            }
             // push to websocket
             $this->pushData(true);
 
@@ -434,26 +427,24 @@ class HenkatenController extends Controller
                                 'status_' . $request->{"4M"} => $otherStat->status,
                             ]);
 
-                            foreach ($empPhone as $empPhone) {
-                                $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
-                                $phone = $empPhone->phone_number;
-                                $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
-                                $curl = curl_init();
-                                curl_setopt_array($curl, [
-                                    CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
-                                    CURLOPT_RETURNTRANSFER => true,
-                                    CURLOPT_ENCODING => '',
-                                    CURLOPT_MAXREDIRS => 10,
-                                    CURLOPT_TIMEOUT => 0,
-                                    CURLOPT_FOLLOWLOCATION => true,
-                                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                                    CURLOPT_CUSTOMREQUEST => 'POST',
-                                    CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
-                                ]);
+                            $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
+                            $phone = '120363233997432617';
+                            $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+                            $curl = curl_init();
+                            curl_setopt_array($curl, [
+                                CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
+                                CURLOPT_RETURNTRANSFER => true,
+                                CURLOPT_ENCODING => '',
+                                CURLOPT_MAXREDIRS => 10,
+                                CURLOPT_TIMEOUT => 0,
+                                CURLOPT_FOLLOWLOCATION => true,
+                                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                                CURLOPT_CUSTOMREQUEST => 'POST',
+                                CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
+                            ]);
 
-                                $response = curl_exec($curl);
-                                curl_close($curl);
-                            }
+                            $response = curl_exec($curl);
+                            curl_close($curl);
 
                             DB::commit();
                             return redirect()
@@ -467,26 +458,24 @@ class HenkatenController extends Controller
             DB::commit();
 
             // send whatsapp notification
-            foreach ($empPhone as $empPhone) {
-                $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
-                $phone = $empPhone->phone_number;
-                $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c         ```*REMINDER*```    %c%cIni adalah pengingat untuk melakukan %capproval permintaan yang masih menunggu%cdi sistem. Mohon segera cek dan%clakukan persetujuan agar proses dapat berlanjut. %cTerima kasih banyak! %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
-                $curl = curl_init();
-                curl_setopt_array($curl, [
-                    CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => '',
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 0,
-                    CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => 'POST',
-                    CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
-                ]);
+            $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
+            $phone = '120363233997432617';
+            $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c         ```*REMINDER*```    %c%cIni adalah pengingat untuk melakukan %capproval permintaan yang masih menunggu%cdi sistem. Mohon segera cek dan%clakukan persetujuan agar proses dapat berlanjut. %cTerima kasih banyak! %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+            $curl = curl_init();
+            curl_setopt_array($curl, [
+                CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
+            ]);
 
-                $response = curl_exec($curl);
-                curl_close($curl);
-            }
+            $response = curl_exec($curl);
+            curl_close($curl);
 
             return redirect()
                 ->back()
@@ -553,64 +542,47 @@ class HenkatenController extends Controller
                     'status' => 'Leader',
                 ]);
 
-                // get spv number
-                $spv = User::select('phone_number')
-                    ->where('origin_id', $empOrigin)
-                    ->where('role', 'SPV')
-                    ->where('notification', '1')
-                    ->first();
-
-                if($spv){
-                    $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
-                    $phone = optional($spv)->phone_number;
-                    $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c         ```*REMINDER*```    %c%cIni adalah pengingat untuk melakukan %capproval permintaan yang masih menunggu%cdi sistem. Mohon segera cek dan%clakukan persetujuan agar proses dapat berlanjut. %cTerima kasih banyak! %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
-                    $curl = curl_init();
-                    curl_setopt_array($curl, [
-                        CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_ENCODING => '',
-                        CURLOPT_MAXREDIRS => 10,
-                        CURLOPT_TIMEOUT => 0,
-                        CURLOPT_FOLLOWLOCATION => true,
-                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                        CURLOPT_CUSTOMREQUEST => 'POST',
-                        CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
-                    ]);
-                    $response = curl_exec($curl);
-                    curl_close($curl);
-                }
+                $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
+                $phone = '120363233997432617';
+                $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c         ```*REMINDER*```    %c%cIni adalah pengingat untuk melakukan %capproval permintaan yang masih menunggu%cdi sistem. Mohon segera cek dan%clakukan persetujuan agar proses dapat berlanjut. %cTerima kasih banyak! %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+                $curl = curl_init();
+                curl_setopt_array($curl, [
+                    CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'POST',
+                    CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
+                ]);
+                $response = curl_exec($curl);
+                curl_close($curl);
+                
             } elseif (auth()->user()->role === 'SPV') {
                 Approval::where('henkaten_id', $request->henkaten_id)->update([
                     'spv' => auth()->user()->name,
                     'status' => 'Supervisor',
                 ]);
 
-                // get mgr number
-                $mgr = User::select('phone_number')
-                    ->where('origin_id', $empOrigin)
-                    ->where('role', 'MGR')
-                    ->where('notification', '1')
-                    ->first();
-
-                if($mgr){
-                    $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
-                    $phone = optional($mgr)->phone_number;
-                    $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c         ```*REMINDER*```    %c%cIni adalah pengingat untuk melakukan %capproval permintaan yang masih menunggu%cdi sistem. Mohon segera cek dan%clakukan persetujuan agar proses dapat berlanjut. %cTerima kasih banyak! %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
-                    $curl = curl_init();
-                    curl_setopt_array($curl, [
-                        CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_ENCODING => '',
-                        CURLOPT_MAXREDIRS => 10,
-                        CURLOPT_TIMEOUT => 0,
-                        CURLOPT_FOLLOWLOCATION => true,
-                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                        CURLOPT_CUSTOMREQUEST => 'POST',
-                        CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
-                    ]);
-                    $response = curl_exec($curl);
-                    curl_close($curl);
-                }
+                $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
+                $phone = '120363233997432617';
+                $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c         ```*REMINDER*```    %c%cIni adalah pengingat untuk melakukan %capproval permintaan yang masih menunggu%cdi sistem. Mohon segera cek dan%clakukan persetujuan agar proses dapat berlanjut. %cTerima kasih banyak! %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+                $curl = curl_init();
+                curl_setopt_array($curl, [
+                    CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'POST',
+                    CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
+                ]);
+                $response = curl_exec($curl);
+                curl_close($curl);
 
             } else {
                 Approval::where('henkaten_id', $request->henkaten_id)->update([
@@ -623,34 +595,25 @@ class HenkatenController extends Controller
                     'is_done' => '1',
                 ]);
 
-                // get user notifications
-                $empPhone = User::select('phone_number')
-                    ->where('notification', '1')
-                    ->get();
-
                 // send whatsapp notification
-                if($empPhone){
-                    foreach ($empPhone as $empPhone) {
-                        $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
-                        $phone = optional($empPhone)->phone_number;
-                        $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
-                        $curl = curl_init();
-                        curl_setopt_array($curl, [
-                            CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
-                            CURLOPT_RETURNTRANSFER => true,
-                            CURLOPT_ENCODING => '',
-                            CURLOPT_MAXREDIRS => 10,
-                            CURLOPT_TIMEOUT => 0,
-                            CURLOPT_FOLLOWLOCATION => true,
-                            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                            CURLOPT_CUSTOMREQUEST => 'POST',
-                            CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
-                        ]);
-    
-                        $response = curl_exec($curl);
-                        curl_close($curl);
-                    }
-                }
+                $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
+                $phone = '120363233997432617';
+                $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+                $curl = curl_init();
+                curl_setopt_array($curl, [
+                    CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'POST',
+                    CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
+                ]);
+
+                $response = curl_exec($curl);
+                curl_close($curl);
             }
 
             // search other henkaten where status henkaten
