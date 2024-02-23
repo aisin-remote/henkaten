@@ -107,6 +107,8 @@ class HenkatenController extends Controller
                 ->where('is_done', '0')
                 ->where('line_id', $request->line)
                 ->where('4M', $request->type)
+                ->where('date', 'LIKE', $current_date . '%')
+                ->where('shift_id', $shiftId)
                 ->get();
 
             if ($otherStats->isEmpty()) {
