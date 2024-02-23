@@ -68,11 +68,19 @@ class DashboardController extends Controller
             ->with('pos')
             ->where('active_from', '<=', $current_date)
             ->where('expired_at', '>=', $current_date)
-            ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
-            })
-            ->whereHas('employee', function($query) use ($empOrigin){
-                $query->where('origin_id', $empOrigin);
+            ->where(function ($query) use ($currentTime) {
+                $query->where(function ($q) use ($currentTime) {
+                    $q->where('time_start', '<=', $currentTime)
+                        ->where('time_end', '>=', $currentTime);
+                })
+                ->orWhere(function ($q) use ($currentTime) {
+                    // Shifts crossing midnight to next day
+                    $q->where('time_start', '>', 'time_end') // Indicates a shift crossing to the next day
+                        ->where(function ($qq) use ($currentTime) {
+                            $qq->where('time_start', '<=', $currentTime)
+                                ->orWhere('time_end', '>=', $currentTime);
+                        });
+                });
             })
             ->count();
 
@@ -143,17 +151,28 @@ class DashboardController extends Controller
             })
             ->get();
 
-        // get man power at spesific line and range of time
-        $activeEmployees = EmployeeActive::with('shift')
-            ->with('employee')
-            ->with('pos')
-            ->where('active_from', '<=', $currentDate)
-            ->where('expired_at', '>=', $currentDate)
-            ->where('line_id', $lineId->id)
-            ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
-            })
-            ->get();
+            $activeEmployees = EmployeeActive::with('shift')
+                ->with('employee')
+                ->with('pos')
+                ->where('active_from', '<=', $currentDate)
+                ->where('expired_at', '>=', $currentDate)
+                ->where('line_id', $lineId->id)
+                ->where(function ($query) use ($currentTime) {
+                    $query->where(function ($q) use ($currentTime) {
+                        $q->where('time_start', '<=', $currentTime)
+                            ->where('time_end', '>=', $currentTime);
+                    })
+                    ->orWhere(function ($q) use ($currentTime) {
+                        // Shifts crossing midnight to next day
+                        $q->where('time_start', '>', 'time_end') // Indicates a shift crossing to the next day
+                            ->where(function ($qq) use ($currentTime) {
+                                $qq->where('time_start', '<=', $currentTime)
+                                    ->orWhere('time_end', '>=', $currentTime);
+                            });
+                    });
+                })
+                ->get();
+        
 
         // get active pic
         $activePic = PicActive::with('shift')
@@ -161,8 +180,19 @@ class DashboardController extends Controller
             ->where('active_from', '<=', $currentDate)
             ->where('expired_at', '>=', $currentDate)
             ->where('line_id', $lineId->id)
-            ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
+            ->where(function ($query) use ($currentTime) {
+                $query->where(function ($q) use ($currentTime) {
+                    $q->where('time_start', '<=', $currentTime)
+                        ->where('time_end', '>=', $currentTime);
+                })
+                ->orWhere(function ($q) use ($currentTime) {
+                    // Shifts crossing midnight to next day
+                    $q->where('time_start', '>', 'time_end') // Indicates a shift crossing to the next day
+                        ->where(function ($qq) use ($currentTime) {
+                            $qq->where('time_start', '<=', $currentTime)
+                                ->orWhere('time_end', '>=', $currentTime);
+                        });
+                });
             })
             ->first();
 
