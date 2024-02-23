@@ -290,10 +290,7 @@
                 width="980vh">
             @if (!$manHenkaten->isEmpty())
                 @php
-                    $photoMap = $manHenkaten
-                        ->where('henkaten.is_done', '1')
-                        ->pluck('manAfter.photo', 'employee_before_id')
-                        ->all();
+                    $photoMap = $manHenkaten->where('henkaten.is_done', '1')->pluck('manAfter.photo', 'employee_before_id')->all();
                 @endphp
 
                 @foreach ($activeEmployees as $emp)
@@ -436,18 +433,35 @@
                     @if ($activePic !== null)
                         @php
                             $picColor = mapRoleToColor($activePic->employee->role);
+                            $picPhoto = $activePic->employee->photo;
+                            $picRole = $activePic->employee->role;
+                            $picName = $activePic->employee->name;
+                            $picNpk = $activePic->employee->npk;
+
+                            foreach ($manHenkaten as $man) {
+                                if ($man->henkaten->is_done === '1') {
+                                    $henkatenEmployeeId = $man->pic_before_id;
+                                    $activeEmployeeId = $activePic->employee_id;
+
+                                    if ($activeEmployeeId == $henkatenEmployeeId) {
+                                        $picPhoto = $man->picAfter->photo;
+                                        $picRole = $man->picAfter->role;
+                                        $picName = $man->picAfter->name;
+                                        $picNpk = $man->picAfter->npk;
+                                    }
+                                }
+                            }
 
                         @endphp
                         <div class="col-lg-4 col-md-12">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <img src="{{ asset('uploads/doc/' . $activePic->employee->photo) }}"
-                                        class="rounded-1" width="100" height="100">
+                                    <img src="{{ asset('uploads/doc/' . $picPhoto) }}" class="rounded-1" width="100"
+                                        height="100">
                                     <div class="mt-n2">
-                                        <span
-                                            class="badge bg-{{ $picColor }}">{{ strtoupper($activePic->employee->role) }}</span>
-                                        <h3 class="card-title mt-3">{{ ucwords($activePic->employee->name) }}</h3>
-                                        <h6 class="card-subtitle">{{ $activePic->employee->npk }}</h6>
+                                        <span class="badge bg-{{ $picColor }}">{{ strtoupper($picRole) }}</span>
+                                        <h3 class="card-title mt-3">{{ ucwords($picName) }}</h3>
+                                        <h6 class="card-subtitle">{{ $picNpk }}</h6>
                                     </div>
                                     <div class="row mt-4">
                                         <div class="col-12">
@@ -936,7 +950,7 @@
                                                                             class="select2 form-select select2-hidden-accessible employeeReplacement"
                                                                             style="width: 100%; height: 36px"
                                                                             tabindex="-1" aria-hidden="true"
-                                                                            name="after[]" required>
+                                                                            name="after[]">
                                                                             <option value="0">Select
                                                                                 Employee</option>
                                                                             @foreach ($employees as $employee)
@@ -949,6 +963,57 @@
                                                                 </div>
                                                             </div>
                                                         @endforeach
+                                                        <div class="row mt-1">
+                                                            <div class="col-lg-1">
+                                                                <label for="exampleInputPassword1"
+                                                                    class="form-label fw-semibold"
+                                                                    style="color: white">Pos</label>
+                                                                <p class="mt-2 text-center badge bg-dark rounded-pill">
+                                                                    PIC
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-lg-5">
+                                                                <div class="mb-4">
+                                                                    <label for="exampleInputPassword1"
+                                                                        class="form-label fw-semibold">Current
+                                                                        PIC/JP</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="picBefore" placeholder="John"
+                                                                        value="{{ optional(optional($activePic)->employee)->name }}"
+                                                                        disabled>
+
+                                                                    <input type="hidden"
+                                                                        class="form-control employeeBefore"
+                                                                        name="picBefore" placeholder="John"
+                                                                        value="{{ optional(optional($activePic)->employee)->id }}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-1">
+                                                                <label for="exampleInputPassword1"
+                                                                    class="form-label fw-semibold"
+                                                                    style="color: white">Last</label>
+                                                                <p class="text-center mt-1">- to -</p>
+                                                            </div>
+                                                            <div class="col-lg-5">
+                                                                <div class="mb-4">
+                                                                    <label for="exampleInputPassword1"
+                                                                        class="form-label fw-semibold">Replacement
+                                                                        Employee</label>
+                                                                    <select
+                                                                        class="select2 form-select select2-hidden-accessible employeeReplacement"
+                                                                        style="width: 100%; height: 36px" tabindex="-1"
+                                                                        aria-hidden="true" name="picAfter">
+                                                                        <option value="0">Select
+                                                                            Employee</option>
+                                                                        @foreach ($employees as $employee)
+                                                                            <option value="{{ $employee->id }}">
+                                                                                {{ $employee->name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             @endif

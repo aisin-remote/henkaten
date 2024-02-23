@@ -50,6 +50,16 @@ class Employee extends Model
         return $this->hasMany(Troubleshoot::class, 'employee_after_id');
     }
     
+    public function picBefore()
+    {
+        return $this->hasMany(Troubleshoot::class, 'pic_before_id');
+    }
+    
+    public function picAfter()
+    {
+        return $this->hasMany(Troubleshoot::class, 'pic_after_id');
+    }
+    
     public function troubleshoot()
     {
         return $this->hasMany(Troubleshoot::class);

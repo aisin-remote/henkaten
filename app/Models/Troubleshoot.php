@@ -30,6 +30,16 @@ class Troubleshoot extends Model
         return $this->belongsTo(Employee::class, 'employee_after_id');
     }
     
+    public function picBefore()
+    {
+        return $this->belongsTo(Employee::class, 'pic_before_id');
+    }
+    
+    public function picAfter()
+    {
+        return $this->belongsTo(Employee::class, 'pic_after_id');
+    }
+    
     public function employee()
     {
         return $this->belongsTo(Employee::class, 'done_by');

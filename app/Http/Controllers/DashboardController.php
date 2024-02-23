@@ -167,7 +167,7 @@ class DashboardController extends Controller
             ->first();
 
         // get man henkaten
-        $manHenkaten = Troubleshoot::with(['henkaten.shift', 'manAfter', 'manBefore'])
+        $manHenkaten = Troubleshoot::with(['henkaten.shift', 'manAfter', 'manBefore', 'picAfter', 'picBefore'])
             ->whereHas('henkaten', function ($query) use ($lineId, $currentDate, $currentTime) {
                 $query
                     ->where('date', 'LIKE', $currentDate . '%')

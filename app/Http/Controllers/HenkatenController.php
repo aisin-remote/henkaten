@@ -235,6 +235,7 @@ class HenkatenController extends Controller
         $firstPic = Pivot::with('firstPic')
             ->where('active_date', Carbon::parse($henkatenInfo->date)->format('Y-m-d'))
             ->first();
+            
         if (!$firstPic) {
             $firstPic = 'unknown';
         } else {
@@ -277,6 +278,8 @@ class HenkatenController extends Controller
         }
 
         $employeeAfter = $request->after;
+        $picAfter = $request->picAfter;
+        $picBefore = $request->picBefore;
 
         try {
             DB::beginTransaction();
@@ -316,16 +319,27 @@ class HenkatenController extends Controller
                     ];
 
                     for ($i = 0; $i < count($request->after); $i++) {
-                        $employeeBeforeId = $request->before[$i];
-                        $employeeAfterId = $request->after[$i];
-
-                        if ($employeeAfterId !== '0') {
-                            $troubleshootData['employee_before_id'] = $employeeBeforeId;
-                            $troubleshootData['employee_after_id'] = $employeeAfterId;
+                        if ($request->after[$i] !== '0') {
+                            if ($picAfter !== '0'){
+                                $troubleshootData['pic_before_id'] = $picBefore;
+                                $troubleshootData['pic_after_id'] = $picAfter;
+                            }
+                            $troubleshootData['employee_before_id'] = $request->before[$i];
+                            $troubleshootData['employee_after_id'] = $request->after[$i];
+                            
+                            Troubleshoot::create($troubleshootData);
                         }
-
-                        Troubleshoot::create($troubleshootData);
                     }
+                    
+                    // Insert Troubleshoot records with null employee_before_id and employee_after_id if needed
+                    if ($picAfter !== '0') {
+                        $troubleshootData['pic_before_id'] = $picBefore;
+                        $troubleshootData['pic_after_id'] = $picAfter;
+                        $troubleshootData['employee_before_id'] = null;
+                        $troubleshootData['employee_after_id'] = null;
+                        
+                        Troubleshoot::create($troubleshootData);
+                    }                    
                 } else {
                     $troubleshootData = [
                         'troubleshoot' => $request->troubleshoot,
@@ -338,16 +352,27 @@ class HenkatenController extends Controller
                     ];
 
                     for ($i = 0; $i < count($request->after); $i++) {
-                        $employeeBeforeId = $request->before[$i];
-                        $employeeAfterId = $request->after[$i];
-
-                        if ($employeeAfterId !== '0') {
-                            $troubleshootData['employee_before_id'] = $employeeBeforeId;
-                            $troubleshootData['employee_after_id'] = $employeeAfterId;
+                        if ($request->after[$i] !== '0') {
+                            if ($picAfter !== '0'){
+                                $troubleshootData['pic_before_id'] = $picBefore;
+                                $troubleshootData['pic_after_id'] = $picAfter;
+                            }
+                            $troubleshootData['employee_before_id'] = $request->before[$i];
+                            $troubleshootData['employee_after_id'] = $request->after[$i];
+                            
+                            Troubleshoot::where('henkaten_id', $request->henkaten_id)->update($troubleshootData);
                         }
-
-                        Troubleshoot::where('henkaten_id', $request->henkaten_id)->update($troubleshootData);
                     }
+                    
+                    // Insert Troubleshoot records with null employee_before_id and employee_after_id if needed
+                    if ($picAfter !== '0') {
+                        $troubleshootData['pic_before_id'] = $picBefore;
+                        $troubleshootData['pic_after_id'] = $picAfter;
+                        $troubleshootData['employee_before_id'] = null;
+                        $troubleshootData['employee_after_id'] = null;
+                        
+                        Troubleshoot::where('henkaten_id', $request->henkaten_id)->update($troubleshootData);
+                    }         
                 }
 
                 DB::commit();
@@ -909,6 +934,11 @@ class HenkatenController extends Controller
 
     public function henkatenExport()
     {
-        return Excel::download(new HenkatenExport, 'henkaten.xlsx');
+        try {
+            return Excel::download(new HenkatenExport, 'henkaten.xlsx');
+        } catch (\Exception $e) {
+            // Optionally, return a response indicating the failure
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }
