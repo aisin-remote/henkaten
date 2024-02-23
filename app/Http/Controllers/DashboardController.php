@@ -151,18 +151,7 @@ class DashboardController extends Controller
             ->where('expired_at', '>=', $currentDate)
             ->where('line_id', $lineId->id)
             ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where(function ($q) use ($currentTime) {
-                    $q->where('time_start', '<=', $currentTime)
-                        ->where('time_end', '>=', $currentTime);
-                })
-                ->orWhere(function ($q) use ($currentTime) {
-                    // Shifts crossing midnight to next day
-                    $q->where('time_start', '>', 'time_end') // Indicates a shift crossing to the next day
-                        ->where(function ($qq) use ($currentTime) {
-                            $qq->where('time_start', '<=', $currentTime)
-                                ->orWhere('time_end', '>=', $currentTime);
-                        });
-                });
+                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
             })
             ->get();
 
