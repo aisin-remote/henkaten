@@ -149,12 +149,8 @@ class DashboardController extends Controller
                 $q->where('time_start', '<=', $currentTime)
                     ->where('time_end', '>=', $currentTime);
             })
-            ->orWhere(function ($q) use ($currentTime) {
-                $q->where('time_start', '>', 'time_end')
-                    ->where(function ($qq) use ($currentTime) {
-                        $qq->where('time_start', '<=', $currentTime)
-                            ->orWhere('time_end', '>=', $currentTime);
-                    });
+            ->orWhere(function ($q) {
+                $q->where('time_start', '>', 'time_end');
             });
         }])
         ->with('employee')
@@ -167,15 +163,12 @@ class DashboardController extends Controller
                 $q->where('time_start', '<=', $currentTime)
                     ->where('time_end', '>=', $currentTime);
             })
-            ->orWhere(function ($q) use ($currentTime) {
-                $q->where('time_start', '>', 'time_end')
-                    ->where(function ($qq) use ($currentTime) {
-                        $qq->where('time_start', '<=', $currentTime)
-                            ->orWhere('time_end', '>=', $currentTime);
-                    });
+            ->orWhere(function ($q) {
+                $q->where('time_start', '>', 'time_end');
             });
         })
         ->get();
+    
     
 
         // get active pic
