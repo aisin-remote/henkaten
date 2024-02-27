@@ -136,12 +136,42 @@ class DashboardController extends Controller
         $currentDate = Carbon::now('Atlantic/Reykjavik')->format('Y-m-d');
         $currentTime = Carbon::now('Atlantic/Reykjavik')->format('H:i:s');
 
-        dd($currentTime);
-
         // get all history
         $histories = Approval::with(['henkaten.troubleshoot.employee', 'henkaten.henkatenManagement'])
             ->whereHas('henkaten', function ($query) use ($lineId) {
                 $query->where('line_id', $lineId->id);
+            })
+            ->get();
+
+            // Define shift times
+        $shifts = [
+            'Shift 1' => ['start' => '06:00:00', 'end' => '14:15:00'],
+            'Shift 2' => ['start' => '14:16:00', 'end' => '22:15:00'],
+            'Shift 3' => ['start' => '22:16:00', 'end' => '23:59:59'], // End of the first day
+            'Shift 3' => ['start' => '00:00:00', 'end' => '05:59:59'], // Beginning of the second day
+            ];
+
+        // Initialize current shift
+        $currentShift = null;
+
+        // Determine the current shift
+        foreach ($shifts as $shiftName => $shiftTimes) {
+            $startTime = $shiftTimes['start'];
+            $endTime = $shiftTimes['end'];
+
+            if ($currentTime >= $startTime && $currentTime <= $endTime) {
+                $currentShift = $shiftName;
+                break;
+            }
+        }
+
+        // Retrieve active employees for the current shift
+        $activeEmployees = EmployeeActive::with(['shift', 'employee', 'pos'])
+            ->where('active_from', '<=', Carbon::now())
+            ->where('expired_at', '>=', Carbon::now())
+            ->where('line_id', $lineId->id)
+            ->whereHas('shift', function ($query) use ($currentShift) {
+                $query->where('name', $currentShift);
             })
             ->get();
 
