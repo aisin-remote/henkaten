@@ -163,13 +163,11 @@ class DashboardController extends Controller
                     })
                     ->orWhere(function ($qq) {
                         $qq->where('time_start', '>=', '00:00:00') // Beginning of the second day
-                            ->where('time_end', '<=', '06:05:00');
+                            ->where('time_end', '<=', '05:59:59');
                     });
                 });
             })
             ->get();
-
-            dd($activeEmployees);
 
         // get active pic
         $activePic = PicActive::with('shift')
