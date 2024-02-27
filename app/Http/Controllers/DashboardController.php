@@ -160,7 +160,7 @@ class DashboardController extends Controller
             ->whereHas('henkaten', function ($query) use ($lineId) {
                 $query->where('line_id', $lineId->id);
             })
-            ->get();
+            ->latest();
 
         // get man power at spesific line and range of time
         $shifts = [
