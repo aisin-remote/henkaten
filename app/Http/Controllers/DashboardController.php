@@ -136,6 +136,8 @@ class DashboardController extends Controller
         $currentDate = Carbon::now('Atlantic/Reykjavik')->format('Y-m-d');
         $currentTime = Carbon::now('Atlantic/Reykjavik')->format('H:i:s');
 
+        dd($currentTime);
+
         // get all history
         $histories = Approval::with(['henkaten.troubleshoot.employee', 'henkaten.henkatenManagement'])
             ->whereHas('henkaten', function ($query) use ($lineId) {
