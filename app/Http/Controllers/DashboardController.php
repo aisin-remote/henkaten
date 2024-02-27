@@ -158,9 +158,9 @@ class DashboardController extends Controller
         // get all history
         $histories = Approval::with(['henkaten.troubleshoot.employee', 'henkaten.henkatenManagement'])
             ->whereHas('henkaten', function ($query) use ($lineId) {
-                $query->where('line_id', $lineId->id);
+                $query->where('line_id', $lineId->id)
+                        ->orderBy('date', 'ASC');
             })
-            ->latest()
             ->get();
 
         // get man power at spesific line and range of time
