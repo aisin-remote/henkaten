@@ -62,14 +62,33 @@ class DashboardController extends Controller
             ->where('origin_id', $empOrigin)
             ->first();
 
+        $shifts = [
+            'Shift 1' => ['start' => '06:00:00', 'end' => '14:15:00'],
+            'Shift 2' => ['start' => '14:16:00', 'end' => '22:15:00'],
+            'Shift 3' => ['start' => '22:16:00', 'end' => '23:59:59'], // End of the first day
+            'Shift 3' => ['start' => '00:00:00', 'end' => '06:00:00'], // Beginning of the second day
+        ];
+        
+        // Initialize current shift
+        $currentShift = null;
+        
+        // Determine the current shift
+        foreach ($shifts as $shiftName => $shiftTimes) {
+            $startTime = $shiftTimes['start'];
+            $endTime = $shiftTimes['end'];
+        
+            if ($currentTime >= $startTime && $currentTime <= $endTime) {
+                $currentShift = $shiftName;
+                break;
+            }
+        }
+
         // get active employee
-        $activeEmployees = EmployeeActive::with('shift')
-            ->with('employee')
-            ->with('pos')
-            ->where('active_from', '<=', $current_date)
-            ->where('expired_at', '>=', $current_date)
-            ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
+        $activeEmployees = EmployeeActive::with(['shift', 'employee', 'pos'])
+            ->where('active_from', '<=', Carbon::now())
+            ->where('expired_at', '>=', Carbon::now())
+            ->whereHas('shift', function ($query) use ($currentShift) {
+                $query->where('name', $currentShift);
             })
             ->whereHas('employee', function($query) use ($empOrigin){
                 $query->where('origin_id', $empOrigin);
