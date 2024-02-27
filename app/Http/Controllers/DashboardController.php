@@ -159,7 +159,7 @@ class DashboardController extends Controller
         $histories = Approval::with(['henkaten.troubleshoot.employee', 'henkaten.henkatenManagement'])
             ->whereHas('henkaten', function ($query) use ($lineId) {
                 $query->where('line_id', $lineId->id)
-                        ->orderBy('date', 'ASC');
+                        ->orderBy('date', 'DSC');
             })
             ->get();
 
