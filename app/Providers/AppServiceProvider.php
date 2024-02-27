@@ -44,8 +44,6 @@ class AppServiceProvider extends ServiceProvider
                         ->latest()
                         ->get();
 
-                        dd($henkatens);
-
             $view->with([
                 'henkatens' => $henkatens,
                 'newHenkatens' => count($henkatens->where('date', 'LIKE', $currentDate .'%')),

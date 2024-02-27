@@ -47,7 +47,7 @@
                         <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="ti ti-bell-ringing"></i>
-                            @if ($newHenkatens !== 0)
+                            @if ($henkatenItems !== 0)
                                 <div class="notification bg-primary rounded-circle"></div>
                             @endif
                         </a>
