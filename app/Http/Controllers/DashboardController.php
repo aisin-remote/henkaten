@@ -164,9 +164,7 @@ class DashboardController extends Controller
                 break;
             }
         }
-        
-        // Now $currentShift holds the name of the current shift
-        
+                
         // Retrieve active employees for the current shift
         $activeEmployees = EmployeeActive::with(['shift', 'employee', 'pos'])
             ->where('active_from', '<=', Carbon::now())
@@ -176,8 +174,6 @@ class DashboardController extends Controller
                 $query->where('name', $currentShift);
             })
             ->get();
-
-            dd($activeEmployees);
 
         // get active pic
         $activePic = PicActive::with('shift')
