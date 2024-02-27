@@ -48,7 +48,7 @@
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="ti ti-bell-ringing"></i>
                             @if ($henkatenItems !== 0)
-                                <div class="notification bg-primary rounded-circle"></div>
+                                <div class="notification bg-danger rounded-circle"></div>
                             @endif
                         </a>
                         <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up"
