@@ -144,30 +144,40 @@ class DashboardController extends Controller
             ->get();
 
         // get man power at spesific line and range of time
-        $activeEmployees = EmployeeActive::with('shift')
-            ->with('employee')
-            ->with('pos')
-            ->where('active_from', '<=', $currentDate)
-            ->where('expired_at', '>=', $currentDate)
+        $shifts = [
+            'Shift 1' => ['start' => '06:00:00', 'end' => '14:15:00'],
+            'Shift 2' => ['start' => '14:16:00', 'end' => '22:15:00'],
+            'Shift 3' => ['start' => '22:16:00', 'end' => '23:59:59'], // End of the first day
+            'Shift 3' => ['start' => '00:00:00', 'end' => '06:00:00'], // Beginning of the second day
+        ];
+        
+        // Initialize current shift
+        $currentShift = null;
+        
+        // Determine the current shift
+        foreach ($shifts as $shiftName => $shiftTimes) {
+            $startTime = $shiftTimes['start'];
+            $endTime = $shiftTimes['end'];
+        
+            if ($currentTime >= $startTime && $currentTime <= $endTime) {
+                $currentShift = $shiftName;
+                break;
+            }
+        }
+        
+        // Now $currentShift holds the name of the current shift
+        
+        // Retrieve active employees for the current shift
+        $activeEmployees = EmployeeActive::with(['shift', 'employee', 'pos'])
+            ->where('active_from', '<=', Carbon::now())
+            ->where('expired_at', '>=', Carbon::now())
             ->where('line_id', $lineId->id)
-            ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where(function ($q) use ($currentTime) {
-                    $q->where('time_start', '<=', $currentTime)
-                        ->where('time_end', '>=', $currentTime);
-                })
-                ->orWhere(function ($q) use ($currentTime) {
-                    // Handle the case when shift crosses midnight
-                    $q->where(function ($qq) {
-                        $qq->where('time_start', '>=', '22:10:00')
-                            ->where('time_end', '<=', '23:59:59'); // End of the first day
-                    })
-                    ->orWhere(function ($qq) {
-                        $qq->where('time_start', '>=', '00:00:00') // Beginning of the second day
-                            ->where('time_end', '<=', '05:59:59');
-                    });
-                });
+            ->whereHas('shift', function ($query) use ($currentShift) {
+                $query->where('name', $currentShift);
             })
             ->get();
+
+            dd($activeEmployees);
 
         // get active pic
         $activePic = PicActive::with('shift')
