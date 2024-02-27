@@ -169,6 +169,8 @@ class DashboardController extends Controller
             })
             ->get();
 
+            dd($activeEmployees);
+
         // get active pic
         $activePic = PicActive::with('shift')
             ->with('employee')
