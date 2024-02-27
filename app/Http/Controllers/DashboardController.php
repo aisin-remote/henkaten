@@ -155,16 +155,10 @@ class DashboardController extends Controller
                     $q->where('time_start', '<=', $currentTime)
                         ->where('time_end', '>=', $currentTime);
                 })
-                ->orWhere(function ($q) use ($currentTime) {
-                    // Handle the case when shift crosses midnight
-                    $q->where(function ($qq) {
-                        $qq->where('time_start', '>=', '22:10:00')
-                            ->where('time_end', '<=', '23:59:59'); // End of the first day
-                    })
-                    ->orWhere(function ($qq) {
-                        $qq->where('time_start', '>=', '00:00:00') // Beginning of the second day
-                            ->where('time_end', '<=', '06:05:00');
-                    });
+                ->where(function ($q) {
+                    // Exclude shift 3 (22:10:00 until 06:05:00) if the current time is beyond 06:05:00
+                    $q->where('time_start', '>', '06:05:00')
+                    ->orWhere('time_end', '<', '06:05:00');
                 });
             })
             ->get();
