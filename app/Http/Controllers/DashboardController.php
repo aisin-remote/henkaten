@@ -152,23 +152,19 @@ class DashboardController extends Controller
             ->where('line_id', $lineId->id)
             ->whereHas('shift', function ($query) use ($currentTime) {
                 $query->where(function ($q) use ($currentTime) {
-                    // For shifts within the same day
-                    $q->where('time_start', '<=', '06:05:00')
+                    $q->where('time_start', '<=', $currentTime)
                         ->where('time_end', '>=', $currentTime);
                 })
                 ->orWhere(function ($q) use ($currentTime) {
-                    // For shift 3 which crosses midnight
-                    $q->where('time_start', '>=', '22:10:00')
-                        ->where('time_end', '<=', '23:59:59') // End of the first day
-                        ->where('time_start', '<=', $currentTime)
-                        ->where('time_end', '>=', $currentTime);
-                })
-                ->orWhere(function ($q) use ($currentTime) {
-                    // For shift 3 which starts in the second day
-                    $q->where('time_start', '>=', '00:00:00') // Beginning of the second day
-                        ->where('time_end', '<=', '06:05:00')
-                        ->where('time_start', '<=', $currentTime)
-                        ->where('time_end', '>=', $currentTime);
+                    // Handle the case when shift crosses midnight
+                    $q->where(function ($qq) {
+                        $qq->where('time_start', '>=', '22:10:00')
+                            ->where('time_end', '<=', '23:59:59'); // End of the first day
+                    })
+                    ->orWhere(function ($qq) {
+                        $qq->where('time_start', '>=', '00:00:00') // Beginning of the second day
+                            ->where('time_end', '<=', '06:05:00');
+                    });
                 });
             })
             ->get();
