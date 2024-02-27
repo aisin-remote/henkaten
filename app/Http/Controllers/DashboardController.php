@@ -176,13 +176,12 @@ class DashboardController extends Controller
             ->get();
 
         // get active pic
-        $activePic = PicActive::with('shift')
-            ->with('employee')
-            ->where('active_from', '<=', $currentDate)
-            ->where('expired_at', '>=', $currentDate)
+        $activePic = PicActive::with(['shift', 'employee', 'pos'])
+            ->where('active_from', '<=', Carbon::now())
+            ->where('expired_at', '>=', Carbon::now())
             ->where('line_id', $lineId->id)
-            ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
+            ->whereHas('shift', function ($query) use ($currentShift) {
+                $query->where('name', $currentShift);
             })
             ->first();
 
