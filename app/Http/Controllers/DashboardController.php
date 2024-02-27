@@ -152,8 +152,8 @@ class DashboardController extends Controller
         // get user role
         $role = auth()->user()->role;
 
-        $currentDate = Carbon::now('Atlantic/Reykjavik')->format('Y-m-d');
-        $currentTime = Carbon::now('Atlantic/Reykjavik')->format('H:i:s');
+        $currentDate = Carbon::now()->format('Y-m-d');
+        $currentTime = Carbon::now()->format('H:i:s');
 
         // get all history
         $histories = Approval::with(['henkaten.troubleshoot.employee', 'henkaten.henkatenManagement'])
