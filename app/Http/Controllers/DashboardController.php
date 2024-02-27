@@ -207,12 +207,12 @@ class DashboardController extends Controller
 
         // get man henkaten
         $manHenkaten = Troubleshoot::with(['henkaten.shift', 'manAfter', 'manBefore', 'picAfter', 'picBefore'])
-            ->whereHas('henkaten', function ($query) use ($lineId, $currentDate, $currentTime) {
+            ->whereHas('henkaten', function ($query) use ($lineId, $currentDate, $currentTime, $currentShift) {
                 $query
                     ->where('date', 'LIKE', $currentDate . '%')
                     ->where('line_id', $lineId->id)
-                    ->whereHas('shift', function ($subQuery) use ($currentTime) {
-                        $subQuery->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
+                    ->whereHas('shift', function ($subQuery) use ($currentShift) {
+                        $subQuery->where('name', $currentShift);
                     });
             })
             ->get();
