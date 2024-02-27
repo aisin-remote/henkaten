@@ -133,45 +133,13 @@ class DashboardController extends Controller
         // get user role
         $role = auth()->user()->role;
 
-        $currentDate = Carbon::now('Atlantic/Reykjavik')->format('Y-m-d');
-        $currentTime = Carbon::now('Atlantic/Reykjavik')->format('H:i:s');
+        $currentDate = Carbon::now()->format('Y-m-d');
+        $currentTime = Carbon::now()->format('H:i:s');
 
         // get all history
         $histories = Approval::with(['henkaten.troubleshoot.employee', 'henkaten.henkatenManagement'])
             ->whereHas('henkaten', function ($query) use ($lineId) {
                 $query->where('line_id', $lineId->id);
-            })
-            ->get();
-
-            // Define shift times
-        $shifts = [
-            'Shift 1' => ['start' => '06:00:00', 'end' => '14:15:00'],
-            'Shift 2' => ['start' => '14:16:00', 'end' => '22:15:00'],
-            'Shift 3' => ['start' => '22:16:00', 'end' => '23:59:59'], // End of the first day
-            'Shift 3' => ['start' => '00:00:00', 'end' => '05:59:59'], // Beginning of the second day
-            ];
-
-        // Initialize current shift
-        $currentShift = null;
-
-        // Determine the current shift
-        foreach ($shifts as $shiftName => $shiftTimes) {
-            $startTime = $shiftTimes['start'];
-            $endTime = $shiftTimes['end'];
-
-            if ($currentTime >= $startTime && $currentTime <= $endTime) {
-                $currentShift = $shiftName;
-                break;
-            }
-        }
-
-        // Retrieve active employees for the current shift
-        $activeEmployees = EmployeeActive::with(['shift', 'employee', 'pos'])
-            ->where('active_from', '<=', Carbon::now())
-            ->where('expired_at', '>=', Carbon::now())
-            ->where('line_id', $lineId->id)
-            ->whereHas('shift', function ($query) use ($currentShift) {
-                $query->where('name', $currentShift);
             })
             ->get();
 
@@ -183,25 +151,7 @@ class DashboardController extends Controller
             ->where('expired_at', '>=', $currentDate)
             ->where('line_id', $lineId->id)
             ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where(function ($q) use ($currentTime) {
-                    // For shifts within the same day
-                    $q->where('time_start', '<=', '06:05:00')
-                        ->where('time_end', '>=', $currentTime);
-                })
-                ->orWhere(function ($q) use ($currentTime) {
-                    // For shift 3 which crosses midnight
-                    $q->where('time_start', '>=', '22:10:00')
-                        ->where('time_end', '<=', '23:59:59') // End of the first day
-                        ->where('time_start', '<=', $currentTime)
-                        ->where('time_end', '>=', $currentTime);
-                })
-                ->orWhere(function ($q) use ($currentTime) {
-                    // For shift 3 which starts in the second day
-                    $q->where('time_start', '>=', '00:00:00') // Beginning of the second day
-                        ->where('time_end', '<=', '06:05:00')
-                        ->where('time_start', '<=', $currentTime)
-                        ->where('time_end', '>=', $currentTime);
-                });
+                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
             })
             ->get();
 
@@ -212,21 +162,7 @@ class DashboardController extends Controller
             ->where('expired_at', '>=', $currentDate)
             ->where('line_id', $lineId->id)
             ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where(function ($q) use ($currentTime) {
-                    $q->where('time_start', '<=', $currentTime)
-                        ->where('time_end', '>=', $currentTime);
-                })
-                ->orWhere(function ($q) use ($currentTime) {
-                    // Handle the case when shift crosses midnight
-                    $q->where(function ($qq) {
-                        $qq->where('time_start', '>=', '22:10:00')
-                            ->where('time_end', '<=', '23:59:59'); // End of the first day
-                    })
-                    ->orWhere(function ($qq) {
-                        $qq->where('time_start', '>=', '00:00:00') // Beginning of the second day
-                            ->where('time_end', '<=', '06:05:00');
-                    });
-                });
+                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
             })
             ->first();
 
