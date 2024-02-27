@@ -176,7 +176,7 @@ class DashboardController extends Controller
             ->get();
 
         // get active pic
-        $activePic = PicActive::with(['shift', 'employee', 'pos'])
+        $activePic = PicActive::with(['shift', 'employee'])
             ->where('active_from', '<=', Carbon::now())
             ->where('expired_at', '>=', Carbon::now())
             ->where('line_id', $lineId->id)
