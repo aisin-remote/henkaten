@@ -42,7 +42,7 @@ class SendWhatsapp extends Command
         
         // get total solved
         $totalSolved = $henkaten->where('is_done', '1')->count();
-        $totalUnsolved = $henkaten->where('is_done', '0')->count();
+        $totalUnsolved =  Henkaten::where('date', 'LIKE', $yesterday .'%')->where('is_done', '0')->count();
 
         try {
             $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
