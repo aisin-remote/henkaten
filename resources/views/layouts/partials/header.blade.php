@@ -90,7 +90,7 @@
                                                 </span>
                                                 <div class="w-75 d-inline-block v-middle">
                                                     <h6 class="mb-1 fw-semibold"
-                                                        style="max-width: 150px;
+                                                        style="max-width: 130px;
                                                         overflow: hidden;
                                                     text-overflow: ellipsis;
                                                     white-space: nowrap;">
