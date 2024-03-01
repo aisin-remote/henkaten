@@ -729,7 +729,7 @@ class HenkatenController extends Controller
         });
 
         return view('pages.website.history', [
-            'henkatenHistory' => $henkatenHistory->get(),
+            'henkatenHistory' => $henkatenHistory->latest()->get(),
             'lines' => Line::where('origin_id', $empOrigin)->get(),
         ]);
     }
