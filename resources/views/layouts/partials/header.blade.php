@@ -82,7 +82,7 @@
                                         @endphp
                                         <div class="d-flex align-items-center justify-content-between">
                                             <a href="{{ url('/dashboard/' . $henkaten->line->id) }}"
-                                                class="py-6 px-7 d-flex align-items-center dropdown-item">
+                                                class="py-6 px-7 d-flex align-items-center dropdown-item justify-content-between">
                                                 <span class="badge bg-{{ $color }} me-3">
                                                     <h3 class="text-white box mb-0 fw-bolder">
                                                         <i class="ti ti-{{ $shape }}"></i>
