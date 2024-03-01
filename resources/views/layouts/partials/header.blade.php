@@ -89,7 +89,11 @@
                                                     </h3>
                                                 </span>
                                                 <div class="w-75 d-inline-block v-middle">
-                                                    <h6 class="mb-1 fw-semibold">{{ $henkaten->abnormality }}</h6>
+                                                    <h6 class="mb-1 fw-semibold"
+                                                        style="overflow: hidden;
+                                                    text-overflow: ellipsis;
+                                                    white-space: nowrap;">
+                                                        {{ $henkaten->abnormality }}</h6>
                                                     <span class="d-block">{{ $henkaten->line->name }}</span>
                                                 </div>
                                                 <span class="badge bg-{{ $colorStatus }} rounded-4 py-1 lh-sm"
