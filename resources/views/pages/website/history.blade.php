@@ -52,20 +52,25 @@
                 </div>
             </div>
             <div class="card-body p-3">
-                <table class="table text-nowrap align-middle mb-0 table-bordered" id="masterSkill"
-                    style="width:100%; font-size: 12px">
+                <table class="table text-nowrap align-middle mb-0 table-bordered" id="masterSkill" font-size: 12px">
                     <thead class="table-light">
                         <tr>
-                            <th rowspan="2" class="align-middle">Date</th>
+                            <th rowspan="2" class="align-middle"
+                                style="position: -webkit-sticky;
+                            position: sticky;
+                            left: 0;
+                            z-index: 1;">
+                                Date</th>
                             <th rowspan="2" class="align-middle">Type</th>
                             <th rowspan="2" class="align-middle">Line</th>
                             <th rowspan="2" class="align-middle">Time</th>
-                            <th rowspan="2" class="align-middle">Abnormality</th>
+                            <th rowspan="2" class="align-middle text-center" style="max-width: 300px">Abnormality</th>
                             <th rowspan="2" class="align-middle">Category</th>
                             <th rowspan="2" class="align-middle">Table Henkaten No.</th>
-                            <th rowspan="2" class="align-middle text-center">
+                            <th rowspan="2" class="align-middle text-center" style="max-width: 300px">
                                 Troubleshoot
                             </th>
+                            <th rowspan="2" class="align-middle text-center">status</th>
                             <th class="text-center">Safety</th>
                             <th colspan="4" class="text-center">Quality Inspection</th>
                             <th rowspan="2" class="align-middle text-center">Done by</th>
@@ -85,13 +90,24 @@
                     <tbody>
                         @foreach ($henkatenHistory as $henkaten)
                             <tr>
-                                <td>{{ Carbon\Carbon::parse($henkaten->date)->format('Y-m-d') }}</td>
+                                <td
+                                    style="position: -webkit-sticky;
+                                position: sticky;
+                                left: 0;
+                                z-index: 1;">
+                                    {{ Carbon\Carbon::parse($henkaten->date)->format('Y-m-d') }}</td>
                                 <td>{{ strtoupper($henkaten->{"4M"}) }}</td>
                                 <td>{{ $henkaten->line->name }}</td>
                                 <td>{{ Carbon\Carbon::parse($henkaten->date)->format('H:i:s') }}</td>
-                                <td>{{ $henkaten->abnormality }}</td>
+                                <td style="max-width: 300px; white-space: normal;">{{ $henkaten->abnormality }}</td>
                                 <td>{{ $henkaten->category }}</td>
                                 <td class="text-center">{{ $henkaten->henkatenManagement->table_no }}</td>
+                                @php
+                                    if ($henkaten->troubleshoot === null) {
+                                        $colorApp = 'danger';
+                                        $text = 'Waiting Troubleshoot';
+                                    }
+                                @endphp
                                 @if ($henkaten->troubleshoot !== null)
                                     @php
                                         if ($henkaten->troubleshoot->before_treatment == 'ng') {
@@ -111,32 +127,74 @@
                                         } else {
                                             $colorResult = 'success';
                                         }
+
+                                        if ($henkaten->approval->ldr !== null) {
+                                            $colorApp = 'success';
+                                            $text = 'solved';
+                                        } else {
+                                            $colorApp = 'warning';
+                                            $text = 'Pending Approval';
+                                        }
                                     @endphp
+                                    <td style="max-width: 300px; white-space: normal;">
+                                        {{ $henkaten->troubleshoot ? $henkaten->troubleshoot->troubleshoot : 'N/A' }}
+                                    </td>
                                     <td class="text-center">
-                                        {{ $henkaten->troubleshoot ? $henkaten->troubleshoot->troubleshoot : 'N/A' }}</td>
-                                    <td class="text-center"><span
-                                            class="badge bg-{{ $colorResult }}">{{ $henkaten->troubleshoot->result_check }}</span>
+                                        <span class="badge bg-{{ $colorApp }}">
+                                            {{ $text }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span
+                                            class="badge bg-light-{{ $colorResult }} text-{{ $colorResult }}">{{ $henkaten->troubleshoot->result_check }}
+                                        </span>
                                     </td>
                                     <td class="text-center">{{ $henkaten->troubleshoot->inspection_report }}</td>
                                     <td class="text-center">{{ $henkaten->troubleshoot->part }}</td>
                                     <td class="text-center"><span
-                                            class="badge bg-{{ $colorBefore }}">{{ $henkaten->troubleshoot->before_treatment }}</span>
+                                            class="badge bg-light-{{ $colorBefore }} text-{{ $colorBefore }}">{{ $henkaten->troubleshoot->before_treatment }}</span>
                                     </td>
                                     <td class="text-center"><span
-                                            class="badge bg-{{ $colorAfter }}">{{ $henkaten->troubleshoot->after_treatment }}</span>
+                                            class="badge bg-light-{{ $colorAfter }} text-{{ $colorAfter }}">{{ $henkaten->troubleshoot->after_treatment }}</span>
                                     </td>
                                     <td class="text-center">{{ $henkaten->troubleshoot->employee->name }}</td>
                                     <td class="text-center">
-                                        {{ $henkaten->approval->ldr !== null ? 'Approved by ' . $henkaten->approval->ldr : 'Waiting...' }}
+                                        @if ($henkaten->approval->ldr !== null)
+                                            <span class="btn btn-success fw-bolder" data-toggle="tooltip"
+                                                title="approved by {{ $henkaten->approval->ldr }}">
+                                                <i class="ti ti-check"></i>
+                                            </span>
+                                        @else
+                                            Waiting...
+                                        @endif
                                     </td>
                                     <td class="text-center">
-                                        {{ $henkaten->approval->spv !== null ? 'Approved by ' . $henkaten->approval->spv : 'Waiting...' }}
+                                        @if ($henkaten->approval->spv !== null)
+                                            <span class="btn btn-success fw-bolder" data-toggle="tooltip"
+                                                title="approved by {{ $henkaten->approval->spv }}">
+                                                <i class="ti ti-check"></i>
+                                            </span>
+                                        @else
+                                            Waiting...
+                                        @endif
                                     </td>
                                     <td class="text-center">
-                                        {{ $henkaten->approval->mgr !== null ? 'Approved by ' . $henkaten->approval->mgr : 'Waiting...' }}
+                                        @if ($henkaten->approval->mgr !== null)
+                                            <span class="btn btn-success fw-bolder" data-toggle="tooltip"
+                                                title="approved by {{ $henkaten->approval->mgr }}">
+                                                <i class="ti ti-check"></i>
+                                            </span>
+                                        @else
+                                            Waiting...
+                                        @endif
                                     </td>
                                 @else
                                     <td class="text-center text-danger">N/A</td>
+                                    <td class="text-center text-danger">
+                                        <span class="badge bg-{{ $colorApp }}">
+                                            {{ $text }}
+                                        </span>
+                                    </td>
                                     <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">N/A</td>
@@ -162,6 +220,9 @@
         // initialize datatable
         let table = $('#masterSkill').DataTable({
             scrollX: true,
+            order: [
+                [0, 'desc']
+            ]
         });
 
         $('#line').on('change', function() {
@@ -212,4 +273,6 @@
                 'change'); // Reset the filter and trigger change event
         });
     });
+
+    $('[data-toggle="tooltip"]').tooltip();
 </script>

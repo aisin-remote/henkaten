@@ -569,54 +569,6 @@ class HenkatenController extends Controller
                     'status' => 'Leader',
                 ]);
 
-                $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
-                $phone = '120363233997432617';
-                $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c         ```*REMINDER*```    %c%cIni adalah pengingat untuk melakukan %capproval permintaan yang masih menunggu%cdi sistem. Mohon segera cek dan%clakukan persetujuan agar proses dapat berlanjut. %cTerima kasih banyak! %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
-                $curl = curl_init();
-                curl_setopt_array($curl, [
-                    CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => '',
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 0,
-                    CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => 'POST',
-                    CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
-                ]);
-                $response = curl_exec($curl);
-                curl_close($curl);
-                
-            } elseif (auth()->user()->role === 'SPV') {
-                Approval::where('henkaten_id', $request->henkaten_id)->update([
-                    'spv' => auth()->user()->name,
-                    'status' => 'Supervisor',
-                ]);
-
-                $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
-                $phone = '120363233997432617';
-                $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c         ```*REMINDER*```    %c%cIni adalah pengingat untuk melakukan %capproval permintaan yang masih menunggu%cdi sistem. Mohon segera cek dan%clakukan persetujuan agar proses dapat berlanjut. %cTerima kasih banyak! %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
-                $curl = curl_init();
-                curl_setopt_array($curl, [
-                    CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => '',
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 0,
-                    CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => 'POST',
-                    CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
-                ]);
-                $response = curl_exec($curl);
-                curl_close($curl);
-
-            } else {
-                Approval::where('henkaten_id', $request->henkaten_id)->update([
-                    'mgr' => auth()->user()->name,
-                    'status' => 'Manager',
-                ]);
-
                 // change approver and is_done status
                 Henkaten::where('id', $request->henkaten_id)->update([
                     'is_done' => '1',
@@ -641,6 +593,18 @@ class HenkatenController extends Controller
 
                 $response = curl_exec($curl);
                 curl_close($curl);
+                
+            } elseif (auth()->user()->role === 'SPV') {
+                Approval::where('henkaten_id', $request->henkaten_id)->update([
+                    'spv' => auth()->user()->name,
+                    'status' => 'Supervisor',
+                ]);
+
+            } else {
+                Approval::where('henkaten_id', $request->henkaten_id)->update([
+                    'mgr' => auth()->user()->name,
+                    'status' => 'Manager',
+                ]);
             }
 
             // search other henkaten where status henkaten
@@ -724,12 +688,16 @@ class HenkatenController extends Controller
         // get origin id
         $empOrigin = auth()->user()->origin_id;
 
-        $henkatenHistory = Henkaten::with(['line.origin', 'approval'])->whereHas('line', function ($query) use ($empOrigin) {
-            $query->where('origin_id', $empOrigin);
-        });
+        $henkatenHistory = Henkaten::with(['line.origin', 'approval'])
+                        ->whereHas('line', function ($query) use ($empOrigin) {
+                            $query->where('origin_id', $empOrigin);
+                        })
+                        ->orderBy('date', 'desc')
+                        ->get();
 
+                        
         return view('pages.website.history', [
-            'henkatenHistory' => $henkatenHistory->latest()->get(),
+            'henkatenHistory' => $henkatenHistory,
             'lines' => Line::where('origin_id', $empOrigin)->get(),
         ]);
     }
