@@ -290,7 +290,10 @@
                 width="980vh">
             @if (!$manHenkaten->isEmpty())
                 @php
-                    $photoMap = $manHenkaten->where('henkaten.is_done', '1')->pluck('manAfter.photo', 'employee_before_id')->all();
+                    $photoMap = $manHenkaten
+                        ->where('henkaten.is_done', '1')
+                        ->pluck('manAfter.photo', 'employee_before_id')
+                        ->all();
                 @endphp
 
                 @foreach ($activeEmployees as $emp)
@@ -325,7 +328,8 @@
                             $flag = '-flag';
                         }
 
-                        $target = $modal['modalId'] == 'manModal' ? '#' . $modal['modalId'] . $flag : '#' . $modal['modalId'];
+                        $target =
+                            $modal['modalId'] == 'manModal' ? '#' . $modal['modalId'] . $flag : '#' . $modal['modalId'];
 
                     @endphp
                     <div class="col-lg-12">
@@ -394,8 +398,7 @@
                                         }
 
                                         $color = mapRoleToColor($role);
-
-                                        if ($line->name === 'ASAN01' || $line->name === 'ASAN02' || $line->name === 'ASIP01' || $line->name === 'ASMP01' || $line->name === 'ASVP01') {
+                                        if ($line->total_emp !== 2) {
                                             $col = '12';
                                         } else {
                                             $col = '6';
@@ -1376,8 +1379,9 @@
 
     $(document).ready(function() {
         var lineName = "{{ $line->name }}";
+        var totalEmp = "{{ $line->total_emp }}";
 
-        if (lineName === 'ASAN01' || lineName === 'ASAN02') {
+        if (totalEmp > 2) {
             $('.temp-row').children().unwrap();
             $('.owl-carousel').owlCarousel({
                 margin: 25,

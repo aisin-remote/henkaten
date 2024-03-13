@@ -449,6 +449,25 @@ class EmployeeController extends Controller
         }
     }
 
+    public function getEmployees(Request $request)
+    {
+        $line = $request->line;
+
+        // get total employee in spesific line
+        $total = Line::select('total_emp')->where('name', $line)->first();
+        if ($total->total_emp == null || $total->total_emp == 0 || !$total){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Jumlah karyawan belum disetup pada line ' . $line . ' harap hubungi ITD!'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'total' => $total->total_emp
+        ]);
+    }
+
     public function getPic(Request $request)
     {
         $shift = $request->shift;

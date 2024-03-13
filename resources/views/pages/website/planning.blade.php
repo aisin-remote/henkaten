@@ -26,7 +26,7 @@
                     @php
                         $flag = false;
                         $empOrigin = auth()->user();
-                        $flag = $empOrigin->origin->name === 'ELECTRIC' ? true : false;
+                        $flag = $empOrigin->origin->name !== 'DC' ? true : false;
                     @endphp
                     <div class="row">
                         <div class="col-12 mb-3">
@@ -142,7 +142,7 @@
                             <th>Line</th>
                             <th>Shift</th>
                             <th>Planning Date</th>
-                            @if (auth()->user()->origin->name !== 'ELECTRIC')
+                            @if (auth()->user()->origin->name === 'DC')
                                 <th><span class="badge bg-warning">POS 1</span></th>
                                 <th><span class="badge bg-danger">POS 2</span></th>
                             @else
@@ -163,7 +163,7 @@
                                 <td>{{ $shift }}</td>
                                 <td>{{ Carbon\Carbon::parse($start)->format('j F Y') }} -
                                     {{ Carbon\Carbon::parse($end)->format('j F Y') }}</td>
-                                @if (auth()->user()->origin->name !== 'ELECTRIC')
+                                @if (auth()->user()->origin->name === 'DC')
                                     @if (count($employees) === 2)
                                         @foreach ($employees as $employee)
                                             <td>{{ $employee->name }}</td>
@@ -173,40 +173,28 @@
                                         <td></td>
                                     @endif
                                 @else
-                                    @if ($line === 'ASAN01' || $line === 'ASAN02')
-                                        <td>
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <ul class="list-group">
-                                                        @foreach (array_slice($employees, 0, 4) as $employee)
-                                                            <li class="list-group-item">
-                                                                {{ $employee->name }}
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                                <div class="col-6">
-                                                    <ul class="list-group">
-                                                        @foreach (array_slice($employees, 4, 3) as $employee)
-                                                            <li class="list-group-item">
-                                                                {{ $employee->name }}
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    @else
-                                        @foreach ($employees as $employee)
-                                            <td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-6">
                                                 <ul class="list-group">
-                                                    <li class="list-group-item">
-                                                        {{ $employee->name }}
-                                                    </li>
+                                                    @foreach (array_slice($employees, 0, 4) as $employee)
+                                                        <li class="list-group-item">
+                                                            {{ $employee->name }}
+                                                        </li>
+                                                    @endforeach
                                                 </ul>
-                                            </td>
-                                        @endforeach
-                                    @endif
+                                            </div>
+                                            <div class="col-6">
+                                                <ul class="list-group">
+                                                    @foreach (array_slice($employees, 4, 3) as $employee)
+                                                        <li class="list-group-item">
+                                                            {{ $employee->name }}
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </td>
                                 @endif
                                 <td class="text-center">
                                     <a class="btn btn-secondary view-employee mb-1" data-bs-toggle="modal"
@@ -315,7 +303,10 @@
                                                                         ->where('employee_id', $emp->employee_id)
                                                                         ->pluck('skill_id')
                                                                         ->all();
-                                                                    $employeeSkills = $allSkills->whereIn('id', $employeeSkillIds);
+                                                                    $employeeSkills = $allSkills->whereIn(
+                                                                        'id',
+                                                                        $employeeSkillIds,
+                                                                    );
                                                                 @endphp
                                                             @endforeach
                                                             @foreach ($employeeSkills as $skill)
@@ -547,82 +538,71 @@
 
         $('#line').on('change', function() {
             let line = $('#line option:selected').text();
-            if (line === 'ASAN01' || line === 'ASAN02') {
-                // Add form
-                let html = '';
-                for (let i = 1; i <= 7; i++) {
-                    html += `
-                    <div class="row mb-3">
-                        <div class="col-lg-3 col-sm-12">
-                            <div class="mb-4 row align-items-center">
-                                <label for="exampleInputPassword1" class="form-label fw-semibold col-sm-3 col-form-label">Pos</label>
-                                <div class="col-9">
-                                    <input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="Pos ${i}" disabled>
-                                    <input type="hidden" class="form-control" placeholder="Employee Name" name="pos[]" value="${i}">
+            let area = line.substring(0, 2);
+
+            if (area !== 'DC') {
+                // ajax request get total employee in line
+                $.ajax({
+                    type: 'get',
+                    url: "{{ url('line/employees') }}",
+                    _token: "{{ csrf_token() }}",
+                    dataType: 'json',
+                    data: {
+                        line: line
+                    },
+                    success: function(data) {
+                        if (data.status == 'success') {
+
+                            // add form based on employee
+                            let html = '';
+                            for (let i = 1; i <= data.total; i++) {
+                                html += `
+                        <div class="row mb-3">
+                            <div class="col-lg-3 col-sm-12">
+                                <div class="mb-4 row align-items-center">
+                                    <label for="exampleInputPassword1" class="form-label fw-semibold col-sm-3 col-form-label">Pos</label>
+                                    <div class="col-9">
+                                        <input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="Pos ${i}" disabled>
+                                        <input type="hidden" class="form-control" placeholder="Employee Name" name="pos[]" value="${i}">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-lg-9 col-sm-12">
-                            <select class="select2 form-select select2-hidden-accessible employee_id" style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" name="employee_id[]" required>
-                                <option value="0">Select Employee</option>`;
+                            <div class="col-lg-9 col-sm-12">
+                                <select class="select2 form-select select2-hidden-accessible employee_id" style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" name="employee_id[]" required>
+                                    <option value="0">Select Employee</option>`;
 
-                    // Assuming employees is a JavaScript array
-                    employees.forEach(employee => {
-                        html += `<option value="${employee.id}">${employee.name}</option>`;
-                    });
+                                // Assuming employees is a JavaScript array
+                                employees.forEach(employee => {
+                                    html +=
+                                        `<option value="${employee.id}">${employee.name}</option>`;
+                                });
 
-                    html += `
-                            </select>
-                        </div>
-                    </div>`;
-                }
-                // Check if the container element exists
-                let container = $('.repeater-mp-container');
-                if (container.length) {
-                    container.html(html);
-                    // Re-initialize select2
-                    container.find('.select2').select2();
-                } else {
-                    console.error("Container element not found");
-                }
-            } else if (line === 'ASIP01' || line === 'ASVP01' || line === 'ASMP01') {
-                // Add form
-                let html = '';
-                for (let i = 1; i <= 1; i++) {
-                    html += `
-                    <div class="row mb-3">
-                        <div class="col-lg-3 col-sm-12">
-                            <div class="mb-4 row align-items-center">
-                                <label for="exampleInputPassword1" class="form-label fw-semibold col-sm-3 col-form-label">Pos</label>
-                                <div class="col-9">
-                                    <input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="Pos ${i}" disabled>
-                                    <input type="hidden" class="form-control" placeholder="Employee Name" name="pos[]" value="${i}">
-                                </div>
+                                html += `
+                                </select>
                             </div>
-                        </div>
-                        <div class="col-lg-9 col-sm-12">
-                            <select class="select2 form-select select2-hidden-accessible employee_id" style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" name="employee_id[]" required>
-                                <option value="0">Select Employee</option>`;
-
-                    // Assuming employees is a JavaScript array
-                    employees.forEach(employee => {
-                        html += `<option value="${employee.id}">${employee.name}</option>`;
-                    });
-
-                    html += `
-                            </select>
-                        </div>
-                    </div>`;
-                }
-                // Check if the container element exists
-                let container = $('.repeater-mp-container');
-                if (container.length) {
-                    container.html(html);
-                    // Re-initialize select2
-                    container.find('.select2').select2();
-                } else {
-                    console.error("Container element not found");
-                }
+                        </div>`;
+                            }
+                            // Check if the container element exists
+                            let container = $('.repeater-mp-container');
+                            if (container.length) {
+                                container.html(html);
+                                // Re-initialize select2
+                                container.find('.select2').select2();
+                            } else {
+                                console.error("Container element not found");
+                            }
+                        } else {
+                            notif(data.status, data.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status == 0) {
+                            localStorage.setItem('pass', false)
+                            notif("error", 'Connection Error');
+                            return;
+                        }
+                    }
+                });
             }
         });
 

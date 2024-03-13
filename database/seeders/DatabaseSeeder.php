@@ -61,31 +61,71 @@ class DatabaseSeeder extends Seeder
         // ]);
             
         // Line
-        $origin = Origin::select('id')->where('name', 'DC')->first();
-        $lines = Line::where('origin_id', $origin->id)->get();
+        // $origin = Origin::select('id')->where('name', 'MA')->first();
+        // $lines = Line::where('origin_id', $origin->id)->get();
 
         // Position::whereNull('size')->update([
         //     'size' => 80
         // ]);
 
-        foreach ($lines as $line) {
-            for($i=1; $i<=2; $i++) {
-                if($i == 1){
-                    Position::where('line_id',$line->id)
-                    ->where('pos', $i)
-                    ->update([
-                        'top' => 59,
-                        'left' => 28
-                    ]);
-                }else{
-                    Position::where('line_id',$line->id)
-                    ->where('pos', $i)
-                    ->update([
-                        'top' => 70,
-                        'left' => 44
-                    ]);
-                }
-            }
+        // foreach ($lines as $line) {
+        //     for($i=1; $i<=2; $i++) {
+        //         if($i == 1){
+        //             Position::create([
+        //                 'line_id' => $line->id,
+        //                 'pos' => $i,
+        //                 'top' => 51,
+        //                 'left' => 14,
+        //                 'size' => 70
+        //             ]);
+        //         }else{
+        //             Position::create([
+        //                 'line_id' => $line->id,
+        //                 'pos' => $i,
+        //                 'top' => 58,
+        //                 'left' => 34,
+        //                 'size' => 70
+        //             ]);
+        //         }
+        //     }
+        // }
+
+        Position::create([
+            'line_id' => '9ac830ff-4e03-44e1-b26f-2a9e36946f3a',
+            'pos' => 1,
+            'top' => 51,
+            'left' => 14,
+            'size' => 70
+        ]);
+        
+        for($i=1; $i<=3; $i++) {
+            Position::create([
+                'line_id' => '9ac830ff-5540-469a-acc6-8c86d751ed3d',
+                'pos' => $i,
+                'top' => 51,
+                'left' => 14,
+                'size' => 70
+            ]);
+        }
+        
+        for($i=1; $i<=6; $i++) {
+            Position::create([
+                'line_id' => '9ac830ff-563b-44f5-8273-7a1ea624b6cd',
+                'pos' => $i,
+                'top' => 51,
+                'left' => 14,
+                'size' => 70
+            ]);
+        }
+        
+        for($i=1; $i<=5; $i++) {
+            Position::create([
+                'line_id' => '9ac830ff-5710-4a88-a79e-a21efd1c24e2',
+                'pos' => $i,
+                'top' => 51,
+                'left' => 14,
+                'size' => 70
+            ]);
         }
         
         // for($i=1; $i<=2; $i++) {

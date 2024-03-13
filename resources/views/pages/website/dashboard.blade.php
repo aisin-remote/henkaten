@@ -503,6 +503,8 @@
                                                             $origin = 'DIE CASTING';
                                                         } elseif (auth()->user()->origin->name == 'MA') {
                                                             $origin = 'MACHINING';
+                                                        } elseif (auth()->user()->origin->name == 'MA ASSY') {
+                                                            $origin = 'MA & ASSY';
                                                         } elseif (auth()->user()->origin->name == 'ASSY') {
                                                             $origin = 'ASSEMBLING';
                                                         } else {
@@ -661,10 +663,30 @@
                                 </div>
                                 @php
                                     $statusMappings = [
-                                        'off' => ['priority' => 1, 'overall' => 'OFF', 'shape' => 'zzz', 'color' => 'dark'],
-                                        'running' => ['priority' => 2, 'overall' => 'RUNNING', 'shape' => 'circle', 'color' => 'success'],
-                                        'henkaten' => ['priority' => 3, 'overall' => 'HENKATEN', 'shape' => 'triangle', 'color' => 'warning'],
-                                        'stop' => ['priority' => 4, 'overall' => 'STOP', 'shape' => 'x', 'color' => 'danger'],
+                                        'off' => [
+                                            'priority' => 1,
+                                            'overall' => 'OFF',
+                                            'shape' => 'zzz',
+                                            'color' => 'dark',
+                                        ],
+                                        'running' => [
+                                            'priority' => 2,
+                                            'overall' => 'RUNNING',
+                                            'shape' => 'circle',
+                                            'color' => 'success',
+                                        ],
+                                        'henkaten' => [
+                                            'priority' => 3,
+                                            'overall' => 'HENKATEN',
+                                            'shape' => 'triangle',
+                                            'color' => 'warning',
+                                        ],
+                                        'stop' => [
+                                            'priority' => 4,
+                                            'overall' => 'STOP',
+                                            'shape' => 'x',
+                                            'color' => 'danger',
+                                        ],
                                     ];
 
                                     // summaery all line

@@ -43,12 +43,21 @@
                                     @endforeach
                                 </select>
                             </div>
+                            @php
+                                $pos = 0;
+                                foreach ($lines as $line) {
+                                    if ($line->total_emp > $pos) {
+                                        $pos = $line->total_emp;
+                                    }
+                                }
+                            @endphp
                             <div class="col-lg-2 col-sm-12">
                                 <label class="mb-1">Pos</label>
                                 <select class="form-select mr-sm-2 pos" id="inlineFormCustomSelect" name="pos[]">
                                     <option value="0">-- select pos --</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
+                                    @for ($i = 0; $i < $pos; $i++)
+                                        <option value="{{ $i + 1 }}">Pos {{ $i + 1 }}</option>
+                                    @endfor
                                 </select>
                             </div>
                             <div class="col-lg-3 col-sm-12">

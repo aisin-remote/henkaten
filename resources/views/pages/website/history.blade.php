@@ -94,7 +94,7 @@
                                     style="position: -webkit-sticky;
                                 position: sticky;
                                 left: 0;
-                                z-index: 1;">
+                                z-index: 1; background-color: #f9f9f9;">
                                     {{ Carbon\Carbon::parse($henkaten->date)->format('Y-m-d') }}</td>
                                 <td>{{ strtoupper($henkaten->{"4M"}) }}</td>
                                 <td>{{ $henkaten->line->name }}</td>

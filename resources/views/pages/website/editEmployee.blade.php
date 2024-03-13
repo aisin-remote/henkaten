@@ -138,7 +138,7 @@
 
 <script>
     $(document).ready(function() {
-        $('#addSkill').on('click', function() {
+        $(document).on('click', '#addSkill', function() {
             var newRow = `<div class="row mb-3">
             <div class="col-lg-9 col-sm-12">
                 <select class="select2 form-select select2-hidden-accessible"
