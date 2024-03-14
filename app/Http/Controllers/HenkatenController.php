@@ -47,6 +47,14 @@ class HenkatenController extends Controller
     {
         // get origin id
         $empOrigin = auth()->user()->origin_id;
+        
+        $originToGroupIdMap = [
+            env('ORIGIN_MA') => env('GROUP_ID_MA'),
+            env('ORIGIN_DC') => env('GROUP_ID_DC'),
+        ];
+        
+        // Use the origin to get the group ID directly from the map, if available
+        $groupId = $originToGroupIdMap[$empOrigin] ?? null;
 
         $currentTime = Carbon::now();
         $shifts = Shift::all();
@@ -179,7 +187,7 @@ class HenkatenController extends Controller
 
             // send WA notif
             $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
-            $phone = env('GROUP_ID');
+            $phone = $groupId;
             $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$line->name*``` %cLINE STATUS   : ```*$status*``` %c4M            : $request->type %cCategory      : $request->category %cABNORMALITY   : $request->abnormality %cTIME          : $date %cPIC           : $pivot %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
             $curl = curl_init();
             curl_setopt_array($curl, [
@@ -221,12 +229,13 @@ class HenkatenController extends Controller
         // get origin id
         $empOrigin = auth()->user()->origin_id;
 
-        // get phone number
-        $empPhone = User::select('phone_number')
-            ->where('origin_id', $empOrigin)
-            ->where('role', 'LDR')
-            ->where('notification', '1')
-            ->get();
+        $originToGroupIdMap = [
+            env('ORIGIN_MA') => env('GROUP_ID_MA'),
+            env('ORIGIN_DC') => env('GROUP_ID_DC'),
+        ];
+        
+        // Use the origin to get the group ID directly from the map, if available
+        $groupId = $originToGroupIdMap[$empOrigin] ?? null;
 
         // get henkaten info
         $henkatenInfo = Henkaten::with(['shift', 'line', 'henkatenManagement'])
@@ -455,7 +464,7 @@ class HenkatenController extends Controller
                             ]);
 
                             $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
-                            $phone = env('GROUP_ID');
+                            $phone = $groupId;
                             $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
                             $curl = curl_init();
                             curl_setopt_array($curl, [
@@ -486,7 +495,7 @@ class HenkatenController extends Controller
 
             // send whatsapp notification
             $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
-            $phone = env('GROUP_ID');
+            $phone = $groupId;
             $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c         ```*REMINDER*```    %c%cIni adalah pengingat untuk melakukan %capproval permintaan yang masih menunggu%cdi sistem. Mohon segera cek dan%clakukan persetujuan agar proses dapat berlanjut. %cTerima kasih banyak! %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
             $curl = curl_init();
             curl_setopt_array($curl, [
@@ -519,6 +528,14 @@ class HenkatenController extends Controller
     {
         // get origin id
         $empOrigin = auth()->user()->origin_id;
+
+        $originToGroupIdMap = [
+            env('ORIGIN_MA') => env('GROUP_ID_MA'),
+            env('ORIGIN_DC') => env('GROUP_ID_DC'),
+        ];
+        
+        // Use the origin to get the group ID directly from the map, if available
+        $groupId = $originToGroupIdMap[$empOrigin] ?? null;
 
         // get henkaten info
         $henkatenInfo = Henkaten::with(['troubleshoot.employee', 'shift', 'line', 'henkatenManagement'])
@@ -576,7 +593,7 @@ class HenkatenController extends Controller
 
                 // send whatsapp notification
                 $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
-                $phone = env('GROUP_ID');
+                $phone = $groupId;
                 $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
                 $curl = curl_init();
                 curl_setopt_array($curl, [
