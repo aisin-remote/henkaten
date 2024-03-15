@@ -469,7 +469,7 @@
                                     <div class="row mt-4">
                                         <div class="col-12">
                                             <button class="btn btn-dark" style="width: 100% !important">
-                                                {{ strtoupper('pic') }}</button>
+                                                {{ strtoupper('JP') }}</button>
                                         </div>
                                     </div>
                                 </div>
