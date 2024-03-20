@@ -23,8 +23,8 @@ class EmployeeController extends Controller
     {
         $cacheKey = 'masterEmployees_' . auth()->user()->origin_id;
 
-        // Forget the cache for the specified key
-        Cache::forget($cacheKey);
+        // // Forget the cache for the specified key
+        // Cache::forget($cacheKey);
 
         // Retrieve data from cache if available, or fetch from database and cache forever
         $masterEmployees = Cache::rememberForever($cacheKey, function () {
