@@ -232,6 +232,11 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function report()
+    {
+        return view('pages.website.report');
+    }
+
     public function updateLineStatus(Line $lineId, Request $request)
     {
         $onOffSwitch = $request->onOffSwitch;

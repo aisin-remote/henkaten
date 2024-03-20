@@ -49,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/lineDashboard', [DashboardController::class, 'indexLine'])->name('dashboard.indexLine');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::prefix('dashboard')->group(function () {
+        Route::get('report', [DashboardController::class, 'report'])->name('dashboard.report');
         Route::get('{lineId}', [DashboardController::class, 'dashboardLine'])->name('dashboard.line');
         Route::get('updateStatus/{lineId}', [DashboardController::class, 'updateLineStatus'])->name('dashboard.line.status');
         Route::get('selectTheme/{theme}', [DashboardController::class, 'selectTheme'])->name('dashboard.theme');
@@ -109,15 +110,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/history', [HenkatenController::class, 'history'])->name('history');
 
+    // theme
     Route::get('/theme', [themeController::class, 'index'])->name('theme');
     Route::post('/themeStore', [themeController::class, 'regist'])->name('theme.regist');
     Route::post('/theme/{id}', [themeController::class, 'destroy'])->name('theme.destroy');
     
+    // henkaten management
     Route::get('/henkatenManagement', [HenkatenController::class, 'henkatenManagementIndex'])->name('henkatenManagement.index');
     Route::post('/henkatenManagement/store', [HenkatenController::class, 'henkatenManagementStore'])->name('henkatenManagement.store');
-    
     Route::get('/henkatenExport', [HenkatenController::class, 'henkatenExport'])->name('henkaten.export');
     
+    // OPL 
     Route::get('/opl', [OplController::class, 'index']);
     Route::post('/submit-form', [OplController::class, 'handleFormSubmission'])->name('form.submit');
 

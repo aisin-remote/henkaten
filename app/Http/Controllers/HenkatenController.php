@@ -245,6 +245,7 @@ class HenkatenController extends Controller
         // get first pic
         $firstPic = Pivot::with('firstPic')
             ->where('active_date', Carbon::parse($henkatenInfo->date)->format('Y-m-d'))
+            ->where('origin_id', $empOrigin)
             ->first();
             
         if (!$firstPic) {
@@ -545,6 +546,7 @@ class HenkatenController extends Controller
         // get first pic
         $firstPic = Pivot::with('firstPic')
             ->where('active_date', Carbon::parse($henkatenInfo->date)->format('Y-m-d'))
+            ->where('origin_id', $empOrigin)
             ->first();
         if (!$firstPic) {
             $firstPic = 'unknown';
