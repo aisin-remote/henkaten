@@ -15,14 +15,23 @@ use Illuminate\Http\Request;
 use App\Models\EmployeeSkill;
 use App\Models\EmployeeActive;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class EmployeeController extends Controller
 {
     public function index()
     {
-        // get origin id
-        $empOrigin = auth()->user()->origin_id;
-        $masterEmployees = Employee::where('origin_id', $empOrigin)->get();
+        $cacheKey = 'masterEmployees_' . auth()->user()->origin_id;
+
+        // Forget the cache for the specified key
+        Cache::forget($cacheKey);
+
+        // Retrieve data from cache if available, or fetch from database and cache forever
+        $masterEmployees = Cache::rememberForever($cacheKey, function () {
+            // get origin id
+            $empOrigin = auth()->user()->origin_id;
+            return Employee::where('origin_id', $empOrigin)->get();
+        });
 
         $allSkills = Skill::select('id', 'name', 'level')->get();
         $nameSkills = Skill::select('name')->groupBy('name')->get();

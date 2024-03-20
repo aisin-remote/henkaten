@@ -259,7 +259,10 @@
                                                                 ->where('employee_id', $emp->id)
                                                                 ->pluck('skill_id')
                                                                 ->all();
-                                                            $employeeSkills = $allSkills->whereIn('id', $employeeSkillIds);
+                                                            $employeeSkills = $allSkills->whereIn(
+                                                                'id',
+                                                                $employeeSkillIds,
+                                                            );
                                                         @endphp
                                                     @endforeach
                                                     @if (!$employeeSkills->isEmpty())
