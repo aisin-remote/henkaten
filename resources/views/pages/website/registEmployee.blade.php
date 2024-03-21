@@ -376,7 +376,7 @@
         // initialize datatable
         $('#masterSkill').DataTable({
             scrollX: true,
-            paging: false,
+            // paging: false,
             columnDefs: [{
                 orderable: false,
                 targets: 0
