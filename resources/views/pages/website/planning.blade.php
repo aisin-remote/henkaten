@@ -230,6 +230,8 @@
                         @endforeach
                     </tbody>
                 </table>
+
+                {{ $groupedArray->links('pagination::bootstrap-4') }}
             </div>
         </div>
     </div>
@@ -389,6 +391,7 @@
         $(document).ready(function() {
             // initialize datatable
             $('#henkatenHistory').DataTable({
+                paging: false,
                 scrollX: true,
             });
         });
