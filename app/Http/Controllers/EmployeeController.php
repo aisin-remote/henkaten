@@ -17,7 +17,6 @@ use App\Models\EmployeeActive;
 use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class EmployeeController extends Controller
 {
@@ -303,21 +302,8 @@ class EmployeeController extends Controller
             return $employee->shift_name . '|' . $employee->line_name . '|' . Carbon::parse($employee->active_from)->format('Y-m-d') . '|' . Carbon::parse($employee->expired_at)->format('Y-m-d');
         });
         
-        // Paginate the grouped results
-        $perPage = 10; // Adjust as needed
-        $page = request()->get('page', 1);
-        $offset = ($page - 1) * $perPage;
-
-        $paginatedResults = new LengthAwarePaginator(
-            $groupedEmployees->forPage($page, $perPage),
-            $groupedEmployees->count(),
-            $perPage,
-            $page,
-            ['path' => request()->url(), 'query' => request()->query()]
-        );
-
-        // Convert the paginated results to a standard array
-        $groupedArray = $paginatedResults->toArray();
+        // Convert the grouped collection to a standard array
+        $groupedArray = $groupedEmployees->toArray();
 
         $allSkills = Skill::select('id', 'name', 'level')->get();
         $nameSkills = Skill::select('name')->groupBy('name')->get();
