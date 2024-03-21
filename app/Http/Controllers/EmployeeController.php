@@ -48,7 +48,7 @@ class EmployeeController extends Controller
     {
         // Define storage paths
         $compressedPath = 'compressed-photos/';
-        $originalPath = public_path('uploads\doc') . DIRECTORY_SEPARATOR . $filename;
+        $originalPath = public_path('uploads/doc') . DIRECTORY_SEPARATOR . $filename;
 
         // Read the first few bytes to determine the image format
         $imageHeaders = file_get_contents($originalPath, false, null, 0, 10);
