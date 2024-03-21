@@ -24,7 +24,7 @@ class EmployeeController extends Controller
     {
         // get origin id
         $empOrigin = auth()->user()->origin_id;
-        $masterEmployees = Employee::where('origin_id', $empOrigin)->get();
+        $masterEmployees = Employee::where('origin_id', $empOrigin)->paginate(10);
 
         // Compress and update photo URLs for each employee
         // foreach ($masterEmployees as $employee) {
