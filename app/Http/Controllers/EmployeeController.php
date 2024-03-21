@@ -54,15 +54,29 @@ class EmployeeController extends Controller
         $imageHeaders = file_get_contents($originalPath, false, null, 0, 10);
         $imageFormat = finfo_buffer(finfo_open(), $imageHeaders, FILEINFO_MIME_TYPE);
 
+        // Ensure that the compressed directory exists and is writable
+        $compressedDirectory = public_path($compressedPath);
+        if (!file_exists($compressedDirectory)) {
+            mkdir($compressedDirectory, 0777, true); // Create the directory recursively
+        }
+
         // Compress the image based on its format
         switch ($imageFormat) {
             case 'image/jpeg':
-                $image = imagecreatefromjpeg($originalPath);
-                imagejpeg($image, public_path($compressedPath . $filename), 75); // Adjust quality as needed
+                if (imagejpeg($image, $compressedDirectory . DIRECTORY_SEPARATOR . $filename, 75)) {
+                    // Image successfully compressed and saved
+                } else {
+                    // Error occurred while compressing or saving the image
+                    return null;
+                }
                 break;
             case 'image/png':
-                $image = imagecreatefrompng($originalPath);
-                imagepng($image, public_path($compressedPath . $filename), 9); // Adjust compression level as needed
+                if (imagepng($image, $compressedDirectory . DIRECTORY_SEPARATOR . $filename, 9)) {
+                    // Image successfully compressed and saved
+                } else {
+                    // Error occurred while compressing or saving the image
+                    return null;
+                }
                 break;
             // Add more cases for other image formats if needed
             default:
