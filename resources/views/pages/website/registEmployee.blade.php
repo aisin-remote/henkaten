@@ -160,8 +160,8 @@
                             @endphp
                             <tr>
                                 <td class="ps-0 text-truncate">
-                                    <img src="{{ asset('compressed-photos/' . $emp->photo) }}"
-                                        class="rounded img-fluid me-2" width="40" alt="{{ $emp->name }}">
+                                    <img src="{{ asset('uploads/doc/' . $emp->photo) }}" class="rounded img-fluid me-2"
+                                        width="40" alt="{{ $emp->name }}">
                                     <span class="ps-2 fw-semibold">{{ $emp->name }}</span>
                                 </td>
                                 <td>{{ $emp->npk }}</td>
@@ -243,8 +243,8 @@
                         <div class="row justify-content-center">
                             <div class="col-lg-6 col-md-12 mt-5">
                                 <div class="text-center">
-                                    <img src="{{ asset('compressed-photos/' . $emp->photo) }}"
-                                        class="rounded-1 img-fluid" width="150">
+                                    <img src="{{ asset('uploads/doc/' . $emp->photo) }}" class="rounded-1 img-fluid"
+                                        width="150">
                                     <div class="mt-n2">
                                         <span class="badge bg-primary">{{ $emp->role }}</span>
                                         <h3 class="card-title mt-3">{{ $emp->name }}</h3>
