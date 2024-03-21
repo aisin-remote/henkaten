@@ -279,7 +279,9 @@ class DashboardController extends Controller
 
         // get current pivot
         $current_date = Carbon::now()->toDateString();
-        $pivot = Pivot::where('active_date', $current_date)->first();
+        $pivot = Pivot::where('active_date', $current_date)
+                        ->where('origin_id', $empOrigin)
+                        ->first();
         if (!$pivot) {
             if ($theme_name == null) {
                 try {
@@ -413,7 +415,9 @@ class DashboardController extends Controller
 
         // get current pivot
         $current_date = Carbon::now()->toDateString();
-        $pivot = Pivot::where('active_date', $current_date)->first();
+        $pivot = Pivot::where('active_date', $current_date)
+                        ->where('origin_id', $empOrigin)
+                        ->first();
 
         $employee = Employee::where('id', $pic)->first();
         if (!$employee) {
@@ -501,6 +505,7 @@ class DashboardController extends Controller
             $query->where('first_pic_id', $pic)->orWhere('second_pic_id', $pic);
         })
             ->whereDate('active_date', '=', now()->toDateString()) // Menggunakan toDateString() untuk mendapatkan tanggal saja
+            ->where('origin_id', $empOrigin)
             ->first();
 
         if ($existingPics) {
@@ -512,7 +517,9 @@ class DashboardController extends Controller
 
         // get current pivot
         $current_date = Carbon::now()->toDateString();
-        $pivot = Pivot::where('active_date', $current_date)->first();
+        $pivot = Pivot::where('active_date', $current_date)
+                        ->where('origin_id', $empOrigin)
+                        ->first();
 
         $employee = Employee::where('id', $pic)->first();
         if (!$employee) {
@@ -604,6 +611,7 @@ class DashboardController extends Controller
             $query->where('first_pic_id', $pic)->orWhere('second_pic_id', $pic);
         })
             ->whereDate('active_date', '=', now()->toDateString()) // Menggunakan toDateString() untuk mendapatkan tanggal saja
+            ->where('origin_id', $empOrigin)
             ->first();
 
         if ($existingPics) {
@@ -615,7 +623,9 @@ class DashboardController extends Controller
 
         // get current pivot
         $current_date = Carbon::now()->toDateString();
-        $pivot = Pivot::where('active_date', $current_date)->first();
+        $pivot = Pivot::where('active_date', $current_date)
+                        ->where('origin_id', $empOrigin)
+                        ->first();
 
         $employee = Employee::where('id', $pic)->first();
         if (!$employee) {
