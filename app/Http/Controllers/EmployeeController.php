@@ -54,6 +54,8 @@ class EmployeeController extends Controller
         $imageHeaders = file_get_contents($originalPath, false, null, 0, 10);
         $imageFormat = finfo_buffer(finfo_open(), $imageHeaders, FILEINFO_MIME_TYPE);
 
+        dd($imageFormat);
+
         // Compress the image based on its format
         switch ($imageFormat) {
             case 'image/jpeg':
