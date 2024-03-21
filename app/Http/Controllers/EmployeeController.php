@@ -27,9 +27,9 @@ class EmployeeController extends Controller
         $masterEmployees = Employee::where('origin_id', $empOrigin)->get();
 
         // Compress and update photo URLs for each employee
-        foreach ($masterEmployees as $employee) {
-            $employee->compressed_photo_url = $this->compressAndStorePhoto($employee->photo);
-        }
+        // foreach ($masterEmployees as $employee) {
+        //     $employee->compressed_photo_url = $this->compressAndStorePhoto($employee->photo);
+        // }
 
         $allSkills = Skill::select('id', 'name', 'level')->get();
         $nameSkills = Skill::select('name')->groupBy('name')->get();
