@@ -205,7 +205,7 @@
                     </tbody>
                 </table>
 
-                {{ $photos->links('pagination::bootstrap-4') }}
+                {{ $masterEmployee->links('pagination::bootstrap-4') }}
             </div>
         </div>
     </div>
