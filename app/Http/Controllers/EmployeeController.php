@@ -15,23 +15,21 @@ use Illuminate\Http\Request;
 use App\Models\EmployeeSkill;
 use App\Models\EmployeeActive;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeController extends Controller
 {
     public function index()
     {
-        $cacheKey = 'masterEmployees_' . auth()->user()->origin_id;
+        // get origin id
+        $empOrigin = auth()->user()->origin_id;
+        $masterEmployees = Employee::where('origin_id', $empOrigin)->get();
 
-        // // Forget the cache for the specified key
-        // Cache::forget($cacheKey);
-
-        // Retrieve data from cache if available, or fetch from database and cache forever
-        $masterEmployees = Cache::rememberForever($cacheKey, function () {
-            // get origin id
-            $empOrigin = auth()->user()->origin_id;
-            return Employee::where('origin_id', $empOrigin)->get();
-        });
+        // Compress and update photo URLs for each employee
+        foreach ($masterEmployees as $employee) {
+            $employee->compressed_photo_url = $this->compressAndStorePhoto($employee->photo);
+        }
 
         $allSkills = Skill::select('id', 'name', 'level')->get();
         $nameSkills = Skill::select('name')->groupBy('name')->get();
@@ -44,6 +42,36 @@ class EmployeeController extends Controller
             'empSkills' => $empSkills,
             'nameSkills' => $nameSkills
         ]);
+    }
+
+    private function compressAndStorePhoto($filename)
+    {
+        // Define storage paths
+        $compressedPath = 'compressed-photos/';
+        $originalPath = public_path('uploads\doc') . DIRECTORY_SEPARATOR . $filename;
+
+        // Read the first few bytes to determine the image format
+        $imageHeaders = file_get_contents($originalPath, false, null, 0, 10);
+        $imageFormat = finfo_buffer(finfo_open(), $imageHeaders, FILEINFO_MIME_TYPE);
+
+        // Compress the image based on its format
+        switch ($imageFormat) {
+            case 'image/jpeg':
+                $image = imagecreatefromjpeg($originalPath);
+                imagejpeg($image, public_path($compressedPath . $filename), 75); // Adjust quality as needed
+                break;
+            case 'image/png':
+                $image = imagecreatefrompng($originalPath);
+                imagepng($image, public_path($compressedPath . $filename), 9); // Adjust compression level as needed
+                break;
+            // Add more cases for other image formats if needed
+            default:
+                // Unsupported image format, handle accordingly
+                return null;
+        }
+
+        // Return the URL to the compressed photo
+        return Storage::url($compressedPath . $filename);
     }
 
     public function attendance()
