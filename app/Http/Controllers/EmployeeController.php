@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use App\Models\EmployeeSkill;
 use App\Models\EmployeeActive;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 
@@ -275,57 +276,49 @@ class EmployeeController extends Controller
 
     public function employeePlanning()
     {
-        // get origin
         $empOrigin = auth()->user()->origin_id;
-        
-        // get current date
         $currentDate = Carbon::now();
         $firstDay = $currentDate->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
         $lastDay = $currentDate->endOfWeek(Carbon::SUNDAY)->format('Y-m-d');
 
-        // get active employee at this period of time (this week)
-        $activeEmployees = DB::table('employee_active')
-                ->join('positions', 'employee_active.pos_id', '=', 'positions.id')
-                ->join('shifts', 'employee_active.shift_id', '=', 'shifts.id')
-                ->join('lines', 'employee_active.line_id', '=', 'lines.id')
-                ->join('origins', 'lines.origin_id', '=', 'origins.id')
-                ->join('employees', 'employee_active.employee_id', '=', 'employees.id')
-                ->select('shifts.name as shift_name', 'shifts.id as shift_id' , 'lines.id as line_id','lines.name as line_name', 'employee_active.active_from', 'employee_active.expired_at', 'employees.name', 'employees.photo','employees.npk', 'employees.role', 'employees.id as employee_id', 'positions.pos')
-                ->where(function ($query) use ($empOrigin) {
-                    $query->where('lines.origin_id', $empOrigin);
-                })
-                ->whereBetween('employee_active.active_from', [$firstDay, $lastDay])
-                ->get();
-    
+        $activeEmployees = EmployeeActive::with(['shift', 'line', 'employee', 'position'])
+            ->whereHas('line', function ($query) use ($empOrigin) {
+                $query->where('origin_id', $empOrigin);
+            })
+            ->whereBetween('active_from', [$firstDay, $lastDay])
+            ->get();
+
         // Manually group by shift, line, and week
         $groupedEmployees = $activeEmployees->groupBy(function ($employee) {
-            return $employee->shift_name . '|' . $employee->line_name . '|' . Carbon::parse($employee->active_from)->format('Y-m-d') . '|' . Carbon::parse($employee->expired_at)->format('Y-m-d');
+            return implode('|', [
+                $employee->shift->name,
+                $employee->line->name,
+                Carbon::parse($employee->active_from)->format('Y-m-d'),
+                Carbon::parse($employee->expired_at)->format('Y-m-d'),
+            ]);
         });
-        
+
         // Convert the grouped collection to a standard array
         $groupedArray = $groupedEmployees->toArray();
 
-        $allSkills = Skill::select('id', 'name', 'level')->get();
-        $nameSkills = Skill::select('name')->groupBy('name')->get();
-        $empSkills = EmployeeSkill::select()->get();
+        // Fetching other necessary data
+        $operators = Employee::select('id', 'name')
+                    ->where('role', 'Operator')
+                    ->where('origin_id', $empOrigin)
+                    ->get();
+        $pics = Employee::select('id', 'name')
+                    ->whereNotIn('role', ['Operator'])
+                    ->where('origin_id', $empOrigin)
+                    ->get();
+        $shifts = Shift::select('id', 'name')->get();
+        $lines = Line::where('origin_id', $empOrigin)->get(['id', 'name']);
+        $skills = Skill::select('name')->groupBy('name')->get();
 
-        return view('pages.website.planning', [
-            'operators' => Employee::select('id', 'name')
-                ->whereIn('role', ['Operator'])
-                ->where('origin_id', $empOrigin)
-                ->get(),
-            'pics' =>  Employee::select('id', 'name')
-                ->whereNotIn('role', ['Operator'])
-                ->where('origin_id', $empOrigin)
-                ->get(),
-            'shifts' => Shift::select('id', 'name')->get(),
-            'lines' => Line::select('id', 'name')->where('origin_id', $empOrigin)->get(),
-            'skills' => Skill::select('name')->groupBy('name')->get(),
-            'groupedArray' => $groupedArray,
-            'allSkills' => $allSkills,
-            'empSkills' => $empSkills,
-            'nameSkills' => $nameSkills
-        ]);
+        $allSkills = Cache::remember('all_skills', 60, function () {
+            return Skill::select('id', 'name', 'level')->get();
+        });
+
+        return view('pages.website.planning', compact('operators', 'pics', 'shifts', 'lines', 'skills', 'groupedArray', 'allSkills'));
     }
 
     public function employeePlanningStore(Request $request)
