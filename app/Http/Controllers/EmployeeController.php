@@ -301,9 +301,20 @@ class EmployeeController extends Controller
         $groupedEmployees = $activeEmployees->groupBy(function ($employee) {
             return $employee->shift_name . '|' . $employee->line_name . '|' . Carbon::parse($employee->active_from)->format('Y-m-d') . '|' . Carbon::parse($employee->expired_at)->format('Y-m-d');
         });
-        
-        // Convert the grouped collection to a standard array
-        $groupedArray = $groupedEmployees->toArray();
+
+        // Paginate each group separately
+        $perPage = 10; // Adjust as needed
+        $paginatedGroups = [];
+
+        foreach ($groupedEmployees as $groupKey => $group) {
+            $paginatedGroups[$groupKey] = new LengthAwarePaginator(
+                $group->forPage(request()->get('page', 1), $perPage),
+                $group->count(),
+                $perPage,
+                null,
+                ['path' => request()->url(), 'query' => request()->query()]
+            );
+        }
 
         $allSkills = Skill::select('id', 'name', 'level')->get();
         $nameSkills = Skill::select('name')->groupBy('name')->get();
@@ -321,7 +332,7 @@ class EmployeeController extends Controller
             'shifts' => Shift::select('id', 'name')->get(),
             'lines' => Line::select('id', 'name')->where('origin_id', $empOrigin)->get(),
             'skills' => Skill::select('name')->groupBy('name')->get(),
-            'groupedArray' => $groupedArray,
+            'groupedArray' => $paginatedGroups,
             'allSkills' => $allSkills,
             'empSkills' => $empSkills,
             'nameSkills' => $nameSkills
