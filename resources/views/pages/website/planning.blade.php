@@ -157,6 +157,7 @@
                                 // Split the group key to get shift, line, and week
                                 [$shift, $line, $start, $end] = explode('|', $groupKey);
                                 $modalId = Str::slug($shift . $line . $start . $end);
+                                dd($employees);
                             @endphp
                             <tr>
                                 <td>{{ $line }}</td>
