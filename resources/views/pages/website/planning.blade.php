@@ -197,12 +197,12 @@
                                     </td>
                                 @endif
                                 <td class="text-center">
-                                    {{-- <a class="btn btn-secondary view-employee mb-1" data-bs-toggle="modal"
+                                    <a class="btn btn-secondary view-employee mb-1" data-bs-toggle="modal"
                                         data-bs-target="#{{ $modalId }}EmployeeDetail">
                                         <span class="rounded-3" id="icon">
                                             <i class="ti ti-search"></i>
                                         </span>
-                                    </a> --}}
+                                    </a>
                                     @php
                                         $employeeData = [];
                                         foreach ($employees as $employee) {
@@ -275,10 +275,10 @@
                                 @foreach ($employees as $emp)
                                     <div class="item">
                                         <div class="text-center">
-                                            {{-- <img src="{{ asset('uploads/doc/' . $emp->photo) }}" class="rounded-1 img"
+                                            <img src="{{ asset('uploads/doc/' . $emp->photo) }}" class="rounded-1 img"
                                                 width="150"
                                                 style="width: 150px !important; margin-left: auto;
-                                                margin-right: auto;"> --}}
+                                                margin-right: auto;">
                                             <div class="mt-n2">
                                                 <span class="badge bg-primary">{{ $emp->role }}</span>
                                                 <h3 class="card-title mt-3">{{ $emp->name }}</h3>
