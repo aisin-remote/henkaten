@@ -276,47 +276,56 @@ class EmployeeController extends Controller
 
     public function employeePlanning()
     {
+        // get origin
         $empOrigin = auth()->user()->origin_id;
+        
+        // get current date
         $currentDate = Carbon::now();
         $firstDay = $currentDate->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
         $lastDay = $currentDate->endOfWeek(Carbon::SUNDAY)->format('Y-m-d');
 
-        $activeEmployees = EmployeeActive::with(['shift', 'line', 'employee', 'pos'])
+        // Using Laravel's Eloquent ORM might be more efficient for complex relationships and eager loading.
+        $activeEmployees = EmployeeActive::with(['position', 'shift', 'line', 'employee'])
             ->whereHas('line', function ($query) use ($empOrigin) {
                 $query->where('origin_id', $empOrigin);
             })
             ->whereBetween('active_from', [$firstDay, $lastDay])
             ->get();
 
-        // Manually group by shift, line, and week
+        // Group by shift, line, and week using collection methods
         $groupedEmployees = $activeEmployees->groupBy(function ($employee) {
-            return implode('|', [
-                $employee->shift->name,
-                $employee->line->name,
-                Carbon::parse($employee->active_from)->format('Y-m-d'),
-                Carbon::parse($employee->expired_at)->format('Y-m-d'),
-            ]);
+            return $employee->shift->name . '|' . $employee->line->name . '|' . 
+                Carbon::parse($employee->active_from)->format('Y-m-d') . '|' . 
+                Carbon::parse($employee->expired_at)->format('Y-m-d');
         });
 
         // Convert the grouped collection to a standard array
         $groupedArray = $groupedEmployees->toArray();
 
-        // Fetching other necessary data
-        $operators = Employee::select('id', 'name')
-                    ->where('role', 'Operator')
+        // Load other data with minimal queries and optimize by reusing the results
+        $employees = Employee::select('id', 'name', 'role', 'origin_id')
                     ->where('origin_id', $empOrigin)
                     ->get();
-        $pics = Employee::select('id', 'name')
-                    ->whereNotIn('role', ['Operator'])
-                    ->where('origin_id', $empOrigin)
-                    ->get();
-        $shifts = Shift::select('id', 'name')->get();
-        $lines = Line::where('origin_id', $empOrigin)->get(['id', 'name']);
-        $skills = Skill::select('name')->groupBy('name')->get();
 
-        $allSkills = Cache::remember('all_skills', 60, function () {
-            return Skill::select('id', 'name', 'level')->get();
+        $operators = $employees->where('role', 'Operator');
+        $pics = $employees->reject(function ($employee) {
+            return $employee->role === 'Operator';
         });
+
+        // Using caching for static data
+        $shifts = Cache::remember('shifts', 60, function () {
+            return Shift::select('id', 'name')->get();
+        });
+        $lines = Cache::remember('lines', 60, function () use ($empOrigin) {
+            return Line::select('id', 'name')->where('origin_id', $empOrigin)->get();
+        });
+        $skills = Cache::remember('skills', 60, function () {
+            return Skill::select('name')->groupBy('name')->get();
+        });
+
+        $allSkills = Skill::select('id', 'name', 'level')->get();
+        // Avoid redundant EmployeeSkill query if it's not processed differently
+        // $empSkills = EmployeeSkill::select()->get();
 
         return view('pages.website.planning', compact('operators', 'pics', 'shifts', 'lines', 'skills', 'groupedArray', 'allSkills'));
     }
