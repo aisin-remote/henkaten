@@ -281,7 +281,7 @@ class EmployeeController extends Controller
         $firstDay = $currentDate->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
         $lastDay = $currentDate->endOfWeek(Carbon::SUNDAY)->format('Y-m-d');
 
-        $activeEmployees = EmployeeActive::with(['shift', 'line', 'employee', 'position'])
+        $activeEmployees = EmployeeActive::with(['shift', 'line', 'employee', 'pos'])
             ->whereHas('line', function ($query) use ($empOrigin) {
                 $query->where('origin_id', $empOrigin);
             })
