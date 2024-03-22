@@ -258,15 +258,12 @@
     </div>
     {{-- end of modal --}}
 
-    @foreach ($groupedArray as $groupKey => $employees)
+    {{-- @foreach ($groupedArray as $groupKey => $employees)
         @php
+            // Split the group key to get shift, line, and week
             [$shift, $line, $start, $end] = explode('|', $groupKey);
             $modalId = Str::slug($shift . $line . $start . $end);
-            // Pre-compute skill and level mappings to avoid repeated computations in the loop.
-            $employeeSkillMappings = $empSkills->mapWithKeys(function ($empSkill) use ($allSkills) {
-                $skillInfo = $allSkills->firstWhere('id', $empSkill->skill_id);
-                return [$empSkill->employee_id => ['name' => $skillInfo->name, 'level' => $skillInfo->level]];
-            });
+
         @endphp
         <div class="modal fade" id="{{ $modalId }}EmployeeDetail" tabindex="-1" role="dialog"
             aria-labelledby="employeeModalLabel" aria-hidden="true" style="display: none;">
@@ -280,11 +277,13 @@
                                         <div class="text-center">
                                             <img src="{{ asset('uploads/doc/' . $emp->photo) }}" class="rounded-1 img"
                                                 width="150"
-                                                style="width: 150px !important; margin-left: auto; margin-right: auto;">
+                                                style="width: 150px !important; margin-left: auto;
+                                                margin-right: auto;">
                                             <div class="mt-n2">
                                                 <span class="badge bg-primary">{{ $emp->role }}</span>
                                                 <h3 class="card-title mt-3">{{ $emp->name }}</h3>
-                                                <h6 class="card-subtitle mt-1">{{ $emp->npk }}</h6>
+                                                <h6 class="card-subtitle mt-1">{{ $emp->npk }}
+                                                </h6>
                                                 <div class="row mt-4">
                                                     <div class="col-12">
                                                         <button class="btn btn-light-danger text-danger"
@@ -298,10 +297,21 @@
                                                     <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
                                                         <div class="ms-2 text-start">
                                                             <h6 class="fw-normal text-muted mb-2">Skill</h6>
-                                                            @if (isset($employeeSkillMappings[$emp->id]))
-                                                                <h4 class="mb-0 fs-5">
-                                                                    {{ $employeeSkillMappings[$emp->id]['name'] }}</h4>
-                                                            @endif
+                                                            @foreach ($skills as $skill)
+                                                                @php
+                                                                    $employeeSkillIds = $empSkills
+                                                                        ->where('employee_id', $emp->employee_id)
+                                                                        ->pluck('skill_id')
+                                                                        ->all();
+                                                                    $employeeSkills = $allSkills->whereIn(
+                                                                        'id',
+                                                                        $employeeSkillIds,
+                                                                    );
+                                                                @endphp
+                                                            @endforeach
+                                                            @foreach ($employeeSkills as $skill)
+                                                                <h4 class="mb-0 fs-5">{{ $skill->name }}</h4>
+                                                            @endforeach
                                                         </div>
                                                     </div>
                                                 </div>
@@ -309,17 +319,17 @@
                                                     <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
                                                         <div class="ms-2 text-start">
                                                             <h6 class="fw-normal text-muted mb-2">Level</h6>
-                                                            @if (isset($employeeSkillMappings[$emp->id]))
+                                                            @foreach ($employeeSkills as $skill)
                                                                 <div class="progress mb-2"
                                                                     style="height: 15px; width: 8vw">
                                                                     <div class="progress-bar" role="progressbar"
-                                                                        style="width: {{ $employeeSkillMappings[$emp->id]['level'] * 20 }}%;"
-                                                                        aria-valuenow="{{ $employeeSkillMappings[$emp->id]['level'] }}"
+                                                                        style="width: {{ $skill->level * 20 }}%;"
+                                                                        aria-valuenow="{{ $skill->level }}"
                                                                         aria-valuemin="0" aria-valuemax="5">
-                                                                        {{ $employeeSkillMappings[$emp->id]['level'] }}
+                                                                        {{ $skill->level }}
                                                                     </div>
                                                                 </div>
-                                                            @endif
+                                                            @endforeach
                                                         </div>
                                                     </div>
                                                 </div>
@@ -333,7 +343,7 @@
                 </div>
             </div>
         </div>
-    @endforeach
+    @endforeach --}}
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.3.min.js"
     integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
