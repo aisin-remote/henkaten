@@ -197,12 +197,12 @@
                                     </td>
                                 @endif
                                 <td class="text-center">
-                                    <a class="btn btn-secondary view-employee mb-1" data-bs-toggle="modal"
+                                    {{-- <a class="btn btn-secondary view-employee mb-1" data-bs-toggle="modal"
                                         data-bs-target="#{{ $modalId }}EmployeeDetail">
                                         <span class="rounded-3" id="icon">
                                             <i class="ti ti-search"></i>
                                         </span>
-                                    </a>
+                                    </a> --}}
                                     @php
                                         $employeeData = [];
                                         foreach ($employees as $employee) {
