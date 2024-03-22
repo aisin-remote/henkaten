@@ -285,7 +285,7 @@ class EmployeeController extends Controller
         $lastDay = $currentDate->endOfWeek(Carbon::SUNDAY)->format('Y-m-d');
 
         // Using Laravel's Eloquent ORM might be more efficient for complex relationships and eager loading.
-        $activeEmployees = EmployeeActive::with(['position', 'shift', 'line', 'employee'])
+        $activeEmployees = EmployeeActive::with(['pos', 'shift', 'line', 'employee'])
             ->whereHas('line', function ($query) use ($empOrigin) {
                 $query->where('origin_id', $empOrigin);
             })
