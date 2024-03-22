@@ -157,6 +157,7 @@
                                 // Split the group key to get shift, line, and week
                                 [$shift, $line, $start, $end] = explode('|', $groupKey);
                                 $modalId = Str::slug($shift . $line . $start . $end);
+                                dd(count($employees));
                             @endphp
                             <tr>
                                 <td>{{ $line }}</td>
@@ -165,9 +166,6 @@
                                     {{ Carbon\Carbon::parse($end)->format('j F Y') }}</td>
                                 @if (auth()->user()->origin->name === 'DC')
                                     @if (count($employees) === 2)
-                                        @php
-                                            dd('test');
-                                        @endphp
                                         @foreach ($employees as $employee)
                                             <td>{{ $employee->name }}</td>
                                         @endforeach
