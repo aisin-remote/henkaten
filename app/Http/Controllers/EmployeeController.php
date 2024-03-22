@@ -323,6 +323,8 @@ class EmployeeController extends Controller
             });
         })->toArray();
 
+        dd($groupedArray);
+
         $allSkills = Skill::select('id', 'name', 'level')->get();
         $nameSkills = Skill::select('name')->groupBy('name')->get();
         $empSkills = EmployeeSkill::select()->get();
