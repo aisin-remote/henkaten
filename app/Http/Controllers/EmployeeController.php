@@ -293,7 +293,7 @@ class EmployeeController extends Controller
             ->get();
 
         // Group by shift, line, and week using collection methods
-        $groupedEmployees = $activeEmployees->groupBy(function ($employee) {
+        $groupedArray = $activeEmployees->groupBy(function ($employee) {
             return $employee->shift->name . '|' . $employee->line->name . '|' . 
                 Carbon::parse($employee->active_from)->format('Y-m-d') . '|' . 
                 Carbon::parse($employee->expired_at)->format('Y-m-d');
@@ -327,7 +327,7 @@ class EmployeeController extends Controller
         // Avoid redundant EmployeeSkill query if it's not processed differently
         // $empSkills = EmployeeSkill::select()->get();
 
-        return view('pages.website.planning', compact('operators', 'pics', 'shifts', 'lines', 'skills', 'groupedEmployees', 'allSkills'));
+        return view('pages.website.planning', compact('operators', 'pics', 'shifts', 'lines', 'skills', 'groupedArray', 'allSkills'));
     }
 
     public function employeePlanningStore(Request $request)
