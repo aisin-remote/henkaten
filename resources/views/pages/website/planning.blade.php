@@ -258,7 +258,7 @@
     </div>
     {{-- end of modal --}}
 
-    @foreach ($groupedArray as $groupKey => $employees)
+    {{-- @foreach ($groupedArray as $groupKey => $employees)
         @php
             // Split the group key to get shift, line, and week
             [$shift, $line, $start, $end] = explode('|', $groupKey);
@@ -343,7 +343,7 @@
                 </div>
             </div>
         </div>
-    @endforeach
+    @endforeach --}}
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.3.min.js"
     integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
