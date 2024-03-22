@@ -300,7 +300,7 @@ class EmployeeController extends Controller
         });
 
         // Convert the grouped collection to a standard array
-        $groupedArray = $groupedEmployees->toArray();
+        // $groupedArray = $groupedEmployees->toArray();
 
         // Load other data with minimal queries and optimize by reusing the results
         $employees = Employee::select('id', 'name', 'role', 'origin_id')
@@ -327,7 +327,7 @@ class EmployeeController extends Controller
         // Avoid redundant EmployeeSkill query if it's not processed differently
         // $empSkills = EmployeeSkill::select()->get();
 
-        return view('pages.website.planning', compact('operators', 'pics', 'shifts', 'lines', 'skills', 'groupedArray', 'allSkills'));
+        return view('pages.website.planning', compact('operators', 'pics', 'shifts', 'lines', 'skills', 'groupedEmployees', 'allSkills'));
     }
 
     public function employeePlanningStore(Request $request)
