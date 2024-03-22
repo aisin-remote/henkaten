@@ -276,75 +276,57 @@ class EmployeeController extends Controller
 
     public function employeePlanning()
     {
+        // get origin
         $empOrigin = auth()->user()->origin_id;
-    
-        // Define date range once and use it for all queries
+        
+        // get current date
         $currentDate = Carbon::now();
-        $dateRange = [
-            $currentDate->startOfWeek(Carbon::MONDAY)->format('Y-m-d'),
-            $currentDate->endOfWeek(Carbon::SUNDAY)->format('Y-m-d')
-        ];
+        $firstDay = $currentDate->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
+        $lastDay = $currentDate->endOfWeek(Carbon::SUNDAY)->format('Y-m-d');
 
-        // Optimize database queries
-        // Pre-fetch positions, shifts, lines, and potentially employee data if the dataset isn't too large
-        $positions = Position::all()->keyBy('id');
-        $shifts = Shift::all()->keyBy('id');
-        $lines = Line::where('origin_id', $empOrigin)->get()->keyBy('id');
-        $employees = Employee::where('origin_id', $empOrigin)->get()->keyBy('id');
-
-        // Get active employees within the date range, focusing on IDs to reduce data transfer
-        $activeEmployeeIds = EmployeeActive::whereBetween('active_from', $dateRange)
-            ->pluck('employee_id');
-
-        // Filter employees already loaded in memory
-        $activeEmployees = $employees->intersectByKeys($activeEmployeeIds->flip());
-
-        // Manual grouping with corrections for structure
-        $groupedEmployees = collect();
-        foreach ($activeEmployees as $employee) {
-            $key = implode('|', [
-                $shifts[$employee->shift_id]->name ?? 'Unknown shift',
-                $lines[$employee->line_id]->name ?? 'Unknown line',
-                // Assuming active_from is available in $employee, else you need to adjust
-                Carbon::parse($employee->active_from)->format('Y-m-d'),
-                Carbon::parse($employee->expired_at)->format('Y-m-d'),
-            ]);
-            $groupedEmployees->put($key, ($groupedEmployees->get($key, collect()))->push($employee));
-        }
-
-        // Convert the grouped collection to the desired structure
-        $groupedArray = $groupedEmployees->map(function ($group) use ($positions) {
-            return $group->map(function ($employee) use ($positions) {
-                return [
-                    'name' => $employee->name,
-                    // Other properties as needed, with fallbacks for missing relations
-                    'position' => $positions[$employee->pos_id]->pos ?? 'Unknown position'
-                ];
-            });
-        })->toArray();
+        // get active employee at this period of time (this week)
+        $activeEmployees = DB::table('employee_active')
+                ->join('positions', 'employee_active.pos_id', '=', 'positions.id')
+                ->join('shifts', 'employee_active.shift_id', '=', 'shifts.id')
+                ->join('lines', 'employee_active.line_id', '=', 'lines.id')
+                ->join('origins', 'lines.origin_id', '=', 'origins.id')
+                ->join('employees', 'employee_active.employee_id', '=', 'employees.id')
+                ->select('shifts.name as shift_name', 'shifts.id as shift_id' , 'lines.id as line_id','lines.name as line_name', 'employee_active.active_from', 'employee_active.expired_at', 'employees.name', 'employees.photo','employees.npk', 'employees.role', 'employees.id as employee_id', 'positions.pos')
+                ->where(function ($query) use ($empOrigin) {
+                    $query->where('lines.origin_id', $empOrigin);
+                })
+                ->whereBetween('employee_active.active_from', [$firstDay, $lastDay])
+                ->get();
+    
+        // Manually group by shift, line, and week
+        $groupedEmployees = $activeEmployees->groupBy(function ($employee) {
+            return $employee->shift_name . '|' . $employee->line_name . '|' . Carbon::parse($employee->active_from)->format('Y-m-d') . '|' . Carbon::parse($employee->expired_at)->format('Y-m-d');
+        });
+        
+        // Convert the grouped collection to a standard array
+        $groupedArray = $groupedEmployees->toArray();
 
         $allSkills = Skill::select('id', 'name', 'level')->get();
         $nameSkills = Skill::select('name')->groupBy('name')->get();
         $empSkills = EmployeeSkill::select()->get();
 
-        return view('pages.website.planning', 
-            [
-                'operators' => Employee::select('id', 'name')
-                    ->whereIn('role', ['Operator'])
-                    ->where('origin_id', $empOrigin)
-                    ->get(),
-                'pics' => Employee::select('id', 'name')
-                    ->whereNotIn('role', ['Operator'])
-                    ->where('origin_id', $empOrigin)
-                    ->get(),
-                'shifts' => Shift::select('id', 'name')->get(),
-                'lines' => Line::select('id', 'name')->where('origin_id', $empOrigin)->get(),
-                'skills' => Skill::select('name')->groupBy('name')->get(),
-                'groupedArray' => $groupedArray, // Pass directly as Collection
-                'allSkills' => $allSkills,
-                'empSkills' => $empSkills,
-                'nameSkills' => $nameSkills
-            ]);
+        return view('pages.website.planning', [
+            'operators' => Employee::select('id', 'name')
+                ->whereIn('role', ['Operator'])
+                ->where('origin_id', $empOrigin)
+                ->get(),
+            'pics' =>  Employee::select('id', 'name')
+                ->whereNotIn('role', ['Operator'])
+                ->where('origin_id', $empOrigin)
+                ->get(),
+            'shifts' => Shift::select('id', 'name')->get(),
+            'lines' => Line::select('id', 'name')->where('origin_id', $empOrigin)->get(),
+            'skills' => Skill::select('name')->groupBy('name')->get(),
+            'groupedArray' => $groupedArray,
+            'allSkills' => $allSkills,
+            'empSkills' => $empSkills,
+            'nameSkills' => $nameSkills
+        ]);
     }
 
     public function employeePlanningStore(Request $request)
