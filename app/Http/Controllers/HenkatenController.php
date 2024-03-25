@@ -351,7 +351,9 @@ class HenkatenController extends Controller
                         $troubleshootData['employee_after_id'] = null;
                         
                         Troubleshoot::create($troubleshootData);
-                    }                    
+                    }    
+                    
+                    Troubleshoot::create($troubleshootData);
                 } else {
                     $troubleshootData = [
                         'troubleshoot' => $request->troubleshoot,
