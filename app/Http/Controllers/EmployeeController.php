@@ -470,8 +470,8 @@ class EmployeeController extends Controller
                     'expired_at' => $endDate
                 ]);
             }
-            dd($pic[0]);
-            if($pic[0] !== 0 || $pic[0] !== null || $pic[0] !== []){
+            
+            if($pic[0] !== "0" || $pic[0] !== null || $pic[0] !== 0){
                 PicActive::create([
                     'employee_id' => $pic[0],
                     'shift_id' => $request->shift,
