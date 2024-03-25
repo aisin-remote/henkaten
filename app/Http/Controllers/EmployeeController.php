@@ -471,7 +471,7 @@ class EmployeeController extends Controller
                 ]);
             }
             
-            if($pic[0] !== 0){
+            if($pic[0] !== 0 || $pic[0] !== null || $pic[0] !== []){
                 PicActive::create([
                     'employee_id' => $pic[0],
                     'shift_id' => $request->shift,
