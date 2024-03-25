@@ -382,9 +382,11 @@ class EmployeeController extends Controller
         // Check for duplicates
         $duplicates = [];
         foreach ($nameCounts as $value => $count) {
-            dd($value);
-            if ($count > 1) {
-                $duplicates[] = $value;
+            dd($nameCounts);
+            if($value !== '0'){
+                if ($count > 1) {
+                    $duplicates[] = $value;
+                }
             }
         }
         
