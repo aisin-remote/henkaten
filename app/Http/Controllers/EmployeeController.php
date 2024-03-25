@@ -334,7 +334,7 @@ class EmployeeController extends Controller
         $request->validate([
             'shift' => 'required',
             'line' => 'required',
-            'pic_name' => 'required',
+            // 'pic_name' => 'required',
             'employee_id' => 'required',
             'active_from' => 'required',
         ]);
@@ -346,9 +346,9 @@ class EmployeeController extends Controller
         // get line name
         $lineName = Line::select('name')->where('id', $request->line)->first();
 
-        if($pic[0] === 0){
-            return redirect()->back()->with('error', 'Isi PIC!');
-        }
+        // if($pic[0] === 0){
+        //     return redirect()->back()->with('error', 'Isi PIC!');
+        // }
 
         if(auth()->user()->origin->name !== 'ELECTRIC'){
             if($employees[0] === 0 && $employees[1] == '0'){
@@ -471,13 +471,15 @@ class EmployeeController extends Controller
                 ]);
             }
             
-            PicActive::create([
-                'employee_id' => $pic[0],
-                'shift_id' => $request->shift,
-                'line_id' => $request->line,
-                'active_from' => $request->active_from,
-                'expired_at' => $endDate
-            ]);
+            if($pic[0] !== 0){
+                PicActive::create([
+                    'employee_id' => $pic[0],
+                    'shift_id' => $request->shift,
+                    'line_id' => $request->line,
+                    'active_from' => $request->active_from,
+                    'expired_at' => $endDate
+                ]);
+            }
 
             DB::commit();
             return redirect()->back()->with('success', 'Planning berhasil dibuat!');
