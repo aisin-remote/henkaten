@@ -1164,9 +1164,9 @@
                                             </div>
                                             <div class="form-floating mb-3">
                                                 <input type="text" class="form-control fw-bolder" id="tb-fname"
-                                                    placeholder="Enter Name here"
-                                                    value="{{ $history->henkaten->henkatenManagement->henkaten_item }} [Table no: {{ $history->henkaten->henkatenManagement->table_no }}]"
-                                                    disabled>
+                                                    placeholder="Enter Name here" disabled>
+                                                {{ $history->henkaten->henkatenManagement->henkaten_item }} [Table no:
+                                                {{ $history->henkaten->henkatenManagement->table_no }}]
                                                 <label for="tb-fname">Hankaten Table No.</label>
                                             </div>
                                             <div class="form-floating mb-3">
