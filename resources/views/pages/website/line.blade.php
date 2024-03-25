@@ -1170,8 +1170,7 @@
                                                 <label for="tb-fname">Hankaten Table No.</label>
                                             </div>
                                             <div class="form-floating mb-3">
-                                                <textarea type="text" class="form-control fw-bolder" id="tb-fname" placeholder="Enter Name here" disabled>
-                                                    {{ strtoupper($history->henkaten->abnormality) }}
+                                                <textarea class="form-control fw-bolder" id="tb-fname" disabled>{{ strtoupper($history->henkaten->abnormality) }}
                                                 </textarea>
                                                 <label for="tb-fname">Abnormality Content</label>
                                             </div>
