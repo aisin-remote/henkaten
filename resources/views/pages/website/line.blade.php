@@ -1164,14 +1164,14 @@
                                             </div>
                                             <div class="form-floating mb-3">
                                                 <input type="text" class="form-control fw-bolder" id="tb-fname"
-                                                    placeholder="Enter Name here" disabled>
-                                                {{ $history->henkaten->henkatenManagement->henkaten_item }} [Table no:
-                                                {{ $history->henkaten->henkatenManagement->table_no }}]
+                                                    placeholder="Enter Name here"
+                                                    value="{{ $history->henkaten->henkatenManagement->henkaten_item }} [Table no: {{ $history->henkaten->henkatenManagement->table_no }}]"
+                                                    disabled>
                                                 <label for="tb-fname">Hankaten Table No.</label>
                                             </div>
                                             <div class="form-floating mb-3">
-                                                <textarea type="text" class="form-control fw-bolder" id="tb-fname" placeholder="Enter Name here"
-                                                    value="{{ strtoupper($history->henkaten->abnormality) }}" disabled>
+                                                <textarea type="text" class="form-control fw-bolder" id="tb-fname" placeholder="Enter Name here" disabled>
+                                                    {{ strtoupper($history->henkaten->abnormality) }}
                                                 </textarea>
                                                 <label for="tb-fname">Abnormality Content</label>
                                             </div>
