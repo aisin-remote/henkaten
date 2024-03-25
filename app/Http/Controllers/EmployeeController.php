@@ -397,7 +397,7 @@ class EmployeeController extends Controller
             return $item !== '0' && $item !== 0;
         });
 
-        dd($employees);
+        // dd($employees);
 
         // get all employee skill
         for($i = 0; $i < count($employees); $i++){
