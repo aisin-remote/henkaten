@@ -397,11 +397,9 @@ class EmployeeController extends Controller
             return $item !== '0' && $item !== 0;
         });
 
-        // dd($employees);
-
         // get all employee skill
         for($i = 0; $i < count($employees); $i++){
-            $employeeSkills = EmployeeSkill::with(['skill','employee'])->where('employee_id', $employees[$i])->get();
+            $employeeSkills = EmployeeSkill::with(['skill','employee'])->where('employee_id', optional($employees[$i]))->get();
 
             // if no skill
             if(count($employeeSkills) === 0){
@@ -440,7 +438,7 @@ class EmployeeController extends Controller
         // get all active from date
         for ($i = 0; $i < count($employees); $i++) {
             $startDate = EmployeeActive::select('active_from', 'expired_at')
-                ->where('employee_id', $employees[$i])
+                ->where('employee_id', optional($employees[$i]))
                 ->whereBetween('active_from', [
                     Carbon::now()->startOfWeek(),
                     Carbon::now()->endOfWeek()
