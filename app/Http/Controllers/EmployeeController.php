@@ -399,7 +399,7 @@ class EmployeeController extends Controller
 
         // get all employee skill
         foreach ($employees as $key => $employeeId) {
-            $employeeSkills = EmployeeSkill::with(['skill','employee'])->where('employee_id', optional($employeeId))->get();
+            $employeeSkills = EmployeeSkill::with(['skill','employee'])->where('employee_id', $employeeId)->get();
 
             // if no skill
             if(count($employeeSkills) === 0){
