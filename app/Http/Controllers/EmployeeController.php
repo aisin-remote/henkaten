@@ -397,11 +397,9 @@ class EmployeeController extends Controller
             return $item !== '0' && $item !== 0;
         });
 
-        dd($employees);
-
         // get all employee skill
-        for($i = 0; $i < count($employees); $i++){
-            $employeeSkills = EmployeeSkill::with(['skill','employee'])->where('employee_id', optional($employees[$i]))->get();
+        foreach ($employees as $key => $employeeId) {
+            $employeeSkills = EmployeeSkill::with(['skill','employee'])->where('employee_id', optional($employeeId))->get();
 
             // if no skill
             if(count($employeeSkills) === 0){
@@ -410,7 +408,7 @@ class EmployeeController extends Controller
             
             $minimumSkills = MinimumSkill::with('skill')
                     ->where('line_id', $request->line)
-                    ->where('pos', $pos[$i])
+                    ->where('pos', $pos[$key])
                     ->get();
             
             // if employee skill lower than minimum skill required
@@ -440,7 +438,7 @@ class EmployeeController extends Controller
         // get all active from date
         for ($i = 0; $i < count($employees); $i++) {
             $startDate = EmployeeActive::select('active_from', 'expired_at')
-                ->where('employee_id', optional($employees[$i]))
+                ->where('employee_id',$employeeId)
                 ->whereBetween('active_from', [
                     Carbon::now()->startOfWeek(),
                     Carbon::now()->endOfWeek()
@@ -450,21 +448,21 @@ class EmployeeController extends Controller
             // if the "active_from" date isnt outside the range or the data is empty, you cant create new records
             if ($startDate) {
                 if (Carbon::parse($request->active_from)->between(Carbon::parse($startDate->active_from)->startOfWeek(), $startDate->expired_at)) {
-                    return redirect()->back()->with('error', 'Planning gagal dibuat, karyawan (' . $employees[$i] . ') sudah pernah didaftarkan dirange waktu ini!');
+                    return redirect()->back()->with('error', 'Planning gagal dibuat, karyawan (' . $employeeId . ') sudah pernah didaftarkan dirange waktu ini!');
                 }
             }
         }
         
         try {
             DB::beginTransaction();
-            for ($i = 0; $i < count($employees); $i++) {
+            foreach ($employees as $key => $employeeId) {
                 $positionId = Position::select('id')
                                     ->where('line_id', $request->line)
-                                    ->where('pos', $pos[$i])
+                                    ->where('pos', $pos[$key])
                                     ->first();
                                     
                 EmployeeActive::create([
-                    'employee_id' => $employees[$i],
+                    'employee_id' => $employeeId,
                     'shift_id' => $request->shift,
                     'line_id' => $request->line,
                     'pos_id' => $positionId->id,
