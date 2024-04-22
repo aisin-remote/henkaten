@@ -72,7 +72,7 @@ class HenkatenController extends Controller
             ->where('origin_id', $empOrigin)
             ->first();
 
-        if (!$pivot) {
+        if (!$pivot->firstPic) {
             $pivot = 'unknown';
         } else {
             $pivot = $pivot->firstPic->name;
@@ -248,7 +248,7 @@ class HenkatenController extends Controller
             ->where('origin_id', $empOrigin)
             ->first();
             
-        if (!$firstPic) {
+        if (!$firstPic->firstPic) {
             $firstPic = 'unknown';
         } else {
             $firstPic = $firstPic->firstPic->name;

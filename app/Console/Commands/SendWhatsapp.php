@@ -67,7 +67,7 @@ class SendWhatsapp extends Command
                 $lineGroup = Origin::select('name')->where('id', $key)->first();
 
                 $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
-                $phone = $key;
+                $phone = $value;
                 // Pass array elements as additional arguments to sprintf
                 $message = sprintf(
                     "```------ ```*AIIA HENKATEN ALERT*``` ------\n\nLINE GROUP     : ```%s```\nDATE           : ```%s```\nTOTAL HENKATEN : ```%d```\nTOTAL SOLVED   : ```%d```\nTOTAL UNSOLVED : ```%d```\n\n------ BY AISIN BISA ------```",

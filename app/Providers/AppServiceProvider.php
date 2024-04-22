@@ -37,8 +37,8 @@ class AppServiceProvider extends ServiceProvider
             $henkatens = Henkaten::with('line.origin')
                         ->with('shift')
                         ->whereHas('line', function ($query) use ($empOrigin){
-                            $query->where('origin_id', $empOrigin);
-                        })
+                                $query->where('origin_id', $empOrigin);
+                            })
                         ->where('is_done', '0')
                         ->take(5)
                         ->latest()
