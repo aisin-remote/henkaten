@@ -393,34 +393,28 @@
         });
 
         $('[id^=carousel_]').each(function() {
-            var modalId = $(this).closest('.modal').attr('id');
             var employees = $(this).find('.item');
 
             employees.each(function() {
                 var employee = JSON.parse($(this).data('employee'));
-                var skills = employee.skills; // Assuming 'skills' is an array of skills
-                var levels = employee.levels; // Assuming 'levels' is an array of levels
+                var skills = employee.skills;
+                var levels = employee.levels;
 
                 var skillHTML = '';
                 var levelHTML = '';
-
-                console.log(skills);
 
                 skills.forEach(function(skill) {
                     skillHTML += '<h4 class="mb-0 fs-5">' + skill.name + '</h4>';
                 });
 
-                levels.forEach(function(level) {
-                    levelHTML +=
-                        '<div class="progress mb-2" style="height: 15px; width: 8vw">';
-                    levelHTML +=
-                        '<div class="progress-bar" role="progressbar" style="width: ' +
-                        (level.value * 20) + '%;"';
-                    levelHTML += 'aria-valuenow="' + level.value +
-                        '" aria-valuemin="0" aria-valuemax="5">';
-                    levelHTML += level.value;
-                    levelHTML += '</div></div>';
-                });
+                // Render skill levels
+                levelHTML += '<div class="progress mb-2" style="height: 15px;">';
+                levelHTML += '<div class="progress-bar" role="progressbar" style="width: ' + (
+                    levels * 20) + '%;"';
+                levelHTML += 'aria-valuenow="' + levels +
+                    '" aria-valuemin="0" aria-valuemax="5">';
+                levelHTML += levels;
+                levelHTML += '</div></div>';
 
                 $(this).find('.employee-skills').html(skillHTML);
                 $(this).find('.employee-levels').html(levelHTML);
