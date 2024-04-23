@@ -285,8 +285,7 @@
                                                 <h6 class="card-subtitle mt-1">{{ $emp->npk }}</h6>
                                                 <div class="row mt-4">
                                                     <div class="col-12">
-                                                        <button class="btn btn-light-danger text-danger"
-                                                            style="width: 100% !important">POS
+                                                        <button class="btn btn-warning" style="width: 100% !important">POS
                                                             {{ strtoupper($emp->pos) }}</button>
                                                     </div>
                                                 </div>
@@ -368,35 +367,6 @@
         $('.repeater-mp-container').on('change', '.employee_name', function() {
             localStorage.setItem('employee', $(this).closest('.repeater-mp-container').find(
                 '.employee_name option:selected').val())
-        });
-
-        $('[id^="carousel_{{ $modalId }}"]').each(function() {
-            var employees = $(this).find('.item');
-
-            employees.each(function() {
-                var employee = JSON.parse($(this).data('employee'));
-                var skills = employee.skills;
-                var levels = employee.levels;
-
-                var skillHTML = '';
-                var levelHTML = '';
-
-                skills.forEach(function(skill) {
-                    skillHTML += '<h4 class="mb-0 fs-5">' + skill.name + '</h4>';
-                });
-
-                // Render skill levels
-                levelHTML += '<div class="progress mb-2" style="height: 15px;">';
-                levelHTML += '<div class="progress-bar" role="progressbar" style="width: ' + (
-                    levels * 20) + '%;"';
-                levelHTML += 'aria-valuenow="' + levels +
-                    '" aria-valuemin="0" aria-valuemax="5">';
-                levelHTML += levels;
-                levelHTML += '</div></div>';
-
-                $(this).find('.employee-skills').html(skillHTML);
-                $(this).find('.employee-levels').html(levelHTML);
-            });
         });
 
         let skillCount = 0;
