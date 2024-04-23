@@ -265,6 +265,40 @@
             $modalId = Str::slug($shift . $line . $start . $end);
         @endphp
 
+        <script>
+            $(document).ready(function() {
+                // Loop through each modal and populate skills and levels
+                $('[id^="carousel_{{ $modalId }}"]').each(function() {
+                    var employees = $(this).find('.item');
+
+                    employees.each(function() {
+                        var employee = JSON.parse($(this).data('employee'));
+                        var skills = employee.skills;
+                        var levels = employee.levels;
+
+                        var skillHTML = '';
+                        var levelHTML = '';
+
+                        skills.forEach(function(skill) {
+                            skillHTML += '<h4 class="mb-0 fs-5">' + skill.name + '</h4>';
+                        });
+
+                        // Render skill levels
+                        levelHTML += '<div class="progress mb-2" style="height: 15px;">';
+                        levelHTML += '<div class="progress-bar" role="progressbar" style="width: ' + (
+                            levels * 20) + '%;"';
+                        levelHTML += 'aria-valuenow="' + levels +
+                            '" aria-valuemin="0" aria-valuemax="5">';
+                        levelHTML += levels;
+                        levelHTML += '</div></div>';
+
+                        $(this).find('.employee-skills').html(skillHTML);
+                        $(this).find('.employee-levels').html(levelHTML);
+                    });
+                });
+            });
+        </script>
+
         <div class="modal fade" id="{{ $modalId }}EmployeeDetail" tabindex="-1" role="dialog"
             aria-labelledby="employeeModalLabel" aria-hidden="true" style="display: none;">
             <div class="modal-dialog modal-dialog-centered modal-md" role="document">
@@ -322,40 +356,6 @@
                 </div>
             </div>
         </div>
-
-        <script>
-            $(document).ready(function() {
-                // Loop through each modal and populate skills and levels
-                $('[id^="carousel_{{ $modalId }}"]').each(function() {
-                    var employees = $(this).find('.item');
-
-                    employees.each(function() {
-                        var employee = JSON.parse($(this).data('employee'));
-                        var skills = employee.skills;
-                        var levels = employee.levels;
-
-                        var skillHTML = '';
-                        var levelHTML = '';
-
-                        skills.forEach(function(skill) {
-                            skillHTML += '<h4 class="mb-0 fs-5">' + skill.name + '</h4>';
-                        });
-
-                        // Render skill levels
-                        levelHTML += '<div class="progress mb-2" style="height: 15px;">';
-                        levelHTML += '<div class="progress-bar" role="progressbar" style="width: ' + (
-                            levels * 20) + '%;"';
-                        levelHTML += 'aria-valuenow="' + levels +
-                            '" aria-valuemin="0" aria-valuemax="5">';
-                        levelHTML += levels;
-                        levelHTML += '</div></div>';
-
-                        $(this).find('.employee-skills').html(skillHTML);
-                        $(this).find('.employee-levels').html(levelHTML);
-                    });
-                });
-            });
-        </script>
     @endforeach
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.3.min.js"
@@ -426,34 +426,34 @@
                 '.employee_name option:selected').val())
         });
 
-        // $('[id^="carousel_{{ $modalId }}"]').each(function() {
-        //     var employees = $(this).find('.item');
+        $('[id^="carousel_{{ $modalId }}"]').each(function() {
+            var employees = $(this).find('.item');
 
-        //     employees.each(function() {
-        //         var employee = JSON.parse($(this).data('employee'));
-        //         var skills = employee.skills;
-        //         var levels = employee.levels;
+            employees.each(function() {
+                var employee = JSON.parse($(this).data('employee'));
+                var skills = employee.skills;
+                var levels = employee.levels;
 
-        //         var skillHTML = '';
-        //         var levelHTML = '';
+                var skillHTML = '';
+                var levelHTML = '';
 
-        //         skills.forEach(function(skill) {
-        //             skillHTML += '<h4 class="mb-0 fs-5">' + skill.name + '</h4>';
-        //         });
+                skills.forEach(function(skill) {
+                    skillHTML += '<h4 class="mb-0 fs-5">' + skill.name + '</h4>';
+                });
 
-        //         // Render skill levels
-        //         levelHTML += '<div class="progress mb-2" style="height: 15px;">';
-        //         levelHTML += '<div class="progress-bar" role="progressbar" style="width: ' + (
-        //             levels * 20) + '%;"';
-        //         levelHTML += 'aria-valuenow="' + levels +
-        //             '" aria-valuemin="0" aria-valuemax="5">';
-        //         levelHTML += levels;
-        //         levelHTML += '</div></div>';
+                // Render skill levels
+                levelHTML += '<div class="progress mb-2" style="height: 15px;">';
+                levelHTML += '<div class="progress-bar" role="progressbar" style="width: ' + (
+                    levels * 20) + '%;"';
+                levelHTML += 'aria-valuenow="' + levels +
+                    '" aria-valuemin="0" aria-valuemax="5">';
+                levelHTML += levels;
+                levelHTML += '</div></div>';
 
-        //         $(this).find('.employee-skills').html(skillHTML);
-        //         $(this).find('.employee-levels').html(levelHTML);
-        //     });
-        // });
+                $(this).find('.employee-skills').html(skillHTML);
+                $(this).find('.employee-levels').html(levelHTML);
+            });
+        });
 
         let skillCount = 0;
         let minimumSkillCount = 0;
