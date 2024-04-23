@@ -273,7 +273,7 @@
                         <div class="row justify-content-center">
                             <div class="owl-carousel owl-theme" id="carousel_{{ $modalId }}">
                                 @foreach ($employees as $emp)
-                                    <div class="item" data-employee="{{ $emp }}">
+                                    <div class="item" data-employee="{{ json_encode($emp) }}">
                                         <div class="text-center">
                                             <img src="{{ asset('uploads/doc/' . $emp->photo) }}" class="rounded-1 img"
                                                 width="150"
