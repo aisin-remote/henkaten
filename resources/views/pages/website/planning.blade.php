@@ -404,6 +404,8 @@
                 var skillHTML = '';
                 var levelHTML = '';
 
+                console.log(skills);
+
                 skills.forEach(function(skill) {
                     skillHTML += '<h4 class="mb-0 fs-5">' + skill.name + '</h4>';
                 });
