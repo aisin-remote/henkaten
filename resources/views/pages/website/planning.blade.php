@@ -392,7 +392,7 @@
                 '.employee_name option:selected').val())
         });
 
-        $('[id^=carousel_]').each(function() {
+        $('[id^="carousel_{{ $modalId }}"]').each(function() {
             var employees = $(this).find('.item');
 
             employees.each(function() {
