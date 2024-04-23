@@ -397,7 +397,7 @@
             var employees = $(this).find('.item');
 
             employees.each(function() {
-                var employee = $(this).data('employee');
+                var employee = JSON.parse($(this).data('employee'));
                 var skills = employee.skills; // Assuming 'skills' is an array of skills
                 var levels = employee.levels; // Assuming 'levels' is an array of levels
 
