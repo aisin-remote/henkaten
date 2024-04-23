@@ -258,32 +258,31 @@
     </div>
     {{-- end of modal --}}
 
-    {{-- @foreach ($groupedArray as $groupKey => $employees)
+    @foreach ($groupedArray as $groupKey => $employees)
         @php
             // Split the group key to get shift, line, and week
             [$shift, $line, $start, $end] = explode('|', $groupKey);
             $modalId = Str::slug($shift . $line . $start . $end);
-
         @endphp
+
         <div class="modal fade" id="{{ $modalId }}EmployeeDetail" tabindex="-1" role="dialog"
             aria-labelledby="employeeModalLabel" aria-hidden="true" style="display: none;">
             <div class="modal-dialog modal-dialog-centered modal-md" role="document">
                 <div class="modal-content p-3">
                     <div class="modal-body">
                         <div class="row justify-content-center">
-                            <div class="owl-carousel owl-theme" id="carousel">
+                            <div class="owl-carousel owl-theme" id="carousel_{{ $modalId }}">
                                 @foreach ($employees as $emp)
-                                    <div class="item">
+                                    <div class="item" data-employee="{{ $emp }}">
                                         <div class="text-center">
                                             <img src="{{ asset('uploads/doc/' . $emp->photo) }}" class="rounded-1 img"
                                                 width="150"
                                                 style="width: 150px !important; margin-left: auto;
-                                                margin-right: auto;">
+                                            margin-right: auto;">
                                             <div class="mt-n2">
                                                 <span class="badge bg-primary">{{ $emp->role }}</span>
                                                 <h3 class="card-title mt-3">{{ $emp->name }}</h3>
-                                                <h6 class="card-subtitle mt-1">{{ $emp->npk }}
-                                                </h6>
+                                                <h6 class="card-subtitle mt-1">{{ $emp->npk }}</h6>
                                                 <div class="row mt-4">
                                                     <div class="col-12">
                                                         <button class="btn btn-light-danger text-danger"
@@ -297,21 +296,9 @@
                                                     <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
                                                         <div class="ms-2 text-start">
                                                             <h6 class="fw-normal text-muted mb-2">Skill</h6>
-                                                            @foreach ($skills as $skill)
-                                                                @php
-                                                                    $employeeSkillIds = $empSkills
-                                                                        ->where('employee_id', $emp->employee_id)
-                                                                        ->pluck('skill_id')
-                                                                        ->all();
-                                                                    $employeeSkills = $allSkills->whereIn(
-                                                                        'id',
-                                                                        $employeeSkillIds,
-                                                                    );
-                                                                @endphp
-                                                            @endforeach
-                                                            @foreach ($employeeSkills as $skill)
-                                                                <h4 class="mb-0 fs-5">{{ $skill->name }}</h4>
-                                                            @endforeach
+                                                            <div class="employee-skills">
+                                                                <!-- Skills will be added dynamically with jQuery -->
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -319,17 +306,9 @@
                                                     <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
                                                         <div class="ms-2 text-start">
                                                             <h6 class="fw-normal text-muted mb-2">Level</h6>
-                                                            @foreach ($employeeSkills as $skill)
-                                                                <div class="progress mb-2"
-                                                                    style="height: 15px; width: 8vw">
-                                                                    <div class="progress-bar" role="progressbar"
-                                                                        style="width: {{ $skill->level * 20 }}%;"
-                                                                        aria-valuenow="{{ $skill->level }}"
-                                                                        aria-valuemin="0" aria-valuemax="5">
-                                                                        {{ $skill->level }}
-                                                                    </div>
-                                                                </div>
-                                                            @endforeach
+                                                            <div class="employee-levels">
+                                                                <!-- Levels will be added dynamically with jQuery -->
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -343,7 +322,7 @@
                 </div>
             </div>
         </div>
-    @endforeach --}}
+    @endforeach
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.3.min.js"
     integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
@@ -411,6 +390,39 @@
         $('.repeater-mp-container').on('change', '.employee_name', function() {
             localStorage.setItem('employee', $(this).closest('.repeater-mp-container').find(
                 '.employee_name option:selected').val())
+        });
+
+        $('[id^=carousel_]').each(function() {
+            var modalId = $(this).closest('.modal').attr('id');
+            var employees = $(this).find('.item');
+
+            employees.each(function() {
+                var employee = $(this).data('employee');
+                var skills = employee.skills; // Assuming 'skills' is an array of skills
+                var levels = employee.levels; // Assuming 'levels' is an array of levels
+
+                var skillHTML = '';
+                var levelHTML = '';
+
+                skills.forEach(function(skill) {
+                    skillHTML += '<h4 class="mb-0 fs-5">' + skill.name + '</h4>';
+                });
+
+                levels.forEach(function(level) {
+                    levelHTML +=
+                        '<div class="progress mb-2" style="height: 15px; width: 8vw">';
+                    levelHTML +=
+                        '<div class="progress-bar" role="progressbar" style="width: ' +
+                        (level.value * 20) + '%;"';
+                    levelHTML += 'aria-valuenow="' + level.value +
+                        '" aria-valuemin="0" aria-valuemax="5">';
+                    levelHTML += level.value;
+                    levelHTML += '</div></div>';
+                });
+
+                $(this).find('.employee-skills').html(skillHTML);
+                $(this).find('.employee-levels').html(levelHTML);
+            });
         });
 
         let skillCount = 0;
