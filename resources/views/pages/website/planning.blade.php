@@ -265,40 +265,6 @@
             $modalId = Str::slug($shift . $line . $start . $end);
         @endphp
 
-        <script>
-            $(document).ready(function() {
-                // Loop through each modal and populate skills and levels
-                $('[id^="carousel_{{ $modalId }}"]').each(function() {
-                    var employees = $(this).find('.item');
-
-                    employees.each(function() {
-                        var employee = JSON.parse($(this).data('employee'));
-                        var skills = employee.skills;
-                        var levels = employee.levels;
-
-                        var skillHTML = '';
-                        var levelHTML = '';
-
-                        skills.forEach(function(skill) {
-                            skillHTML += '<h4 class="mb-0 fs-5">' + skill.name + '</h4>';
-                        });
-
-                        // Render skill levels
-                        levelHTML += '<div class="progress mb-2" style="height: 15px;">';
-                        levelHTML += '<div class="progress-bar" role="progressbar" style="width: ' + (
-                            levels * 20) + '%;"';
-                        levelHTML += 'aria-valuenow="' + levels +
-                            '" aria-valuemin="0" aria-valuemax="5">';
-                        levelHTML += levels;
-                        levelHTML += '</div></div>';
-
-                        $(this).find('.employee-skills').html(skillHTML);
-                        $(this).find('.employee-levels').html(levelHTML);
-                    });
-                });
-            });
-        </script>
-
         <div class="modal fade" id="{{ $modalId }}EmployeeDetail" tabindex="-1" role="dialog"
             aria-labelledby="employeeModalLabel" aria-hidden="true" style="display: none;">
             <div class="modal-dialog modal-dialog-centered modal-md" role="document">
@@ -322,28 +288,6 @@
                                                         <button class="btn btn-light-danger text-danger"
                                                             style="width: 100% !important">POS
                                                             {{ strtoupper($emp->pos) }}</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row mt-3 justify-content-center">
-                                                <div class="col-6">
-                                                    <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
-                                                        <div class="ms-2 text-start">
-                                                            <h6 class="fw-normal text-muted mb-2">Skill</h6>
-                                                            <div class="employee-skills">
-                                                                <!-- Skills will be added dynamically with jQuery -->
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
-                                                        <div class="ms-2 text-start">
-                                                            <h6 class="fw-normal text-muted mb-2">Level</h6>
-                                                            <div class="employee-levels">
-                                                                <!-- Levels will be added dynamically with jQuery -->
-                                                            </div>
-                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
