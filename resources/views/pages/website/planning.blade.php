@@ -285,7 +285,8 @@
                                                 <h6 class="card-subtitle mt-1">{{ $emp->npk }}</h6>
                                                 <div class="row mt-4">
                                                     <div class="col-12">
-                                                        <button class="btn btn-warning" style="width: 100% !important">POS
+                                                        <button class="btn btn-light-danger text-danger"
+                                                            style="width: 100% !important">POS
                                                             {{ strtoupper($emp->pos) }}</button>
                                                     </div>
                                                 </div>
