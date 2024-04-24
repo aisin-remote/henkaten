@@ -419,7 +419,7 @@ class EmployeeController extends Controller
             foreach($minimumSkills as $minimumSkill){
                 foreach($employeeSkills as $employeeSkill){
 
-                    dd($employeeSkill->employee->name);
+                    dd($employees);
 
                     if($employeeSkill->skill->level < $minimumSkill->skill->level){
                         return redirect()->back()->with('error', 'Level skill karyawan : ' . $employeeSkill->employee->name . ' kurang dari ketentuan!');
