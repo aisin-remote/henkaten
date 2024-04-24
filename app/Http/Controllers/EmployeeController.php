@@ -428,7 +428,7 @@ class EmployeeController extends Controller
             
                 // If the required skill is not found, return an error
                 if(!$employeeSkillFound){
-                    return redirect()->back()->with('error', 'Karyawan ' . $employeeSkill->employee->name . ' tidak memiliki level skill yang memenuhi persyaratan untuk posisi yang ditentukan!');
+                    return redirect()->back()->with('error', 'Level skill ('. $employeeSkill->skill->name  .') karyawan : ' . $employeeSkill->employee->name . ' kurang dari ketentuan!');
                 }
             }
         }
