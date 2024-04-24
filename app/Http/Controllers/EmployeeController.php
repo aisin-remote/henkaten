@@ -411,6 +411,8 @@ class EmployeeController extends Controller
                     ->where('pos', $pos[$key])
                     ->get();
             
+            dd($minimumSkills);
+            
             // if employee skill lower than minimum skill required
             if(count($employeeSkills) < count($minimumSkills)){
                 return redirect()->back()->with('error', 'Tidak memiliki semua skill yang dibutuhkan!');
