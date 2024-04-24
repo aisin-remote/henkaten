@@ -72,11 +72,7 @@ class HenkatenController extends Controller
             ->where('origin_id', $empOrigin)
             ->first();
 
-        if (!$pivot->firstPic) {
-            $pivot = 'unknown';
-        } else {
-            $pivot = $pivot->firstPic->name;
-        }
+        $pivot = $pivot && $pivot->firstPic ? $pivot->firstPic->name : 'unknown';
 
         $statusMappings = [
             'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
@@ -248,11 +244,7 @@ class HenkatenController extends Controller
             ->where('origin_id', $empOrigin)
             ->first();
             
-        if (!$firstPic->firstPic) {
-            $firstPic = 'unknown';
-        } else {
-            $firstPic = $firstPic->firstPic->name;
-        }
+        $firstPic = $firstPic && $firstPic->firstPic ? $firstPic->firstPic->name : 'unknown';
 
         $statusMappings = [
             'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
@@ -530,11 +522,8 @@ class HenkatenController extends Controller
             ->where('active_date', Carbon::parse($henkatenInfo->date)->format('Y-m-d'))
             ->where('origin_id', $empOrigin)
             ->first();
-        if (!$firstPic) {
-            $firstPic = 'unknown';
-        } else {
-            $firstPic = $firstPic->firstPic->name;
-        }
+            
+        $firstPic = $firstPic && $firstPic->firstPic ? $firstPic->firstPic->name : 'unknown';
 
         $statusMappings = [
             'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
