@@ -410,9 +410,7 @@ class EmployeeController extends Controller
                     ->where('line_id', $request->line)
                     ->where('pos', $pos[$key])
                     ->get();
-            
-            dd($minimumSkills);
-            
+                        
             // if employee skill lower than minimum skill required
             if(count($employeeSkills) < count($minimumSkills)){
                 return redirect()->back()->with('error', 'Tidak memiliki semua skill yang dibutuhkan!');
@@ -420,6 +418,9 @@ class EmployeeController extends Controller
                 
             foreach($minimumSkills as $minimumSkill){
                 foreach($employeeSkills as $employeeSkill){
+
+            dd($employeeSkill->skill->level);
+
                     if($employeeSkill->skill->level < $minimumSkill->skill->level){
                         return redirect()->back()->with('error', 'Level skill karyawan : ' . $employeeSkill->employee->name . ' kurang dari ketentuan!');
                     }
