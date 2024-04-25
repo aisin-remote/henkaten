@@ -497,6 +497,7 @@
             let line = $('#line option:selected').text();
             let area = line.substring(0, 2);
             let name;
+            let j;
 
             if (area !== 'DC') {
                 // ajax request get total employee in line
@@ -525,7 +526,7 @@
                                 <div class="mb-4 row align-items-center">
                                     <label for="exampleInputPassword1" class="form-label fw-semibold col-sm-3 col-form-label">Pos</label>
                                     <div class="col-9">
-                                        <input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="${name} ${area === 'DS' && i === 1 ? '' : i-1 }" disabled>
+                                        <input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="${name} ${area === 'DS' && i === 1 ? '' : j = i-1 }" disabled>
                                         <input type="hidden" class="form-control" placeholder="Employee Name" name="pos[]" value="${i}">
                                     </div>
                                 </div>
