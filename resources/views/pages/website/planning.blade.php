@@ -515,6 +515,10 @@
                             let html = '';
                             for (let i = 1; i <= data.total; i++) {
 
+                                if (area === 'DS') {
+                                    i = i - 1;
+                                }
+
                                 if (area === 'DS' && i == 1) {
                                     name = 'Haito'
                                 } else {
