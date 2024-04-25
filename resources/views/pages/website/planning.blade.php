@@ -523,7 +523,7 @@
                         <div class="row mb-3">
                             <div class="col-lg-3 col-sm-12">
                                 <div class="mb-4 row align-items-center">
-                                    <label for="exampleInputPassword1" class="form-label fw-semibold col-sm-3 col-form-label">Pos</label>
+                                    <label for="exampleInputPassword1" class="form-label fw-semibold col-sm-3 col-form-label">${name}</label>
                                     <div class="col-9">
                                         <input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="${name} ${i}" disabled>
                                         <input type="hidden" class="form-control" placeholder="Employee Name" name="pos[]" value="${i}">
