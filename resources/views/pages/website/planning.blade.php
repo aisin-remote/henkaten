@@ -497,7 +497,6 @@
             let line = $('#line option:selected').text();
             let area = line.substring(0, 2);
             let name;
-            let j;
 
             if (area !== 'DC') {
                 // ajax request get total employee in line
@@ -515,7 +514,6 @@
                             // add form based on employee
                             let html = '';
                             for (let i = 1; i <= data.total; i++) {
-                                const j = area === 'DS' ? i - 1 : '';
                                 if (area === 'DS' && i == 1) {
                                     name = 'Haito'
                                 } else {
@@ -527,7 +525,7 @@
                                 <div class="mb-4 row align-items-center">
                                     <label for="exampleInputPassword1" class="form-label fw-semibold col-sm-3 col-form-label">Pos</label>
                                     <div class="col-9">
-                                        <input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="${name} ${j}" disabled>
+                                        <input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="${name} ${area === 'DS' && i === 1 ? '' : i }" disabled>
                                         <input type="hidden" class="form-control" placeholder="Employee Name" name="pos[]" value="${i}">
                                     </div>
                                 </div>
