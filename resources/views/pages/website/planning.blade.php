@@ -497,35 +497,36 @@
             let line = $('#line option:selected').text();
             let area = line.substring(0, 2);
             let name;
+            let j;
 
-            if (area !== 'DC') {
-                // ajax request get total employee in line
-                $.ajax({
-                    type: 'get',
-                    url: "{{ url('line/employees') }}",
-                    _token: "{{ csrf_token() }}",
-                    dataType: 'json',
-                    data: {
-                        line: line
-                    },
-                    success: function(data) {
-                        if (data.status == 'success') {
+            // if (area !== 'DC') {
+            // ajax request get total employee in line
+            $.ajax({
+                type: 'get',
+                url: "{{ url('line/employees') }}",
+                _token: "{{ csrf_token() }}",
+                dataType: 'json',
+                data: {
+                    line: line
+                },
+                success: function(data) {
+                    if (data.status == 'success') {
 
-                            // add form based on employee
-                            let html = '';
-                            for (let i = 1; i <= data.total; i++) {
-                                if (area === 'DS' && i == 1) {
-                                    name = 'Haito'
-                                } else {
-                                    name = 'Pos'
-                                }
-                                html += `
+                        // add form based on employee
+                        let html = '';
+                        for (let i = 1; i <= data.total; i++) {
+                            if (area === 'DS' && i == 1) {
+                                name = 'Haito'
+                            } else {
+                                name = 'Pos'
+                            }
+                            html += `
                         <div class="row mb-3">
                             <div class="col-lg-3 col-sm-12">
                                 <div class="mb-4 row align-items-center">
                                     <label for="exampleInputPassword1" class="form-label fw-semibold col-sm-3 col-form-label">Pos</label>
                                     <div class="col-9">
-                                        <input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="${name} ${area === 'DS' && i === 1 ? '' : i }" disabled>
+                                        <input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="${name} ${area === 'DS' && i === 1 ? '' : j = i - 1 }" disabled>
                                         <input type="hidden" class="form-control" placeholder="Employee Name" name="pos[]" value="${i}">
                                     </div>
                                 </div>
@@ -534,39 +535,39 @@
                                 <select class="select2 form-select select2-hidden-accessible employee_id" style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" name="employee_id[]" required>
                                     <option value="0">Select Employee</option>`;
 
-                                // Assuming employees is a JavaScript array
-                                employees.forEach(employee => {
-                                    html +=
-                                        `<option value="${employee.id}">${employee.name}</option>`;
-                                });
+                            // Assuming employees is a JavaScript array
+                            employees.forEach(employee => {
+                                html +=
+                                    `<option value="${employee.id}">${employee.name}</option>`;
+                            });
 
-                                html += `
+                            html += `
                                 </select>
                             </div>
                         </div>`;
-                            }
-                            // Check if the container element exists
-                            let container = $('.repeater-mp-container');
-                            if (container.length) {
-                                container.html(html);
-                                // Re-initialize select2
-                                container.find('.select2').select2();
-                            } else {
-                                console.error("Container element not found");
-                            }
+                        }
+                        // Check if the container element exists
+                        let container = $('.repeater-mp-container');
+                        if (container.length) {
+                            container.html(html);
+                            // Re-initialize select2
+                            container.find('.select2').select2();
                         } else {
-                            notif(data.status, data.message);
+                            console.error("Container element not found");
                         }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status == 0) {
-                            localStorage.setItem('pass', false)
-                            notif("error", 'Connection Error');
-                            return;
-                        }
+                    } else {
+                        notif(data.status, data.message);
                     }
-                });
-            }
+                },
+                error: function(xhr) {
+                    if (xhr.status == 0) {
+                        localStorage.setItem('pass', false)
+                        notif("error", 'Connection Error');
+                        return;
+                    }
+                }
+            });
+            // }
         });
 
         $('#addPlanning').on('click', function() {
