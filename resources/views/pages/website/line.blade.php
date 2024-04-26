@@ -404,8 +404,10 @@
                                             $col = '6';
                                         }
 
+                                        $pos_number = true;
                                         if ($line->name === 'DSAA01-02' && $emp->pos->pos == '1') {
                                             $pos_name = 'HAITO';
+                                            $pos_number = false;
                                         } else {
                                             $pos_name = 'POS';
                                         }
@@ -429,7 +431,7 @@
                                                         <div class="col-12">
                                                             <button class="btn btn-light-danger text-danger"
                                                                 style="width: 100% !important">{{ $pos_name }}
-                                                                {{ strtoupper($emp->pos->pos) }}</button>
+                                                                {{ $appear = $pos_number ? $strtoupper($emp->pos->pos) : '' }}</button>
                                                         </div>
                                                     </div>
                                                 </div>
