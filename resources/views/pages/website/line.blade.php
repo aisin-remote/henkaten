@@ -405,6 +405,7 @@
                                         }
 
                                         $pos_number = true;
+                                        $appear = '';
                                         if ($line->name === 'DSAA01-02' && $emp->pos->pos == '1') {
                                             $pos_name = 'HAITO';
                                             $pos_number = false;
