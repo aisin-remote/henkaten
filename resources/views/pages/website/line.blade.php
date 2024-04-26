@@ -432,7 +432,10 @@
                                                         <div class="col-12">
                                                             <button class="btn btn-light-danger text-danger"
                                                                 style="width: 100% !important">{{ $pos_name }}
-                                                                {{ $appear = $pos_number === true ? $strtoupper($emp->pos->pos) : '' }}</button>
+                                                                @if ($pos_number)
+                                                                    {{ strtoupper($emp->pos->pos) }}
+                                                                @endif
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
