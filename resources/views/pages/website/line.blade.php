@@ -404,7 +404,7 @@
                                             $col = '6';
                                         }
 
-                                        if ($line->name === 'DSAA01-02') {
+                                        if ($line->name === 'DSAA01-02' && $emp->pos->pos == '1') {
                                             $pos_name = 'HAITO';
                                         } else {
                                             $pos_name = 'POS';
