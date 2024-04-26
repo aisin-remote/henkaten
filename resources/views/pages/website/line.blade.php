@@ -403,6 +403,13 @@
                                         } else {
                                             $col = '6';
                                         }
+
+                                        if ($line->name === 'DSAA01-02') {
+                                            $pos_name = 'HAITO';
+                                        } else {
+                                            $pos_name = 'POS';
+                                        }
+
                                     @endphp
                                     <div class="col-lg-{{ $col }} col-md-12">
                                         <div class="item">
@@ -421,7 +428,7 @@
                                                     <div class="row mt-4">
                                                         <div class="col-12">
                                                             <button class="btn btn-light-danger text-danger"
-                                                                style="width: 100% !important">POS
+                                                                style="width: 100% !important">{{ $pos_name }}
                                                                 {{ strtoupper($emp->pos->pos) }}</button>
                                                         </div>
                                                     </div>
