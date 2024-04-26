@@ -142,12 +142,7 @@
                             <th>Line</th>
                             <th>Shift</th>
                             <th>Planning Date</th>
-                            @if (auth()->user()->origin->name === 'DC')
-                                <th><span class="badge bg-warning">POS 1</span></th>
-                                <th><span class="badge bg-danger">POS 2</span></th>
-                            @else
-                                <th><span class="badge bg-info">Employee List</span></th>
-                            @endif
+                            <th class="text-center"><span class="badge bg-info">Employee List</span></th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
@@ -163,39 +158,29 @@
                                 <td>{{ $shift }}</td>
                                 <td>{{ Carbon\Carbon::parse($start)->format('j F Y') }} -
                                     {{ Carbon\Carbon::parse($end)->format('j F Y') }}</td>
-                                @if (auth()->user()->origin->name === 'DC')
-                                    @if (count($employees) === 2)
-                                        @foreach ($employees as $employee)
-                                            <td>{{ $employee->name }}</td>
-                                        @endforeach
-                                    @else
-                                        <td>{{ $employees[0]->name }}</td>
-                                        <td></td>
-                                    @endif
-                                @else
-                                    <td>
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <ul class="list-group">
-                                                    @foreach (array_slice($employees, 0, 4) as $employee)
-                                                        <li class="list-group-item">
-                                                            {{ $employee->name }}
-                                                        </li>
-                                                    @endforeach
-                                                </ul>
-                                            </div>
-                                            <div class="col-6">
-                                                <ul class="list-group">
-                                                    @foreach (array_slice($employees, 4, 3) as $employee)
-                                                        <li class="list-group-item">
-                                                            {{ $employee->name }}
-                                                        </li>
-                                                    @endforeach
-                                                </ul>
-                                            </div>
+
+                                <td>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <ul class="list-group">
+                                                @foreach (array_slice($employees, 0, 4) as $employee)
+                                                    <li class="list-group-item">
+                                                        {{ $employee->name }}
+                                                    </li>
+                                                @endforeach
+                                            </ul>
                                         </div>
-                                    </td>
-                                @endif
+                                        <div class="col-6">
+                                            <ul class="list-group">
+                                                @foreach (array_slice($employees, 4, 3) as $employee)
+                                                    <li class="list-group-item">
+                                                        {{ $employee->name }}
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td class="text-center">
                                     <a class="btn btn-secondary view-employee mb-1" data-bs-toggle="modal"
                                         data-bs-target="#{{ $modalId }}EmployeeDetail">
