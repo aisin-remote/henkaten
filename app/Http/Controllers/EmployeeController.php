@@ -402,6 +402,8 @@ class EmployeeController extends Controller
             $employeeSkills = EmployeeSkill::with(['skill', 'employee'])
                                 ->where('employee_id', $employeeId)
                                 ->get();
+
+            dd($employeeSkills);
         
             // if no skill
             if(count($employeeSkills) === 0){
@@ -412,8 +414,6 @@ class EmployeeController extends Controller
                             ->where('line_id', $request->line)
                             ->where('pos', $pos[$key])
                             ->get();
-
-                            dd($minimumSkills->isEmpty());
                                 
             // if minimum skills not found for the position
             if($minimumSkills->isEmpty()){
