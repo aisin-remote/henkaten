@@ -399,6 +399,7 @@ class EmployeeController extends Controller
 
         // get all employee skill
         foreach ($employees as $key => $employeeId) {
+            dd($key);
             // Retrieve the employee skills that match the minimum skills required for the position
             $employeeSkills = EmployeeSkill::with(['skill', 'employee'])
                                 ->where('employee_id', $employeeId)
