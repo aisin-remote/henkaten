@@ -425,7 +425,7 @@ class EmployeeController extends Controller
                     // Check if the employee skill matches one of the minimum skills required for the position
                     if($employeeSkill->skill_id == $minimumSkill->skill_id){
                         // Compare the skill level only if it's one of the minimum skills required for the position
-                        if($employeeSkill->level >= $minimumSkill->skill->level){
+                        if($employeeSkill->skill->level >= $minimumSkill->skill->level){
                             $employeeSkillFound = true;
                             break;
                         }
