@@ -403,7 +403,7 @@ class EmployeeController extends Controller
                                 ->where('employee_id', $employeeId)
                                 ->get();
 
-            dd($employeeSkills);
+            dd($employees);
         
             // if no skill
             if(count($employeeSkills) === 0){
