@@ -400,8 +400,14 @@ class EmployeeController extends Controller
         // get all employee skill
         foreach ($employees as $key => $employeeId) {
             $employeeSkills = EmployeeSkill::with(['skill', 'employee'])
-                                ->where('employee_id', $employeeId)
-                                ->get();
+                        ->where('employee_id', $employeeId)
+                        ->whereIn('skill_id', function($query) use ($request, $pos, $key) {
+                            $query->select('skill_id')
+                                ->from('minimum_skills')
+                                ->where('line_id', $request->line)
+                                ->where('pos', $pos[$key]);
+                        })
+                        ->get();
         
             // if no skill
             if(count($employeeSkills) === 0){
@@ -419,8 +425,8 @@ class EmployeeController extends Controller
             }
 
             // Check if employee has all the minimum required skills for the position
-            $employeeSkillFound = false;
             foreach($minimumSkills as $minimumSkill){
+                $employeeSkillFound = false;
                 foreach($employeeSkills as $employeeSkill){
                     // Check if the employee skill matches the minimum skill required for the position
                     if($employeeSkill->skill_id == $minimumSkill->skill_id && $employeeSkill->level >= $minimumSkill->skill->level){
