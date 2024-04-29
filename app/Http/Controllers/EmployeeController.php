@@ -399,50 +399,36 @@ class EmployeeController extends Controller
 
         // get all employee skill
         foreach ($employees as $key => $employeeId) {
+            // Retrieve the employee skills that match the minimum skills required for the position
             $employeeSkills = EmployeeSkill::with(['skill', 'employee'])
-                        ->where('employee_id', $employeeId)
-                        ->whereIn('skill_id', function($query) use ($request, $pos, $key) {
-                            $query->select('skill_id')
-                                ->from('minimum_skills')
-                                ->where('line_id', $request->line)
-                                ->where('pos', $pos[$key]);
-                        })
-                        ->get();
-
-                        dd($employeeSkills);
+                                ->where('employee_id', $employeeId)
+                                ->whereIn('skill_id', function($query) use ($request, $pos, $key) {
+                                    $query->select('skill_id')
+                                        ->from('minimum_skills')
+                                        ->where('line_id', $request->line)
+                                        ->where('pos', $pos[$key]);
+                                })
+                                ->get();
         
-            // if no skill
-            if(count($employeeSkills) === 0){
-                return redirect()->back()->with('error', 'Karyawan tidak memiliki skill!');
+            // if no matching skill found
+            if ($employeeSkills->isEmpty()) {
+                return redirect()->back()->with('error', 'Karyawan tidak memiliki semua level skill yang memenuhi persyaratan minimum untuk posisi yang ditentukan!');
             }
-            
-            $minimumSkills = MinimumSkill::with('skill')
-                            ->where('line_id', $request->line)
-                            ->where('pos', $pos[$key])
-                            ->get();
-                                
-            // if minimum skills not found for the position
-            if($minimumSkills->isEmpty()){
-                return redirect()->back()->with('error', 'Minimum skill tidak ditemukan untuk posisi yang ditentukan!');
-            }
-
+        
             // Check if employee has all the minimum required skills for the position
-            foreach($minimumSkills as $minimumSkill){
-                $employeeSkillFound = false;
-                foreach($employeeSkills as $employeeSkill){
-                    // Check if the employee skill matches the minimum skill required for the position
-                    if($employeeSkill->skill_id == $minimumSkill->skill_id && $employeeSkill->level >= $minimumSkill->skill->level){
-                        $employeeSkillFound = true;
-                        break;
-                    }
-                }
+            foreach($employeeSkills as $employeeSkill){
+                $minimumSkill = MinimumSkill::where('line_id', $request->line)
+                                            ->where('pos', $pos[$key])
+                                            ->where('skill_id', $employeeSkill->skill_id)
+                                            ->first();
         
-                // If the required skill is not found, return an error
-                if(!$employeeSkillFound){
-                    return redirect()->back()->with('error', 'Level skill ('. $employeeSkill->skill->name  .') karyawan : ' . $employeeSkill->employee->name . ' kurang dari ketentuan!');
+                // If the employee's skill level is lower than required, return an error
+                if ($employeeSkill->level < $minimumSkill->level) {
+                    return redirect()->back()->with('error', 'Level skill (' . $employeeSkill->skill->name . ') karyawan : ' . $employeeSkill->employee->name . ' kurang dari ketentuan!');
                 }
             }
-        }        
+        }
+                
 
         // current date
         $currentDate = Carbon::parse($request->active_from);
