@@ -422,18 +422,17 @@ class EmployeeController extends Controller
             foreach($minimumSkills as $minimumSkill){
                 $employeeSkillFound = false;
                 foreach($employeeSkills as $employeeSkill){
-                    dd($employeeSkill);
                     // Check if the employee skill matches the minimum skill required for the position
                     if($employeeSkill->skill_id == $minimumSkill->skill->skill_id && $employeeSkill->level >= $minimumSkill->skill->level){
                         $employeeSkillFound = true;
                         break;
                     }
                 }
-        
-                // If the required skill is not found, return an error
-                if(!$employeeSkillFound){
-                    return redirect()->back()->with('error', 'Level skill ('. $employeeSkill->skill->name  .') karyawan : ' . $employeeSkill->employee->name . ' kurang dari ketentuan!');
-                }
+            }
+
+            // If the required skill is not found, return an error
+            if(!$employeeSkillFound){
+                return redirect()->back()->with('error', 'Level skill ('. $employeeSkill->skill->name  .') karyawan : ' . $employeeSkill->employee->name . ' kurang dari ketentuan!');
             }
         }        
 
