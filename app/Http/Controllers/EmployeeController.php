@@ -408,6 +408,8 @@ class EmployeeController extends Controller
                                 ->where('pos', $pos[$key]);
                         })
                         ->get();
+
+                        dd($employeeSkills);
         
             // if no skill
             if(count($employeeSkills) === 0){
