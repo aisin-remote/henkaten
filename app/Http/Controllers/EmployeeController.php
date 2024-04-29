@@ -422,6 +422,7 @@ class EmployeeController extends Controller
             foreach($minimumSkills as $minimumSkill){
                 $employeeSkillFound = false;
                 foreach($employeeSkills as $employeeSkill){
+                    dd($employeeSkill);
                     // Check if the employee skill matches the minimum skill required for the position
                     if($employeeSkill->skill_id == $minimumSkill->skill->skill_id && $employeeSkill->level >= $minimumSkill->skill->level){
                         $employeeSkillFound = true;
