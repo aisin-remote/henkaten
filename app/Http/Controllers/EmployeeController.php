@@ -402,8 +402,6 @@ class EmployeeController extends Controller
             $employeeSkills = EmployeeSkill::with(['skill', 'employee'])
                                 ->where('employee_id', $employeeId)
                                 ->get();
-
-            dd($employees);
         
             // if no skill
             if(count($employeeSkills) === 0){
@@ -415,9 +413,9 @@ class EmployeeController extends Controller
                             ->where('pos', $pos[$key])
                             ->get();
                                 
-            // if minimum skills not found for the position
-            if($minimumSkills->isEmpty()){
-                return redirect()->back()->with('error', 'Minimum skill tidak ditemukan untuk posisi yang ditentukan!');
+           // if employee skill lower than minimum skill required
+            if(count($employeeSkills) < count($minimumSkills)){
+                return redirect()->back()->with('error', 'Tidak memiliki semua skill yang dibutuhkan!');
             }
         
             // Check if employee has all the minimum required skills for the position
