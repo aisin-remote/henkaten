@@ -412,6 +412,8 @@ class EmployeeController extends Controller
                             ->where('line_id', $request->line)
                             ->where('pos', $pos[$key])
                             ->get();
+
+                            dd($minimumSkills);
                                 
             // if minimum skills not found for the position
             if($minimumSkills->isEmpty()){
