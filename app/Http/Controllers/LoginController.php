@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Traits\ThrottlesLogins;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
+    use ThrottlesLogins;
+    
     public function index()
     {
         return view('pages.auth.login');
