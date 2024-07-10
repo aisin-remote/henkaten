@@ -300,9 +300,7 @@ class DashboardController extends Controller
                         [
                             'status' => 'error',
                             'message' => $th,
-                        ],
-                        500,
-                    );
+                        ],500);
                 }
             } else {
                 try {
@@ -323,7 +321,7 @@ class DashboardController extends Controller
                             'status' => 'error',
                             'message' => $th,
                         ],
-                        500,
+                        500
                     );
                 }
             }
@@ -346,7 +344,7 @@ class DashboardController extends Controller
                             'status' => 'error',
                             'message' => $th,
                         ],
-                        500,
+                        500
                     );
                 }
             } else {
@@ -367,7 +365,7 @@ class DashboardController extends Controller
                             'status' => 'error',
                             'message' => $th,
                         ],
-                        500,
+                        500
                     );
                 }
             }
@@ -396,7 +394,7 @@ class DashboardController extends Controller
                 'theme_id' => $parts[2],
                 'theme_name' => $theme_name_final,
             ],
-            200,
+            200
         );
     }
 
@@ -426,7 +424,7 @@ class DashboardController extends Controller
                     'status' => 'error',
                     'message' => 'karyawan tidak terdaftar!',
                 ],
-                404,
+                404
             );
         }
 
@@ -451,7 +449,7 @@ class DashboardController extends Controller
                     [
                         'status' => 'error',
                         'message' => $th,
-                ],500,);
+                ],500);
             }
         } else {
             try {
@@ -484,7 +482,7 @@ class DashboardController extends Controller
                 'role' => $employee->role,
                 'npk' => $employee->npk,
             ],
-            200,
+            200
         );
     }
     
@@ -528,7 +526,7 @@ class DashboardController extends Controller
                     'status' => 'error',
                     'message' => 'karyawan tidak terdaftar!',
                 ],
-                404,
+                404
             );
         }
 
@@ -554,7 +552,7 @@ class DashboardController extends Controller
                         'status' => 'error',
                         'message' => $th,
                     ],
-                    500,
+                    500
                 );
             }
         } else {
@@ -573,7 +571,7 @@ class DashboardController extends Controller
                         'status' => 'error',
                         'message' => $th,
                     ],
-                    500,
+                    500
                 );
             }
         }
@@ -590,7 +588,7 @@ class DashboardController extends Controller
                 'role' => $employee->role,
                 'npk' => $employee->npk,
             ],
-            200,
+            200
         );
     }
 
@@ -634,7 +632,7 @@ class DashboardController extends Controller
                     'status' => 'error',
                     'message' => 'karyawan tidak terdaftar!',
                 ],
-                404,
+                404
             );
         }
 
@@ -660,7 +658,7 @@ class DashboardController extends Controller
                         'status' => 'error',
                         'message' => $th,
                     ],
-                    500,
+                    500
                 );
             }
         } else {
@@ -679,7 +677,7 @@ class DashboardController extends Controller
                         'status' => 'error',
                         'message' => $th,
                     ],
-                    500,
+                    500
                 );
             }
         }
@@ -696,7 +694,7 @@ class DashboardController extends Controller
                 'role' => $employee->role,
                 'npk' => $employee->npk,
             ],
-            200,
+            200
         );
     }
 }

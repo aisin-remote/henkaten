@@ -22,6 +22,11 @@ class UpdateEmployeeShifts extends Command
 
         $newShifts = $currentShifts->map(function ($employee) {
             $nextShiftUuid = $this->getNextShiftUuid($employee->shift_id);
+            if ($nextShiftUuid === null) {
+                // If the next shift UUID is null, remove the employee
+                EmployeeActive::where('employee_id', $employee->employee_id)->delete();
+                return null; // Do not include in the new shifts
+            }
             return [
                 'employee_id' => $employee->employee_id,
                 'shift_id' => $nextShiftUuid,
@@ -30,7 +35,7 @@ class UpdateEmployeeShifts extends Command
                 'active_from' => Carbon::now()->startOfWeek(),
                 'expired_at' => Carbon::now()->endOfWeek(),
             ];
-        });
+        })->filter(); // Remove null entries
 
         // Example of creating each new shift record individually
         foreach ($newShifts as $newShift) {
@@ -53,6 +58,6 @@ class UpdateEmployeeShifts extends Command
             $shifts['Shift 3']->id => $shifts['Shift 2']->id,
         ];
 
-        return $shiftsMap[$currentShiftUuid] ?? null; // Return null or handle invalid UUID
+        return $shiftsMap[$currentShiftUuid] ?? null;
     }
 }

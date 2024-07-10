@@ -21,11 +21,22 @@ class LoginController extends Controller
         ]);
 
         // Lakukan proses otentikasi
+        if ($this->hasTooManyLoginAttempts($request)) {
+            // If too many attempts, send the lockout response
+            return $this->sendLockoutResponse($request);
+        }   
+
+        // Lakukan proses otentikasi
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+            // Reset the login attempts since authentication succeeded
+            $this->clearLoginAttempts($request);
+
             // Otentikasi berhasil
             return redirect()->intended("/dashboard");
         }
+
+        // Increment login attempts since authentication failed
+        $this->incrementLoginAttempts($request);
 
         // Otentikasi gagal
         return redirect("/login")->with('error', 'Invalid login credentials');
