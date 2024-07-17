@@ -46,7 +46,7 @@
                     </select>
                 </div>
                 <div class="form-group mb-4">
-                    <label class="mr-sm-2 form-label" for="inlineFormCustomSelect">Origin</label>
+                    <label class="mr-sm-2 form-label" for="inlineFormCustomSelect">Department</label>
                     <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="origin_id">
                         <option selected>-- select --</option>
                         @foreach ($origins as $origin)
