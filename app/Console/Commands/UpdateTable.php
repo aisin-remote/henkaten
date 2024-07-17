@@ -29,9 +29,9 @@ class UpdateTable extends Command
     public function handle()
     {
         // update skill table ad origin id
-        Skill::whereDate('created_at', '2024-03-18')
+        Skill::whereDate('created_at', '2024-12-08')
                 ->update([
-                    'origin_id' => '9ac7fcde-84b6-4076-9d9c-2eaa3486dcb8'
+                    'origin_id' => '9ac7fcde-7c45-43ee-9a3b-ea9a29de66db'
                 ]);
     }
 }
