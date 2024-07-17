@@ -14,6 +14,7 @@ class skillController extends Controller
     public function index()
     {
         $masterSkills = Skill::select('name', DB::raw('GROUP_CONCAT(level) as levels'))
+            ->where('origin_id', auth()->user()->origin_id)
             ->groupBy('name')
             ->get();
 
@@ -71,6 +72,7 @@ class skillController extends Controller
             foreach ($skills as $skill) {
                 for ($i = 1; $i <= 5; $i++) {
                     Skill::create([
+                        'origin_id' => auth()->user()->origin_id,
                         'name' => $skill['name'],
                         'level' => $i + 1
                     ]);
