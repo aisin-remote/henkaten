@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- Mirrored from demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/html/horizontal/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 26 Sep 2023 00:45:05 GMT -->
-
 <head>
     <!-- Title -->
     <title>Digital Henkaten</title>
@@ -252,7 +250,5 @@
         scheduleRefresh();
     </script>
 </body>
-
-<!-- Mirrored from demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/html/horizontal/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 26 Sep 2023 00:45:30 GMT -->
 
 </html>
