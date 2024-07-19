@@ -28,7 +28,7 @@ class EmployeeController extends Controller
         $empOrigin = auth()->user()->origin_id;
 
         // Eager load relationships to minimize query count
-        $masterEmployees = Employee::with('employeeSkills.skill')
+        $masterEmployees = Employee::with('employeeSkill.skill')
             ->where('origin_id', $empOrigin)
             ->paginate(10);
 
