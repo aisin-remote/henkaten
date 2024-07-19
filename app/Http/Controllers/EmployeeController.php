@@ -24,22 +24,25 @@ class EmployeeController extends Controller
     
     public function index()
     {
-        // Get origin ID
+        // get origin id
         $empOrigin = auth()->user()->origin_id;
+        $masterEmployees = Employee::where('origin_id', $empOrigin)->paginate(10);
 
-        // Eager load relationships to minimize query count
-        $masterEmployees = Employee::with('employeeSkill.skill')
-            ->where('origin_id', $empOrigin)
-            ->paginate(10);
-
-        // Get all skills once
+        // Retrieve all skills with necessary columns
         $allSkills = Skill::select('id', 'name', 'level')->get();
-        $nameSkills = Skill::select('name')->groupBy('name')->get();
+
+        // Retrieve distinct skill names efficiently
+        $nameSkills = Skill::distinct()->pluck('name');
+
+        // Retrieve all employee skills with necessary columns
+        $empSkills = EmployeeSkill::with('skill')->get();
 
         return view('pages.website.registEmployee', [
-            'skills' => $nameSkills,
+            'skills' => Skill::select('name')->groupBy('name')->get(),
             'masterEmployee' => $masterEmployees,
             'allSkills' => $allSkills,
+            'empSkills' => $empSkills,
+            'nameSkills' => $nameSkills
         ]);
     }
 
