@@ -21,23 +21,26 @@ use Illuminate\Support\Facades\Storage;
 
 class EmployeeController extends Controller
 {
+    
     public function index()
     {
-        // get origin id
+        // Get origin ID
         $empOrigin = auth()->user()->origin_id;
-        $masterEmployees = Employee::where('origin_id', $empOrigin)->paginate(10);
 
-        // Compress and update photo URLs for each employee
-        // foreach ($masterEmployees as $employee) {
-        //     $employee->compressed_photo_url = $this->compressAndStorePhoto($employee->photo);
-        // }
+        // Eager load skills and paginate employees
+        $masterEmployees = Employee::with('skills')
+            ->where('origin_id', $empOrigin)
+            ->paginate(10);
 
+        // Get all skills and unique skill names
         $allSkills = Skill::select('id', 'name', 'level')->get();
-        $nameSkills = Skill::select('name')->groupBy('name')->get();
-        $empSkills = EmployeeSkill::select()->get();
+        $nameSkills = $allSkills->groupBy('name')->keys();
+
+        // No need to select all columns from EmployeeSkill if you don't use them
+        $empSkills = EmployeeSkill::select('employee_id', 'skill_id', 'level')->get();
 
         return view('pages.website.registEmployee', [
-            'skills' => Skill::select('name')->groupBy('name')->get(),
+            'skills' => $nameSkills,
             'masterEmployee' => $masterEmployees,
             'allSkills' => $allSkills,
             'empSkills' => $empSkills,
