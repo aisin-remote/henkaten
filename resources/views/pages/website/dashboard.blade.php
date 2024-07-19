@@ -895,9 +895,9 @@
     </div>
     {{-- end of modal --}}
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.3.min.js"
-    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
-<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+<script src={{ asset('js/jquery-3.6.3.min.js') }} integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+    crossorigin="anonymous"></script>
+<script src={{ asset('js/pusher.min.js') }}></script>
 <script>
     let pivot = @json($pivot);
     $(document).ready(function() {

@@ -44,8 +44,13 @@
                                             $currentDate = Carbon\Carbon::now()->format('Y-m-d');
                                             $attendance = $employee
                                                 ->with('attendance')
-                                                ->whereHas('attendance', function ($query) use ($employee, $currentDate) {
-                                                    $query->where('employee_active_id', $employee->id)->where('created_at', 'LIKE', $currentDate . '%');
+                                                ->whereHas('attendance', function ($query) use (
+                                                    $employee,
+                                                    $currentDate,
+                                                ) {
+                                                    $query
+                                                        ->where('employee_active_id', $employee->id)
+                                                        ->where('created_at', 'LIKE', $currentDate . '%');
                                                 })
                                                 ->has('attendance')
                                                 ->first();
@@ -92,8 +97,8 @@
         </div>
     </div>
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.3.min.js"
-    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src={{ asset('js/jquery-3.6.3.min.js') }} integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+    crossorigin="anonymous"></script>
 <script>
     $(document).ready(function() {
         // initialize datatable

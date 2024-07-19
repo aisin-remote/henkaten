@@ -17,20 +17,17 @@
     <meta name="keywords" content="Mordenize" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/png"
-        href="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/favicon.ico" />
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/favicon.ico') }}" />
     <!-- Owl Carousel -->
     {{-- <link rel="stylesheet" href={{ asset('dist/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}> --}}
-    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap4.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css"
-        rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/owl.carousel@2.3.4/dist/assets/owl.carousel.min.css" rel="stylesheet">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+    <link href="{{ asset('css/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/bootstrap4-toggle.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/owl.carousel.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/owl.theme.default.min.css') }}">
     <link rel="stylesheet" href={{ asset('dist/libs/select2/dist/css/select2.min.css') }}>
     <!-- Core Css -->
     <link id="themeColors" rel="stylesheet" href={{ asset('dist/css/style.min.css') }} />
-    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="{{ asset('js/highcharts.js') }}"></script>
     <style>
         .vertical-carousel {
             overflow: hidden;
@@ -65,8 +62,7 @@
 <body>
     <!-- Preloader -->
     <div class="preloader">
-        <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/favicon.ico"
-            alt="loader" class="lds-ripple img-fluid" />
+        <img src="{{ asset('images/favicon.ico') }}" alt="loader" class="lds-ripple img-fluid" />
     </div>
     <!-- Body Wrapper -->
     <div class="page-wrapper" id="main-wrapper" data-layout="horizontal" data-navbarbg="skin6" data-sidebartype="full"
@@ -153,15 +149,15 @@
     <script src={{ asset('dist/js/sidebarmenu.js') }}></script>
     <script src={{ asset('dist/js/repeater-init.js') }}></script>
     <script src={{ asset('dist/js/custom.js') }}></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/owl.carousel@2.3.4/dist/owl.carousel.min.js"></script>
+    <script src={{ asset('js/jquery.dataTables.min.js') }}></script>
+    <script src={{ asset('js/dataTables.bootstrap4.min.js') }}></script>
+    <script src={{ asset('js/owl.carousel.min.js') }}></script>
     <!--  current page js files -->
     <script src={{ asset('dist/js/dashboard.js') }}></script>
     <script src={{ asset('dist/js/plugins/toastr-init.js') }}></script>
     <script src={{ asset('dist/libs/select2/dist/js/select2.full.min.js') }}></script>
     <script src={{ asset('dist/js/forms/select2.init.js') }}></script>
-    <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+    <script src={{ asset('js/bootstrap4-toggle.min.js') }}></script>
     <script>
         const carousel = document.querySelector('.vertical-carousel');
         const items = carousel.querySelectorAll('.col-md-12');

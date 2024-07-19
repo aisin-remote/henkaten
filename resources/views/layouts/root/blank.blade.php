@@ -16,8 +16,7 @@
     <meta name="keywords" content="Mordenize" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!--  Favicon -->
-    <link rel="shortcut icon" type="image/png"
-        href="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/favicon.ico" />
+    <link rel="shortcut icon" type="image/png" href={{ asset('images/favicon.ico') }} />
     <!-- Core Css -->
     <link id="themeColors" rel="stylesheet" href={{ asset('dist/css/style.min.css') }} />
 </head>
@@ -25,14 +24,10 @@
 <body>
     <!-- Preloader -->
     <div class="preloader">
-        <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/favicon.ico"
-            alt="loader" class="lds-ripple img-fluid" />
+        <img src={{ asset('images/favicon.ico') }} alt="loader" class="lds-ripple img-fluid" />
     </div>
     <!-- Preloader -->
-    <div class="preloader">
-        <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/favicon.ico"
-            alt="loader" class="lds-ripple img-fluid" />
-    </div>
+
     <!--  Body Wrapper -->
     <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-sidebartype="full"
         data-sidebar-position="fixed" data-header-position="fixed">

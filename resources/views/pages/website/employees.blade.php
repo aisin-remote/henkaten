@@ -108,7 +108,10 @@
                                                                 ->where('employee_id', $emp->employee_id)
                                                                 ->pluck('skill_id')
                                                                 ->all();
-                                                            $employeeSkills = $allSkills->whereIn('id', $employeeSkillIds);
+                                                            $employeeSkills = $allSkills->whereIn(
+                                                                'id',
+                                                                $employeeSkillIds,
+                                                            );
                                                         @endphp
                                                     @endforeach
                                                     @foreach ($employeeSkills as $skill)
@@ -144,8 +147,8 @@
         </div>
     @endforeach
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.3.min.js"
-    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src={{ asset('js/jquery-3.6.3.min.js') }} integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+    crossorigin="anonymous"></script>
 <script>
     $(document).ready(function() {
         // initialize datatable

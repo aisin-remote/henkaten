@@ -12,8 +12,18 @@
                     </div>
                     @php
                         $statusMappings = [
-                            'running' => ['priority' => 1, 'overall' => 'RUNNING', 'shape' => 'circle', 'color' => 'success'],
-                            'henkaten' => ['priority' => 2, 'overall' => 'HENKATEN', 'shape' => 'triangle', 'color' => 'warning'],
+                            'running' => [
+                                'priority' => 1,
+                                'overall' => 'RUNNING',
+                                'shape' => 'circle',
+                                'color' => 'success',
+                            ],
+                            'henkaten' => [
+                                'priority' => 2,
+                                'overall' => 'HENKATEN',
+                                'shape' => 'triangle',
+                                'color' => 'warning',
+                            ],
                             'stop' => ['priority' => 3, 'overall' => 'STOP', 'shape' => 'x', 'color' => 'danger'],
                             'off' => ['priority' => 4, 'overall' => 'OFF', 'shape' => 'zzz', 'color' => 'dark'],
                         ];
@@ -142,8 +152,8 @@
         @endforeach
     </div>
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.3.min.js"
-    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src={{ asset('js/jquery-3.6.3.min.js') }} integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+    crossorigin="anonymous"></script>
 <script>
     $(document).ready(function() {
         $('.dc-card').on('click', function() {

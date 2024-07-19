@@ -311,13 +311,13 @@
         </div>
     @endforeach
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.3.min.js"
-    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/highcharts-more.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src={{ asset('js/jquery-3.6.3.min.js') }} integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+    crossorigin="anonymous"></script>
+<script src={{ asset('js/highcharts.js') }}></script>
+<script src={{ asset('js/highcharts-more.js') }}></script>
+<script src={{ asset('js/exporting.js') }}></script>
+<script src={{ asset('js/export-data.js') }}></script>
+<script src={{ asset('js/accessibility.js') }}></script>
 <script>
     $(document).ready(function() {
         $('.view-employee').on('click', function() {
