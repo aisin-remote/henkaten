@@ -37,7 +37,7 @@ class EmployeeController extends Controller
         $nameSkills = $allSkills->groupBy('name')->keys();
 
         // No need to select all columns from EmployeeSkill if you don't use them
-        $empSkills = EmployeeSkill::select('employee_id', 'skill_id', 'level')->get();
+        $empSkills = EmployeeSkill::with('skill')->select('employee_id', 'skill_id', 'level')->get();
 
         return view('pages.website.registEmployee', [
             'skills' => $nameSkills,
