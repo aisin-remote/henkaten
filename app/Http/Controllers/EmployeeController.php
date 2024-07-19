@@ -28,7 +28,7 @@ class EmployeeController extends Controller
         $empOrigin = auth()->user()->origin_id;
 
         // Eager load skills and paginate employees
-        $masterEmployees = Employee::with('skills')
+        $masterEmployees = Employee::with('skill')
             ->where('origin_id', $empOrigin)
             ->paginate(10);
 
