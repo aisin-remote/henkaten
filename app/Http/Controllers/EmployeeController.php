@@ -27,8 +27,8 @@ class EmployeeController extends Controller
         // Get origin ID
         $empOrigin = auth()->user()->origin_id;
 
-        // Eager load skills and paginate employees
-        $masterEmployees = Employee::with('employeeSkill')
+        // Eager load skills for employees and paginate
+        $masterEmployees = Employee::with('skills')
             ->where('origin_id', $empOrigin)
             ->paginate(10);
 
@@ -36,8 +36,8 @@ class EmployeeController extends Controller
         $allSkills = Skill::select('id', 'name', 'level')->get();
         $nameSkills = $allSkills->groupBy('name')->keys();
 
-        // No need to select all columns from EmployeeSkill if you don't use them
-        $empSkills = EmployeeSkill::with('skill')->select('employee_id', 'skill_id', 'level')->get();
+        // Get all employee skills
+        $empSkills = EmployeeSkill::select('employee_id', 'skill_id', 'level')->get();
 
         return view('pages.website.registEmployee', [
             'skills' => $nameSkills,
