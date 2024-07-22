@@ -24,25 +24,34 @@ class EmployeeController extends Controller
     
     public function index()
     {
-        // get origin id
-        $empOrigin = auth()->user()->origin_id;
-        $masterEmployees = Employee::where('origin_id', $empOrigin)->paginate(10);
+        // Get the origin id from the authenticated user
+        $originId = auth()->user()->origin_id;
 
-        // Retrieve all skills with necessary columns
-        $allSkills = Skill::select('id', 'name', 'level')->get();
+        // Paginate employees with eager loading of related skills through EmployeeSkill
+        $masterEmployees = Employee::with(['employeeSkill.skill'])->where('origin_id', $originId)->get();
 
-        // Retrieve distinct skill names efficiently
+        // Prepare employee details including skills and levels
+        $employeeDetails = [];
+        foreach ($masterEmployees as $employee) {
+            $skills = $employee->employeeSkill->map(function ($employeeSkill) {
+                return (object) [
+                    'name' => $employeeSkill->skill->name,
+                    'level' => $employeeSkill->skill->level // Assuming 'level' is stored in EmployeeSkill
+                ];
+            });
+
+            $employeeDetails[$employee->id] = (object) [
+                'skills' => $skills
+            ];
+        }
+
+        // Retrieve all distinct skill names for dropdown or other purposes
         $nameSkills = Skill::distinct()->pluck('name');
 
-        // Retrieve all employee skills with necessary columns
-        $empSkills = EmployeeSkill::with('skill')->get();
-
         return view('pages.website.registEmployee', [
-            'skills' => Skill::select('name')->groupBy('name')->get(),
+            'skills' => $nameSkills,
             'masterEmployee' => $masterEmployees,
-            'allSkills' => $allSkills,
-            'empSkills' => $empSkills,
-            'nameSkills' => $nameSkills
+            'employeeDetails' => $employeeDetails,
         ]);
     }
 

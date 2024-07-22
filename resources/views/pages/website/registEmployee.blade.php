@@ -75,7 +75,7 @@
                                         name="skill_name[]">
                                         <option value="0">Select</option>
                                         @foreach ($skills as $skill)
-                                            <option value="{{ $skill->name }}">{{ $skill->name }}</option>
+                                            <option value="{{ $skill }}">{{ $skill }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -204,8 +204,6 @@
                         @endforeach
                     </tbody>
                 </table>
-
-                {{ $masterEmployee->links('pagination::bootstrap-4') }}
             </div>
         </div>
     </div>
@@ -255,25 +253,11 @@
                                             <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
                                                 <div class="ms-2 text-start">
                                                     <h6 class="fw-normal text-muted mb-2">Skill</h6>
-                                                    @foreach ($skills as $skill)
-                                                        @php
-                                                            $employeeSkillIds = $empSkills
-                                                                ->where('employee_id', $emp->id)
-                                                                ->pluck('skill_id')
-                                                                ->all();
-                                                            $employeeSkills = $allSkills->whereIn(
-                                                                'id',
-                                                                $employeeSkillIds,
-                                                            );
-                                                        @endphp
-                                                    @endforeach
-                                                    @if (!$employeeSkills->isEmpty())
-                                                        @foreach ($employeeSkills as $skill)
-                                                            <h4 class="mb-0 fs-4">{{ $skill->name }}</h4>
-                                                        @endforeach
-                                                    @else
-                                                        <span class="badge bg-warning">Tidak Memiliki Skill</span>
-                                                    @endif
+                                                    @forelse ($employeeDetails[$emp->id]->skills as $skill)
+                                                        <h4 class="mb-0 fs-4">{{ $skill->name }}</h4>
+                                                    @empty
+                                                        <span class="badge bg-warning">No Skills Listed</span>
+                                                    @endforelse
                                                 </div>
                                             </div>
                                         </div>
@@ -281,20 +265,18 @@
                                             <div class="py-2 px-3 bg-light rounded d-flex align-items-center">
                                                 <div class="ms-2 text-start">
                                                     <h6 class="fw-normal text-muted mb-2">Level</h6>
-                                                    @if (!$employeeSkills->isEmpty())
-                                                        @foreach ($employeeSkills as $skill)
-                                                            <div class="progress mb-2" style="height: 15px; width: 8vw">
-                                                                <div class="progress-bar" role="progressbar"
-                                                                    style="width: {{ $skill->level * 20 }}%;"
-                                                                    aria-valuenow="{{ $skill->level }}" aria-valuemin="0"
-                                                                    aria-valuemax="5">
-                                                                    {{ $skill->level }}
-                                                                </div>
+                                                    @forelse ($employeeDetails[$emp->id]->skills as $skill)
+                                                        <div class="progress mb-2" style="height: 15px; width: 8vw">
+                                                            <div class="progress-bar" role="progressbar"
+                                                                style="width: {{ $skill->level * 20 }}%;"
+                                                                aria-valuenow="{{ $skill->level }}" aria-valuemin="0"
+                                                                aria-valuemax="5">
+                                                                {{ $skill->level }}
                                                             </div>
-                                                        @endforeach
-                                                    @else
-                                                        <span class="badge bg-warning">Tidak Memiliki Skill</span>
-                                                    @endif
+                                                        </div>
+                                                    @empty
+                                                        <span class="badge bg-warning">No Levels Assigned</span>
+                                                    @endforelse
                                                 </div>
                                             </div>
                                         </div>
@@ -336,7 +318,7 @@
                     aria-hidden="true" id="themeSelect" name="skill_name[]">
                     <option value="0">Select</option>
                     @foreach ($skills as $skill)
-                        <option value="{{ $skill->name }}">{{ $skill->name }}</option>
+                        <option value="{{ $skill }}">{{ $skill }}</option>
                     @endforeach
                 </select>
             </div>
@@ -376,7 +358,9 @@
         // initialize datatable
         $('#masterSkill').DataTable({
             scrollX: true,
-            paging: false,
+            paging: true,
+            processing: true,
+            serverSide: false,
             columnDefs: [{
                 orderable: false,
                 targets: 4
@@ -452,7 +436,7 @@
             })
         });
 
-        $('#masterSkill').on('click', '.view-employee', function() {
+        $(document).on('click', '#masterSkill .view-employee', function() {
             var employeeId = $(this).data('emp');
             let empId = $(this).data('emp-id');
             let chartId = $(this).data('chart-id');
@@ -527,4 +511,59 @@
             }
         });
     });
+
+    $(document).ready(function() {
+        handleEmployeeView();
+        handleEmployeeTable();
+        handleFormSubmission();
+        handleModalActions();
+    });
+
+    function handleEmployeeView() {
+        $('.view-employee').on('click', function() {
+            var targetModal = $(this).data('bs-target');
+            $(targetModal).modal('show');
+        });
+    }
+
+    function handleFormSubmission() {
+        $('#employee-form').submit(function(event) {
+            var npkInput = $('input[name="npk"]');
+            if (npkInput.val().length < 6) {
+                event.preventDefault();
+                showInputError(npkInput, 'NPK harus terdiri dari 6 karakter');
+            }
+        });
+    }
+
+    function showInputError(inputElement, message) {
+        inputElement.addClass('is-invalid');
+        inputElement.siblings('.error-message').remove();
+        inputElement.after(`<span class="error-message text-danger">${message}</span>`);
+    }
+
+    function handleModalActions() {
+        $('#addEmployee').on('click', function() {
+            $("#addEmployeeCard").toggle();
+            updateIcon($(this), $("#addEmployeeCard").is(":visible"));
+        });
+
+        initializeDeletionHandling();
+    }
+
+    function updateIcon(buttonElement, isVisible) {
+        let icon = isVisible ? 'ti-minus' : 'ti-plus';
+        buttonElement.find('#icon i').removeClass().addClass(`ti ${icon}`);
+    }
+
+    function initializeDeletionHandling() {
+        $('.delete-button').on('click', function(event) {
+            event.preventDefault();
+            let deleteForm = $(this).closest('form');
+            $('#confirmDelete').off('click').on('click', function() {
+                deleteForm.submit();
+            });
+            $('#confirmationModal').modal('show');
+        });
+    }
 </script>
