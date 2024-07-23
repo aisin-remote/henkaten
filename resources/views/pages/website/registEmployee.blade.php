@@ -360,7 +360,7 @@
             scrollX: true,
             paging: true,
             processing: true,
-            serverSide: false,
+            serverSide: true,
             columnDefs: [{
                 orderable: false,
                 targets: 4
