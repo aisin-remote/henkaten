@@ -64,8 +64,7 @@ class skillController extends Controller
         if (!empty($duplicates)) {
             // Handle the case where duplicates are found
             $status = 'warning';
-            $message = 'Skill ' . $name . ' already exists!';
-            return redirect()->back()->with('error', 'Skill cant be same!');
+            $message = 'Skill ' . $name . ' cant be same!';
         }
 
         foreach($names as $name){
