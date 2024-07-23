@@ -39,6 +39,9 @@ class skillController extends Controller
 
     public function regist(Request $request)
     {
+        $status = 'success';
+        $message = 'Skill created successfully!';
+        
         $empOrigin = auth()->user()->origin_id;
 
         $skills = $request->input('repeater-group');
@@ -60,6 +63,8 @@ class skillController extends Controller
         // Check if there are duplicates
         if (!empty($duplicates)) {
             // Handle the case where duplicates are found
+            $status = 'warning';
+            $message = 'Skill ' . $name . ' already exists!';
             return redirect()->back()->with('error', 'Skill cant be same!');
         }
 
@@ -67,7 +72,8 @@ class skillController extends Controller
             // error handling when theme already exists in database
             $existingSkill = Skill::whereRaw('UPPER(name) = ?', $name)->where('origin_id', $empOrigin)->first();
             if($existingSkill){
-                return redirect()->back()->with('error', 'Skill already exist!');
+                $status = 'warning';
+                $message = 'Skill ' . $name . ' already exists!';
             }
         }
 
@@ -86,7 +92,7 @@ class skillController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Skill created successfully!');
+            return redirect()->back()->with($status, $message);
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Skill creation failed!');
         }
