@@ -39,6 +39,8 @@ class skillController extends Controller
 
     public function regist(Request $request)
     {
+        $empOrigin = auth()->user()->origin_id;
+
         $skills = $request->input('repeater-group');
 
         // Extract the lowercase "name" values from each inner array
@@ -63,7 +65,7 @@ class skillController extends Controller
 
         foreach($names as $name){
             // error handling when theme already exists in database
-            $existingSkill = Skill::whereRaw('UPPER(name) = ?', $name)->first();
+            $existingSkill = Skill::whereRaw('UPPER(name) = ?', $name)->where('origin_id', $empOrigin)->first();
             if($existingSkill){
                 return redirect()->back()->with('error', 'Skill already exist!');
             }
