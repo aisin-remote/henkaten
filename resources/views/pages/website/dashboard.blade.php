@@ -382,7 +382,7 @@
                 @if ($supervisor)
                     <div class="card-body p-3 d-flex align-items-center gap-3">
                         <img src="{{ $supervisor->photo ? asset('uploads/doc/' . $supervisor->photo) : asset('path_to_default_image') }}"
-                            alt="" class="rounded-circle" width="60" height="60">
+                            alt="" class="rounded-circle" width="60" height="60" loading="lazy">
                         <div>
                             <h6 class="fw-semibold mb-0">{{ $supervisor->name }}</h6>
                             <span class="fs-2 d-flex align-items-center py-1"><i
@@ -407,7 +407,7 @@
                 @if ($firstPic)
                     <div class="card-body p-3 d-flex align-items-center gap-3">
                         <img src="{{ $firstPic->photo ? asset('uploads/doc/' . $firstPic->photo) : asset('path_to_default_image') }}"
-                            alt="" class="rounded-circle" width="60" height="60">
+                            alt="" class="rounded-circle" width="60" height="60" loading="lazy">
                         <div>
                             <h6 class="fw-semibold mb-0">{{ $firstPic->name }}</h6>
                             <span class="fs-2 d-flex align-items-center py-1"><i
@@ -431,7 +431,7 @@
                 @if ($secondPic)
                     <div class="card-body p-3 d-flex align-items-center gap-3">
                         <img src="{{ $secondPic->photo ? asset('uploads/doc/' . $secondPic->photo) : asset('path_to_default_image') }}"
-                            alt="" class="rounded-circle" width="60" height="60">
+                            alt="" class="rounded-circle" width="60" height="60" loading="lazy">
                         <div>
                             <h6 class="fw-semibold mb-0">{{ $secondPic->name }}</h6>
                             <span class="fs-2 d-flex align-items-center py-1"><i
@@ -1059,7 +1059,7 @@
                         <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#supervisorModal" id="suprvisor">
                             <div class="card-body p-3 d-flex align-items-center gap-3">
                                 <img src="{{ asset('uploads/doc/${photo}') }}"
-                                    alt="" class="rounded-circle" width="60" height="60">
+                                    alt="" class="rounded-circle" width="60" height="60" loading="lazy">
                                 <div>
                                     <h6 class="fw-semibold mb-0">${data.name}</h6>
                                     <span class="fs-2 d-flex align-items-center py-1"><i
@@ -1109,7 +1109,7 @@
                         <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#firstPicModal" id="firstPic">
                             <div class="card-body p-3 d-flex align-items-center gap-3">
                                 <img src="{{ asset('uploads/doc/${photo}') }}"
-                                    alt="" class="rounded-circle" width="60" height="60">
+                                    alt="" class="rounded-circle" width="60" height="60" loading="lazy">
                                 <div>
                                     <h6 class="fw-semibold mb-0">${data.name}</h6>
                                     <span class="fs-2 d-flex align-items-center py-1"><i
@@ -1159,7 +1159,7 @@
                         <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#secondPicModal" id="secondPic">
                             <div class="card-body p-3 d-flex align-items-center gap-3">
                                 <img src="{{ asset('uploads/doc/${photo}') }}"
-                                    alt="" class="rounded-circle" width="60" height="60">
+                                    alt="" class="rounded-circle" width="60" height="60" loading="lazy">
                                 <div>
                                     <h6 class="fw-semibold mb-0">${data.name}</h6>
                                     <span class="fs-2 d-flex align-items-center py-1"><i
