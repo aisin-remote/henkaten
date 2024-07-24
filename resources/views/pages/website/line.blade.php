@@ -288,7 +288,7 @@
     <div class="row">
         <div class="col-lg-6 col-md-12">
             <img src="{{ asset('assets/images/' . $lineMap->photo) }}" alt="" class="mw-100" usemap="#roomMap"
-                width="980vh">
+                width="980vh" loading="lazy">
             @if (!$manHenkaten->isEmpty())
                 @php
                     $photoMap = $manHenkaten
@@ -304,7 +304,8 @@
 
                     <div style="position: absolute; top: {{ $emp->pos->top }}vh; left: {{ $emp->pos->left }}vh;">
                         <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
-                            style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};" class="rounded-1" />
+                            style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};" class="rounded-1"
+                            loading="lazy" />
                     </div>
                 @endforeach
             @else
@@ -315,7 +316,8 @@
                     <!-- Displaying the employee photo with default position -->
                     <div style="position: absolute; top: {{ $emp->pos->top }}vh; left: {{ $emp->pos->left }}vh;">
                         <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
-                            style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};" class="rounded-1" />
+                            style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};" class="rounded-1"
+                            loading="lazy" />
                     </div>
                 @endforeach
             @endif
@@ -422,7 +424,8 @@
                                                     <img src="{{ asset('uploads/doc/' . $photo) }}"
                                                         class="rounded-1 center" height="100"
                                                         style="width: 100px !important; margin-left: auto;
-                                                    margin-right: auto;">
+                                                    margin-right: auto;"
+                                                        loading="lazy">
                                                     <div class="mt-n2">
                                                         <span
                                                             class="badge bg-{{ $color }}">{{ strtoupper($role) }}</span>
@@ -474,7 +477,7 @@
                             <div class="card text-center">
                                 <div class="card-body">
                                     <img src="{{ asset('uploads/doc/' . $picPhoto) }}" class="rounded-1" width="100"
-                                        height="100">
+                                        height="100" loading="lazy">
                                     <div class="mt-n2">
                                         <span class="badge bg-{{ $picColor }}">{{ strtoupper($picRole) }}</span>
                                         <h3 class="card-title mt-3">{{ ucwords($picName) }}</h3>
