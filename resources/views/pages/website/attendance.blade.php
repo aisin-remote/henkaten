@@ -59,7 +59,7 @@
                                         <div class="d-flex align-items-center justify-content-between mt-4">
                                             <div class="d-flex gap-3">
                                                 <img src="{{ asset('uploads/doc/' . $employee->employee->photo) }}"
-                                                    class="rounded-1 img-fluid" width="40">
+                                                    class="rounded-1 img-fluid" width="40" loading="lazy">
                                                 <div>
                                                     @if ($employee->line->name == $line->name)
                                                         <h6 class="mb-1 fs-4 fw-semibold">{{ $employee->employee->name }}

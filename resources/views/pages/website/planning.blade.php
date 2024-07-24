@@ -263,7 +263,8 @@
                                             <img src="{{ asset('uploads/doc/' . $emp->photo) }}" class="rounded-1 img"
                                                 width="150"
                                                 style="width: 150px !important; margin-left: auto;
-                                            margin-right: auto;">
+                                            margin-right: auto;"
+                                                loading="lazy">
                                             <div class="mt-n2">
                                                 <span class="badge bg-primary">{{ $emp->role }}</span>
                                                 <h3 class="card-title mt-3">{{ $emp->name }}</h3>
