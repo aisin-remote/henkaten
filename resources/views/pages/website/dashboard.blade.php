@@ -776,6 +776,10 @@
                                     $color_method = mapStatusToColor($line->status_method);
                                     $color_material = mapStatusToColor($line->status_material);
                                     $color_machine = mapStatusToColor($line->status_machine);
+
+                                    if ($lineGroups == 'ELECTRIC' && $overall_status == 'RUNNING') {
+                                        $overall_status = 'NO HENKATEN';
+                                    }
                                 @endphp
                                 <div class="card-body bg-{{ $color_status }} text-white text-center p-1 pt-2">
                                     <div class="d-inline-block">

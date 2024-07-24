@@ -8,6 +8,7 @@ use App\Models\Line;
 use App\Models\Pivot;
 use App\Models\Shift;
 use App\Models\Theme;
+use App\Models\Origin;
 use App\Models\Approval;
 use App\Models\Employee;
 use App\Models\Henkaten;
@@ -131,6 +132,7 @@ class DashboardController extends Controller
                 ->get(),
             'lines' => Line::where('origin_id', $empOrigin)->get(),
             'histories' => $activeProblems,
+            'lineGroups' => Origin::where('id', $empOrigin)->pluck('name')->first()
         ]);
     }
 
@@ -142,6 +144,7 @@ class DashboardController extends Controller
         // in this page we will get all line status
         return view('pages.website.lineDashboard', [
             'lines' => Line::where('origin_id', $empOrigin)->get(),
+            'lineGroups' => Origin::where('id', $empOrigin)->pluck('name')->first()
         ]);
     }
 
