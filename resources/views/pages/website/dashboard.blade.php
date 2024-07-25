@@ -930,7 +930,7 @@
     // carousel.addEventListener('click', nextItem);
 
     // Optional: Auto-rotate the carousel
-    setInterval(nextItem, 3000); // Uncomment this line to auto-rotate every 3 seconds
+    // setInterval(nextItem, 3000); // Uncomment this line to auto-rotate every 3 seconds
 
     let pivot = @json($pivot);
     $(document).ready(function() {
