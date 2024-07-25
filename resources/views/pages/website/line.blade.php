@@ -1560,9 +1560,9 @@
         });
 
         // Push the initial values to the array
-        $('.employeeReplacement').each(function() {
-            let value = $(this).val();
-            employeeReplacement.push(value);
-        });
+        // $('.employeeReplacement').each(function() {
+        //     let value = $(this).val();
+        //     employeeReplacement.push(value);
+        // });
     });
 </script>
