@@ -905,8 +905,10 @@
     crossorigin="anonymous"></script>
 <script src={{ asset('js/pusher.min.js') }}></script>
 <script>
-    const carousel = document.querySelector('.vertical-carousel');
-    console.log(carousel);
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const carousel = document.querySelector('.vertical-carousel');
+        console.log(carousel);
+    });
     // const items = carousel.querySelectorAll('.col-md-12');
     // let currentIndex = 0;
 
