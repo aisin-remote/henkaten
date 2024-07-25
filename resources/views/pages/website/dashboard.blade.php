@@ -906,6 +906,7 @@
 <script src={{ asset('js/pusher.min.js') }}></script>
 <script>
     const carousel = document.querySelector('.vertical-carousel');
+    concols.log(carousel);
     // const items = carousel.querySelectorAll('.col-md-12');
     // let currentIndex = 0;
 
