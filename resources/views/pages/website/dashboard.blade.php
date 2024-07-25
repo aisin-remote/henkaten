@@ -903,6 +903,33 @@
     crossorigin="anonymous"></script>
 <script src={{ asset('js/pusher.min.js') }}></script>
 <script>
+    const carousel = document.querySelector('.vertical-carousel');
+    const items = carousel.querySelectorAll('.col-md-12');
+    let currentIndex = 0;
+
+    function nextItem() {
+        currentIndex = (currentIndex + 1) % items.length;
+        updateCarousel();
+    }
+
+    function prevItem() {
+        currentIndex = (currentIndex - 1 + items.length) % items.length;
+        updateCarousel();
+    }
+
+    function updateCarousel() {
+        const translateY = -currentIndex * 100;
+        items.forEach((item, index) => {
+            item.style.transform = `translateY(${translateY}%)`;
+        });
+    }
+
+    // Trigger next item on click (you can add buttons for this)
+    carousel.addEventListener('click', nextItem);
+
+    // Optional: Auto-rotate the carousel
+    setInterval(nextItem, 3000); // Uncomment this line to auto-rotate every 3 seconds
+
     let pivot = @json($pivot);
     $(document).ready(function() {
 

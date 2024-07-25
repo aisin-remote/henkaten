@@ -273,6 +273,4 @@
                 'change'); // Reset the filter and trigger change event
         });
     });
-
-    $('[data-toggle="tooltip"]').tooltip();
 </script>
