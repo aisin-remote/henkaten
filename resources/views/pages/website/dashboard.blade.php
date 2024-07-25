@@ -828,7 +828,6 @@
                             }
                         }
 
-                        dd($overall_status_all_lines);
                     @endphp
                 </div>
             </div>
