@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- Mirrored from demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/html/horizontal/authentication-error.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 26 Sep 2023 00:46:43 GMT -->
-
 <head>
     <!-- Title -->
     <title>Mordenize</title>
@@ -16,8 +14,8 @@
     <meta name="keywords" content="Mordenize" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/png"
-        href="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/favicon.ico" />
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/favicon.ico') }}" />
+
     <!-- Core Css -->
     <link id="themeColors" rel="stylesheet" href={{ asset('dist/css/style.min.css') }} />
 </head>
@@ -25,8 +23,7 @@
 <body>
     <!-- Preloader -->
     <div class="preloader">
-        <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/favicon.ico"
-            alt="loader" class="lds-ripple img-fluid" />
+        <img src="{{ asset('images/favicon.ico') }}" alt="loader" class="lds-ripple img-fluid" />
     </div>
     <!-- Body Wrapper -->
     <div class="page-wrapper" id="main-wrapper" data-layout="horizontal" data-navbarbg="skin6" data-sidebartype="full"
@@ -36,8 +33,8 @@
                 <div class="row justify-content-center w-100">
                     <div class="col-lg-4">
                         <div class="text-center">
-                            <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/backgrounds/errorimg.svg"
-                                alt="" class="img-fluid" width="500">
+                            <img src="{{ asset('images/errorimg.svg') }}" alt="" class="img-fluid"
+                                width="500">
                             <h1 class="fw-semibold mb-7 fs-9">Opps!!!</h1>
                             <h4 class="fw-semibold mb-7">This page you are looking for could not be found.</h4>
                             <a class="btn btn-primary" href="{{ route('dashboard.index') }}" role="button">Go Back to
@@ -61,7 +58,5 @@
 
     <script src={{ asset('dist/js/custom.js') }}></script>
 </body>
-
-<!-- Mirrored from demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/html/horizontal/authentication-error.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 26 Sep 2023 00:46:43 GMT -->
 
 </html>

@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- Mirrored from demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/html/main/authentication-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 12 Sep 2023 03:06:29 GMT -->
-
 <head>
     <!--  Title -->
     <title>Digital Henkaten</title>
@@ -60,13 +58,11 @@
     <script src={{ asset('dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}></script>
     <!--  core files -->
     <script src={{ asset('dist/js/app.min.js') }}></script>
-    <script src={{ asset('dist/js/app.init.js') }}></script>
     <script src={{ asset('dist/js/app-style-switcher.js') }}></script>
     <script src={{ asset('dist/js/sidebarmenu.js') }}></script>
 
     <script src={{ asset('dist/js/custom.js') }}></script>
 </body>
 
-<!-- Mirrored from demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/html/main/authentication-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 12 Sep 2023 03:06:29 GMT -->
 
 </html>
