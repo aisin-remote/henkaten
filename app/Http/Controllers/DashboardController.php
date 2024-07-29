@@ -160,23 +160,20 @@ class DashboardController extends Controller
         $currentTime = Carbon::now()->format('H:i:s');
 
         // get all history
-        $lineHistories = Approval::with(['henkaten.troubleshoot.employee', 'henkaten.henkatenManagement'])
-                ->whereHas('henkaten', function ($query) use ($lineId) {
-                    $query->where('line_id', $lineId->id)
-                        ->where('is_done', '0');
+        $histories = Approval::with(['henkaten.troubleshoot.employee', 'henkaten.henkatenManagement'])
+                ->whereHas('henkaten', function ($query) use ($lineId, $currentDate) {
+                    $query->where(function ($q) use ($lineId,  $currentDate) {
+                        $q->where('line_id', $lineId->id)
+                        ->where('is_done', '0')
+                        ->orWhere(function ($q2) use ($lineId, $currentDate) {
+                            $q2->where('line_id', $lineId->id)
+                                ->whereDate('date', $currentDate);
+                        });
+                    });
                 })
                 ->latest()
                 ->get();
 
-            $dateHistories = Approval::with(['henkaten.troubleshoot.employee', 'henkaten.henkatenManagement'])
-                ->whereHas('henkaten', function ($query) use ($currentDate) {
-                    $query->whereDate('date', $currentDate);
-                })
-                ->latest()
-                ->get();
-
-        // Combine results and remove duplicates
-        $histories = $lineHistories->merge($dateHistories)->unique('id');
 
         // get man power at spesific line and range of time
         $shifts = [
