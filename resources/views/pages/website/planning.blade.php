@@ -498,7 +498,8 @@
                             if (area === 'DS' && i == 1) {
                                 name = 'Haito'
                             } else if (line === 'ASAN01' && i == 6) {
-                                name = 'MH'
+                                name = 'MH';
+                                i = '';
                             } else {
                                 name = 'Pos'
                             }
