@@ -499,7 +499,6 @@
                                 name = 'Haito'
                             } else if (line === 'ASAN01' && i == 6) {
                                 name = 'MH';
-                                i = '';
                             } else {
                                 name = 'Pos'
                             }
