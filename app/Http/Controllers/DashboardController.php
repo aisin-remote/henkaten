@@ -163,7 +163,7 @@ class DashboardController extends Controller
         $histories = Approval::with(['henkaten.troubleshoot.employee', 'henkaten.henkatenManagement'])
             ->whereHas('henkaten', function ($query) use ($lineId,$currentDate) {
                 $query->where('line_id', $lineId->id)
-                        ->where('is_done', '0')
+                        ->where('is_done', '0');
             })
             ->latest()
             ->get();
