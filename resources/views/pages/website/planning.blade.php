@@ -497,10 +497,16 @@
                         for (let i = 1; i <= data.total; i++) {
                             if (area === 'DS' && i == 1) {
                                 name = 'Haito'
+                                tag =
+                                    '<input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="${name}" disabled>'
                             } else if (line === 'ASAN01' && i == 6) {
                                 name = 'MH';
+                                tag =
+                                    '<input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="${name}" disabled>';
                             } else {
-                                name = 'Pos'
+                                name = 'Pos';
+                                tag =
+                                    '<input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="${name} ${i}" disabled>'
                             }
                             html += `
                         <div class="row mb-3">
@@ -508,7 +514,7 @@
                                 <div class="mb-4 row align-items-center">
                                     <label for="exampleInputPassword1" class="form-label fw-semibold col-sm-3 col-form-label">${name}</label>
                                     <div class="col-9">
-                                        <input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="${name} ${i}" disabled>
+                                        ${tag}
                                         <input type="hidden" class="form-control" placeholder="Employee Name" name="pos[]" value="${i}">
                                     </div>
                                 </div>
