@@ -46,7 +46,7 @@ class EmployeeController extends Controller
         }
 
         // Retrieve all distinct skill names for dropdown or other purposes
-        $nameSkills = Skill::distinct()->pluck('name');
+        $nameSkills = Skill::distinct()->where('origin_id', $originId)->pluck('name');
 
         return view('pages.website.registEmployee', [
             'skills' => $nameSkills,

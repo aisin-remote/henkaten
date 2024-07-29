@@ -32,7 +32,7 @@ class skillController extends Controller
         
         return view('pages.website.minimumSkill', [
             'minimumSkills' => MinimumSkill::whereIn('line_id', $lineIds)->get(),
-            'skills' => Skill::selectRaw('MAX(id) as id, name')->groupBy('name')->get(),
+            'skills' => Skill::selectRaw('MAX(id) as id, name')->where('origin_id', $empOrigin)->groupBy('name')->get(),
             'lines' => Line::where('origin_id', $empOrigin)->get()
         ]);
     }
@@ -93,7 +93,7 @@ class skillController extends Controller
     }
 
     public function minimumRegist(Request $request)
-    {
+    {        
         $create = null;
         $validatedData = $request->validate([
             'skill' => 'required',
