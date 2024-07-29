@@ -165,11 +165,14 @@ class DashboardController extends Controller
                     $query->where(function ($q) use ($lineId, $currentDate) {
                         $q->where('line_id', $lineId->id)
                             ->where('is_done', '0')
-                            ->orWhereDate('date', $currentDate);
+                            ->orWhere(function ($q2) use ($currentDate) {
+                                $q2->whereDate('date', $currentDate);
+                            });
                     });
                 })
                 ->latest()
                 ->get();
+
 
         // get man power at spesific line and range of time
         $shifts = [
