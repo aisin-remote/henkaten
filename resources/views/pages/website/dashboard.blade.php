@@ -104,7 +104,7 @@
     </div>
 
     @php
-        $modalTitle = $pivot && $pivot->firstPic ? 'Change PIC' : 'Add PIC';
+        $modalTitle = $pivot && $pivot->firstPic ? 'Change PIC' : 'Add Leader';
     @endphp
 
     {{-- 1 PIC modal --}}
@@ -125,7 +125,7 @@
                             </div>
                         @endif
 
-                        <label class="mb-2">New PIC</label>
+                        <label class="mb-2">New Leader</label>
                         <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
                             data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true" id="firstPicSelect"
                             required>
@@ -149,7 +149,7 @@
 
     {{-- end of modal --}}
     @php
-        $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
+        $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add Leader';
     @endphp
 
     {{-- 2 PIC modal --}}
@@ -170,7 +170,7 @@
                             </div>
                         @endif
 
-                        <label class="mb-2">New PIC</label>
+                        <label class="mb-2">New Leader</label>
                         <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
                             data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true" id="secondPicSelect"
                             required>
@@ -248,7 +248,7 @@
     {{-- end of modal --}}
 
     @php
-        $modalTitle = $pivot && $pivot->firstPic ? 'Change PIC' : 'Add PIC';
+        $modalTitle = $pivot && $pivot->firstPic ? 'Change PIC' : 'Add Leader';
     @endphp
 
     {{-- 1 PIC modal --}}
@@ -269,7 +269,7 @@
                             </div>
                         @endif
 
-                        <label class="mb-2">New PIC</label>
+                        <label class="mb-2">New Leader</label>
                         <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
                             data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true" id="firstPicSelect"
                             required>
@@ -293,7 +293,7 @@
 
     {{-- end of modal --}}
     @php
-        $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add PIC';
+        $modalTitle = $pivot && $pivot->secondPic ? 'Change PIC' : 'Add Leader';
     @endphp
 
     {{-- 2 PIC modal --}}
@@ -314,7 +314,7 @@
                             </div>
                         @endif
 
-                        <label class="mb-2">New PIC</label>
+                        <label class="mb-2">New Leader</label>
                         <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
                             data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true" id="secondPicSelect"
                             required>
@@ -416,7 +416,7 @@
                     </div>
                 @else
                     <form action="#" class="dropzone dz-clickable p-3 rounded-1">
-                        <p class="text-center pt-3">Add First PIC</p>
+                        <p class="text-center pt-3">Add Leader</p>
                     </form>
                 @endif
             </div>
@@ -440,7 +440,7 @@
                     </div>
                 @else
                     <form action="#" class="dropzone dz-clickable p-3 rounded-1">
-                        <p class="text-center pt-3">Add Second PIC</p>
+                        <p class="text-center pt-3">Add Leader</p>
                     </form>
                 @endif
             </div>
@@ -842,12 +842,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add PIC</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add Leader</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form>
                     <div class="modal-body">
-                        <label class="mb-2">New PIC</label>
+                        <label class="mb-2">New Leader</label>
                         <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
                             data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true" id="firstPicSelect"
                             required>
@@ -874,12 +874,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add PIC</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add Leader</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form>
                     <div class="modal-body">
-                        <label class="mb-2">New PIC</label>
+                        <label class="mb-2">New Leader</label>
                         <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
                             data-select2-id="select2-data-1-lmv6" tabindex="-1" aria-hidden="true"
                             id="secondPicSelect">
@@ -989,7 +989,7 @@
             $('#firstPicContainer').html(`
                     <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#firstPicModal" id="firstPic">
                         <form action="#" class="dropzone dz-clickable p-3 rounded-1">
-                            <p class="text-center pt-3">Add First PIC</p>
+                            <p class="text-center pt-3">Add Leader</p>
                         </form>
                     </div>
                 `);

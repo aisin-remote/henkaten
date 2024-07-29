@@ -54,7 +54,7 @@
                                     <select class="select2 form-select select2-hidden-accessible pic"
                                         style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" id="pic_name"
                                         name="pic_name[]" required>
-                                        <option value="0">Select PIC</option>
+                                        <option value="0">Select JP</option>
                                         @foreach ($pics as $pic)
                                             <option value="{{ $pic->id }}">{{ $pic->name }}</option>
                                         @endforeach
@@ -144,6 +144,7 @@
                             <th>Planning Date</th>
                             <th class="text-center"><span class="badge bg-info">Employee List</span></th>
                             <th class="text-center">Action</th>
+                            <th class="text-center">Change Shift</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -210,6 +211,13 @@
                                             </span>
                                         </button>
                                     </form>
+                                </td>
+                                <td class="text-center">
+                                    <button type="submit" class="btn btn-warning" id="change_shift">
+                                        <span class="rounded-3" id="icon">
+                                            <i class="fw-bolder">Change Shift</i>
+                                        </span>
+                                    </button>
                                 </td>
                             </tr>
                         @endforeach
