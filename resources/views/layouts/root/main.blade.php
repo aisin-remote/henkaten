@@ -143,7 +143,6 @@
     <script src={{ asset('dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}></script>
     <!--  core files -->
     <script src={{ asset('dist/js/app.min.js') }}></script>
-    <script src={{ asset('dist/js/app.init.js') }}></script>
     <script src={{ asset('dist/js/app.horizontal.init.js') }}></script>
     <script src={{ asset('dist/js/sidebarmenu.js') }}></script>
     <script src={{ asset('dist/js/repeater-init.js') }}></script>
