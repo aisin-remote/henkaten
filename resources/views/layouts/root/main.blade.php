@@ -23,6 +23,7 @@
     <link href="{{ asset('css/owl.carousel.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/owl.theme.default.min.css') }}">
     <link rel="stylesheet" href={{ asset('dist/libs/select2/dist/css/select2.min.css') }}>
+    <link href="{{ asset('css/iziToast.min.css') }}" rel="stylesheet">
     <!-- Core Css -->
     <link id="themeColors" rel="stylesheet" href={{ asset('dist/css/style.min.css') }} />
     <script src="{{ asset('js/highcharts.js') }}"></script>

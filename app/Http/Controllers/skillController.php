@@ -92,6 +92,41 @@ class skillController extends Controller
         }
     }
 
+    public function editSkill($old , $new)
+    {                                
+        if($new == '' || $new == null){
+            return [
+                'status' => 'error',
+                'message' => 'Skill tidak boleh kosong!',
+            ];
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // update loading list detail based on loading list id and customer part
+            Skill::where('name', $old)
+                    ->update([
+                        'name' => $new
+                    ]);
+
+            DB::commit();
+            
+            return response()->json([
+                'status' => 'success',
+                'data' => $new,
+                'message' => 'Data berhasil diupdate!'
+            ],200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ],500);
+        }
+    }
+
     public function minimumRegist(Request $request)
     {        
         $create = null;

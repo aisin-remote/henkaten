@@ -637,7 +637,7 @@
                                                 @endforeach
                                             </div>
                                         @else
-                                            <h1 class="fw-bolder text-center"
+                                            <h1 class="fw-bolder text-center pt-5"
                                                 style="font-size: 5em; display:block; font-weight:900 !important">
                                                 NO HENKATEN
                                             </h1>

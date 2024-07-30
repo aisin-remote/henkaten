@@ -83,14 +83,26 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Level</th>
+                            <th class="text-center">Edit</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($masterSkill as $master)
                             <tr>
-                                <td>{{ $master->name }}</td>
-                                <td>{{ $master->levels }}</td>
+                                <td>
+                                    <span class="actual">{{ $master->name }}</span>
+                                    <input id="editActual" class="form-control editActual" type="text"
+                                        value="{{ $master->name }}" data-width="100"
+                                        style="border-radius:6px; display:none">
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-icon btn-warning edit" id="edit"><i
+                                            class="far fa-edit"></i></button>
+                                    <button class="btn btn-icon btn-success save mb-1" style="display: none"><i
+                                            class="fas fa-check"></i></button>
+                                    <button class="btn btn-icon btn-danger cancel" style="display: none"><i
+                                            class="fas fa-times"></i></button>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -101,10 +113,11 @@
 @endsection
 <script src={{ asset('js/jquery-3.6.3.min.js') }} integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
     crossorigin="anonymous"></script>
+<script src="{{ asset('js/iziToast.min.js') }}"></script>
 <script>
     $(document).ready(function() {
         // initialize datatable
-        $('#masterSkill').DataTable({
+        var table = $('#masterSkill').DataTable({
             scrollX: true,
         });
 
@@ -114,9 +127,7 @@
             $("#icon").html($("#addSkillCard").is(":visible") ? '<i class="ti ti-minus"></i>' :
                 '<i class="ti ti-plus"></i>');
         })
-    });
 
-    $(document).ready(function() {
         $('.delete-skill').on('click', function(e) {
             e.preventDefault();
 
@@ -141,5 +152,109 @@
                 });
             }
         });
+
+        $(document).on('click', '#masterSkill .edit', function() {
+            // hide span
+            $(this).closest('tr').find('.actual').hide();
+
+            // show input
+            $(this).closest('tr').find('.editActual').show();
+
+            // show save button
+            $(this).closest('tr').find('.save').css({
+                display: 'inline'
+            });
+
+            // show cancel button
+            $(this).closest('tr').find('.cancel').css({
+                display: 'inline'
+            });
+
+            // hide edit button
+            $(this).closest('tr').find('.edit').hide();
+        });
+
+        $(document).on('click', '#masterSkill .save', function() {
+            let $row = $(this).closest('tr');
+
+            // get customer part
+            let old = $row.find('.actual').html();
+
+            // get edit value
+            let newActual = $row.find('.editActual').val();
+
+            let requestOptions = {
+                method: 'GET', // Adjust the method if needed
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                        'content') // Add CSRF token for security
+                }
+            };
+
+            fetch(`/skill/edit/${old}/${newActual}`, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        notif('success', data.message);
+
+                        // update span content
+                        $row.find('.actual').html(data.data).show();
+
+                        // hide input
+                        $row.find('.editActual').hide();
+
+                        // hide save button
+                        $row.find('.save').hide();
+
+                        // hide cancel button
+                        $row.find('.cancel').hide();
+
+                        // show edit button
+                        $row.find('.edit').show();
+
+                    } else if (data.status === 'error') {
+                        notif('error', data.message);
+                    }
+                })
+                .catch(error => {
+                    notif('error', error.message);
+                });
+        });
+
+        $(document).on('click', '#masterSkill .cancel', function() {
+            let $row = $(this).closest('tr');
+
+            // show span
+            $row.find('.actual').show();
+
+            // hide input
+            $row.find('.editActual').hide();
+
+            // hide save button
+            $row.find('.save').hide();
+
+            // hide cancel button
+            $row.find('.cancel').hide();
+
+            // show edit button
+            $row.find('.edit').show();
+        });
+
+        function notif(type, message) {
+            if (type === 'error') {
+                iziToast.error({
+                    title: 'Error!',
+                    message: message,
+                    position: 'bottomRight'
+                });
+            } else if (type === 'success') {
+                iziToast.success({
+                    title: 'Success!',
+                    message: message,
+                    position: 'bottomRight'
+                });
+            }
+        }
     });
 </script>
