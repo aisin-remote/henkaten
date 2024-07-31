@@ -60,7 +60,7 @@
                                         New</span>
                                 @endif
                             </div>
-                            <div class="message-body" data-simplebar>
+                            <div class="message-body">
                                 @if (!$henkatens->isEmpty())
                                     @foreach ($henkatens as $henkaten)
                                         @php
@@ -108,7 +108,7 @@
                                 @endif
                             </div>
                             <div class="py-6 px-7 mb-1">
-                                <a href="/history   " class="btn btn-outline-primary w-100"> See All Abnormality </a>
+                                <a href="/history" class="btn btn-outline-primary w-100"> See All Abnormality </a>
                             </div>
                         </div>
                     </li>
