@@ -17,6 +17,7 @@ use App\Models\Troubleshoot;
 use Illuminate\Http\Request;
 use App\Models\EmployeeActive;
 use App\Models\HenkatenMethod;
+use PhpMqtt\Client\MqttClient;
 use App\Exports\HenkatenExport;
 use App\Models\HenkatenMachine;
 use App\Models\HenkatenMaterial;
@@ -24,9 +25,53 @@ use App\Models\HenkatenManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpMqtt\Client\ConnectionSettings;
 
 class HenkatenController extends Controller
 {
+    public function mqttConnect($topic, $message)
+    {
+        $server   = '172.18.3.70';
+        $port     = 1883;
+        $clientId = '1234';
+        // $username = 'fabian';
+        // $password = '1234';
+        $clean_session = false;
+        $mqtt_version = MqttClient::MQTT_3_1_1;
+
+        $connectionSettings = (new ConnectionSettings())
+            // ->setUsername($username)
+            // ->setPassword($password)
+            ->setKeepAliveInterval(600)
+            ->setConnectTimeout(10)
+            ->setLastWillTopic('test')
+            ->setLastWillMessage('client disconnect')
+            ->setLastWillQualityOfService(1);
+
+        $mqtt = new MqttClient($server, $port, $clientId, $mqtt_version);
+
+        try {
+            $mqtt->connect($connectionSettings, $clean_session);
+
+            $mqtt->publish(
+                // topic
+                $topic,
+                // payload
+                json_encode($message),
+                // qos
+                0,
+                // retain
+                false
+            );
+            sleep(1);
+        } catch (\Exception $e) {
+            // Handle the exception appropriately
+            echo "Exception: " . $e->getMessage() . "\n";
+        } finally {
+            $mqtt->disconnect();
+        }
+    }
+    
     public function pushData($is_updated)
     {
         // connection to pusher
@@ -202,7 +247,8 @@ class HenkatenController extends Controller
             curl_close($curl);
 
             // push to websocket
-            $this->pushData(true);
+            // $this->pushData(true);
+            $this->mqttConnect('update' , '1');
 
             DB::commit();
             return redirect()
@@ -674,7 +720,8 @@ class HenkatenController extends Controller
             DB::commit();
 
             // push to websocket
-            $this->pushData(true);
+            // $this->pushData(true);
+            $this->mqttConnect('update' , '1');
 
             return redirect()
                 ->back()
