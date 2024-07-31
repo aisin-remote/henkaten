@@ -137,8 +137,6 @@
     <!-- Import Js Files -->
     {{-- <script src={{ asset('dist/js/datatable/datatable-basic.init.js') }}></script>
     <script src={{ asset('dist/libs/datatables.net/js/jquery.dataTables.min.js') }}></script> --}}
-    <script src={{ asset('js/mqttws31.js') }} type="text/javascript"></script>
-    <script src={{ asset('js/mqtt.min.js') }}></script>
     <script src={{ asset('dist/libs/jquery/dist/jquery.min.js') }}></script>
     <script src={{ asset('dist/libs/jquery-ui/dist/jquery-ui.min.js') }}></script>
     <script src={{ asset('dist/libs/simplebar/dist/simplebar.min.js') }}></script>
