@@ -759,7 +759,8 @@
                         </h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('dashboard.troubleshootHenkaten') }}" method="POST" class="mt-3">
+                    <form action="{{ route('dashboard.troubleshootHenkaten') }}" method="POST" class="mt-3"
+                        enctype="multipart/form-data">
                         @csrf
                         @method('POST')
                         <div class="modal-body">
@@ -1040,6 +1041,14 @@
                                         </div>
                                     </div>
                                     <div class="col-12 mt-4">
+                                        <div class="mb-3">
+                                            <label for="formFileSm" class="form-label">Dokumen pendukung</label>
+                                            <input class="form-control form-control" id="photo" type="file"
+                                                name="photo">
+                                            <small class="text-danger">*optional</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mt-2">
                                         <label class="form-label fw-semibold">Done By</label>
                                         <select class="select2 form-control" style="width: 100%; height: 36px"
                                             tabindex="-1" aria-hidden="true" id="{{ $history->henkaten->id }}DoneBy"
@@ -1260,6 +1269,26 @@
                                                         value="{{ strtoupper($history->henkaten->troubleshoot->employee->name) }}"
                                                         disabled>
                                                     <label for="tb-fname">Done By</label>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control fw-bolder"
+                                                                id="tb-fname" placeholder="Enter Name here"
+                                                                value="{{ Carbon\Carbon::parse($history->henkaten->troubleshoot->created_at)->format('j F Y,  H:i:s') }}"
+                                                                disabled>
+                                                            <label for="tb-fname">Time</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <button class="btn btn-lg btn-success py-3 px-4">
+                                                            <i class="ti ti-eye fs-4 pe-2"></i>
+                                                            <a href="{{ asset('uploads/ts_henkaten/' . $history->henkaten->troubleshoot->photo) }}"
+                                                                target="_blank" style="color: white">
+                                                                See Document
+                                                            </a>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             @endif
                                         </div>

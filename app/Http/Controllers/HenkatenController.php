@@ -222,6 +222,11 @@ class HenkatenController extends Controller
 
     public function troubleshootHenkaten(Request $request)
     {
+        // Validate the request
+        $request->validate([
+            'photo' => 'required|file|mimes:jpg,jpeg,png|max:10240', // 10 MB max
+        ]);
+        
         // get origin id
         $empOrigin = auth()->user()->origin_id;
 
@@ -290,6 +295,13 @@ class HenkatenController extends Controller
 
             // Check if a record already exists
             $existingRecord = Troubleshoot::where('henkaten_id', $request->henkaten_id)->first();
+
+            // storing image
+            if ($request->has('photo')) {
+                $doc = $request->file('photo');
+                $docName = time() . '-' . $doc->getClientOriginalName();
+                $doc->move(public_path('uploads/ts_henkaten'), $docName);
+            }
             
             if ($request->{"4M"} == 'man') {
                 // count same value of input
@@ -393,6 +405,7 @@ class HenkatenController extends Controller
                         'part' => $request->part,
                         'before_treatment' => $request->beforeTreatment,
                         'after_treatment' => $request->afterTreatment,
+                        'photo' => $docName,
                         'done_by' => $request->doneBy,
                     ]);
                 }else{
@@ -403,6 +416,7 @@ class HenkatenController extends Controller
                         'part' => $request->part,
                         'before_treatment' => $request->beforeTreatment,
                         'after_treatment' => $request->afterTreatment,
+                        'photo' => $docName,
                         'done_by' => $request->doneBy,
                     ]);
                 }
