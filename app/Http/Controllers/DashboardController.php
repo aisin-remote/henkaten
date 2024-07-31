@@ -20,14 +20,59 @@ use App\Models\Troubleshoot;
 use Illuminate\Http\Request;
 use App\Models\EmployeeActive;
 use App\Models\HenkatenMethod;
+use PhpMqtt\Client\MqttClient;
 use App\Models\HenkatenMachine;
 use App\Models\HenkatenMaterial;
 use App\Models\HenkatenManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
+use PhpMqtt\Client\ConnectionSettings;
 
 class DashboardController extends Controller
 {
+    public function mqttConnect($topic, $message)
+    {
+        $server   = '172.18.3.70';
+        $port     = 1883;
+        $clientId = '1234';
+        // $username = 'fabian';
+        // $password = '1234';
+        $clean_session = false;
+        $mqtt_version = MqttClient::MQTT_3_1_1;
+
+        $connectionSettings = (new ConnectionSettings())
+            // ->setUsername($username)
+            // ->setPassword($password)
+            ->setKeepAliveInterval(600)
+            ->setConnectTimeout(10)
+            ->setLastWillTopic('test')
+            ->setLastWillMessage('client disconnect')
+            ->setLastWillQualityOfService(1);
+
+        $mqtt = new MqttClient($server, $port, $clientId, $mqtt_version);
+
+        try {
+            $mqtt->connect($connectionSettings, $clean_session);
+
+            $mqtt->publish(
+                // topic
+                $topic,
+                // payload
+                json_encode($message),
+                // qos
+                0,
+                // retain
+                false
+            );
+            sleep(1);
+        } catch (\Exception $e) {
+            // Handle the exception appropriately
+            echo "Exception: " . $e->getMessage() . "\n";
+        } finally {
+            $mqtt->disconnect();
+        }
+    }
+    
     public function pushData($is_updated){
         // connection to pusher
         $options = array(
@@ -395,7 +440,8 @@ class DashboardController extends Controller
         }
 
         // push to websocket
-        $this->pushData(true);
+        // $this->pushData(true);
+        $this->mqttConnect('update' , '1');
 
         // Mengembalikan respons JSON tanpa if-else
         return response()->json(
@@ -482,7 +528,8 @@ class DashboardController extends Controller
         }
 
         // push to websocket
-        $this->pushData(true);
+        // $this->pushData(true);
+        $this->mqttConnect('update' , '1');
 
         return response()->json(
             [
@@ -588,7 +635,8 @@ class DashboardController extends Controller
         }
 
         // push to websocket
-        $this->pushData(true);
+        // $this->pushData(true);
+        $this->mqttConnect('update' , '1');
 
         return response()->json(
             [
@@ -694,7 +742,8 @@ class DashboardController extends Controller
         }
 
         // push to websocket
-        $this->pushData(true);
+        // $this->pushData(true);
+        $this->mqttConnect('update' , '1');
 
         return response()->json(
             [
