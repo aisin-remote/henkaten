@@ -144,7 +144,9 @@
                             <th>Planning Date</th>
                             <th class="text-center"><span class="badge bg-info">Employee List</span></th>
                             <th class="text-center">Action</th>
-                            <th class="text-center">Change Shift</th>
+                            @if (auth()->user()->origin_id == env('ORIGIN_ELC'))
+                                <th class="text-center">Change Shift</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -155,11 +157,24 @@
                                 $modalId = Str::slug($shift . $line . $start . $end);
                             @endphp
                             <tr>
-                                <td>{{ $line }}</td>
-                                <td>{{ $shift }}</td>
-                                <td>{{ Carbon\Carbon::parse($start)->format('j F Y') }} -
-                                    {{ Carbon\Carbon::parse($end)->format('j F Y') }}</td>
-
+                                <td class="line">{{ $line }}</td>
+                                <td class="w-20">
+                                    <span class="actual shift">{{ $shift }}</span>
+                                    <select id="editActual" class="form-select editActual"
+                                        style="border-radius:6px; display:none">
+                                        @foreach ($shifts as $shift)
+                                            @if ($shift->name == 'Shift 1' || $shift->name == 'Shift 2')
+                                                <option value="{{ $shift->id }}">{{ $shift->name }}</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    {{ Carbon\Carbon::parse($start)->format('j F Y') }}
+                                    -
+                                    {{ Carbon\Carbon::parse($end)->format('j F Y') }}
+                                    <input type="hidden" value="{{ $end }}" class="expired">
+                                </td>
                                 <td>
                                     <div class="row">
                                         <div class="col-6">
@@ -212,13 +227,19 @@
                                         </button>
                                     </form>
                                 </td>
-                                <td class="text-center">
-                                    <button type="submit" class="btn btn-warning" id="change_shift">
-                                        <span class="rounded-3" id="icon">
-                                            <i class="fw-bolder">Change Shift</i>
-                                        </span>
-                                    </button>
-                                </td>
+                                @if (auth()->user()->origin_id == env('ORIGIN_ELC'))
+                                    <td class="text-center">
+                                        <button class="btn btn-icon btn-warning edit fw-bolder" id="edit">
+                                            Change Shift
+                                        </button>
+                                        <button class="btn btn-icon btn-success save mb-1" style="display: none">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-icon btn-danger cancel" style="display: none">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </td>
+                                @endif
                             </tr>
                         @endforeach
                     </tbody>
@@ -298,6 +319,7 @@
 @endsection
 <script src={{ asset('js/jquery-3.6.3.min.js') }} integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
     crossorigin="anonymous"></script>
+<script src="{{ asset('js/iziToast.min.js') }}"></script>
 <script>
     // toast
     let employees = @json($operators);
@@ -319,6 +341,124 @@
     }
 
     $(document).ready(function() {
+        // initialize datatable
+        var table = $('#henkatenHistory').DataTable({
+            scrollX: true,
+        });
+
+        $('#addSkill').on('click', function() {
+            $("#addSkillCard").toggle();
+
+            $("#icon").html($("#addSkillCard").is(":visible") ? '<i class="ti ti-minus"></i>' :
+                '<i class="ti ti-plus"></i>');
+        })
+
+        $(document).on('click', '#henkatenHistory .edit', function() {
+            // hide span
+            $(this).closest('tr').find('.actual').hide();
+
+            // show input
+            $(this).closest('tr').find('.editActual').show();
+
+            // show save button
+            $(this).closest('tr').find('.save').css({
+                display: 'inline'
+            });
+
+            // show cancel button
+            $(this).closest('tr').find('.cancel').css({
+                display: 'inline'
+            });
+
+            // hide edit button
+            $(this).closest('tr').find('.edit').hide();
+        });
+
+        $(document).on('click', '#henkatenHistory .save', function() {
+            let $row = $(this).closest('tr');
+
+            let shift = $row.find('.shift').html();
+            let line = $row.find('.line').html();
+            let expired = $row.find('.expired').val();
+            let newShift = $row.find('.editActual').val();
+
+            let requestOptions = {
+                method: 'GET', // Adjust the method if needed
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                        'content') // Add CSRF token for security
+                }
+            };
+
+            fetch(`/employee/planning/changeShift/${line}/${shift}/${expired}/${newShift}`,
+                    requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        notif('success', data.message);
+
+                        // update span content
+                        $row.find('.actual').html(data.data).show();
+
+                        // hide input
+                        $row.find('.editActual').hide();
+
+                        // hide save button
+                        $row.find('.save').hide();
+
+                        // hide cancel button
+                        $row.find('.cancel').hide();
+
+                        // show edit button
+                        $row.find('.edit').show();
+
+                    } else if (data.status === 'error') {
+                        notif('error', data.message);
+                    }
+                })
+                .catch(error => {
+                    notif('error', error.message);
+                });
+        });
+
+        $(document).on('click', '#henkatenHistory .cancel', function() {
+            let $row = $(this).closest('tr');
+
+            // show span
+            $row.find('.actual').show();
+
+            // hide input
+            $row.find('.editActual').hide();
+
+            // hide save button
+            $row.find('.save').hide();
+
+            // hide cancel button
+            $row.find('.cancel').hide();
+
+            // show edit button
+            $row.find('.edit').show();
+        });
+
+        function notif(type, message) {
+            if (type === 'error') {
+                iziToast.error({
+                    title: 'Error!',
+                    message: message,
+                    position: 'bottomRight'
+                });
+            } else if (type === 'success') {
+                iziToast.success({
+                    title: 'Success!',
+                    message: message,
+                    position: 'bottomRight'
+                });
+            }
+        }
+    });
+
+    $(document).ready(function() {
         let owl = $('.owl-carousel');
         owl.owlCarousel({
             margin: 20,
@@ -332,12 +472,6 @@
         // clear all local storage when page load
         localStorage.clear();
 
-        $(document).ready(function() {
-            // initialize datatable
-            $('#henkatenHistory').DataTable({
-                scrollX: true,
-            });
-        });
 
         $('.repeater-pic-container').on('click', '.remove-pic-row', function() {
             if (confirm("Are you sure you want to remove this item?")) {

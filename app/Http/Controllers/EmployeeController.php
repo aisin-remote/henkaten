@@ -301,7 +301,7 @@ class EmployeeController extends Controller
                 ->join('lines', 'employee_active.line_id', '=', 'lines.id')
                 ->join('origins', 'lines.origin_id', '=', 'origins.id')
                 ->join('employees', 'employee_active.employee_id', '=', 'employees.id')
-                ->select('shifts.name as shift_name', 'shifts.id as shift_id' , 'lines.id as line_id','lines.name as line_name', 'employee_active.active_from', 'employee_active.expired_at', 'employees.name', 'employees.photo','employees.npk', 'employees.role', 'employees.id as employee_id', 'positions.pos')
+                ->select('shifts.id as shift_id','shifts.name as shift_name', 'shifts.id as shift_id' , 'lines.id as line_id','lines.name as line_name', 'employee_active.active_from', 'employee_active.expired_at', 'employees.name', 'employees.photo','employees.npk', 'employees.role', 'employees.id as employee_id', 'positions.pos')
                 ->where(function ($query) use ($empOrigin) {
                     $query->where('lines.origin_id', $empOrigin);
                 })
@@ -510,6 +510,46 @@ class EmployeeController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
+    public function editPlanning($line , $shift, $expired, $newShift)
+    {        
+        $lineId = Line::where('name', $line)->value('id');                        
+        $shiftId = Shift::where('name', $shift)->value('id');
+                                
+        if($shift == '' || $shift == null){
+            return [
+                'status' => 'error',
+                'message' => 'Shift tidak boleh kosong!',
+            ];
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // update loading list detail based on loading list id and customer part
+            EmployeeActive::where('line_id', $lineId)
+                            ->where('shift_id', $shiftId)
+                            ->where('expired_at', $expired)
+                            ->update([
+                                'shift_id' => $newShift,
+                            ]);
+
+            DB::commit();
+            
+            return response()->json([
+                'status' => 'success',
+                'data' => Shift::where('id', $newShift)->value('name'),
+                'message' => 'Data berhasil diupdate!'
+            ],200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ],500);
         }
     }
 

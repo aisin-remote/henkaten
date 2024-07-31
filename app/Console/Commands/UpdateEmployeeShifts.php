@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Carbon\Carbon;
+use App\Models\Origin;
 use Illuminate\Console\Command;
 use App\Models\EmployeeActive; // Make sure to use your actual model
 
@@ -19,6 +20,7 @@ class UpdateEmployeeShifts extends Command
     public function handle()
     {
         $currentShifts = EmployeeActive::select('employee_id', 'shift_id', 'line_id', 'pos_id')->get();
+        $origins = Origin::all();
 
         $newShifts = $currentShifts->map(function ($employee) {
             $nextShiftUuid = $this->getNextShiftUuid($employee->shift_id);
@@ -38,8 +40,12 @@ class UpdateEmployeeShifts extends Command
         })->filter(); // Remove null entries
 
         // Example of creating each new shift record individually
-        foreach ($newShifts as $newShift) {
-            EmployeeActive::create($newShift);
+        foreach($origins as $origin){
+            if($origin->id !== env('ORIGIN_ELC')){
+                foreach ($newShifts as $newShift) {
+                    EmployeeActive::create($newShift);
+                }
+            }
         }
 
         $this->info('Employee shifts updated successfully.');

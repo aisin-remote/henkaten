@@ -1,0 +1,68 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Carbon\Carbon;
+use App\Models\Origin;
+use Illuminate\Console\Command;
+use App\Models\EmployeeActive; // Make sure to use your actual model
+
+class UpdateEmployeeShiftsElc extends Command
+{
+    protected $signature = 'employee:update-shifts-elc';
+    protected $description = 'Update employee shifts elc';
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    public function handle()
+    {
+        $currentShifts = EmployeeActive::select('employee_id', 'shift_id', 'line_id', 'pos_id')->get();
+        $origins = Origin::all();
+
+        $newShifts = $currentShifts->map(function ($employee) {
+            $nextShiftUuid = $this->getNextShiftUuid($employee->shift_id);
+            if ($nextShiftUuid === null) {
+                // If the next shift UUID is null, remove the employee
+                EmployeeActive::where('employee_id', $employee->employee_id)->delete();
+                return null; // Do not include in the new shifts
+            }
+            return [
+                'employee_id' => $employee->employee_id,
+                'shift_id' => $nextShiftUuid,
+                'line_id' => $employee->line_id,
+                'pos_id' => $employee->pos_id,
+                'active_from' => Carbon::now()->startOfWeek(),
+                'expired_at' => Carbon::now()->endOfWeek(),
+            ];
+        })->filter(); // Remove null entries
+
+        // Example of creating each new shift record individually
+        foreach($origins as $origin){
+            if($origin->id == env('ORIGIN_ELC')){
+                foreach ($newShifts as $newShift) {
+                    EmployeeActive::create($newShift);
+                }
+            }
+        }
+
+        $this->info('Employee shifts elc updated successfully.');
+    }
+
+    public function getNextShiftUuid($currentShiftUuid)
+    {
+        $shifts = \App\Models\Shift::whereIn('name', ['Non Shift', 'Shift 3'])
+                                ->get()
+                                ->keyBy('name');
+
+        // Map the shift names to their IDs
+        $shiftsMap = [
+            $shifts['Non Shift']->id => $shifts['Shift 3']->id,
+            $shifts['Shift 3']->id => $shifts['Non Shift']->id,
+        ];
+
+        return $shiftsMap[$currentShiftUuid] ?? null;
+    }
+}

@@ -73,6 +73,7 @@ Route::middleware(['auth'])->group(function () {
         // planning employees
         Route::get('/planning', [EmployeeController::class, 'employeePlanning'])->name('employeePlanning.index');
         Route::post('/planning/store', [EmployeeController::class, 'employeePlanningStore'])->name('employeePlanning.store');
+        Route::get('/planning/changeShift/{line}/{shift}/{expired}/{newShift}', [EmployeeController::class, 'editPlanning'])->name('planning.edit');        
 
         // get employee skill from employee
         Route::get('/getSkillEmp', [EmployeeController::class, 'getSkillEmp'])->name('employee.getSkillEmp');
