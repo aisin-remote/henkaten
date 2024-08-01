@@ -1281,7 +1281,14 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
-                                                        <button class="btn btn-lg btn-success py-3 px-4">
+                                                        @php
+                                                            $status = '';
+                                                            if ($history->henkaten->troubleshoot->photo == null) {
+                                                                $status = 'disable';
+                                                            }
+                                                        @endphp
+                                                        <button class="btn btn-lg btn-success py-3 px-4"
+                                                            {{ $status }}>
                                                             <i class="ti ti-eye fs-4 pe-2"></i>
                                                             <a href="{{ asset('uploads/ts_henkaten/' . $history->henkaten->troubleshoot->photo) }}"
                                                                 target="_blank" style="color: white">
