@@ -348,6 +348,8 @@ class HenkatenController extends Controller
                 $docName = time() . '-' . $doc->getClientOriginalName();
                 $doc->move(public_path('uploads/ts_henkaten'), $docName);
             }
+
+            dd($docName);
             
             if ($request->{"4M"} == 'man') {
                 // count same value of input
@@ -442,7 +444,6 @@ class HenkatenController extends Controller
                 DB::commit();
             } else {
 
-                dd($docName);
                 if (!$existingRecord) {
                     // Insert troubleshoot for non-'man' case
                     Troubleshoot::create([
