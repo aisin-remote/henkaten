@@ -536,6 +536,14 @@ class EmployeeController extends Controller
                                 'shift_id' => $newShift,
                             ]);
 
+            // update JP 
+            PicActive::where('line_id', $lineId)
+                            ->where('shift_id', $shiftId)
+                            ->where('expired_at', $expired)
+                            ->update([
+                                'shift_id' => $newShift,
+                            ]);
+
             DB::commit();
             
             return response()->json([

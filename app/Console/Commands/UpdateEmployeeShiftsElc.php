@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Carbon\Carbon;
 use App\Models\Origin;
+use App\Models\PicActive;
 use Illuminate\Console\Command;
 use App\Models\EmployeeActive; // Make sure to use your actual model
 
@@ -20,6 +21,7 @@ class UpdateEmployeeShiftsElc extends Command
     public function handle()
     {
         $currentShifts = EmployeeActive::select('employee_id', 'shift_id', 'line_id', 'pos_id')->get();
+        $currentPicShifts = EmployeeActive::select('employee_id', 'shift_id', 'line_id', 'pos_id')->get();
         $origins = Origin::all();
 
         $newShifts = $currentShifts->map(function ($employee) {
@@ -38,12 +40,36 @@ class UpdateEmployeeShiftsElc extends Command
                 'expired_at' => Carbon::now()->endOfWeek(),
             ];
         })->filter(); // Remove null entries
+        
+        // PIC
+        $newPicShifts = $currentPicShifts->map(function ($employee) {
+            $nextPicShiftUuid = $this->getNextShiftUuid($employee->shift_id);
+            if ($nextPicShiftUuid === null) {
+                // If the next shift UUID is null, remove the employee
+                PicActive::where('employee_id', $employee->employee_id)->delete();
+                return null; // Do not include in the new shifts
+            }
+            return [
+                'employee_id' => $employee->employee_id,
+                'shift_id' => $nextPicShiftUuid,
+                'line_id' => $employee->line_id,
+                'pos_id' => $employee->pos_id,
+                'active_from' => Carbon::now()->startOfWeek(),
+                'expired_at' => Carbon::now()->endOfWeek(),
+            ];
+        })->filter(); // Remove null entries
 
         // Example of creating each new shift record individually
         foreach($origins as $origin){
-            if($origin->id == env('ORIGIN_ELC')){
+            if($origin->id === env('ORIGIN_ELC')){
+                // EMP
                 foreach ($newShifts as $newShift) {
                     EmployeeActive::create($newShift);
+                }
+
+                // PIC
+                foreach ($newPicShifts as $newPicShift) {
+                    PicActive::create($newPicShift);
                 }
             }
         }
