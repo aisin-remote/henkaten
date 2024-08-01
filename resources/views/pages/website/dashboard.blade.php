@@ -903,8 +903,8 @@
 <script src={{ asset('js/jquery-3.6.3.min.js') }} integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
     crossorigin="anonymous"></script>
 <script src={{ asset('js/pusher.min.js') }}></script>
-{{-- <script src={{ asset('js/mqttws31.js') }} type="text/javascript"></script> --}}
-<script src={{ asset('js/mqtt.min.js') }}></script>
+<script src={{ asset('js/mqttws31.js') }} type="text/javascript"></script>
+{{-- <script src={{ asset('js/mqtt.min.js') }}></script> --}}
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {
         const carousel = document.querySelector('.vertical-carousel');
