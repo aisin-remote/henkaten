@@ -440,8 +440,8 @@ class DashboardController extends Controller
         }
 
         // push to websocket
-        // $this->pushData(true);
-        $this->mqttConnect('update' , '1');
+        $this->pushData(true);
+        // $this->mqttConnect('update' , '1');
 
         // Mengembalikan respons JSON tanpa if-else
         return response()->json(
@@ -528,8 +528,8 @@ class DashboardController extends Controller
         }
 
         // push to websocket
-        // $this->pushData(true);
-        $this->mqttConnect('update' , '1');
+        $this->pushData(true);
+        // $this->mqttConnect('update' , '1');
 
         return response()->json(
             [
@@ -635,8 +635,8 @@ class DashboardController extends Controller
         }
 
         // push to websocket
-        // $this->pushData(true);
-        $this->mqttConnect('update' , '1');
+        $this->pushData(true);
+        // $this->mqttConnect('update' , '1');
 
         return response()->json(
             [
@@ -742,8 +742,8 @@ class DashboardController extends Controller
         }
 
         // push to websocket
-        // $this->pushData(true);
-        $this->mqttConnect('update' , '1');
+        $this->pushData(true);
+        // $this->mqttConnect('update' , '1');
 
         return response()->json(
             [

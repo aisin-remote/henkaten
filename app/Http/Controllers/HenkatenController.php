@@ -247,8 +247,8 @@ class HenkatenController extends Controller
             curl_close($curl);
 
             // push to websocket
-            // $this->pushData(true);
-            $this->mqttConnect('update' , '1');
+            $this->pushData(true);
+            // $this->mqttConnect('update' , '1');
 
             DB::commit();
             return redirect()
@@ -720,8 +720,8 @@ class HenkatenController extends Controller
             DB::commit();
 
             // push to websocket
-            // $this->pushData(true);
-            $this->mqttConnect('update' , '1');
+            $this->pushData(true);
+            // $this->mqttConnect('update' , '1');
 
             return redirect()
                 ->back()
