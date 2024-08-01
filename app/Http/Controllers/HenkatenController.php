@@ -275,6 +275,7 @@ class HenkatenController extends Controller
         
         // get origin id
         $empOrigin = auth()->user()->origin_id;
+        $docName = null;
 
         $originToGroupIdMap = [
             env('ORIGIN_MA') => env('GROUP_ID_MA'),
