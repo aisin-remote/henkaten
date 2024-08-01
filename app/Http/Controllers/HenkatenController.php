@@ -346,8 +346,10 @@ class HenkatenController extends Controller
             if ($request->has('photo')) {
                 $doc = $request->file('photo');
                 $docName = time() . '-' . $doc->getClientOriginalName();
-                dd($doc->move(public_path('uploads/ts_henkaten'), $docName));
+                $doc->move(public_path('uploads/ts_henkaten'), $docName);
             }
+
+            dd($request);
             
             if ($request->{"4M"} == 'man') {
                 // count same value of input
