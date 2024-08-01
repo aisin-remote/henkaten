@@ -272,6 +272,8 @@ class HenkatenController extends Controller
         // $request->validate([
         //     'photo' => 'required|file|mimes:jpg,jpeg,png|max:10240', // 10 MB max
         // ]);
+
+        dd($request);
         
         // get origin id
         $empOrigin = auth()->user()->origin_id;
