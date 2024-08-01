@@ -1298,7 +1298,7 @@
         function connectMQTT() {
             // Create an MQTT client instance
             clientId = "client_" + Math.random().toString(16).substr(2, 8);
-            client = new Paho.MQTT.Client("wss://172.18.3.70:8083/mqtt", Number(8083), clientId);
+            client = new Paho.MQTT.Client("wss://172.18.3.70:8083/mqtt", clientId);
 
             // Set callback handlers
             client.onConnectionLost = onConnectionLost;
@@ -1308,8 +1308,6 @@
             client.connect({
                 onSuccess: onConnect,
                 onFailure: onFailure,
-                userName: "fabian",
-                password: "1234"
             });
         }
 
