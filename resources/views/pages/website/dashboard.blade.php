@@ -1295,14 +1295,6 @@
 
         let client;
 
-        let ws = new WebSocket('wss://172.18.3.70:8083/mqtt');
-        ws.onopen = function() {
-            console.log('Connected');
-        };
-        ws.onerror = function(error) {
-            console.error('WebSocket Error:', error);
-        };
-
         function connectMQTT() {
             // Create an MQTT client instance
             clientId = "client_" + Math.random().toString(16).substr(2, 8);
