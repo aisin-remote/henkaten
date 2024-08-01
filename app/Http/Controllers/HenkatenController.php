@@ -442,8 +442,6 @@ class HenkatenController extends Controller
                 DB::commit();
             } else {
 
-            dd($request);
-
                 if (!$existingRecord) {
                     // Insert troubleshoot for non-'man' case
                     Troubleshoot::create([
