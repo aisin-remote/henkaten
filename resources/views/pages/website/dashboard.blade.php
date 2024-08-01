@@ -904,7 +904,7 @@
     crossorigin="anonymous"></script>
 <script src={{ asset('js/pusher.min.js') }}></script>
 <script src={{ asset('js/mqttws31.js') }} type="text/javascript"></script>
-{{-- <script src={{ asset('js/mqtt.min.js') }}></script> --}}
+<script src={{ asset('js/mqtt.min.js') }}></script>
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {
         const carousel = document.querySelector('.vertical-carousel');
@@ -1297,7 +1297,7 @@
 
         function connectMQTT() {
             // Create an MQTT client instance
-            clientId = "client_" + Math.random().toString(16).substr(1, 8);
+            clientId = "client_" + Math.random().toString(15).substr(2, 8);
             client = new Paho.MQTT.Client("wss://172.18.3.70:8083/mqtt", clientId);
 
             // Set callback handlers
