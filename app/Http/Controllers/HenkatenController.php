@@ -379,6 +379,7 @@ class HenkatenController extends Controller
                         'before_treatment' => $request->beforeTreatment,
                         'after_treatment' => $request->afterTreatment,
                         'done_by' => $request->doneBy,
+                        'photo'=> $docName
                     ];
 
                     for ($i = 0; $i < count($request->after); $i++) {
@@ -414,6 +415,7 @@ class HenkatenController extends Controller
                         'before_treatment' => $request->beforeTreatment,
                         'after_treatment' => $request->afterTreatment,
                         'done_by' => $request->doneBy,
+                        'photo' => $docName
                     ];
 
                     for ($i = 0; $i < count($request->after); $i++) {
