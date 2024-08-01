@@ -342,12 +342,14 @@ class HenkatenController extends Controller
             // Check if a record already exists
             $existingRecord = Troubleshoot::where('henkaten_id', $request->henkaten_id)->first();
 
-            dd($request->has('photo'));
-
             // storing image
             if ($request->has('photo')) {
                 $doc = $request->file('photo');
                 $docName = time() . '-' . $doc->getClientOriginalName();
+
+
+            dd($request->has('photo'));
+
                 $doc->move(public_path('uploads/ts_henkaten'), $docName);
             }
             
