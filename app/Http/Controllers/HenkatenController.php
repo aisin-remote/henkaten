@@ -346,8 +346,7 @@ class HenkatenController extends Controller
             if ($request->has('photo')) {
                 $doc = $request->file('photo');
                 $docName = time() . '-' . $doc->getClientOriginalName();
-                $doc->move(public_path('uploads/ts_henkaten'), $docName);
-                dd($docName);
+                dd($doc->move(public_path('uploads/ts_henkaten'), $docName));
             }
             
             if ($request->{"4M"} == 'man') {
