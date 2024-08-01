@@ -1284,7 +1284,7 @@
                                                         @php
                                                             $status = '';
                                                             if ($history->henkaten->troubleshoot->photo == null) {
-                                                                $status = 'disable';
+                                                                $status = 'disabled';
                                                             }
                                                         @endphp
                                                         <button class="btn btn-lg btn-success py-3 px-4"
