@@ -1291,25 +1291,49 @@
             window.location.replace(`{{ url('/dashboard/${idCard}') }}`);
         });
 
+        const wsurl = 'wss://172.18.3.70:8083/mqtt'; // Adjust URL as needed
+        const mqttVersion = 4; // Example version, set appropriately
+
+        let subprotocol = mqttVersion < 4 ? "mqttv3.1" : "mqtt";
+        let socket;
+
+        try {
+            socket = new WebSocket(wsurl, [subprotocol]);
+            socket.onopen = function() {
+                console.log('WebSocket connection opened.');
+            };
+            socket.onerror = function(error) {
+                console.error('WebSocket Error: ', error);
+            };
+            socket.onmessage = function(event) {
+                console.log('WebSocket message received:', event.data);
+            };
+            socket.onclose = function() {
+                console.log('WebSocket connection closed.');
+            };
+        } catch (e) {
+            console.error('WebSocket initialization error:', e);
+        }
+
         Paho.MQTT.DEBUG = true;
 
         let client;
 
-        function connectMQTT() {
-            // Create an MQTT client instance
-            clientId = "client_" + Math.random().toString(16).substr(2, 8);
-            client = new Paho.MQTT.Client("wss://172.18.3.70:8083/mqtt", clientId);
+        // function connectMQTT() {
+        //     // Create an MQTT client instance
+        //     clientId = "client_" + Math.random().toString(16).substr(2, 8);
+        //     client = new Paho.MQTT.Client("wss://172.18.3.70:1883/mqtt", clientId);
 
-            // Set callback handlers
-            client.onConnectionLost = onConnectionLost;
-            client.onMessageArrived = onMessageArrived;
+        //     // Set callback handlers
+        //     client.onConnectionLost = onConnectionLost;
+        //     client.onMessageArrived = onMessageArrived;
 
-            // Connect the client, providing an onConnect callback
-            client.connect({
-                onSuccess: onConnect,
-                onFailure: onFailure,
-            });
-        }
+        //     // Connect the client, providing an onConnect callback
+        //     client.connect({
+        //         onSuccess: onConnect,
+        //         onFailure: onFailure,
+        //     });
+        // }
 
         function onConnect() {
             console.log('Connected');
