@@ -286,7 +286,7 @@ class DashboardController extends Controller
                     ->where('date', 'LIKE', $currentDate . '%')
                     ->where('line_id', $lineId->id)
                     ->whereHas('shift', function ($subQuery) use ($currentShifts) {
-                        $subQuery->where('name', $currentShifts);
+                        $subQuery->whereIn('name', $currentShifts);
                     });
             })
             ->get();
