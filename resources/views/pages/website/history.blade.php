@@ -142,13 +142,21 @@
                                     </td>
                                     <td class="text-center">
                                         @if ($henkaten->troubleshoot->photo)
-                                            <button class="btn btn-info">
-                                                <i class="ti ti-eye fs-4 pe-2"></i>
-                                                <a href="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}"
-                                                    target="_blank" style="color: white">
-                                                    See Document
-                                                </a>
-                                            </button>
+                                            @if (pathinfo($image, PATHINFO_EXTENSION) === 'xlsx' || pathinfo($image, PATHINFO_EXTENSION) === 'xls')
+                                                <button class="btn btn-info">
+                                                    <a href="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}"
+                                                        download style="color: white">
+                                                        Download File
+                                                    </a>
+                                                </button>
+                                            @else
+                                                <button class="btn btn-info">
+                                                    <a href="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}"
+                                                        target="_blank" style="color: white">
+                                                        Show File
+                                                    </a>
+                                                </button>
+                                            @endif
                                         @else
                                             No Document
                                         @endif
