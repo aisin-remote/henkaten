@@ -142,7 +142,8 @@
                                     </td>
                                     <td class="text-center">
                                         @if ($henkaten->troubleshoot->photo)
-                                            @if (pathinfo($image, PATHINFO_EXTENSION) === 'xlsx' || pathinfo($image, PATHINFO_EXTENSION) === 'xls')
+                                            @if (pathinfo($henkaten->troubleshoot->photo, PATHINFO_EXTENSION) === 'xlsx' ||
+                                                    pathinfo($henkaten->troubleshoot->photo, PATHINFO_EXTENSION) === 'xls')
                                                 <button class="btn btn-info">
                                                     <a href="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}"
                                                         download style="color: white">
