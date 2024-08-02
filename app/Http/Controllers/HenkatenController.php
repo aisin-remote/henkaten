@@ -750,7 +750,9 @@ class HenkatenController extends Controller
                         ->orderBy('date', 'desc')
                         ->get();
 
-                        dd($henkatenHistory->troubleshoot);
+                       foreach($henkatenHistory as $henkaten){
+                        dd($henkaten->troubleshoot);
+                       }
 
                         
         return view('pages.website.history', [
