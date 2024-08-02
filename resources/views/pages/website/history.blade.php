@@ -248,8 +248,10 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
-                        <img src="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}" alt=""
-                            class="w-100">
+                        <div class="modal-body p-3">
+                            <img src="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}"
+                                alt="" class="w-100">
+                        </div>
                     </div>
                 </div>
             </div>
