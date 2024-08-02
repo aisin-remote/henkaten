@@ -277,6 +277,9 @@ class DashboardController extends Controller
             ->whereHas('shift', function ($query) use ($currentShifts) {
                 $query->where('name', $currentShifts);
             })
+            ->whereHas('employee', function($query) use ($empOrigin){
+                $query->where('origin_id', $empOrigin);
+            })
             ->first();
 
         // get man henkaten
