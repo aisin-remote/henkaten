@@ -274,12 +274,11 @@ class DashboardController extends Controller
             ->where('active_from', '<=', Carbon::now())
             ->where('expired_at', '>=', Carbon::now())
             ->where('line_id', $lineId->id)
-            // ->whereHas('shift', function ($query) use ($currentShifts) {
-            //     $query->where('name', $currentShifts);
-            // })
+            ->whereHas('shift', function ($query) use ($currentShifts) {
+                $query->whereIn('name', $currentShifts);
+            })
             ->first();
 
-            dd($activePic);
         // get man henkaten
         $manHenkaten = Troubleshoot::with(['henkaten.shift', 'manAfter', 'manBefore', 'picAfter', 'picBefore'])
             ->whereHas('henkaten', function ($query) use ($lineId, $currentDate, $currentTime, $currentShifts) {
