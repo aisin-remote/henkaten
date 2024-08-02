@@ -160,6 +160,7 @@ class DashboardController extends Controller
                     $q->where('origin_id', $empOrigin);
                 });
             })
+            ->take(3)
             ->get();
 
         // in this page we will get all line status

@@ -820,7 +820,7 @@
                                                                 <label for="part"
                                                                     class="form-label fw-semibold">Part</label>
                                                                 <input type="text" class="form-control" id="part"
-                                                                    name="part" placeholder="TCC d983"
+                                                                    name="part"
                                                                     value="{{ optional($history->henkaten->troubleshoot)->part }}">
                                                             </div>
                                                         </div>
