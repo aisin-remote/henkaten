@@ -145,7 +145,7 @@
                                     <td style="max-width: 300px; white-space: normal;">
                                         {{ $henkaten->troubleshoot ? $henkaten->troubleshoot->troubleshoot : 'N/A' }}
                                     </td>
-                                    <td style="max-width: 300px; white-space: normal;">
+                                    <td class="text-center">
                                         <button class="btn btn-lg btn-success py-3 px-4" {{ $status }}>
                                             <i class="ti ti-eye fs-4 pe-2"></i>
                                             <a href="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}"
