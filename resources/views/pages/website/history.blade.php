@@ -237,7 +237,7 @@
 
     @foreach ($henkatenHistory as $henkaten)
         @if ($henkaten->troubleshoot)
-            <div class="modal fade modal-md" id="{{ $henkaten->troubleshoot->id }}Photo" tabindex="-1"
+            <div class="modal fade modal-lg" id="{{ $henkaten->troubleshoot->id }}Photo" tabindex="-1"
                 aria-labelledby="bs-example-modal-xl" style="display: none;" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
