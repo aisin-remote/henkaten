@@ -21,14 +21,14 @@ class UpdateEmployeeShifts extends Command
     public function handle()
     {
         $currentShifts = EmployeeActive::with('line')
-                                ->select('employee_id', 'shift_id', 'line_id', 'pos_id')
+                                // ->select('employee_id', 'shift_id', 'line_id', 'pos_id')
                                 ->whereHas('line', function ($query){
                                     $query->whereNot('origin_id', env('ORIGIN_ELC'));
                                 })
                                 ->get();
                                 
         $currentPicShifts = PicActive::with('line')
-                                ->select('employee_id', 'shift_id', 'line_id', 'pos_id')
+                                // ->select('employee_id', 'shift_id', 'line_id', 'pos_id')
                                 ->whereHas('line', function ($query){
                                     $query->whereNot('origin_id', env('ORIGIN_ELC'));
                                 })
