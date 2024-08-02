@@ -279,6 +279,8 @@ class DashboardController extends Controller
             })
             ->get();
 
+            dd($activePic);
+
         // get man henkaten
         $manHenkaten = Troubleshoot::with(['henkaten.shift', 'manAfter', 'manBefore', 'picAfter', 'picBefore'])
             ->whereHas('henkaten', function ($query) use ($lineId, $currentDate, $currentTime, $currentShifts) {
