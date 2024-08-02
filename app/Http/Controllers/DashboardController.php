@@ -231,34 +231,42 @@ class DashboardController extends Controller
         $shifts = [
             'Non Shift' => ['start' => '07:15:00', 'end' => '16:20:00'],
             'Shift 1' => ['start' => '06:00:00', 'end' => '14:15:00'],
+            'Shift 1 Long' => ['start' => '06:00:00', 'end' => '18:00:00'],
             'Shift 2' => ['start' => '14:16:00', 'end' => '22:15:00'],
             'Shift 3' => ['start' => '22:16:00', 'end' => '23:59:59'], // End of the first day
             'Shift 3' => ['start' => '00:00:00', 'end' => '06:00:00'], // Beginning of the second day
         ];
         
-        // Initialize current shift
-        $currentShift = null;
-        
-        // Determine the current shift
+        // Initialize current shifts
+        $currentShifts = [];
+
+        // Determine the current shifts
         foreach ($shifts as $shiftName => $shiftTimes) {
             $startTime = $shiftTimes['start'];
             $endTime = $shiftTimes['end'];
-        
-            if ($currentTime >= $startTime && $currentTime <= $endTime) {
-                $currentShift = $shiftName;
-                break;
+            
+            if ($startTime > $endTime) { // Shift spans midnight
+                if (($currentTime >= $startTime && $currentTime <= '23:59:59') || ($currentTime >= '00:00:00' && $currentTime <= $endTime)) {
+                    $currentShifts[] = $shiftName;
+                }
+            } else { // Regular shift within the same day
+                if ($currentTime >= $startTime && $currentTime <= $endTime) {
+                    $currentShifts[] = $shiftName;
+                }
             }
         }
                 
-        // Retrieve active employees for the current shift
+        // get active employee
         $activeEmployees = EmployeeActive::with(['shift', 'employee', 'pos'])
-            ->where('active_from', '<=', Carbon::now())
-            ->where('expired_at', '>=', Carbon::now())
-            ->where('line_id', $lineId->id)
-            ->whereHas('shift', function ($query) use ($currentShift) {
-                $query->where('name', $currentShift);
-            })
-            ->get();
+                ->where('active_from', '<=', Carbon::now())
+                ->where('expired_at', '>=', Carbon::now())
+                ->whereHas('shift', function ($query) use ($currentShifts) {
+                        $query->whereIn('name', $currentShifts);
+                    })
+                    ->whereHas('employee', function($query) use ($empOrigin){
+                        $query->where('origin_id', $empOrigin);
+                    })
+                ->get();
 
         // get active pic
         $activePic = PicActive::with(['shift', 'employee'])
