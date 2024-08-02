@@ -181,7 +181,7 @@
                                     <option value="Safety Issue">Safety Issue</option>
                                     <option value="Productivity Issue">Productivity Issue</option>
                                     <option value="Cost Issue">Cost Issue</option>
-                                    <option value="Cost Issue">Quality Issue</option>
+                                    <option value="Quality Issue">Quality Issue</option>
                                     <option value="Other">Other</option>
                                 </select>
                             </div>
