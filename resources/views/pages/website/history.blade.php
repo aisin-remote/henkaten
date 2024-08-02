@@ -67,9 +67,9 @@
                             <th rowspan="2" class="align-middle text-center" style="max-width: 300px">Abnormality</th>
                             <th rowspan="2" class="align-middle">Category</th>
                             <th rowspan="2" class="align-middle">Table Henkaten No.</th>
-                            {{-- <th rowspan="2" class="align-middle text-center" style="max-width: 300px">
+                            <th rowspan="2" class="align-middle text-center" style="max-width: 300px">
                                 Troubleshoot
-                            </th> --}}
+                            </th>
                             <th rowspan="2" class="align-middle text-center">Document</th>
                             <th rowspan="2" class="align-middle text-center">status</th>
                             <th class="text-center">Safety</th>
@@ -145,7 +145,7 @@
                                     <td style="max-width: 300px; white-space: normal;">
                                         {{ $henkaten->troubleshoot ? $henkaten->troubleshoot->troubleshoot : 'N/A' }}
                                     </td>
-                                    {{-- <td class="text-center">
+                                    <td class="text-center">
                                         <button class="btn btn-lg btn-success py-3 px-4" {{ $status }}>
                                             <i class="ti ti-eye fs-4 pe-2"></i>
                                             <a href="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}"
@@ -153,7 +153,7 @@
                                                 See Document
                                             </a>
                                         </button>
-                                    </td> --}}
+                                    </td>
                                     <td class="text-center">
                                         <span class="badge bg-{{ $colorApp }}">
                                             {{ $text }}
