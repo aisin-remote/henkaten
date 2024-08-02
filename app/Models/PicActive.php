@@ -24,4 +24,9 @@ class PicActive extends Model
     {
         return $this->belongsTo(Employee::class);
     }
+
+    public function line()
+    {
+        return $this->belongsTo(Line::class);
+    }
 }
