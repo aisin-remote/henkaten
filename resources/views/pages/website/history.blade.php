@@ -151,11 +151,9 @@
                                                     </a>
                                                 </button>
                                             @else
-                                                <button class="btn btn-info">
-                                                    <a href="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}"
-                                                        target="_blank" style="color: white">
-                                                        Show File
-                                                    </a>
+                                                <button class="btn btn-info" data-bs-toggle="modal"
+                                                    data-bs-target="#{{ $henkaten->troubleshoot->id }}Photo">
+                                                    Show File
                                                 </button>
                                             @endif
                                         @else
@@ -236,6 +234,26 @@
             </div>
         </div>
     </div>
+
+    @foreach ($henkatenHistory as $henkaten)
+        <div class="modal fade modal-md" id="{{ $henkaten->troubleshoot->id }}Photo" tabindex="-1"
+            aria-labelledby="bs-example-modal-xl" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header d-flex align-items-center">
+                        <h4 class="modal-title" id="myLargeModalLabel">
+                            Document
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <img src="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}" alt=""
+                        class="w-100">
+                </div>
+            </div>
+        </div>
+    @endforeach
+
+
 @endsection
 <script src={{ asset('js/jquery-3.6.3.min.js') }} integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
     crossorigin="anonymous"></script>
