@@ -70,6 +70,7 @@
                             <th rowspan="2" class="align-middle text-center" style="max-width: 300px">
                                 Troubleshoot
                             </th>
+                            <th rowspan="2" class="align-middle text-center">Document</th>
                             <th rowspan="2" class="align-middle text-center">status</th>
                             <th class="text-center">Safety</th>
                             <th colspan="4" class="text-center">Quality Inspection</th>
@@ -135,9 +136,23 @@
                                             $colorApp = 'warning';
                                             $text = 'Pending Approval';
                                         }
+
+                                        $status = '';
+                                        if ($history->henkaten->troubleshoot->photo == null) {
+                                            $status = 'disabled';
+                                        }
                                     @endphp
                                     <td style="max-width: 300px; white-space: normal;">
                                         {{ $henkaten->troubleshoot ? $henkaten->troubleshoot->troubleshoot : 'N/A' }}
+                                    </td>
+                                    <td style="max-width: 300px; white-space: normal;">
+                                        <button class="btn btn-lg btn-success py-3 px-4" {{ $status }}>
+                                            <i class="ti ti-eye fs-4 pe-2"></i>
+                                            <a href="{{ asset('uploads/ts_henkaten/' . $history->henkaten->troubleshoot->photo) }}"
+                                                target="_blank" style="color: white">
+                                                See Document
+                                            </a>
+                                        </button>
                                     </td>
                                     <td class="text-center">
                                         <span class="badge bg-{{ $colorApp }}">
