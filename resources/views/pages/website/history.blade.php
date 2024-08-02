@@ -146,7 +146,7 @@
                                         {{ $henkaten->troubleshoot ? $henkaten->troubleshoot->troubleshoot : 'N/A' }}
                                     </td>
                                     <td class="text-center">
-                                        <button class="btn btn-lg btn-success py-3 px-4" {{ $status }}>
+                                        <button class="btn btn-success py-3 px-4" {{ $status }}>
                                             <i class="ti ti-eye fs-4 pe-2"></i>
                                             <a href="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}"
                                                 target="_blank" style="color: white">
