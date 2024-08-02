@@ -382,7 +382,7 @@
                 @if ($supervisor)
                     <div class="card-body p-3 d-flex align-items-center gap-3">
                         <img src="{{ $supervisor->photo ? asset('uploads/doc/' . $supervisor->photo) : asset('path_to_default_image') }}"
-                            alt="" width="60" height="60" loading="lazy">
+                            alt="" class="rounded-circle" width="60" height="60" loading="lazy">
                         <div>
                             <h6 class="fw-semibold mb-0">{{ $supervisor->name }}</h6>
                             <span class="fs-2 d-flex align-items-center py-1"><i
