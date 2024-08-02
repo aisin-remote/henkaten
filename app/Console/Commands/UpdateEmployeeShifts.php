@@ -20,9 +20,19 @@ class UpdateEmployeeShifts extends Command
 
     public function handle()
     {
-        $currentShifts = EmployeeActive::select('employee_id', 'shift_id', 'line_id', 'pos_id')->get();
-        $currentPicShifts = EmployeeActive::select('employee_id', 'shift_id', 'line_id', 'pos_id')->get();
-        $origins = Origin::all();
+        $currentShifts = EmployeeActive::with('line')
+                                ->select('employee_id', 'shift_id', 'line_id', 'pos_id')
+                                ->whereHas('line', function ($query){
+                                    $query->whereNot('origin_id', env('ORIGIN_ELC'));
+                                })
+                                ->get();
+                                
+        $currentPicShifts = PicActive::with('line')
+                                ->select('employee_id', 'shift_id', 'line_id', 'pos_id')
+                                ->whereHas('line', function ($query){
+                                    $query->whereNot('origin_id', env('ORIGIN_ELC'));
+                                })
+                                ->get();
 
         $newShifts = $currentShifts->map(function ($employee) {
             $nextShiftUuid = $this->getNextShiftUuid($employee->shift_id);
@@ -59,19 +69,14 @@ class UpdateEmployeeShifts extends Command
             ];
         })->filter(); // Remove null entries
 
-        // Example of creating each new shift record individually
-        foreach($origins as $origin){
-            if($origin->id !== env('ORIGIN_ELC')){
-                // EMP
-                foreach ($newShifts as $newShift) {
-                    EmployeeActive::create($newShift);
-                }
+        // EMP
+        foreach ($newShifts as $newShift) {
+            EmployeeActive::create($newShift);
+        }
 
-                // PIC
-                foreach ($newPicShifts as $newPicShift) {
-                    PicActive::create($newPicShift);
-                }
-            }
+        // PIC
+        foreach ($newPicShifts as $newPicShift) {
+            PicActive::create($newPicShift);
         }
 
         $this->info('Employee shifts updated successfully.');

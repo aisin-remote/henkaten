@@ -949,11 +949,23 @@ class HenkatenController extends Controller
             'status_machine' => $newStatus,
         ];
 
-        Line::where('status_man', $currentStatus)
-            ->orWhere('status_method', $currentStatus)
-            ->orWhere('status_material', $currentStatus)
-            ->orWhere('status_machine', $currentStatus)
-            ->update($columnsToUpdate);
+        try {
+            DB::beginTransaction();
+
+            Line::whereNot('origin_id', env('ORIGIN_ELC'))
+                    ->where(function($query) use ($currentStatus) {
+                        $query->where('status_man', $currentStatus)
+                            ->orWhere('status_method', $currentStatus)
+                            ->orWhere('status_material', $currentStatus)
+                            ->orWhere('status_machine', $currentStatus);
+                    })
+                    ->update($columnsToUpdate);
+
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+        }
     }
 
     public function henkatenExport()
