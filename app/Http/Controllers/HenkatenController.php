@@ -750,6 +750,8 @@ class HenkatenController extends Controller
                         ->orderBy('date', 'desc')
                         ->get();
 
+                        dd($henkatenHistory);
+
                         
         return view('pages.website.history', [
             'henkatenHistory' => $henkatenHistory,
