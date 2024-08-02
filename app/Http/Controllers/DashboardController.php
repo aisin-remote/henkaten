@@ -111,6 +111,7 @@ class DashboardController extends Controller
         $shifts = [
             'Non Shift' => ['start' => '07:15:00', 'end' => '16:20:00'],
             'Shift 1' => ['start' => '06:00:00', 'end' => '14:15:00'],
+            'Shift 1 Long' => ['start' => '06:00:00', 'end' => '18:00:00'],
             'Shift 2' => ['start' => '14:16:00', 'end' => '22:15:00'],
             'Shift 3' => ['start' => '22:16:00', 'end' => '23:59:59'], // End of the first day
             'Shift 3' => ['start' => '00:00:00', 'end' => '06:00:00'], // Beginning of the second day
