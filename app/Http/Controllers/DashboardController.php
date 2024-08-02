@@ -260,6 +260,7 @@ class DashboardController extends Controller
         $activeEmployees = EmployeeActive::with(['shift', 'employee', 'pos'])
             ->where('active_from', '<=', Carbon::now())
             ->where('expired_at', '>=', Carbon::now())
+            ->where('line_id', $lineId->id)
             ->whereHas('shift', function ($query) use ($currentShifts) {
                 $query->whereIn('name', $currentShifts);
             })
