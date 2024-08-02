@@ -163,9 +163,7 @@
                                     <select id="editActual" class="form-select editActual"
                                         style="border-radius:6px; display:none">
                                         @foreach ($shifts as $shift)
-                                            @if ($shift->name == 'Shift 1' || $shift->name == 'Shift 2')
-                                                <option value="{{ $shift->id }}">{{ $shift->name }}</option>
-                                            @endif
+                                            <option value="{{ $shift->id }}">{{ $shift->name }}</option>
                                         @endforeach
                                     </select>
                                 </td>
