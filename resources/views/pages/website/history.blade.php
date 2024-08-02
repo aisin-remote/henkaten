@@ -236,21 +236,24 @@
     </div>
 
     @foreach ($henkatenHistory as $henkaten)
-        <div class="modal fade modal-md" id="{{ $henkaten->troubleshoot->id }}Photo" tabindex="-1"
-            aria-labelledby="bs-example-modal-xl" style="display: none;" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header d-flex align-items-center">
-                        <h4 class="modal-title" id="myLargeModalLabel">
-                            Document
-                        </h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        @if ($henkaten->troubleshoot)
+            <div class="modal fade modal-md" id="{{ $henkaten->troubleshoot->id }}Photo" tabindex="-1"
+                aria-labelledby="bs-example-modal-xl" style="display: none;" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header d-flex align-items-center">
+                            <h4 class="modal-title" id="myLargeModalLabel">
+                                Document
+                            </h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <img src="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}" alt=""
+                            class="w-100">
                     </div>
-                    <img src="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}" alt=""
-                        class="w-100">
                 </div>
             </div>
-        </div>
+        @endif
     @endforeach
 
 
