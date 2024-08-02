@@ -136,23 +136,22 @@
                                             $colorApp = 'warning';
                                             $text = 'Pending Approval';
                                         }
-
-                                        $status = '';
-                                        if ($henkaten->troubleshoot->photo == null) {
-                                            $status = 'disabled';
-                                        }
                                     @endphp
                                     <td style="max-width: 300px; white-space: normal;">
                                         {{ $henkaten->troubleshoot ? $henkaten->troubleshoot->troubleshoot : 'N/A' }}
                                     </td>
                                     <td class="text-center">
-                                        <button class="btn btn-info" {{ $status }}>
-                                            <i class="ti ti-eye fs-4 pe-2"></i>
-                                            <a href="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}"
-                                                target="_blank" style="color: white">
-                                                See Document
-                                            </a>
-                                        </button>
+                                        @if ($henkaten->troubleshoot->photo)
+                                            <button class="btn btn-info">
+                                                <i class="ti ti-eye fs-4 pe-2"></i>
+                                                <a href="{{ asset('uploads/ts_henkaten/' . $henkaten->troubleshoot->photo) }}"
+                                                    target="_blank" style="color: white">
+                                                    See Document
+                                                </a>
+                                            </button>
+                                        @else
+                                            No Document
+                                        @endif
                                     </td>
                                     <td class="text-center">
                                         <span class="badge bg-{{ $colorApp }}">
