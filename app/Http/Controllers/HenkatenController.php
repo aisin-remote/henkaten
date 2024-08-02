@@ -751,7 +751,7 @@ class HenkatenController extends Controller
                         ->get();
 
                        foreach($henkatenHistory as $henkaten){
-                        dd($henkaten->troubleshoot);
+                        dd($henkaten->troubleshoot->id);
                        }
 
                         
