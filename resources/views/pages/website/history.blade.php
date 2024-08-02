@@ -219,6 +219,7 @@
                                     <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">N/A</td>
+                                    <td class="text-center text-danger">N/A</td>
                                 @endif
                             </tr>
                         @endforeach
