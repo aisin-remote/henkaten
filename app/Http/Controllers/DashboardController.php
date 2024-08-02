@@ -116,31 +116,36 @@ class DashboardController extends Controller
             'Shift 3' => ['start' => '00:00:00', 'end' => '06:00:00'], // Beginning of the second day
         ];
         
-        // Initialize current shift
-        $currentShift = null;
-        
-        // Determine the current shift
+        // Initialize current shifts
+        $currentShifts = [];
+
+        // Determine the current shifts
         foreach ($shifts as $shiftName => $shiftTimes) {
             $startTime = $shiftTimes['start'];
             $endTime = $shiftTimes['end'];
-        
-            if ($currentTime >= $startTime && $currentTime <= $endTime) {
-                $currentShift = $shiftName;
-                break;
+            
+            if ($startTime > $endTime) { // Shift spans midnight
+                if (($currentTime >= $startTime && $currentTime <= '23:59:59') || ($currentTime >= '00:00:00' && $currentTime <= $endTime)) {
+                    $currentShifts[] = $shiftName;
+                }
+            } else { // Regular shift within the same day
+                if ($currentTime >= $startTime && $currentTime <= $endTime) {
+                    $currentShifts[] = $shiftName;
+                }
             }
         }
 
         // get active employee
         $activeEmployees = EmployeeActive::with(['shift', 'employee', 'pos'])
-            ->where('active_from', '<=', Carbon::now())
-            ->where('expired_at', '>=', Carbon::now())
-            ->whereHas('shift', function ($query) use ($currentShift) {
-                $query->where('name', $currentShift);
-            })
-            ->whereHas('employee', function($query) use ($empOrigin){
-                $query->where('origin_id', $empOrigin);
-            })
-            ->count();
+                    ->where('active_from', '<=', Carbon::now())
+                    ->where('expired_at', '>=', Carbon::now())
+                    ->whereHas('shift', function ($query) use ($currentShifts) {
+                        $query->whereIn('name', $currentShifts);
+                    })
+                    ->whereHas('employee', function($query) use ($empOrigin){
+                        $query->where('origin_id', $empOrigin);
+                    })
+                    ->count();
 
         // get henkaten where status still active
         $activeProblems = Henkaten::with(['shift', 'line.origin'])
