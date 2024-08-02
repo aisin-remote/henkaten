@@ -205,12 +205,12 @@
                                     </td>
                                 @else
                                     <td class="text-center text-danger">N/A</td>
+                                    <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">
                                         <span class="badge bg-{{ $colorApp }}">
                                             {{ $text }}
                                         </span>
                                     </td>
-                                    <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">N/A</td>
