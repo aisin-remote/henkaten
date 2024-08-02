@@ -280,9 +280,7 @@ class DashboardController extends Controller
             ->whereHas('employee', function($query) use ($empOrigin){
                 $query->where('origin_id', $empOrigin);
             })
-            ->get();
-
-            dd($activePic);
+            ->first();
 
         // get man henkaten
         $manHenkaten = Troubleshoot::with(['henkaten.shift', 'manAfter', 'manBefore', 'picAfter', 'picBefore'])
