@@ -597,6 +597,17 @@
                                                     <i class="ti ti-edit"></i>
                                                 </span>
                                             </button>
+                                            <form
+                                                action="{{ route('dashboard.henkaten.destroy', ['id' => $history->henkaten->id]) }}"
+                                                method="post" class="delete d-inline-block m-0">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger delete">
+                                                    <span class="rounded-3" id="icon">
+                                                        <i class="ti ti-x"></i>
+                                                    </span>
+                                                </button>
+                                            </form>
                                         @endcan
                                     </td>
                                     @can('LDR')
@@ -607,6 +618,17 @@
                                                     <i class="ti ti-checks"></i>
                                                 </span>
                                             </button>
+                                            <form
+                                                action="{{ route('dashboard.henkaten.destroy', ['id' => $history->henkaten->id]) }}"
+                                                method="post" class="delete d-inline-block m-0">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger delete">
+                                                    <span class="rounded-3" id="icon">
+                                                        <i class="ti ti-x"></i>
+                                                    </span>
+                                                </button>
+                                            </form>
                                         </td>
                                     @endcan
                                     @can('SPV')
@@ -1399,6 +1421,30 @@
             </div>
         </div>
     </div>
+
+    {{-- modal confirmation --}}
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content modal-filled bg-light-warning">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center text-warning">
+                        <i class="ti ti-alert-octagon fs-7"></i>
+                        <p class="mt-3">
+                            Are you sure you want to delete this record?
+                        </p>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- end of modal --}}
 @endsection
 <script src={{ asset('js/jquery-3.6.3.min.js') }} integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
     crossorigin="anonymous"></script>
@@ -1619,6 +1665,27 @@
             setTimeout(function() {
                 $('.henkatenSubmitButton').prop('disabled', false);
             }, 5000);
+        });
+
+        var deleteForm; // Variable to store the form to be submitted
+
+        // Handle click on delete button
+        $('.delete').on('click', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Store the form associated with the delete button
+            deleteForm = $(this).closest('form');
+
+            // Show the confirmation modal
+            $('#confirmationModal').modal('show');
+        });
+
+        // Handle click on confirm delete button
+        $('#confirmDelete').on('click', function() {
+            if (deleteForm) {
+                // Submit the stored form for deletion
+                deleteForm.submit();
+            }
         });
 
         // Push the initial values to the array

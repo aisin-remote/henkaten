@@ -276,6 +276,32 @@ class HenkatenController extends Controller
             ->with('success', 'Data berhasil disimpan');
     }
 
+    public function destroy(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            // get current line and 4M based on henkaten id
+            $line = Henkaten::select('line_id', '4M')->find($request->id);
+
+            $henkaten = Henkaten::findOrFail($request->id);
+            $henkaten->delete();
+
+            // update status
+            Line::where('id', $line->line_id)
+                    ->update([
+                        'status_' . $line->{"4M"} => 'running'
+                    ]);
+            
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Henkaten deleted successfully!');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
     public function troubleshootHenkaten(Request $request)
     {
         // Validate the request

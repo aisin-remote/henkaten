@@ -60,6 +60,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('storeHenkaten', [HenkatenController::class, 'storeHenkaten'])->name('dashboard.storeHenkaten');
         Route::post('troubleshootHenkaten', [HenkatenController::class, 'troubleshootHenkaten'])->name('dashboard.troubleshootHenkaten');
         Route::post('troubleshootApproval', [HenkatenController::class, 'troubleshootApproval'])->name('dashboard.troubleshootApproval');
+
+        Route::delete('destroy', [HenkatenController::class, 'destroy'])->name('dashboard.henkaten.destroy');
     });
 
     // employees 
