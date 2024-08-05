@@ -92,10 +92,12 @@ class HenkatenController extends Controller
     {
         // get origin id
         $empOrigin = auth()->user()->origin_id;
+        $docName = null;
         
         $originToGroupIdMap = [
             env('ORIGIN_MA') => env('GROUP_ID_MA'),
             env('ORIGIN_DC') => env('GROUP_ID_DC'),
+            env('ORIGIN_ELC') => env('GROUP_ID_ELC'),
         ];
         
         // Use the origin to get the group ID directly from the map, if available
@@ -151,6 +153,13 @@ class HenkatenController extends Controller
 
         try {
             DB::beginTransaction();
+
+            // storing image
+            if ($request->has('photo')) {
+                $doc = $request->file('photo');
+                $docName = time() . '-' . $doc->getClientOriginalName();
+                $doc->move(public_path('uploads/ts_henkaten'), $docName);
+            }
 
             $otherStats = Henkaten::select('status')
                 ->where('is_done', '0')
@@ -214,6 +223,7 @@ class HenkatenController extends Controller
                 'category' => $request->category,
                 'henkaten_management_id' => $request->henkatenManagement,
                 'abnormality' => $request->abnormality,
+                'photo' => $docName,
                 'date' => Carbon::now(),
                 'is_done' => '0',
             ]);
@@ -280,6 +290,7 @@ class HenkatenController extends Controller
         $originToGroupIdMap = [
             env('ORIGIN_MA') => env('GROUP_ID_MA'),
             env('ORIGIN_DC') => env('GROUP_ID_DC'),
+            env('ORIGIN_ELC') => env('GROUP_ID_ELC'),
         ];
         
         // Use the origin to get the group ID directly from the map, if available

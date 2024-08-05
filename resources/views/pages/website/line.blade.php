@@ -142,7 +142,8 @@
                         </h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form class="mt-3 henkatenForm" action="{{ route('dashboard.storeHenkaten') }}" method="POST">
+                    <form class="mt-3 henkatenForm" action="{{ route('dashboard.storeHenkaten') }}" method="POST"
+                        enctype="multipart/form-data">
                         @csrf
                         @method('POST')
                         <div class="modal-body">
@@ -201,6 +202,12 @@
                                 <input class="form-control" rows="3" placeholder="Abnormality..." name="abnormality"
                                     id="{{ $modal['modalId'] }}Abnormality" required>
                                 </input>
+                            </div>
+                            <div class="form-group mt-3 mb-3 description">
+                                <label for="formFileSm" class="form-label">Dokumen pendukung</label>
+                                <input class="form-control form-control" type="file" id="{{ $modal['modalId'] }}Photo"
+                                    name="photo">
+                                <small class="text-danger">*optional</small>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -1200,12 +1207,31 @@
                                                 </textarea>
                                                 <label for="tb-fname">Abnormality Content</label>
                                             </div>
-                                            <div class="form-floating mb-3">
-                                                <input type="text" class="form-control fw-bolder" id="tb-fname"
-                                                    placeholder="Enter Name here"
-                                                    value="{{ Carbon\Carbon::parse($history->henkaten->date)->format('j F Y,  H:i:s') }}"
-                                                    disabled>
-                                                <label for="tb-fname">Time</label>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="text" class="form-control fw-bolder"
+                                                            id="tb-fname" placeholder="Enter Name here"
+                                                            value="{{ Carbon\Carbon::parse($history->henkaten->date)->format('j F Y,  H:i:s') }}"
+                                                            disabled>
+                                                        <label for="tb-fname">Time</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    @php
+                                                        $status = '';
+                                                        if ($history->henkaten->photo == null) {
+                                                            $status = 'disabled';
+                                                        }
+                                                    @endphp
+                                                    <button class="btn btn-lg btn-success py-3 px-4" {{ $status }}>
+                                                        <i class="ti ti-eye fs-4 pe-2"></i>
+                                                        <a href="{{ asset('uploads/ts_henkaten/' . $history->henkaten->photo) }}"
+                                                            target="_blank" style="color: white">
+                                                            See Document
+                                                        </a>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
