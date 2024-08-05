@@ -20,15 +20,30 @@ class UpdateEmployeeShiftsElc extends Command
 
     public function handle()
     {
+        // Set the current time to the start of the current week, then subtract a week
+        $previousWeekStart = Carbon::now()
+            ->startOfWeek()
+            ->subWeek()
+            ->format('Y-m-d');
+
+        // Set the time to the end of that week
+        $previousWeekEnd = Carbon::now()
+            ->startOfWeek()
+            ->subWeek()
+            ->endOfWeek()
+            ->format('Y-m-d');
+            
         $currentShifts = EmployeeActive::with('line')
-                            // ->select('employee_id', 'shift_id', 'line_id', 'pos_id')
+                            ->where('active_from', '<=', $previousWeekEnd)
+                            ->where('expired_at', '>=', $previousWeekStart)
                             ->whereHas('line', function ($query){
                                 $query->where('origin_id', env('ORIGIN_ELC'));
                             })
                             ->get();
                             
         $currentPicShifts = PicActive::with('line')
-                            // ->select('employee_id', 'shift_id', 'line_id', 'pos_id')
+                            ->where('active_from', '<=', $previousWeekEnd)
+                            ->where('expired_at', '>=', $previousWeekStart)
                             ->whereHas('line', function ($query){
                                 $query->where('origin_id', env('ORIGIN_ELC'));
                             })
