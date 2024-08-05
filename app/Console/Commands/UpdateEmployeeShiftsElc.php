@@ -34,16 +34,16 @@ class UpdateEmployeeShiftsElc extends Command
             ->format('Y-m-d');
             
         $currentShifts = EmployeeActive::with('line')
-                            ->where('active_from', '<=', $previousWeekStart)
-                            ->where('expired_at', '>=', $previousWeekEnd)
+                            ->where('active_from', '<=', $previousWeekEnd)
+                            ->where('expired_at', '>=', $previousWeekStart)
                             ->whereHas('line', function ($query){
                                 $query->where('origin_id', env('ORIGIN_ELC'));
                             })
                             ->get();
                             
         $currentPicShifts = PicActive::with('line')
-                            ->where('active_from', '<=', $previousWeekStart)
-                            ->where('expired_at', '>=', $previousWeekEnd)
+                            ->where('active_from', '<=', $previousWeekEnd)
+                            ->where('expired_at', '>=', $previousWeekStart)
                             ->whereHas('line', function ($query){
                                 $query->where('origin_id', env('ORIGIN_ELC'));
                             })
