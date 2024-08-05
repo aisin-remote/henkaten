@@ -32,6 +32,8 @@ class UpdateEmployeeShiftsElc extends Command
             ->subWeek()
             ->endOfWeek()
             ->format('Y-m-d');
+
+            dd($previousWeekEnd);
             
         $currentShifts = EmployeeActive::with('line')
                             ->where('active_from', '<=', $previousWeekEnd)
