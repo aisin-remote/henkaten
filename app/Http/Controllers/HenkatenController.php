@@ -1034,32 +1034,32 @@ class HenkatenController extends Controller
         try {
             DB::beginTransaction();
 
-            Henkaten::with('line')
-                ->where('is_done', '0')
-                ->whereHas('line', function ($query) use ($currentStatus) {
-                    $query->whereNot('origin_id', env('ORIGIN_ELC'))
-                        ->where(function ($subQuery) use ($currentStatus) {
-                            $subQuery->where('status_man', $currentStatus)
-                                ->orWhere('status_method', $currentStatus)
-                                ->orWhere('status_material', $currentStatus)
-                                ->orWhere('status_machine', $currentStatus);
-                        });
-                })
-                ->orWhere('is_done', '1')
-                ->whereHas('line', function ($query) use ($currentStatus) {
-                    $query->where(function ($subQuery) use ($currentStatus) {
-                        $subQuery->where('status_man', $currentStatus)
-                            ->orWhere('status_method', $currentStatus)
-                            ->orWhere('status_material', $currentStatus)
-                            ->orWhere('status_machine', $currentStatus);
-                    });
-                });
+            // Henkaten::with('line')
+            //     ->where('is_done', '0')
+            //     ->whereHas('line', function ($query) use ($currentStatus) {
+            //         $query->whereNot('origin_id', env('ORIGIN_ELC'))
+            //             ->where(function ($subQuery) use ($currentStatus) {
+            //                 $subQuery->where('status_man', $currentStatus)
+            //                     ->orWhere('status_method', $currentStatus)
+            //                     ->orWhere('status_material', $currentStatus)
+            //                     ->orWhere('status_machine', $currentStatus);
+            //             });
+            //     })
+            //     ->orWhere('is_done', '1')
+            //     ->whereHas('line', function ($query) use ($currentStatus) {
+            //         $query->where(function ($subQuery) use ($currentStatus) {
+            //             $subQuery->where('status_man', $currentStatus)
+            //                 ->orWhere('status_method', $currentStatus)
+            //                 ->orWhere('status_material', $currentStatus)
+            //                 ->orWhere('status_machine', $currentStatus);
+            //         });
+            //     });
                     
-            // Line::where('status_man', $currentStatus)
-            //         ->orWhere('status_method', $currentStatus)
-            //         ->orWhere('status_material', $currentStatus)
-            //         ->orWhere('status_machine', $currentStatus)
-            //         ->update($columnsToUpdate);
+            Line::where('status_man', $currentStatus)
+                    ->orWhere('status_method', $currentStatus)
+                    ->orWhere('status_material', $currentStatus)
+                    ->orWhere('status_machine', $currentStatus)
+                    ->update($columnsToUpdate);
 
             DB::commit();
         } catch (\Throwable $th) {
