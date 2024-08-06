@@ -295,7 +295,7 @@ class HenkatenController extends Controller
             $henkaten->delete();
 
             $otherStats = Henkaten::select('status')
-                ->where('is_done', '0')
+                // ->where('is_done', '0')
                 ->where('line_id', $line->line_id)
                 ->where('4M', $line->{"4M"})
                 ->where('date', 'LIKE', $toDate . '%')
