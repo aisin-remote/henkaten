@@ -1034,7 +1034,7 @@ class HenkatenController extends Controller
         try {
             DB::beginTransaction();
 
-            Henkaten::with('line')
+            $query = Henkaten::with('line')
                 ->where('is_done', '0')
                 ->whereHas('line', function ($query) use ($currentStatus) {
                     $query->whereNot('origin_id', env('ORIGIN_ELC'))
@@ -1055,7 +1055,9 @@ class HenkatenController extends Controller
                     });
                 })
                 ->get();
-                    
+
+                
+                dd($query);
             // Line::where('status_man', $currentStatus)
             //         ->orWhere('status_method', $currentStatus)
             //         ->orWhere('status_material', $currentStatus)
