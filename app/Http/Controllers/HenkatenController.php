@@ -1034,7 +1034,10 @@ class HenkatenController extends Controller
         try {
             DB::beginTransaction();
 
-            // Update lines where origin_id is not ELC and is_done = 0 or is_done = 1
+            // Get Henkaten records where:
+            // - origin_id is not ELC, and update regardless of is_done status
+            // OR
+            // - origin_id is ELC and is_done is 1
             $henkatenRecords = Henkaten::whereHas('line', function ($query) use ($currentStatus) {
                     $query->where('origin_id', '!=', env('ORIGIN_ELC'))
                         ->where(function ($subQuery) use ($currentStatus) {
@@ -1047,6 +1050,7 @@ class HenkatenController extends Controller
                 ->orWhere(function ($query) use ($currentStatus) {
                     $query->whereHas('line', function ($subQuery) use ($currentStatus) {
                         $subQuery->where('origin_id', env('ORIGIN_ELC'))
+                                ->where('is_done', '1')
                                 ->where(function ($subSubQuery) use ($currentStatus) {
                                     $subSubQuery->where('status_man', $currentStatus)
                                                 ->orWhere('status_method', $currentStatus)
@@ -1068,6 +1072,7 @@ class HenkatenController extends Controller
             Log::error('Failed to update line statuses: ', ['error' => $th->getMessage()]);
         }
     }
+
 
     public function henkatenExport()
     {
