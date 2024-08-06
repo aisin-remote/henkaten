@@ -1034,13 +1034,25 @@ class HenkatenController extends Controller
         try {
             DB::beginTransaction();
 
-            Line::whereNot('origin_id', env('ORIGIN_ELC'))
-                    ->where(function($query) use ($currentStatus) {
-                        $query->where('status_man', $currentStatus)
-                            ->orWhere('status_method', $currentStatus)
-                            ->orWhere('status_material', $currentStatus)
-                            ->orWhere('status_machine', $currentStatus);
-                    })
+            // Henkaten::with('line')
+            //             ->whereHas('line', function ($query) use ($currentStatus){
+            //                 $query->where('origin_id', env('ORIGIN_ELC'))
+            //             })
+
+            // Line::with('henkaten')
+            //         ->whereNot('origin_id', env('ORIGIN_ELC'))
+            //         ->where(function($query) use ($currentStatus) {
+            //             $query->where('status_man', $currentStatus)
+            //                 ->orWhere('status_method', $currentStatus)
+            //                 ->orWhere('status_material', $currentStatus)
+            //                 ->orWhere('status_machine', $currentStatus);
+            //         })
+            //         ->update($columnsToUpdate);
+                    
+            Line::where('status_man', $currentStatus)
+                    ->orWhere('status_method', $currentStatus)
+                    ->orWhere('status_material', $currentStatus)
+                    ->orWhere('status_machine', $currentStatus)
                     ->update($columnsToUpdate);
 
 
