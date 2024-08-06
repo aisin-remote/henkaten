@@ -618,6 +618,12 @@
                                                     <i class="ti ti-checks"></i>
                                                 </span>
                                             </button>
+                                            <button class="btn btn-warning troubleshoot"
+                                                data-history-id="{{ $history->henkaten->id }}">
+                                                <span class="rounded-3" id="icon">
+                                                    <i class="ti ti-edit"></i>
+                                                </span>
+                                            </button>
                                             <form
                                                 action="{{ route('dashboard.henkaten.destroy', ['id' => $history->henkaten->id]) }}"
                                                 method="post" class="delete d-inline-block m-0">
