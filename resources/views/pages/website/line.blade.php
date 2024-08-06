@@ -537,9 +537,9 @@
                             <th>Time</th>
                             <th class="text-center">Troubleshoot</th>
                             <th>Status</th>
-                            <th class="text-center">Action</th>
+                            <th class="text-center">Detail</th>
                             @if (auth()->user()->role !== 'JP')
-                                <th class="text-center">Approval</th>
+                                <th class="text-center">Action</th>
                             @endif
                         </tr>
                     </thead>
@@ -639,7 +639,7 @@
                                     @endcan
                                     @can('SPV')
                                         <td class="text-center">
-                                            <button class="btn btn-success" data-history-id="{{ $history->henkaten->id }}"
+                                            <button class="btn btn-danger" data-history-id="{{ $history->henkaten->id }}"
                                                 disabled>
                                                 <span class="rounded-3" id="icon">
                                                     <i class="ti ti-checks"></i>
@@ -649,7 +649,7 @@
                                     @endcan
                                     @can('MGR')
                                         <td class="text-center">
-                                            <button class="btn btn-success" data-history-id="{{ $history->henkaten->id }}"
+                                            <button class="btn btn-danger" data-history-id="{{ $history->henkaten->id }}"
                                                 disabled>
                                                 <span class="rounded-3" id="icon">
                                                     <i class="ti ti-checks"></i>
