@@ -1042,7 +1042,7 @@ class HenkatenController extends Controller
                         ->orWhere('status_material', $currentStatus)
                         ->orWhere('status_machine', $currentStatus);
                 })
-                ->pluck('id');
+                ->update($columnsToUpdate);
 
             if ($linesToUpdate1->isNotEmpty()) {
                 Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
