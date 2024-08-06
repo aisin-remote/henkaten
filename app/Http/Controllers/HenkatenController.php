@@ -1047,19 +1047,20 @@ class HenkatenController extends Controller
                             });
                     });
                 })
-                ->orWhere(function ($query) use ($currentStatus) {
-                    // Condition 2: is_done = 1 (no restriction on origin_id)
-                    $query->where('is_done', '1')
-                        ->whereHas('line', function ($subQuery) use ($currentStatus) {
-                            $subQuery->where(function ($subSubQuery) use ($currentStatus) {
-                                $subSubQuery->where('status_man', $currentStatus)
-                                    ->orWhere('status_method', $currentStatus)
-                                    ->orWhere('status_material', $currentStatus)
-                                    ->orWhere('status_machine', $currentStatus);
-                            });
-                        });
-                })
                 ->get();
+
+                // ->orWhere(function ($query) use ($currentStatus) {
+                //     // Condition 2: is_done = 1 (no restriction on origin_id)
+                //     $query->where('is_done', '1')
+                //         ->whereHas('line', function ($subQuery) use ($currentStatus) {
+                //             $subQuery->where(function ($subSubQuery) use ($currentStatus) {
+                //                 $subSubQuery->where('status_man', $currentStatus)
+                //                     ->orWhere('status_method', $currentStatus)
+                //                     ->orWhere('status_material', $currentStatus)
+                //                     ->orWhere('status_machine', $currentStatus);
+                //             });
+                //         });
+                // })
                 
                 foreach ($henkatenRecords as $henkaten) {
                     $henkaten->line->update($columnsToUpdate);
