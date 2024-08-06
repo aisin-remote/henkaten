@@ -278,20 +278,65 @@ class HenkatenController extends Controller
 
     public function destroy(Request $request)
     {
+        // get current line and 4M based on henkaten id
+        $line = Henkaten::find($request->id);
+        $toDate = Carbon::parse($line->date)->format('Y-m-d');
+        $worstPriorityItem = 0;
+
+        $statusMappings = [
+            'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
+            'stop' => ['priority' => 2, 'overall' => 'stop'],
+        ];
+        
         try {
             DB::beginTransaction();
-
-            // get current line and 4M based on henkaten id
-            $line = Henkaten::select('line_id', '4M')->find($request->id);
 
             $henkaten = Henkaten::findOrFail($request->id);
             $henkaten->delete();
 
-            // update status
-            Line::where('id', $line->line_id)
-                    ->update([
-                        'status_' . $line->{"4M"} => 'running'
-                    ]);
+            $otherStats = Henkaten::select('status')
+                ->where('is_done', '0')
+                ->where('line_id', $line->line_id)
+                ->where('4M', $line->{"4M"})
+                ->where('date', 'LIKE', $toDate . '%')
+                ->where('shift_id', $line->shift_id)
+                ->get();
+                
+            if ($otherStats->isEmpty()) {
+                // update status
+                Line::where('id', $line->line_id)
+                        ->update([
+                            'status_' . $line->{"4M"} => 'running'
+                        ]);
+            }else{
+                foreach ($otherStats as $otherStat) {
+                    if (isset($statusMappings[$otherStat->status])) {
+                        $priority = $statusMappings[$otherStat->status]['priority'];
+                        // If the priority is 2 (which is the biggest priority) we can immediately break the loop
+                        if ($priority > $worstPriorityItem) {
+                            $worstPriorityItem = $priority;
+                            $status = $statusMappings[$otherStat->status]['overall'];
+                            
+                            // Insert into line table
+                            try {
+                                DB::beginTransaction();
+
+                                // change line status
+                                Line::where('id', $line->line_id)->update([
+                                    'status_' . $line->{"4M"} => $status,
+                                ]);
+
+                                DB::commit();
+                            } catch (\Throwable $th) {
+                                DB::rollBack();
+                                return redirect()
+                                    ->back()
+                                    ->with('error', 'Data gagal disimpan!');
+                            }
+                        }
+                    }
+                }
+            }
             
             DB::commit();
 
