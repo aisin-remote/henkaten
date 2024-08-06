@@ -100,13 +100,30 @@ class DashboardController extends Controller
 
         // get current pivot
         $currentTime = Carbon::now()->format('H:i:s');
-        $current_date = Carbon::now()->toDateString();
-        $pivot = Pivot::with('theme')
-            ->with('firstPic')
-            ->with('secondPic')
-            ->where('active_date', $current_date)
-            ->where('origin_id', $empOrigin)
-            ->first();
+        
+        // get current pivot
+        $currentDateTime = Carbon::now();
+        $current_date = $currentDateTime->toDateString();
+        $current_time = $currentDateTime->toTimeString();
+        
+        // Determine if the time is before 06:00:00
+        $isBeforeMorningCutoff = $currentDateTime->lessThan(Carbon::parse('06:00:00'));
+        
+
+        // Query Logic
+        $pivotQuery = Pivot::with('theme', 'firstPic', 'secondPic')
+                            ->where('origin_id', $empOrigin);
+
+        if ($isBeforeMorningCutoff) {
+            // If before 06:00 AM, consider the previous day as the active date
+            $previousDate = Carbon::parse($current_date)->subDay()->toDateString(); // '2024-08-05'
+            $pivotQuery->where('active_date', $previousDate);
+        } else {
+            // Otherwise, consider the current date as the active date
+            $pivotQuery->where('active_date', $current_date);
+        }
+                            
+        $pivot = $pivotQuery->first();
 
         $shifts = [
             'Non Shift' => ['start' => '07:15:00', 'end' => '16:20:00'],
