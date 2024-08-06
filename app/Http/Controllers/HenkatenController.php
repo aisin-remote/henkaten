@@ -1042,10 +1042,11 @@ class HenkatenController extends Controller
                         ->orWhere('status_material', $currentStatus)
                         ->orWhere('status_machine', $currentStatus);
                 })
-                ->update($columnsToUpdate);
+                ->pluck('id');
 
             if ($linesToUpdate1->isNotEmpty()) {
-                Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
+                $cek = Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
+                dd($cek);
             }
 
             // 2. Update lines where origin_id is ELC and is_done is 1
