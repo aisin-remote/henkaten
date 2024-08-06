@@ -1034,21 +1034,20 @@ class HenkatenController extends Controller
         try {
             DB::beginTransaction();
 
+            // Update all lines related to Henkaten records where is_done = 0 and origin_id != ELC
             $henkatenRecords = Henkaten::where(function ($query) use ($currentStatus) {
-                // Condition 1: is_done = 0 and origin_id is NOT ELC
-                $query->where('is_done', '0')
-                    ->whereHas('line', function ($subQuery) use ($currentStatus) {
-                        $subQuery->whereNot('origin_id', env('ORIGIN_ELC'))
-                            ->where(function ($subSubQuery) use ($currentStatus) {
-                                $subSubQuery->where('status_man', $currentStatus)
-                                    ->orWhere('status_method', $currentStatus)
-                                    ->orWhere('status_material', $currentStatus)
-                                    ->orWhere('status_machine', $currentStatus);
-                            });
-                    });
+                    $query->where('is_done', '0')
+                        ->whereHas('line', function ($subQuery) use ($currentStatus) {
+                            $subQuery->where('origin_id', '!=', env('ORIGIN_ELC'))
+                                ->where(function ($subSubQuery) use ($currentStatus) {
+                                    $subSubQuery->where('status_man', $currentStatus)
+                                        ->orWhere('status_method', $currentStatus)
+                                        ->orWhere('status_material', $currentStatus)
+                                        ->orWhere('status_machine', $currentStatus);
+                                });
+                        });
                 })
                 ->orWhere(function ($query) use ($currentStatus) {
-                    // Condition 2: is_done = 1 (no restriction on origin_id)
                     $query->where('is_done', '1')
                         ->whereHas('line', function ($subQuery) use ($currentStatus) {
                             $subQuery->where(function ($subSubQuery) use ($currentStatus) {
@@ -1060,20 +1059,17 @@ class HenkatenController extends Controller
                         });
                 })
                 ->get();
-                
-                foreach ($henkatenRecords as $henkaten) {
-                    $henkaten->line->update($columnsToUpdate);
-                }
-                
-            // Line::where('status_man', $currentStatus)
-            //         ->orWhere('status_method', $currentStatus)
-            //         ->orWhere('status_material', $currentStatus)
-            //         ->orWhere('status_machine', $currentStatus)
-            //         ->update($columnsToUpdate);
+
+            // Bulk update all related Line records
+            Line::whereHas('henkaten', function ($query) use ($henkatenRecords) {
+                $query->whereIn('id', $henkatenRecords->pluck('line_id'));
+            })->update($columnsToUpdate);
 
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
+            // Consider logging the error
+            Log::error('Failed to update line statuses: ', ['error' => $th->getMessage()]);
         }
     }
 
