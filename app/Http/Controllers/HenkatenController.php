@@ -1054,7 +1054,8 @@ class HenkatenController extends Controller
                             ->orWhere('status_machine', $currentStatus);
                     });
                 })
-                ->update($columnsToUpdate);
+                ->get();
+                // ->update($columnsToUpdate);
 
                 
                 dd($query);
