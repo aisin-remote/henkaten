@@ -612,12 +612,12 @@
                                     </td>
                                     @can('LDR')
                                         <td class="text-center">
-                                            <button class="btn btn-success" data-history-id="{{ $history->henkaten->id }}"
+                                            {{-- <button class="btn btn-success" data-history-id="{{ $history->henkaten->id }}"
                                                 disabled>
                                                 <span class="rounded-3" id="icon">
                                                     <i class="ti ti-checks"></i>
                                                 </span>
-                                            </button>
+                                            </button> --}}
                                             <button class="btn btn-warning troubleshoot"
                                                 data-history-id="{{ $history->henkaten->id }}">
                                                 <span class="rounded-3" id="icon">
