@@ -1034,7 +1034,7 @@ class HenkatenController extends Controller
         try {
             DB::beginTransaction();
 
-            Henkaten::where(function ($query) use ($currentStatus) {
+            $query = Henkaten::where(function ($query) use ($currentStatus) {
                 // Condition 1: is_done = 0 and origin_id is NOT ELC
                 $query->where('is_done', '0')
                     ->whereHas('line', function ($subQuery) use ($currentStatus) {
@@ -1047,7 +1047,8 @@ class HenkatenController extends Controller
                             });
                     });
                 })
-                ->update($columnsToUpdate);
+                ->get();
+                // ->update($columnsToUpdate);
 
                 // ->orWhere(function ($query) use ($currentStatus) {
                 //     // Condition 2: is_done = 1 (no restriction on origin_id)
@@ -1063,7 +1064,7 @@ class HenkatenController extends Controller
                 // })
                 // ->get();
                 
-                // dd($query);
+                dd($query);
                 
             // Line::where('status_man', $currentStatus)
             //         ->orWhere('status_method', $currentStatus)
