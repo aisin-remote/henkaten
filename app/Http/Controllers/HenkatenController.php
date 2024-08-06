@@ -1067,7 +1067,6 @@ class HenkatenController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             // Consider logging the error
-            Log::error('Failed to update line statuses: ', ['error' => $th->getMessage()]);
         }
     }
 
