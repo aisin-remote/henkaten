@@ -1034,7 +1034,7 @@ class HenkatenController extends Controller
         try {
             DB::beginTransaction();
 
-            $query = Henkaten::where(function ($query) use ($currentStatus) {
+            Henkaten::where(function ($query) use ($currentStatus) {
                 // Condition 1: is_done = 0 and origin_id is NOT ELC
                 $query->where('is_done', '0')
                     ->whereHas('line', function ($subQuery) use ($currentStatus) {
@@ -1047,22 +1047,23 @@ class HenkatenController extends Controller
                             });
                     });
                 })
-                ->orWhere(function ($query) use ($currentStatus) {
-                    // Condition 2: is_done = 1 (no restriction on origin_id)
-                    $query->where('is_done', '1')
-                        ->whereHas('line', function ($subQuery) use ($currentStatus) {
-                            $subQuery->where(function ($subSubQuery) use ($currentStatus) {
-                                $subSubQuery->where('status_man', $currentStatus)
-                                    ->orWhere('status_method', $currentStatus)
-                                    ->orWhere('status_material', $currentStatus)
-                                    ->orWhere('status_machine', $currentStatus);
-                            });
-                        });
-                })
-                ->get();
-                // ->update($columnsToUpdate);
+                ->update($columnsToUpdate);
+
+                // ->orWhere(function ($query) use ($currentStatus) {
+                //     // Condition 2: is_done = 1 (no restriction on origin_id)
+                //     $query->where('is_done', '1')
+                //         ->whereHas('line', function ($subQuery) use ($currentStatus) {
+                //             $subQuery->where(function ($subSubQuery) use ($currentStatus) {
+                //                 $subSubQuery->where('status_man', $currentStatus)
+                //                     ->orWhere('status_method', $currentStatus)
+                //                     ->orWhere('status_material', $currentStatus)
+                //                     ->orWhere('status_machine', $currentStatus);
+                //             });
+                //         });
+                // })
+                // ->get();
                 
-                dd($query);
+                // dd($query);
                 
             // Line::where('status_man', $currentStatus)
             //         ->orWhere('status_method', $currentStatus)
