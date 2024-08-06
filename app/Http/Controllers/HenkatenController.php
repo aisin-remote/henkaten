@@ -1057,7 +1057,7 @@ class HenkatenController extends Controller
                 ->update($columnsToUpdate);
 
                 
-                // dd($query);
+                dd($query);
             // Line::where('status_man', $currentStatus)
             //         ->orWhere('status_method', $currentStatus)
             //         ->orWhere('status_material', $currentStatus)
