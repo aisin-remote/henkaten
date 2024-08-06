@@ -1045,20 +1045,19 @@ class HenkatenController extends Controller
                                 ->orWhere('status_machine', $currentStatus);
                         });
                 })
-                ->get();
-                // ->orWhere('is_done', '1')
-                // ->whereHas('line', function ($query) use ($currentStatus) {
-                //     $query->where(function ($subQuery) use ($currentStatus) {
-                //         $subQuery->where('status_man', $currentStatus)
-                //             ->orWhere('status_method', $currentStatus)
-                //             ->orWhere('status_material', $currentStatus)
-                //             ->orWhere('status_machine', $currentStatus);
-                //     });
-                // });
-                
+                ->orWhere('is_done', '1')
+                ->whereHas('line', function ($query) use ($currentStatus) {
+                    $query->where(function ($subQuery) use ($currentStatus) {
+                        $subQuery->where('status_man', $currentStatus)
+                            ->orWhere('status_method', $currentStatus)
+                            ->orWhere('status_material', $currentStatus)
+                            ->orWhere('status_machine', $currentStatus);
+                    });
+                })
+                ->update($columnsToUpdate);
 
                 
-                dd($query);
+                // dd($query);
             // Line::where('status_man', $currentStatus)
             //         ->orWhere('status_method', $currentStatus)
             //         ->orWhere('status_material', $currentStatus)
