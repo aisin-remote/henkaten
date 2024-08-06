@@ -1045,7 +1045,9 @@ class HenkatenController extends Controller
                 ->pluck('id');
 
             if ($linesToUpdate1->isNotEmpty()) {
-                dd(Line::whereIn('id', $linesToUpdate1)->get());
+                $cek = Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
+
+                dd(DB::getQueryLog());
             }
 
             // 2. Update lines where origin_id is ELC and is_done is 1
