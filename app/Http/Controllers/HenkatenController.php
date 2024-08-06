@@ -1034,31 +1034,34 @@ class HenkatenController extends Controller
         try {
             DB::beginTransaction();
 
-            $query = Henkaten::with('line')
-                ->where('is_done', '0')
-                ->whereHas('line', function ($query) use ($currentStatus) {
-                    $query->whereNot('origin_id', env('ORIGIN_ELC'))
-                        ->where(function ($subQuery) use ($currentStatus) {
-                            $subQuery->where('status_man', $currentStatus)
+            Henkaten::where(function ($query) use ($currentStatus) {
+                // First condition: is_done = 0 and origin_id is NOT ELC
+                $query->where('is_done', '0')
+                    ->whereHas('line', function ($subQuery) use ($currentStatus) {
+                        $subQuery->whereNot('origin_id', env('ORIGIN_ELC'))
+                            ->where(function ($subSubQuery) use ($currentStatus) {
+                                $subSubQuery->where('status_man', $currentStatus)
+                                    ->orWhere('status_method', $currentStatus)
+                                    ->orWhere('status_material', $currentStatus)
+                                    ->orWhere('status_machine', $currentStatus);
+                            });
+                    });
+            })
+            ->orWhere(function ($query) use ($currentStatus) {
+                // Second condition: is_done = 1
+                $query->where('is_done', '1')
+                    ->whereHas('line', function ($subQuery) use ($currentStatus) {
+                        $subQuery->where(function ($subSubQuery) use ($currentStatus) {
+                            $subSubQuery->where('status_man', $currentStatus)
                                 ->orWhere('status_method', $currentStatus)
                                 ->orWhere('status_material', $currentStatus)
                                 ->orWhere('status_machine', $currentStatus);
                         });
-                })
-                ->orWhere('is_done', '1')
-                ->whereHas('line', function ($query) use ($currentStatus) {
-                    $query->where(function ($subQuery) use ($currentStatus) {
-                        $subQuery->where('status_man', $currentStatus)
-                            ->orWhere('status_method', $currentStatus)
-                            ->orWhere('status_material', $currentStatus)
-                            ->orWhere('status_machine', $currentStatus);
                     });
-                })
-                ->get();
-                // ->update($columnsToUpdate);
+            })
+            ->update($columnsToUpdate);
 
                 
-                dd($query);
             // Line::where('status_man', $currentStatus)
             //         ->orWhere('status_method', $currentStatus)
             //         ->orWhere('status_material', $currentStatus)
