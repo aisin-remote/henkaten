@@ -1033,7 +1033,6 @@ class HenkatenController extends Controller
 
         try {
             DB::beginTransaction();
-            DB::enableQueryLog(); // Enable query logging
 
             // 1. Update lines where origin_id is not ELC
             $linesToUpdate1 = Line::whereNot('origin_id', env('ORIGIN_ELC'))
@@ -1045,11 +1044,10 @@ class HenkatenController extends Controller
                 })
                 ->pluck('id');
 
-            if ($linesToUpdate1->isNotEmpty()) {
-                $cek = Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
+                dd($columnsToUpdate);
 
-                $queries = DB::getQueryLog();
-                dd($queries);
+            if ($linesToUpdate1->isNotEmpty()) {
+                Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
             }
 
             // 2. Update lines where origin_id is ELC and is_done is 1
