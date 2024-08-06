@@ -939,16 +939,16 @@
     $(document).ready(function() {
 
         // reload page based on websocket signal
-        // var pusher = new Pusher('8ee9e8a15df964407aec', {
-        //     cluster: 'ap1',
-        //     forceTLS: true
-        // });
+        var pusher = new Pusher('8ee9e8a15df964407aec', {
+            cluster: 'ap1',
+            forceTLS: true
+        });
 
-        // // websocket
-        // pusher.subscribe('henkaten').bind('DashboardUpdated', function(data) {
-        //     // reload the page
-        //     window.location.reload();
-        // });
+        // websocket
+        pusher.subscribe('henkaten').bind('DashboardUpdated', function(data) {
+            // reload the page
+            window.location.reload();
+        });
 
         var themeSelect = document.getElementById('themeSelect');
         var customThemeInput = document.getElementById('customThemeInput');
@@ -1338,6 +1338,6 @@
             }
         }
 
-        connectMQTT();
+        // connectMQTT();
     });
 </script>
