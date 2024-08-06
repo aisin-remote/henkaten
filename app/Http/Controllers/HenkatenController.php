@@ -1059,9 +1059,10 @@ class HenkatenController extends Controller
                             });
                         });
                 })
-                ->update($columnsToUpdate);
+                ->get();
+                // ->update($columnsToUpdate);
                 
-
+                dd($query);
                 
             // Line::where('status_man', $currentStatus)
             //         ->orWhere('status_method', $currentStatus)
