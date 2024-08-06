@@ -1035,26 +1035,20 @@ class HenkatenController extends Controller
             DB::beginTransaction();
 
             // 1. Update lines where origin_id is not ELC
-            Line::whereNot('origin_id', env('ORIGIN_ELC'))
-                    ->where(function($query) use ($currentStatus) {
-                        $query->where('status_man', $currentStatus)
-                            ->orWhere('status_method', $currentStatus)
-                            ->orWhere('status_material', $currentStatus)
-                            ->orWhere('status_machine', $currentStatus);
-                    })
-                    ->update($columnsToUpdate);
-            // $linesToUpdate1 = Line::whereNot('origin_id', env('ORIGIN_ELC'))
-            //     ->where(function ($query) use ($currentStatus) {
-            //         $query->where('status_man', $currentStatus)
-            //             ->orWhere('status_method', $currentStatus)
-            //             ->orWhere('status_material', $currentStatus)
-            //             ->orWhere('status_machine', $currentStatus);
-            //     })
-            //     ->pluck('id');
+            $linesToUpdate1 = Line::whereNot('origin_id', env('ORIGIN_ELC'))
+                ->where(function ($query) use ($currentStatus) {
+                    $query->where('status_man', $currentStatus)
+                        ->orWhere('status_method', $currentStatus)
+                        ->orWhere('status_material', $currentStatus)
+                        ->orWhere('status_machine', $currentStatus);
+                })
+                ->pluck('id');
 
-            // if ($linesToUpdate1->isNotEmpty()) {
-            //     Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
-            // }
+                dd(env('ORIGIN_ELC'));
+
+            if ($linesToUpdate1->isNotEmpty()) {
+                Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
+            }
 
             // 2. Update lines where origin_id is ELC and is_done is 1
             $linesToUpdate2 = Line::where('origin_id', env('ORIGIN_ELC'))
