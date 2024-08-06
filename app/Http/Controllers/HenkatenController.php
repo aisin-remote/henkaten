@@ -1034,36 +1034,34 @@ class HenkatenController extends Controller
         try {
             DB::beginTransaction();
 
-            // Get Henkaten records where:
-            // - origin_id is not ELC, and update regardless of is_done status
-            // OR
-            // - origin_id is ELC and is_done is 1
-            $henkatenRecords = Henkaten::whereHas('line', function ($query) use ($currentStatus) {
-                    $query->where('origin_id', '!=', env('ORIGIN_ELC'))
-                        ->where(function ($subQuery) use ($currentStatus) {
-                            $subQuery->where('status_man', $currentStatus)
-                                    ->orWhere('status_method', $currentStatus)
-                                    ->orWhere('status_material', $currentStatus)
-                                    ->orWhere('status_machine', $currentStatus);
-                        });
+            // 1. Update lines where origin_id is not ELC
+            $linesToUpdate1 = Line::where('origin_id', '!=', env('ORIGIN_ELC'))
+                ->where(function ($query) use ($currentStatus) {
+                    $query->where('status_man', $currentStatus)
+                        ->orWhere('status_method', $currentStatus)
+                        ->orWhere('status_material', $currentStatus)
+                        ->orWhere('status_machine', $currentStatus);
                 })
-                ->orWhere(function ($query) use ($currentStatus) {
-                    $query->whereHas('line', function ($subQuery) use ($currentStatus) {
-                        $subQuery->where('origin_id', env('ORIGIN_ELC'))
-                                ->where('is_done', '1')
-                                ->where(function ($subSubQuery) use ($currentStatus) {
-                                    $subSubQuery->where('status_man', $currentStatus)
-                                                ->orWhere('status_method', $currentStatus)
-                                                ->orWhere('status_material', $currentStatus)
-                                                ->orWhere('status_machine', $currentStatus);
-                                });
-                    });
-                })
-                ->get();
+                ->pluck('id');
 
-            // Bulk update all related Line records
-            $lineIds = $henkatenRecords->pluck('line_id')->unique();
-            Line::whereIn('id', $lineIds)->update($columnsToUpdate);
+            if ($linesToUpdate1->isNotEmpty()) {
+                Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
+            }
+
+            // 2. Update lines where origin_id is ELC and is_done is 1
+            $linesToUpdate2 = Line::where('origin_id', env('ORIGIN_ELC'))
+                ->where('is_done', '1')
+                ->where(function ($query) use ($currentStatus) {
+                    $query->where('status_man', $currentStatus)
+                        ->orWhere('status_method', $currentStatus)
+                        ->orWhere('status_material', $currentStatus)
+                        ->orWhere('status_machine', $currentStatus);
+                })
+                ->pluck('id');
+
+            if ($linesToUpdate2->isNotEmpty()) {
+                Line::whereIn('id', $linesToUpdate2)->update($columnsToUpdate);
+            }
 
             DB::commit();
         } catch (\Throwable $th) {
@@ -1072,7 +1070,6 @@ class HenkatenController extends Controller
             Log::error('Failed to update line statuses: ', ['error' => $th->getMessage()]);
         }
     }
-
 
     public function henkatenExport()
     {
