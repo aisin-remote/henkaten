@@ -127,11 +127,20 @@ class HenkatenController extends Controller
         ];
 
         foreach ($shifts as $shift) {
-            if ($currentTime->between($shift->time_start, $shift->time_end)) {
-                $shiftId = $shift->id;
-                break;
+            if ($shift->time_start > $shift->time_end) {
+                // Shift spans midnight
+                if ($currentTime->gte($shift->time_start) || $currentTime->lte($shift->time_end)) {
+                    $shiftId = $shift->id;
+                    break;
+                }
+            } else {
+                // Regular shift
+                if ($currentTime->between($shift->time_start, $shift->time_end)) {
+                    $shiftId = $shift->id;
+                    break;
+                }
             }
-        }
+        }        
 
         if (!$request->status) {
             return redirect()

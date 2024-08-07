@@ -108,7 +108,6 @@ class DashboardController extends Controller
         
         // Determine if the time is before 06:00:00
         $isBeforeMorningCutoff = $currentDateTime->lessThan(Carbon::parse('06:00:00'));
-        
 
         // Query Logic
         $pivotQuery = Pivot::with('theme', 'firstPic', 'secondPic')
