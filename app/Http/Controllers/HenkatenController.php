@@ -662,6 +662,7 @@ class HenkatenController extends Controller
         $originToGroupIdMap = [
             env('ORIGIN_MA') => env('GROUP_ID_MA'),
             env('ORIGIN_DC') => env('GROUP_ID_DC'),
+            env('ORIGIN_ELC') => env('GROUP_ID_ELC'),
         ];
         
         // Use the origin to get the group ID directly from the map, if available
