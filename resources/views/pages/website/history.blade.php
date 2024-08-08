@@ -65,12 +65,13 @@
                             <th rowspan="2" class="align-middle">Line</th>
                             <th rowspan="2" class="align-middle">Time</th>
                             <th rowspan="2" class="align-middle text-center" style="max-width: 300px">Abnormality</th>
+                            <th rowspan="2" class="align-middle text-center">Henkaten Document</th>
                             <th rowspan="2" class="align-middle">Category</th>
                             <th rowspan="2" class="align-middle">Table Henkaten No.</th>
                             <th rowspan="2" class="align-middle text-center" style="max-width: 300px">
                                 Troubleshoot
                             </th>
-                            <th rowspan="2" class="align-middle text-center">Document</th>
+                            <th rowspan="2" class="align-middle text-center">Troubleshoot Document</th>
                             <th rowspan="2" class="align-middle text-center">status</th>
                             <th class="text-center">Safety</th>
                             <th colspan="4" class="text-center">Quality Inspection</th>
@@ -101,6 +102,26 @@
                                 <td>{{ $henkaten->line->name }}</td>
                                 <td>{{ Carbon\Carbon::parse($henkaten->date)->format('H:i:s') }}</td>
                                 <td style="max-width: 300px; white-space: normal;">{{ $henkaten->abnormality }}</td>
+                                <td class="text-center">
+                                    @if ($henkaten->photo)
+                                        @if (pathinfo($henkaten->photo, PATHINFO_EXTENSION) === 'xlsx' ||
+                                                pathinfo($henkaten->photo, PATHINFO_EXTENSION) === 'xls')
+                                            <button class="btn btn-info">
+                                                <a href="{{ asset('uploads/ts_henkaten/' . $henkaten->photo) }}" download
+                                                    style="color: white">
+                                                    Download File
+                                                </a>
+                                            </button>
+                                        @else
+                                            <button class="btn btn-info" data-bs-toggle="modal"
+                                                data-bs-target="#{{ $henkaten->id }}Photo">
+                                                Show File
+                                            </button>
+                                        @endif
+                                    @else
+                                        No Document
+                                    @endif
+                                </td>
                                 <td>{{ $henkaten->category }}</td>
                                 <td class="text-center">{{ $henkaten->henkatenManagement->table_no }}</td>
                                 @php
