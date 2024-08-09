@@ -255,7 +255,7 @@ class DashboardController extends Controller
         ];
         
         // Initialize current shift
-        $currentShift = null;
+        $currentShifts = null;
         
         // Determine the current shifts
         foreach ($shifts as $shiftName => $shiftTimes) {
