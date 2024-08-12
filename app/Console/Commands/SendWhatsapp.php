@@ -87,7 +87,7 @@ class SendWhatsapp extends Command
                             $pending->line->name,
                             $pending->abnormality,
                             $status,
-                            $pending->date
+                            \Carbon\Carbon::parse($pending->date)->format('Y-m-d')
                         );
                     }
                 }else{
