@@ -165,18 +165,46 @@ class DashboardController extends Controller
                     ->count();
 
         // get henkaten where status still active
+        // $activeProblems = Henkaten::with(['shift', 'line.origin'])
+        //     ->where(function ($query) use ($empOrigin, $currentTime, $current_date) {
+        //             $query->whereHas('line', function ($q) use ($empOrigin) {
+        //                 $q->where('origin_id', $empOrigin);
+        //             })
+        //             ->whereHas('shift', function ($q) use ($currentTime) {
+        //                 $q->where(function ($subQuery) use ($currentTime) {
+        //                     $subQuery->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
+        //                 });
+        //             })
+        //             ->where('date', 'LIKE', $current_date . '%')
+        //             ->where('status', 'henkaten');
+        //     })
+        //     ->orWhere(function ($query) use ($empOrigin) {
+        //         $query->where('status', 'stop')->where('is_done', '0')->whereHas('line', function ($q) use ($empOrigin) {
+        //             $q->where('origin_id', $empOrigin);
+        //         });
+        //     })
+        //     ->take(2)
+        //     ->get();
+
         $activeProblems = Henkaten::with(['shift', 'line.origin'])
             ->where(function ($query) use ($empOrigin, $currentTime, $current_date) {
-                    $query->whereHas('line', function ($q) use ($empOrigin) {
-                        $q->where('origin_id', $empOrigin);
+                $query->whereHas('line', function ($q) use ($empOrigin) {
+                    $q->where('origin_id', $empOrigin);
+                })
+                ->where(function ($subQuery) use ($currentTime, $empOrigin) {
+                    // Apply shift condition only for non-electric origin_id
+                    $subQuery->whereHas('line', function ($q) use ($empOrigin) {
+                        $q->where('origin_id', '!=', env('ORIGIN_ELC'));
                     })
                     ->whereHas('shift', function ($q) use ($currentTime) {
-                        $q->where(function ($subQuery) use ($currentTime) {
-                            $subQuery->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
+                        $q->where(function ($shiftQuery) use ($currentTime) {
+                            $shiftQuery->where('time_start', '<=', $currentTime)
+                                    ->where('time_end', '>=', $currentTime);
                         });
-                    })
-                    ->where('date', 'LIKE', $current_date . '%')
-                    ->where('status', 'henkaten');
+                    });
+                })
+                ->where('date', 'LIKE', $current_date . '%')
+                ->where('status', 'henkaten');
             })
             ->orWhere(function ($query) use ($empOrigin) {
                 $query->where('status', 'stop')->where('is_done', '0')->whereHas('line', function ($q) use ($empOrigin) {
@@ -185,6 +213,7 @@ class DashboardController extends Controller
             })
             ->take(2)
             ->get();
+        
 
         // in this page we will get all line status
         return view('pages.website.dashboard', [
