@@ -1054,8 +1054,6 @@ class HenkatenController extends Controller
                 })
                 ->pluck('id');
 
-                dd($linesToUpdate1);
-
             if ($linesToUpdate1->isNotEmpty()) {
                 Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
                 DB::commit();
@@ -1076,6 +1074,8 @@ class HenkatenController extends Controller
                 Line::whereIn('id', $linesToUpdate2)->update($columnsToUpdate);
                 DB::commit();
             }
+
+            dd($linesToUpdate2);
 
             DB::commit();
         } catch (\Throwable $th) {
