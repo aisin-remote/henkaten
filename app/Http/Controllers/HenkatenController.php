@@ -1070,9 +1070,7 @@ class HenkatenController extends Controller
                 })
                 ->pluck('id');
 
-                dd('Reached this point');
             dd($linesToUpdate2);
-
 
             if ($linesToUpdate2->isNotEmpty()) {
                 Line::whereIn('id', $linesToUpdate2)->update($columnsToUpdate);
@@ -1082,7 +1080,7 @@ class HenkatenController extends Controller
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
-            // Consider logging the error
+            dd('Caught an exception: ' . $th->getMessage());
         }
     }
 
