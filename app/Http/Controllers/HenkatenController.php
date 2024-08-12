@@ -1045,7 +1045,7 @@ class HenkatenController extends Controller
             DB::beginTransaction();
 
             // 1. Update lines where origin_id is not ELC
-            $linesToUpdate1 = Line::where('origin_id', '!=' , env('ORIGIN_ELC'))
+            $linesToUpdate1 = Line::whereNot('origin_id', env('ORIGIN_ELC'))
                 ->where(function ($query) use ($currentStatus) {
                     $query->where('status_man', $currentStatus)
                         ->orWhere('status_method', $currentStatus)
@@ -1054,8 +1054,6 @@ class HenkatenController extends Controller
                 })
                 ->pluck('id');
 
-                dd($linesToUpdate1);
-
             if ($linesToUpdate1->isNotEmpty()) {
                 Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
                 DB::commit();
@@ -1063,8 +1061,8 @@ class HenkatenController extends Controller
 
             // 2. Update lines where origin_id is ELC and is_done is 1
             $linesToUpdate2 = Henkaten::whereHas('line', function ($query) use ($currentStatus) {
-                            $query->whereNot('origin_id', env('ORIGIN_ELC'))
-                                    ->where('is_done', 'done')
+                            $query->where('origin_id', env('ORIGIN_ELC'))
+                                    ->where('is_done', '1')
                                     ->where(function ($subQuery) use ($currentStatus) {
                                         $subQuery->where('status_man', $currentStatus)
                                                 ->orWhere('status_method', $currentStatus)
