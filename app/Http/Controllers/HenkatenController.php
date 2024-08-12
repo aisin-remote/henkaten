@@ -1054,6 +1054,8 @@ class HenkatenController extends Controller
                 })
                 ->pluck('id');
 
+                dd($linesToUpdate1);
+
             if ($linesToUpdate1->isNotEmpty()) {
                 Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
                 DB::commit();
@@ -1061,17 +1063,15 @@ class HenkatenController extends Controller
 
             // 2. Update lines where origin_id is ELC and is_done is 1
             $linesToUpdate2 = Henkaten::whereHas('line', function ($query) use ($currentStatus) {
-                                    $query->whereNot('origin_id', env('ORIGIN_ELC'))
-                                            ->where('is_done', 'done')
-                                            ->where(function ($subQuery) use ($currentStatus) {
-                                                $subQuery->where('status_man', $currentStatus)
-                                                        ->orWhere('status_method', $currentStatus)
-                                                        ->orWhere('status_material', $currentStatus)
-                                                        ->orWhere('status_machine', $currentStatus);
-                                            });
-                                    })->pluck('id');
-
-            dd($linesToUpdate2);
+                            $query->whereNot('origin_id', env('ORIGIN_ELC'))
+                                    ->where('is_done', 'done')
+                                    ->where(function ($subQuery) use ($currentStatus) {
+                                        $subQuery->where('status_man', $currentStatus)
+                                                ->orWhere('status_method', $currentStatus)
+                                                ->orWhere('status_material', $currentStatus)
+                                                ->orWhere('status_machine', $currentStatus);
+                                    });
+                            })->pluck('id');
 
             if ($linesToUpdate2->isNotEmpty()) {
                 Line::whereIn('id', $linesToUpdate2)->update($columnsToUpdate);
