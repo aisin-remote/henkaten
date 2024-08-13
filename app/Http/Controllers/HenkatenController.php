@@ -824,7 +824,7 @@ class HenkatenController extends Controller
                 ->with('success', 'Berhasil diapprove!');
         } catch (\Throwable $th) {
             DB::rollback();
-            dd($th->getMessage());
+            // dd($th->getMessage());
             return redirect()
                     ->back()
                     ->with('error', 'Gagal diapprove!');
