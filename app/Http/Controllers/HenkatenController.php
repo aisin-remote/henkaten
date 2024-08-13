@@ -805,7 +805,6 @@ class HenkatenController extends Controller
                             DB::commit();
                         } catch (\Throwable $th) {
                             DB::rollBack();
-                            dd($th->getMessage());
                             return redirect()
                                 ->back()
                                 ->with('error', 'Data gagal disimpan!');
@@ -825,6 +824,7 @@ class HenkatenController extends Controller
                 ->with('success', 'Berhasil diapprove!');
         } catch (\Throwable $th) {
             DB::rollback();
+            dd($th->getMessage());
             return redirect()
                     ->back()
                     ->with('error', 'Gagal diapprove!');
