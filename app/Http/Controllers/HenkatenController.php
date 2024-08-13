@@ -723,7 +723,10 @@ class HenkatenController extends Controller
                 // send whatsapp notification
                 $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
                 $phone = $groupId;
-                $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+                $message = sprintf(
+                    "```------ ```*AIIA HENKATEN ALERT*``` ------ %s%sLINE          : ```*%s*``` %sLINE STATUS   : ```*%s*``` %s4M            : %s %sCategory      : %s %sABNORMALITY   : %s %sTIME          : %s %sPIC           : %s %s%s         ```*TROUBLESHOOT*```    %s%sTROUBLESHOOT       : %s %sTIME               : %s %sRESULT CHECK       : %s %sINSPECTION REPORT  : %s %sPART               : %s %sBEFORE TREATMENT   : %s %sAFTER TREATMENT    : %s   %sDONE BY            : %s %s%s------ BY AISIN BISA ------```",
+                    "\n", "\n", $lineName, "\n", $status, "\n", $type, "\n", $category, "\n", $abnormality, "\n", $time, "\n", $firstPic, "\n", "\n", "\n", "\n", $troubleshoot, "\n", $troubleshootTime, "\n", $resultCheck, "\n", $inspectionCheck, "\n", $part, "\n", $beforeTreatment, "\n", $afterTreatment, "\n", $doneBy, "\n", "\n"
+                );                
                 $curl = curl_init();
                 curl_setopt_array($curl, [
                     CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
