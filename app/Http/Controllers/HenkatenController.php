@@ -686,6 +686,27 @@ class HenkatenController extends Controller
             'stop' => ['priority' => 2, 'overall' => 'stop'],
         ];
 
+        $currentTimeFull = Carbon::now();
+        $shifts = Shift::all();
+        $shiftId = null;
+
+        // get current shift id
+        foreach ($shifts as $shift) {
+            if ($shift->time_start > $shift->time_end) {
+                // Shift spans midnight
+                if ($currentTimeFull->gte($shift->time_start) || $currentTimeFull->lte($shift->time_end)) {
+                    $shiftId = $shift->id;
+                    break;
+                }
+            } else {
+                // Regular shift
+                if ($currentTimeFull->between($shift->time_start, $shift->time_end)) {
+                    $shiftId = $shift->id;
+                    break;
+                }
+            }
+        }      
+
         $currentDate = Carbon::now()->format('Y-m-d');
         $currentTime = Carbon::now()->format('H:i:s');
 
@@ -792,29 +813,33 @@ class HenkatenController extends Controller
             // Leveling priority
             $worstPriority = 0;
             foreach ($otherStats as $otherStat) {
-                if (isset($statusMappings[$otherStat->status])) {
-                    $priority = $statusMappings[$otherStat->status]['priority'];
-                    // If the priority is 2 (which is the biggest priority) we can immediately break the loop
-                    if ($priority > $worstPriority) {
-                        $worstPriority = $priority;
-                        // Insert into line table
-                        try {
-                            DB::beginTransaction();
-                            // change line status
-                            Line::where('id', $request->line)->update([
-                                'status_' . $request->{"4M"} => $otherStat->status,
-                            ]);
+                $status = $otherStat->status;
+                if (!isset($statusMappings[$status])) {
+                    continue;
+                }
+                $priority = $statusMappings[$status]['priority'];
+                // If the priority is 2 (which is the highest priority), update and break the loop
+                if ($priority > $worstPriority) {
+                    $worstPriority = $priority;
+                    try {
+                        DB::beginTransaction();
 
-                            DB::commit();
-                        } catch (\Throwable $th) {
-                            DB::rollBack();
-                            return redirect()
-                                ->back()
-                                ->with('error', 'Data gagal disimpan!');
-                        }
+                        $lineStatus = ($shiftId !== $henkatenInfo->shift_id) ? ($status !== 'STOP' ? 'running' : 'stop') : $status;
+
+                        Line::where('id', $request->line)->update([
+                            'status_' . $request->{"4M"} => $lineStatus,
+                        ]);
+
+                        DB::commit();
+                    } catch (\Throwable $th) {
+                        DB::rollBack();
+                        return redirect()
+                            ->back()
+                            ->with('error', 'Data gagal disimpan!');
                     }
                 }
             }
+
 
             DB::commit();
 
