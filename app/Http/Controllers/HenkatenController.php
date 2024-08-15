@@ -1098,7 +1098,7 @@ class HenkatenController extends Controller
                                                 ->orWhere('status_material', $currentStatus)
                                                 ->orWhere('status_machine', $currentStatus);
                                     });
-                            })->pluck('id');
+                            })->get()->pluck('line.id');
 
                             dd($linesToUpdate2);
 
