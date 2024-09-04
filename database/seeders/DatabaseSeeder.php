@@ -61,7 +61,7 @@ class DatabaseSeeder extends Seeder
         // ]);
             
         // Line
-        // $origin = Origin::select('id')->where('name', 'MA')->first();
+        $origin = Origin::select('id')->where('name', 'SEAT MOTOR')->first();
         // $lines = Line::where('origin_id', $origin->id)->get();
 
         // Position::whereNull('size')->update([
@@ -90,43 +90,43 @@ class DatabaseSeeder extends Seeder
         //     }
         // }
 
-        Position::create([
-            'line_id' => '9ac830ff-4e03-44e1-b26f-2a9e36946f3a',
-            'pos' => 1,
-            'top' => 51,
-            'left' => 14,
-            'size' => 70
-        ]);
+        // Position::create([
+        //     'line_id' => '9ac830ff-4e03-44e1-b26f-2a9e36946f3a',
+        //     'pos' => 1,
+        //     'top' => 51,
+        //     'left' => 14,
+        //     'size' => 70
+        // ]);
         
-        for($i=1; $i<=3; $i++) {
-            Position::create([
-                'line_id' => '9ac830ff-5540-469a-acc6-8c86d751ed3d',
-                'pos' => $i,
-                'top' => 51,
-                'left' => 14,
-                'size' => 70
-            ]);
-        }
+        // for($i=1; $i<=3; $i++) {
+        //     Position::create([
+        //         'line_id' => '9ac830ff-5540-469a-acc6-8c86d751ed3d',
+        //         'pos' => $i,
+        //         'top' => 51,
+        //         'left' => 14,
+        //         'size' => 70
+        //     ]);
+        // }
         
-        for($i=1; $i<=6; $i++) {
-            Position::create([
-                'line_id' => '9ac830ff-563b-44f5-8273-7a1ea624b6cd',
-                'pos' => $i,
-                'top' => 51,
-                'left' => 14,
-                'size' => 70
-            ]);
-        }
+        // for($i=1; $i<=6; $i++) {
+        //     Position::create([
+        //         'line_id' => '9ac830ff-563b-44f5-8273-7a1ea624b6cd',
+        //         'pos' => $i,
+        //         'top' => 51,
+        //         'left' => 14,
+        //         'size' => 70
+        //     ]);
+        // }
         
-        for($i=1; $i<=5; $i++) {
-            Position::create([
-                'line_id' => '9ac830ff-5710-4a88-a79e-a21efd1c24e2',
-                'pos' => $i,
-                'top' => 51,
-                'left' => 14,
-                'size' => 70
-            ]);
-        }
+        // for($i=1; $i<=5; $i++) {
+        //     Position::create([
+        //         'line_id' => '9ac830ff-5710-4a88-a79e-a21efd1c24e2',
+        //         'pos' => $i,
+        //         'top' => 51,
+        //         'left' => 14,
+        //         'size' => 70
+        //     ]);
+        // }
         
         // for($i=1; $i<=2; $i++) {
         //         Line::create([
@@ -134,6 +134,19 @@ class DatabaseSeeder extends Seeder
         //             'name' => 'ASAN0' . $i
         //         ]);
         // }
+
+        Line::create([
+            'origin_id' => $origin->id,
+            'name' => 'AS548'
+        ]);
+        Line::create([
+            'origin_id' => $origin->id,
+            'name' => 'AS561'
+        ]);
+        Line::create([
+            'origin_id' => $origin->id,
+            'name' => 'AS600'
+        ]);
         
         // for($i=0; $i<1; $i++) {
         //     Line::create([

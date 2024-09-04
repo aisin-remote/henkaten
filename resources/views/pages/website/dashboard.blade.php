@@ -508,7 +508,7 @@
                                                         } elseif (auth()->user()->origin->name == 'ASSY') {
                                                             $origin = 'ASSEMBLING';
                                                         } else {
-                                                            $origin = 'ELECTRIC';
+                                                            $origin = auth()->user()->origin->name;
                                                         }
                                                     @endphp
                                                     {{ $origin }}
