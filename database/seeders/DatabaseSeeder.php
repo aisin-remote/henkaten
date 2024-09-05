@@ -61,7 +61,7 @@ class DatabaseSeeder extends Seeder
         // ]);
             
         // Line
-        $origin = Origin::select('id')->where('name', 'SEAT MOTOR')->first();
+        $origin = Origin::select('id')->where('name', 'HANDLE')->first();
         // $lines = Line::where('origin_id', $origin->id)->get();
 
         // Position::whereNull('size')->update([
@@ -137,16 +137,15 @@ class DatabaseSeeder extends Seeder
 
         Line::create([
             'origin_id' => $origin->id,
-            'name' => 'AS548'
+            'name' => 'AS501'
         ]);
-        Line::create([
-            'origin_id' => $origin->id,
-            'name' => 'AS561'
-        ]);
-        Line::create([
-            'origin_id' => $origin->id,
-            'name' => 'AS600'
-        ]);
+        
+        for($i=521; $i<529; $i++) {
+            Line::create([
+                'origin_id' => $origin->id,
+                'name' => 'AS' . $i
+            ]);
+        }
         
         // for($i=0; $i<1; $i++) {
         //     Line::create([
