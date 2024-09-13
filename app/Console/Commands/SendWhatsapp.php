@@ -41,6 +41,8 @@ class SendWhatsapp extends Command
             env('ORIGIN_MA') => env('GROUP_ID_MA'),
             env('ORIGIN_DC') => env('GROUP_ID_DC'),
             env('ORIGIN_ELC') => env('GROUP_ID_ELC'),
+            env('ORIGIN_SEAT') => env('GROUP_ID_BODY'),
+            env('ORIGIN_HANDLE') => env('GROUP_ID_BODY'),
         ];
         
         $henkaten = []; // Initialize the result array
