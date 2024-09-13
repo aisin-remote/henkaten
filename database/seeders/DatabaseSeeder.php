@@ -61,7 +61,7 @@ class DatabaseSeeder extends Seeder
         // ]);
             
         // Line
-        $origin = Origin::select('id')->where('name', 'HANDLE')->first();
+        // $origin = Origin::select('id')->where('name', 'HANDLE')->first();
         // $lines = Line::where('origin_id', $origin->id)->get();
 
         // Position::whereNull('size')->update([
@@ -118,14 +118,18 @@ class DatabaseSeeder extends Seeder
         //     ]);
         // }
         
+        $lines = Line::select('id')->where('origin_id', '9ac7fcde-8689-4bcc-9770-4847253355a2')->get();
+        
         // for($i=1; $i<=5; $i++) {
-        //     Position::create([
-        //         'line_id' => '9ac830ff-5710-4a88-a79e-a21efd1c24e2',
-        //         'pos' => $i,
-        //         'top' => 51,
-        //         'left' => 14,
-        //         'size' => 70
-        //     ]);
+        foreach($lines as $line) {
+            Position::create([
+                'line_id' => $line->id,
+                'pos' => '1',
+                'top' => 65,
+                'left' => 50,
+                'size' => 80
+            ]);
+        }
         // }
         
         // for($i=1; $i<=2; $i++) {
@@ -135,17 +139,17 @@ class DatabaseSeeder extends Seeder
         //         ]);
         // }
 
-        Line::create([
-            'origin_id' => $origin->id,
-            'name' => 'AS501'
-        ]);
+        // Line::create([
+        //     'origin_id' => $origin->id,
+        //     'name' => 'AS501'
+        // ]);
         
-        for($i=521; $i<529; $i++) {
-            Line::create([
-                'origin_id' => $origin->id,
-                'name' => 'AS' . $i
-            ]);
-        }
+        // for($i=521; $i<529; $i++) {
+        //     Line::create([
+        //         'origin_id' => $origin->id,
+        //         'name' => 'AS' . $i
+        //     ]);
+        // }
         
         // for($i=0; $i<1; $i++) {
         //     Line::create([

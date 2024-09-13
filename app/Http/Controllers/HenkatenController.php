@@ -25,6 +25,7 @@ use App\Models\HenkatenManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Jobs\SendWhatsAppNotification;
 use PhpMqtt\Client\ConnectionSettings;
 
 class HenkatenController extends Controller
@@ -249,21 +250,9 @@ class HenkatenController extends Controller
             $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
             $phone = $groupId;
             $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$line->name*``` %cLINE STATUS   : ```*$status*``` %c4M            : $request->type %cCategory      : $request->category %cABNORMALITY   : $request->abnormality %cTIME          : $date %cPIC           : $pivot %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
-            $curl = curl_init();
-            curl_setopt_array($curl, [
-                CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
-            ]);
-
-            $response = curl_exec($curl);
-            curl_close($curl);
+            
+            // dispatch job
+            SendWhatsAppNotification::dispatch($message, $token, $phone);
 
             // push to websocket
             $this->pushData(true);
@@ -747,22 +736,10 @@ class HenkatenController extends Controller
                 $message = sprintf(
                     "```------ ```*AIIA HENKATEN ALERT*``` ------ %s%sLINE          : ```*%s*``` %sLINE STATUS   : ```*%s*``` %s4M            : %s %sCategory      : %s %sABNORMALITY   : %s %sTIME          : %s %sPIC           : %s %s%s         ```*TROUBLESHOOT*```    %s%sTROUBLESHOOT       : %s %sTIME               : %s %sRESULT CHECK       : %s %sINSPECTION REPORT  : %s %sPART               : %s %sBEFORE TREATMENT   : %s %sAFTER TREATMENT    : %s   %sDONE BY            : %s %s%s------ BY AISIN BISA ------```",
                     "\n", "\n", $lineName, "\n", $status, "\n", $type, "\n", $category, "\n", $abnormality, "\n", $time, "\n", $firstPic, "\n", "\n", "\n", "\n", $troubleshoot, "\n", $troubleshootTime, "\n", $resultCheck, "\n", $inspectionCheck, "\n", $part, "\n", $beforeTreatment, "\n", $afterTreatment, "\n", $doneBy, "\n", "\n"
-                );                
-                $curl = curl_init();
-                curl_setopt_array($curl, [
-                    CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => '',
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 0,
-                    CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => 'POST',
-                    CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
-                ]);
-
-                $response = curl_exec($curl);
-                curl_close($curl);
+                );     
+                
+                 // dispatch job
+                SendWhatsAppNotification::dispatch($message, $token, $phone);
                 
             } elseif (auth()->user()->role === 'SPV') {
                 Approval::where('henkaten_id', $request->henkaten_id)->update([

@@ -347,15 +347,35 @@ class DashboardController extends Controller
 
         $line = Line::findOrFail($lineId->id);
 
+        // get current status of each status
+        $status_man = $line->status_man;
+        $status_method = $line->status_method;
+        $status_machine = $line->status_machine;
+        $status_material = $line->status_material;
+
+        $all_stat = [
+            'status_man' => $status_man,
+            'status_method' => $status_method,
+            'status_machine' => $status_machine,
+            'status_material' => $status_material,
+        ];
+
+        $stat_to_update = [];
+        
+        foreach($all_stat as $key => $value){
+            if($value === 'off'){
+                array_push($stat_to_update, $key);
+            }
+        }
+
         try {
             DB::beginTransaction();
 
-            $line->update([
-                'status_man' => $onOffSwitch,
-                'status_method' => $onOffSwitch,
-                'status_machine' => $onOffSwitch,
-                'status_material' => $onOffSwitch,
-            ]);
+            for($i = 0; $i < count($stat_to_update); $i++) {
+                $line->update([
+                    $stat_to_update[$i] => $onOffSwitch,
+                ]);
+            }
 
             DB::commit();
             return ['status' => 'success'];
