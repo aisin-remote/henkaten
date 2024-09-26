@@ -247,11 +247,12 @@ class HenkatenController extends Controller
 
             $status = strtoupper($request->status);
             $date = Carbon::parse($henkaten->date)->format('j F Y, g:i A');
+            $pic = auth()->user()->name;
 
             // send WA notif
             $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
             $phone = $groupId;
-            $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$line->name*``` %cLINE STATUS   : ```*$status*``` %c4M            : $request->type %cCategory      : $request->category %cABNORMALITY   : $request->abnormality %cTIME          : $date %cPIC           : $pivot %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+            $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$line->name*``` %cLINE STATUS   : ```*$status*``` %c4M            : $request->type %cCategory      : $request->category %cABNORMALITY   : $request->abnormality %cTIME          : $date %cPIC           : $pic %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
             
             // dispatch job
             SendWhatsAppNotification::dispatch($message, $token, $phone);
@@ -720,6 +721,7 @@ class HenkatenController extends Controller
         $beforeTreatment = $henkatenInfo->troubleshoot->before_treatment;
         $afterTreatment = $henkatenInfo->troubleshoot->after_treatment;
         $doneBy = $henkatenInfo->troubleshoot->employee->name;
+        $pic = auth()->user()->name;
 
         try {
             DB::beginTransaction();
@@ -741,7 +743,7 @@ class HenkatenController extends Controller
                 $phone = $groupId;
                 $message = sprintf(
                     "```------ ```*AIIA HENKATEN ALERT*``` ------ %s%sLINE          : ```*%s*``` %sLINE STATUS   : ```*%s*``` %s4M            : %s %sCategory      : %s %sABNORMALITY   : %s %sTIME          : %s %sPIC           : %s %s%s         ```*TROUBLESHOOT*```    %s%sTROUBLESHOOT       : %s %sTIME               : %s %sRESULT CHECK       : %s %sINSPECTION REPORT  : %s %sPART               : %s %sBEFORE TREATMENT   : %s %sAFTER TREATMENT    : %s   %sDONE BY            : %s %s%s------ BY AISIN BISA ------```",
-                    "\n", "\n", $lineName, "\n", $status, "\n", $type, "\n", $category, "\n", $abnormality, "\n", $time, "\n", $firstPic, "\n", "\n", "\n", "\n", $troubleshoot, "\n", $troubleshootTime, "\n", $resultCheck, "\n", $inspectionCheck, "\n", $part, "\n", $beforeTreatment, "\n", $afterTreatment, "\n", $doneBy, "\n", "\n"
+                    "\n", "\n", $lineName, "\n", $status, "\n", $type, "\n", $category, "\n", $abnormality, "\n", $time, "\n", $pic, "\n", "\n", "\n", "\n", $troubleshoot, "\n", $troubleshootTime, "\n", $resultCheck, "\n", $inspectionCheck, "\n", $part, "\n", $beforeTreatment, "\n", $afterTreatment, "\n", $doneBy, "\n", "\n"
                 );     
                 
                  // dispatch job
