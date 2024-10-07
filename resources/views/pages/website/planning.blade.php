@@ -25,8 +25,7 @@
                     @method('POST')
                     @php
                         $flag = false;
-                        $empOrigin = auth()->user();
-                        $flag = $empOrigin->origin->name !== 'DC' ? true : false;
+                        $flag = $origin->name !== 'DC' ? true : false;
                     @endphp
                     <div class="row">
                         <div class="col-12 mb-3">
@@ -144,8 +143,10 @@
                             <th>Planning Date</th>
                             <th class="text-center"><span class="badge bg-info">Employee List</span></th>
                             <th class="text-center">Action</th>
-                            @if (auth()->user()->origin_id == env('ORIGIN_ELC'))
-                                <th class="text-center">Change Shift</th>
+                            @if (request()->segment(3) == env('ORIGIN_ELC') ||
+                                    request()->segment(3) == env('ORIGIN_SEAT') ||
+                                    request()->segment(3) == env('ORIGIN_HANDLE'))
+                                <th class="text-center">Change Action</th>
                             @endif
                         </tr>
                     </thead>
@@ -153,13 +154,23 @@
                         @foreach ($groupedArray as $groupKey => $employees)
                             @php
                                 // Split the group key to get shift, line, and week
-                                [$shift, $line, $start, $end] = explode('|', $groupKey);
-                                $modalId = Str::slug($shift . $line . $start . $end);
+                                [$shift, $line, $start, $end, $line_id, $shift_id] = explode('|', $groupKey);
+                                $modalId = Str::slug($shift . $line . $start . $end . $line_id . $shift_id);
                             @endphp
                             <tr>
-                                <td class="line">{{ $line }}</td>
                                 <td class="w-20">
-                                    <span class="actual shift">{{ $shift }}</span>
+                                    <span class="actual-line line"
+                                        data-line-id="{{ $line_id }}">{{ $line }}</span>
+                                    <select id="editActualLine" class="form-select editActualLine"
+                                        style="border-radius:6px; display:none">
+                                        @foreach ($lines as $line)
+                                            <option value="{{ $line->id }}">{{ $line->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td class="w-20">
+                                    <span class="actual shift"
+                                        data-shift-id="{{ $shift_id }}">{{ $shift }}</span>
                                     <select id="editActual" class="form-select editActual"
                                         style="border-radius:6px; display:none">
                                         @foreach ($shifts as $shift)
@@ -225,7 +236,7 @@
                                         </button>
                                     </form>
                                 </td>
-                                @if (auth()->user()->origin_id == env('ORIGIN_ELC'))
+                                @if (request()->segment(3) == env('ORIGIN_ELC'))
                                     <td class="text-center">
                                         <button class="btn btn-icon btn-warning edit fw-bolder" id="edit">
                                             Change Shift
@@ -233,7 +244,19 @@
                                         <button class="btn btn-icon btn-success save mb-1" style="display: none">
                                             <i class="fas fa-check"></i>
                                         </button>
-                                        <button class="btn btn-icon btn-danger cancel" style="display: none">
+                                        <button class="btn btn-icon btn-danger cancel mb-1" style="display: none">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </td>
+                                @elseif(request()->segment(3) == env('ORIGIN_SEAT') || request()->segment(3) == env('HANDLE'))
+                                    <td class="text-center">
+                                        <button class="btn btn-icon btn-warning fw-bolder edit-body" id="edit-body">
+                                            Change Line/Shift
+                                        </button>
+                                        <button class="btn btn-icon btn-success save-body mb-1" style="display: none">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-icon btn-danger cancel-body mb-1" style="display: none">
                                             <i class="fas fa-times"></i>
                                         </button>
                                     </td>
@@ -273,8 +296,8 @@
     @foreach ($groupedArray as $groupKey => $employees)
         @php
             // Split the group key to get shift, line, and week
-            [$shift, $line, $start, $end] = explode('|', $groupKey);
-            $modalId = Str::slug($shift . $line . $start . $end);
+            [$shift, $line, $start, $end, $line_id, $shift_id] = explode('|', $groupKey);
+            $modalId = Str::slug($shift . $line . $start . $end . $line_id . $shift_id);
         @endphp
 
         <div class="modal fade" id="{{ $modalId }}EmployeeDetail" tabindex="-1" role="dialog"
@@ -355,6 +378,9 @@
             // hide span
             $(this).closest('tr').find('.actual').hide();
 
+            var currentShiftValue = $row.find('.actual').data('shift-id');
+            $row.find('.editActual').val(currentShiftValue);
+
             // show input
             $(this).closest('tr').find('.editActual').show();
 
@@ -371,6 +397,40 @@
             // hide edit button
             $(this).closest('tr').find('.edit').hide();
         });
+
+        $(document).on('click', '#henkatenHistory .edit-body', function() {
+            // Find the current row
+            var $row = $(this).closest('tr');
+
+            // Hide the span elements
+            $row.find('.actual-line').hide();
+            $row.find('.actual').hide();
+
+            // Get the current value from the hidden actual-line element (make sure it's the correct element)
+            var currentLineValue = $row.find('.actual-line').data('line-id');
+            var currentShiftValue = $row.find('.actual').data('shift-id');
+
+            // Set the select input to the current value (must match one of the option values)
+            $row.find('.editActualLine').val(currentLineValue);
+            $row.find('.editActual').val(currentShiftValue);
+
+            // Show the input fields
+            $row.find('.editActualLine').show();
+            $row.find('.editActual').show();
+
+            // Show save and cancel buttons
+            $row.find('.save-body').css({
+                display: 'inline'
+            });
+            $row.find('.cancel-body').css({
+                display: 'inline'
+            });
+
+            // Hide the edit button
+            $row.find('.edit-body').hide();
+        });
+
+
 
         $(document).on('click', '#henkatenHistory .save', function() {
             let $row = $(this).closest('tr');
@@ -420,6 +480,57 @@
                 });
         });
 
+        $(document).on('click', '#henkatenHistory .save-body', function() {
+            let $row = $(this).closest('tr');
+
+            let shift = $row.find('.shift').html();
+            let line = $row.find('.line').html();
+            let expired = $row.find('.expired').val();
+            let newShift = $row.find('.editActual').val();
+            let newLine = $row.find('.editActualLine').val();
+
+            let requestOptions = {
+                method: 'GET', // Adjust the method if needed
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                        'content') // Add CSRF token for security
+                }
+            };
+
+            fetch(`/employee/planning/changeShift/${line}/${shift}/${expired}/${newShift}/${newLine}`,
+                    requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        notif('success', data.message);
+
+                        // update span content
+                        $row.find('.actual').html(data.data).show();
+                        $row.find('.actual-line').html(data.line).show();
+
+                        // hide input
+                        $row.find('.editActual').hide();
+                        $row.find('.editActualLine').hide();
+
+                        // hide save button
+                        $row.find('.save-body').hide();
+
+                        // hide cancel button
+                        $row.find('.cancel-body').hide();
+
+                        // show edit button
+                        $row.find('.edit-body').show();
+
+                    } else if (data.status === 'error') {
+                        notif('error', data.message);
+                    }
+                })
+                .catch(error => {
+                    notif('error', error.message);
+                });
+        });
+
         $(document).on('click', '#henkatenHistory .cancel', function() {
             let $row = $(this).closest('tr');
 
@@ -437,6 +548,27 @@
 
             // show edit button
             $row.find('.edit').show();
+        });
+
+        $(document).on('click', '#henkatenHistory .cancel-body', function() {
+            let $row = $(this).closest('tr');
+
+            // show span
+            $row.find('.actual-line').show();
+            $row.find('.actual').show();
+
+            // hide input
+            $row.find('.editActualLine').hide();
+            $row.find('.editActual').hide();
+
+            // hide save button
+            $row.find('.save-body').hide();
+
+            // hide cancel button
+            $row.find('.cancel-body').hide();
+
+            // show edit button
+            $row.find('.edit-body').show();
         });
 
         function notif(type, message) {
@@ -468,7 +600,19 @@
             items: 1
         })
         // clear all local storage when page load
-        localStorage.clear();
+        function clearLocalStorageExcept(excludedKeys) {
+            // Loop through all keys in local storage
+            Object.keys(localStorage).forEach(key => {
+                // If the current key is not in the excludedKeys array, remove it
+                if (!excludedKeys.includes(key)) {
+                    localStorage.removeItem(key);
+                }
+            });
+        }
+
+        // Usage
+        const keysToKeep = ['origin_id'];
+        clearLocalStorageExcept(keysToKeep);
 
 
         $('.repeater-pic-container').on('click', '.remove-pic-row', function() {

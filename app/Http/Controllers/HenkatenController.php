@@ -8,6 +8,7 @@ use App\Models\Line;
 use App\Models\User;
 use App\Models\Pivot;
 use App\Models\Shift;
+use App\Models\Origin;
 use App\Models\Approval;
 use App\Models\Employee;
 use App\Models\Henkaten;
@@ -92,7 +93,16 @@ class HenkatenController extends Controller
     public function storeHenkaten(Request $request)
     {
         // get origin id
-        $empOrigin = auth()->user()->origin_id;
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0];
+            }else{
+                $empOrigin = $request->origin;
+            }
+        }else{
+            $empOrigin = $request->origin ? $request->origin : auth()->user()->origin_id;
+        }
+        
         $docName = null;
         
         $originToGroupIdMap = [
@@ -356,7 +366,16 @@ class HenkatenController extends Controller
         // ]);
         
         // get origin id
-        $empOrigin = auth()->user()->origin_id;
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0];
+            }else{
+                $empOrigin = $request->origin;
+            }
+        }else{
+            $empOrigin = $request->origin ? $request->origin : auth()->user()->origin_id;
+        }
+        
         $docName = null;
 
         $originToGroupIdMap = [
@@ -651,7 +670,15 @@ class HenkatenController extends Controller
     public function troubleShootApproval(Request $request)
     {
         // get origin id
-        $empOrigin = auth()->user()->origin_id;
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0];
+            }else{
+                $empOrigin = $request->origin;
+            }
+        }else{
+            $empOrigin = $request->origin ? $request->origin : auth()->user()->origin_id;
+        }
 
         $originToGroupIdMap = [
             env('ORIGIN_MA') => env('GROUP_ID_MA'),
@@ -844,10 +871,21 @@ class HenkatenController extends Controller
         }
     }
 
-    public function history()
+    public function history($originId = null)
     {
-        // get origin id
-        $empOrigin = auth()->user()->origin_id;
+        // Get the origin id from the authenticated user
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
+                $origins = Origin::where('id', $empOrigin)->first();
+            }else{
+                $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+                $origins = Origin::where('id', $empOrigin)->first();
+            }
+        }else{
+            $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+            $origins = Origin::where('id', $empOrigin)->first();
+        }
 
         $henkatenHistory = Henkaten::with(['line.origin', 'approval'])
                         ->whereHas('line', function ($query) use ($empOrigin) {

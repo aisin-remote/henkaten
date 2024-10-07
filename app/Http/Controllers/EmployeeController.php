@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Line;
 use App\Models\Shift;
 use App\Models\Skill;
+use App\Models\Origin;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Models\PicActive;
@@ -22,10 +23,21 @@ use Illuminate\Support\Facades\Storage;
 class EmployeeController extends Controller
 {
     
-    public function index()
+    public function index($originId = null)
     {
         // Get the origin id from the authenticated user
-        $originId = auth()->user()->origin_id;
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
+                $origins = Origin::where('id', $empOrigin)->first();
+            }else{
+                $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+                $origins = Origin::where('id', $empOrigin)->first();
+            }
+        }else{
+            $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+            $origins = Origin::where('id', $empOrigin)->first();
+        }
 
         // Paginate employees with eager loading of related skills through EmployeeSkill
         $masterEmployees = Employee::with(['employeeSkill.skill'])->where('origin_id', $originId)->get();
@@ -85,10 +97,21 @@ class EmployeeController extends Controller
         return Storage::url($compressedPath . $filename);
     }
 
-    public function attendance()
+    public function attendance($originId = null)
     {
-        // get origin id
-        $empOrigin = auth()->user()->origin_id;
+        // Get the origin id from the authenticated user
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
+                $origins = Origin::where('id', $empOrigin)->first();
+            }else{
+                $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+                $origins = Origin::where('id', $empOrigin)->first();
+            }
+        }else{
+            $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+            $origins = Origin::where('id', $empOrigin)->first();
+        }
         
         $currentDate = Carbon::now()->format('Y-m-d');
         $currentTime = Carbon::now()->format('H:i:s');
@@ -109,6 +132,20 @@ class EmployeeController extends Controller
                 $query->where('origin_id', $empOrigin);
             })
             ->get();
+            
+        $activePics = PicActive::with('shift')
+            ->with('employee')
+            ->with('line')
+            ->where('active_from', '<=', $currentDate)
+            ->where('expired_at', '>=', $currentDate)
+            ->whereHas('shift', function ($query) use ($currentTime) {
+                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
+            })
+            ->whereHas('employee', function($query) use ($empOrigin){
+                $query->where('origin_id', $empOrigin);
+            })
+            ->get()
+            ->unique('employee.name'); // Ensure only unique employee names are returned
 
             $activeEmployees = $activeEmployees->groupBy('line_id');
             
@@ -116,6 +153,7 @@ class EmployeeController extends Controller
             $lines = Line::select('name','id')->where('origin_id', $empOrigin)->get();
             
         return view('pages.website.attendance', [
+            'pics' => $activePics, 
             'employees' => $activeEmployees,
             'shift' => $shift,
             'lines' => $lines,
@@ -129,67 +167,114 @@ class EmployeeController extends Controller
         $currentTime = Carbon::now()->format('H:i:s');
 
         // get shift
-        $shift = Shift::where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime)->first();
-        
-        // cek if employee exist
+        $shift = Shift::where('time_start', '<=', $currentTime)
+            ->where('time_end', '>=', $currentTime)
+            ->first();
+
+        // check if employee exists
         $employee = Employee::where('npk', $npk)->first();
-        if (!$employee){
+        if (!$employee) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Karyawan tidak terdaftar'
             ]);
         }
-        
-        // cek if employee already planned
+
+        // check if employee is already planned
         $employeePlanned = EmployeeActive::with('employee')
-            ->whereHas('employee', function ($query) use ($npk){
-                $query->where('npk', $npk);    
+            ->whereHas('employee', function ($query) use ($npk) {
+                $query->where('npk', $npk);
             })
             ->first();
-        if (!$employeePlanned){
+        if (!$employeePlanned) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Karyawan belum masuk planning!'
             ]);
         }
 
+        // check activeEmployee
         $activeEmployee = EmployeeActive::with('shift')
             ->with('employee')
             ->with('pos')
             ->where('active_from', '<=', $currentDate)
             ->where('expired_at', '>=', $currentDate)
             ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
+                $query->where('time_start', '<=', $currentTime)
+                    ->where('time_end', '>=', $currentTime);
             })
-            ->whereHas('employee', function ($query) use ($npk){
-                $query->where('npk', $npk);    
+            ->whereHas('employee', function ($query) use ($npk) {
+                $query->where('npk', $npk);
             })
             ->first();
-        if(!$activeEmployee){
+
+        // check activePic
+        $activePic = PicActive::with('shift')
+            ->with('employee')
+            ->where('active_from', '<=', $currentDate)
+            ->where('expired_at', '>=', $currentDate)
+            ->whereHas('shift', function ($query) use ($currentTime) {
+                $query->where('time_start', '<=', $currentTime)
+                    ->where('time_end', '>=', $currentTime);
+            })
+            ->whereHas('employee', function ($query) use ($npk) {
+                $query->where('npk', $npk);
+            })
+            ->first();
+
+        // check if neither activeEmployee nor activePic exists
+        if (!$activeEmployee && !$activePic) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Karyawan npk ' . $npk . ' bukan ' . $shift->name . '!'
             ]);
         }
 
-        $attendance = Attendance::where('employee_active_id', $activeEmployee->id)
-                    ->where('created_at', 'LIKE' , $currentDate . '%')
-                    ->first();
-        if($attendance){
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Karyawan npk ' . $npk . ' sudah absen!'
-            ]);
+        // Check if already marked attendance in the respective table
+        if ($activeEmployee) {
+            $attendance = Attendance::where('employee_active_id', $activeEmployee->id)
+                ->where('created_at', 'LIKE', $currentDate . '%')
+                ->first();
+            if ($attendance) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Karyawan npk ' . $npk . ' sudah absen!'
+                ]);
+            }
         }
 
+        if ($activePic) {
+            $picAttendance = PicAttendance::where('pic_active_id', $activePic->id)
+                ->where('created_at', 'LIKE', $currentDate . '%')
+                ->first();
+            if ($picAttendance) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Karyawan npk ' . $npk . ' sudah absen!'
+                ]);
+            }
+        }
+
+        // Insert into the appropriate table
         try {
             DB::beginTransaction();
 
-            // insert to attendance table
-            Attendance::create([
-                'employee_active_id' => $activeEmployee->id,
-                'time_in' => Carbon::now()->format('H:i:s'),
-            ]);
+            if ($activeEmployee) {
+                // Insert into Attendance table
+                Attendance::create([
+                    'employee_active_id' => $activeEmployee->id,
+                    'time_in' => Carbon::now()->format('H:i:s'),
+                ]);
+            }
+
+            if ($activePic) {
+                // Insert into PicAttendance table
+                PicAttendance::create([
+                    'pic_active_id' => $activePic->id,
+                    'time_in' => Carbon::now()->format('H:i:s'),
+                ]);
+            }
+
             DB::commit();
             return response()->json([
                 'status' => 'success',
@@ -207,7 +292,15 @@ class EmployeeController extends Controller
     public function employeeStore(Request $request)
     {
         // get origin id
-        $empOrigin = auth()->user()->origin_id;
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0];
+            }else{
+                $empOrigin = $request->origin;
+            }
+        }else{
+            $empOrigin = $request->origin ? $request->origin : auth()->user()->origin_id;
+        }
         
         $skills = $request->skill_name;
         $levels = $request->level;
@@ -284,10 +377,20 @@ class EmployeeController extends Controller
         }
     }
 
-    public function employeePlanning()
+    public function employeePlanning($originId = null)
     {
-        // get origin
-        $empOrigin = auth()->user()->origin_id;
+        // get origin id
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
+            }else{
+                $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+                $origins = Origin::where('id', $empOrigin)->first();
+            }
+        }else{
+            $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+            $origins = Origin::where('id', $empOrigin)->first();
+        }
         
         // get current date
         $currentDate = Carbon::now();
@@ -301,7 +404,7 @@ class EmployeeController extends Controller
                 ->join('lines', 'employee_active.line_id', '=', 'lines.id')
                 ->join('origins', 'lines.origin_id', '=', 'origins.id')
                 ->join('employees', 'employee_active.employee_id', '=', 'employees.id')
-                ->select('shifts.id as shift_id','shifts.name as shift_name', 'shifts.id as shift_id' , 'lines.id as line_id','lines.name as line_name', 'employee_active.active_from', 'employee_active.expired_at', 'employees.name', 'employees.photo','employees.npk', 'employees.role', 'employees.id as employee_id', 'positions.pos')
+                ->select('shifts.id as shift_id','shifts.name as shift_name', 'shifts.id as shift_id' , 'lines.id as line_id','lines.name as line_name', 'employee_active.active_from', 'employee_active.expired_at', 'employees.name', 'employees.photo','employees.npk', 'employees.role', 'employees.id as employee_id', 'positions.pos', 'lines.id as line_id')
                 ->where(function ($query) use ($empOrigin) {
                     $query->where('lines.origin_id', $empOrigin);
                 })
@@ -310,7 +413,7 @@ class EmployeeController extends Controller
     
         // Manually group by shift, line, and week
         $groupedEmployees = $activeEmployees->groupBy(function ($employee) {
-            return $employee->shift_name . '|' . $employee->line_name . '|' . Carbon::parse($employee->active_from)->format('Y-m-d') . '|' . Carbon::parse($employee->expired_at)->format('Y-m-d');
+            return $employee->shift_name . '|' . $employee->line_name . '|' . Carbon::parse($employee->active_from)->format('Y-m-d') . '|' . Carbon::parse($employee->expired_at)->format('Y-m-d') . '|' . $employee->line_id . '|' . $employee->shift_id;
         });
         
         // Convert the grouped collection to a standard array
@@ -321,6 +424,7 @@ class EmployeeController extends Controller
         $empSkills = EmployeeSkill::select()->get();
 
         return view('pages.website.planning', [
+            'origin' => $origins,
             'operators' => Employee::select('id', 'name')
                 ->whereIn('role', ['Operator'])
                 ->where('origin_id', $empOrigin)
@@ -513,12 +617,16 @@ class EmployeeController extends Controller
         }
     }
 
-    public function editPlanning($line , $shift, $expired, $newShift)
+    public function editPlanning($line , $shift, $expired, $newShift, $newLine = null)
     {        
-        $lineId = Line::where('name', $line)->value('id');                        
+        $lineId = Line::where('name', $line)->value('id');
+        
+        // If $newLine is null, use the current line's ID
+        $newLineId = $newLine ?? $lineId;
+
         $shiftId = Shift::where('name', $shift)->value('id');
-                                
-        if($shift == '' || $shift == null){
+        
+        if (empty($shift)) {
             return [
                 'status' => 'error',
                 'message' => 'Shift tidak boleh kosong!',
@@ -528,20 +636,22 @@ class EmployeeController extends Controller
         try {
             DB::beginTransaction();
 
-            // update loading list detail based on loading list id and customer part
+            // Update EmployeeActive with the new shift and line
             EmployeeActive::where('line_id', $lineId)
                             ->where('shift_id', $shiftId)
                             ->where('expired_at', $expired)
                             ->update([
                                 'shift_id' => $newShift,
+                                'line_id' => $newLineId, // Update to new line if applicable
                             ]);
 
-            // update JP 
+            // Update PicActive with the new shift and line
             PicActive::where('line_id', $lineId)
                             ->where('shift_id', $shiftId)
                             ->where('expired_at', $expired)
                             ->update([
                                 'shift_id' => $newShift,
+                                'line_id' => $newLineId, // Update to new line if applicable
                             ]);
 
             DB::commit();
@@ -549,15 +659,16 @@ class EmployeeController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data' => Shift::where('id', $newShift)->value('name'),
+                'line' => Line::where('id', $newLine)->value('name'),
                 'message' => 'Data berhasil diupdate!'
-            ],200);
+            ], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
 
             return response()->json([
                 'status' => 'error',
                 'message' => $th->getMessage(),
-            ],500);
+            ], 500);
         }
     }
 

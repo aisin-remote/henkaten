@@ -14,6 +14,7 @@ use App\Models\Employee;
 use App\Models\Henkaten;
 use App\Models\Position;
 use App\Models\PicActive;
+use App\Models\Attendance;
 use App\Models\HenkatenMan;
 use Illuminate\Support\Str;
 use App\Models\Troubleshoot;
@@ -92,11 +93,34 @@ class DashboardController extends Controller
 
         return $result;
     }
+
+    public function portal()
+    {
+        $originIds = json_decode(auth()->user()->origin_id); // Decode the JSON field
+        $origins = Origin::with('line.henkaten')->whereIn('id', $originIds)->get(); // Retrieve the origins based on IDs
+
+        // dd($origins); //
+        
+        return view('pages.website.portal',[
+            'origins' => $origins,
+        ]);
+    }
     
-    public function index()
+    public function index($originId = null)
     {
         // get origin id
-        $empOrigin = auth()->user()->origin_id;
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
+                $origins = Origin::where('id', $empOrigin)->first();
+            }else{
+                $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+                $origins = Origin::where('id', $empOrigin)->first();
+            }
+        }else{
+            $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+            $origins = Origin::where('id', $empOrigin)->first();
+        }
 
         // get current pivot
         $currentTime = Carbon::now()->format('H:i:s');
@@ -200,9 +224,9 @@ class DashboardController extends Controller
             ->take(2)
             ->get();
 
-
         // in this page we will get all line status
         return view('pages.website.dashboard', [
+            'origin' => $origins,
             'pivot' => $pivot,
             'activeEmployees' => $activeEmployees,
             'themes' => Theme::all(),
@@ -220,10 +244,21 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function indexLine()
+    public function indexLine($originId = null)
     {
         // get origin id
-        $empOrigin = auth()->user()->origin_id;
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
+                $origins = Origin::where('id', $empOrigin)->first();
+            }else{
+                $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+                $origins = Origin::where('id', $empOrigin)->first();
+            }
+        }else{
+            $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+            $origins = Origin::where('id', $empOrigin)->first();
+        }
 
         // in this page we will get all line status
         return view('pages.website.lineDashboard', [
@@ -232,10 +267,20 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function dashboardLine(Line $lineId)
+    public function dashboardLine(Line $lineId, $originId = null)
     {
         // get origin id
-        $empOrigin = auth()->user()->origin_id;
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
+            }else{
+                $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+                $origins = Origin::where('id', $empOrigin)->first();
+            }
+        }else{
+            $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+            $origins = Origin::where('id', $empOrigin)->first();
+        }
 
         // get user role
         $role = auth()->user()->role;
@@ -322,7 +367,10 @@ class DashboardController extends Controller
             })
             ->get();
 
+        $attendance = Attendance::whereDate('created_at', $currentDate)->get();
+
         return view('pages.website.line', [
+            'attendance' => $attendance,
             'line' => Line::findOrFail($lineId->id),
             'lineMap' => Line::where('id', $lineId->id)->first(),
             'employees' => Employee::doesntHave('employeeActive')
@@ -391,7 +439,15 @@ class DashboardController extends Controller
     public function selectTheme(Request $request)
     {
         // get origin id
-        $empOrigin = auth()->user()->origin_id;
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0];
+            }else{
+                $empOrigin = $request->origin;
+            }
+        }else{
+            $empOrigin = $request->origin ? $request->origin : auth()->user()->origin_id;
+        }
 
         // get theme name
         $parts = explode('/', $request->path());
@@ -523,10 +579,18 @@ class DashboardController extends Controller
         );
     }
 
-    public function selectSupervisor($id)
+    public function selectSupervisor(Request $request , $id)
     {
         // get origin id
-        $empOrigin = auth()->user()->origin_id;
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0];
+            }else{
+                $empOrigin = $request->origin;
+            }
+        }else{
+            $empOrigin = $request->origin ? $request->origin : auth()->user()->origin_id;
+        }
 
         $pic = $id;
         if ($pic == 0) {
@@ -612,10 +676,18 @@ class DashboardController extends Controller
         );
     }
     
-    public function selectFirstPic($id)
+    public function selectFirstPic(Request $request , $id)
     {
         // get origin id
-        $empOrigin = auth()->user()->origin_id;
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0];
+            }else{
+                $empOrigin = $request->origin;
+            }
+        }else{
+            $empOrigin = $request->origin ? $request->origin : auth()->user()->origin_id;
+        }
 
         $pic = $id;
         if ($pic == 0) {
@@ -719,11 +791,19 @@ class DashboardController extends Controller
         );
     }
 
-    public function selectSecondPic($id)
+    public function selectSecondPic(Request $request, $id)
     {
         // get origin id
-        $empOrigin = auth()->user()->origin_id;
-
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0];
+            }else{
+                $empOrigin = $request->origin;
+            }
+        }else{
+            $empOrigin = $request->origin ? $request->origin : auth()->user()->origin_id;
+        }
+        
         $pic = $id;
         if ($pic == 0) {
             return response()->json([

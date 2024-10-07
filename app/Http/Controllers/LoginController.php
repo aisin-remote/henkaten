@@ -34,6 +34,12 @@ class LoginController extends Controller
             // Reset the login attempts since authentication succeeded
             $this->clearLoginAttempts($request);
 
+            if(json_decode(auth()->user()->origin_id)){
+                if(count(json_decode(auth()->user()->origin_id)) >= 2){
+                    return redirect()->intended("/portal");
+                }
+            }
+
             // Otentikasi berhasil
             return redirect()->intended("/dashboard");
         }

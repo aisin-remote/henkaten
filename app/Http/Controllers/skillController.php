@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Line;
 use App\Models\Skill;
+use App\Models\Origin;
 use App\Models\MinimumSkill;
 use Illuminate\Http\Request;
 use App\Models\EmployeeSkill;
@@ -11,10 +12,24 @@ use Illuminate\Support\Facades\DB;
 
 class skillController extends Controller
 {
-    public function index()
+    public function index($originId = null)
     {
+        // Get the origin id from the authenticated user
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
+                $origins = Origin::where('id', $empOrigin)->first();
+            }else{
+                $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+                $origins = Origin::where('id', $empOrigin)->first();
+            }
+        }else{
+            $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+            $origins = Origin::where('id', $empOrigin)->first();
+        }
+        
         $masterSkills = Skill::select('name', DB::raw('GROUP_CONCAT(level) as levels'))
-            ->where('origin_id', auth()->user()->origin_id)
+            ->where('origin_id', $empOrigin)
             ->groupBy('name')
             ->get();
 
@@ -23,9 +38,21 @@ class skillController extends Controller
         ]);
     }
 
-    public function minimumIndex()
+    public function minimumIndex($originId = null)
     {
-        $empOrigin = auth()->user()->origin_id;
+        // Get the origin id from the authenticated user
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
+                $origins = Origin::where('id', $empOrigin)->first();
+            }else{
+                $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+                $origins = Origin::where('id', $empOrigin)->first();
+            }
+        }else{
+            $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+            $origins = Origin::where('id', $empOrigin)->first();
+        }
 
         // First, get the IDs from the `lines` table
         $lineIds = Line::where('origin_id', $empOrigin)->pluck('id');
@@ -39,7 +66,15 @@ class skillController extends Controller
 
     public function regist(Request $request)
     {
-        $empOrigin = auth()->user()->origin_id;
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0];
+            }else{
+                $empOrigin = $request->origin;
+            }
+        }else{
+            $empOrigin = $request->origin ? $request->origin : auth()->user()->origin_id;
+        }
 
         $skills = $request->input('repeater-group');
 
@@ -77,7 +112,7 @@ class skillController extends Controller
             foreach ($skills as $skill) {
                 for ($i = 1; $i <= 5; $i++) {
                     Skill::create([
-                        'origin_id' => auth()->user()->origin_id,
+                        'origin_id' => $empOrigin,
                         'name' => $skill['name'],
                         'level' => $i + 1
                     ]);

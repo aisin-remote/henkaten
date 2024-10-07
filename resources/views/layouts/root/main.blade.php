@@ -222,6 +222,26 @@
 
         // Initial schedule
         scheduleRefresh();
+
+        $(document).ready(function() {
+            var storedOriginId = localStorage.getItem('origin_id');
+
+            // If origin_id exists, update the navbar links dynamically
+            if (storedOriginId) {
+                $('#dashboard-link').attr('href', '/dashboard/' + storedOriginId);
+                $('#lineDashboard-link').attr('href', '/lineDashboard/' + storedOriginId);
+                $('#employee-link').attr('href', '/employee/' + storedOriginId);
+                $('#attendance-link').attr('href', '/attendance/' + storedOriginId);
+                $('#history-link').attr('href', '/history/' + storedOriginId);
+                $('#planning-link').attr('href', '/employee/planning/' + storedOriginId);
+                $('#skill-link').attr('href', '/skill/' + storedOriginId);
+                $('#skillMinimum-link').attr('href', '/skill/minimum/' + storedOriginId);
+            }
+        })
+
+        $('#logout').on('click', function() {
+            localStorage.removeItem('origin_id');
+        });
     </script>
 </body>
 

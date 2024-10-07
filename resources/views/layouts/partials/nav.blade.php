@@ -15,7 +15,7 @@
                 <!-- Dashboard -->
                 <!-- =================== -->
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link" href="/dashboard" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link" href="/dashboard" aria-expanded="false" id="dashboard-link">
                         <span class="rounded-3">
                             <i class="ti ti-home"></i>
                         </span>
@@ -23,7 +23,8 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link" href="/lineDashboard" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link" href="/lineDashboard" aria-expanded="false"
+                        id="lineDashboard-link">
                         <span class="rounded-3">
                             <i class="ti ti-article"></i>
                         </span>
@@ -46,7 +47,8 @@
                     </a>
                 </li> --}}
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link" href="/employee/planning" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link" href="/employee/planning" aria-expanded="false"
+                        id="planning-link">
                         <span class="rounded-3">
                             <i class="ti ti-calendar-time"></i>
                         </span>
@@ -54,7 +56,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link" href="/history" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link" href="/history" aria-expanded="false" id="history-link">
                         <span class="rounded-3">
                             <i class="ti ti-history"></i>
                         </span>
@@ -62,7 +64,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link" href="/attendance" aria-expanded="false">
+                    <a class="sidebar-link sidebar-link" href="/attendance" aria-expanded="false" id="attendance-link">
                         <span class="rounded-3">
                             <i class="ti ti-scan"></i>
                         </span>
@@ -84,19 +86,19 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="/employee" class="sidebar-link">
+                            <a href="/employee" class="sidebar-link" id="employee-link">
                                 <i class="ti ti-user"></i>
                                 <span class="hide-menu">Employee</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="/skill" class="sidebar-link">
+                            <a href="/skill" class="sidebar-link" id="skill-link">
                                 <i class="ti ti-barbell"></i>
                                 <span class="hide-menu">Skill</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="/skill/minimum" class="sidebar-link">
+                            <a href="/skill/minimum" class="sidebar-link" id="skillMinimum-link">
                                 <i class="ti ti-aperture"></i>
                                 <span class="hide-menu">Minimum Skill</span>
                             </a>
@@ -130,8 +132,8 @@
                 <h6 class="mb-0 fs-4">John Doe</h6>
                 <span class="fs-2">Designer</span>
             </div>
-            <button class="border-0 bg-transparent text-primary ms-2" tabindex="0" type="button" aria-label="logout"
-                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="logout">
+            <button class="border-0 bg-transparent text-primary ms-2" tabindex="0" type="button"
+                aria-label="logout" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="logout">
                 <i class="ti ti-power fs-6"></i>
             </button>
         </div>

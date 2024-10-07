@@ -38,8 +38,8 @@
                                 <label class="mb-1">Employee</label>
                                 <input type="text" class="form-control" placeholder="Employee Name" name="name"
                                     required>
-                                <input type="hidden" class="form-control" placeholder="Employee Name" name="origin_id"
-                                    value="{{ auth()->user()->origin_id }}">
+                                <input type="hidden" class="form-control" placeholder="Employee Name" name="origin"
+                                    id="origin">
                             </div>
                             <div class="col-lg-2 col-sm-12">
                                 <label class="mb-1">NPK</label>
@@ -478,6 +478,14 @@
                     '<span class="error-message text-danger">NPK harus terdiri dari 6 karakter</span>'
                 );
             }
+        });
+
+        $('#employee-form').on('submit', function() {
+            // Get the value from local storage
+            const origin = localStorage.getItem('origin_id'); // replace with your key
+
+            // Set the value to the hidden input
+            $('#origin').val(origin);
         });
 
         $('#addEmployee').on('click', function() {

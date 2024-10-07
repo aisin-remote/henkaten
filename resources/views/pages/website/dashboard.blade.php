@@ -476,7 +476,6 @@
                     return $overallStatusItem;
                 }
             }
-
             foreach ($items as $item) {
                 $summaryResultsItem[$item] = getOverallItem($lines, $item, $statusMappings);
             }
@@ -497,21 +496,7 @@
                                                     style="font-size: 1em; display:block; font-weight:900 !important; font-size:80px !important">
                                                     OVERALL
                                                     <br>
-                                                    @php
-                                                        $origin = '';
-                                                        if (auth()->user()->origin->name == 'DC') {
-                                                            $origin = 'DIE CASTING';
-                                                        } elseif (auth()->user()->origin->name == 'MA') {
-                                                            $origin = 'MACHINING';
-                                                        } elseif (auth()->user()->origin->name == 'MA ASSY') {
-                                                            $origin = 'MA & ASSY';
-                                                        } elseif (auth()->user()->origin->name == 'ASSY') {
-                                                            $origin = 'ASSEMBLING';
-                                                        } else {
-                                                            $origin = auth()->user()->origin->name;
-                                                        }
-                                                    @endphp
-                                                    {{ $origin }}
+                                                    {{ $origin->name }}
                                                 </h1>
                                             </div>
                                             <div class="col-lg-3 text-center" id="overallShape">
@@ -527,7 +512,6 @@
                             @foreach ($items as $item)
                                 @php
                                     $overallStatus = $summaryResultsItem[$item];
-
                                     if (!function_exists('overallMapStatusToShape')) {
                                         function overallMapStatusToShape($status)
                                         {
@@ -1072,6 +1056,9 @@
                 url: `{{ url('dashboard/selectSupervisor/${pic}') }}`,
                 _token: "{{ csrf_token() }}",
                 dataType: 'json',
+                data: {
+                    origin: localStorage.getItem('origin_id'),
+                },
                 success: function(data) {
                     if (data.status == 'success') {
                         // set local storage
@@ -1122,6 +1109,9 @@
                 url: `{{ url('dashboard/selectFirstPic/${pic}') }}`,
                 _token: "{{ csrf_token() }}",
                 dataType: 'json',
+                data: {
+                    origin: localStorage.getItem('origin_id'),
+                },
                 success: function(data) {
                     if (data.status == 'success') {
                         // set local storage
@@ -1172,6 +1162,9 @@
                 url: `{{ url('dashboard/selectSecondPic/${pic}') }}`,
                 _token: "{{ csrf_token() }}",
                 dataType: 'json',
+                data: {
+                    origin: localStorage.getItem('origin_id'),
+                },
                 success: function(data) {
                     if (data.status == 'success') {
                         // set local storage
@@ -1226,7 +1219,8 @@
                 _token: "{{ csrf_token() }}",
                 dataType: 'json',
                 data: {
-                    theme: theme
+                    theme: theme,
+                    origin: localStorage.getItem('origin_id'),
                 },
                 success: function(data) {
                     console.log(data);

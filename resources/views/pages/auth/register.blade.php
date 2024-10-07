@@ -36,8 +36,7 @@
                 </div>
                 <div class="form-group mb-4">
                     <label class="mr-sm-2 form-label" for="inlineFormCustomSelect">Role</label>
-                    <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="role">
-                        <option selected>-- select --</option>
+                    <select class="select2 form-control" style="height: 36px; width: 100%" name="role">
                         <option value="OPR">Operator</option>
                         <option value="JP">JP</option>
                         <option value="LDR">Leader</option>
@@ -47,8 +46,8 @@
                 </div>
                 <div class="form-group mb-4">
                     <label class="mr-sm-2 form-label" for="inlineFormCustomSelect">Department</label>
-                    <select class="form-select mr-sm-2" id="inlineFormCustomSelect" name="origin_id">
-                        <option selected>-- select --</option>
+                    <select class="select2 form-control" id="inlineFormCustomSelect" name="origin_id[]" multiple
+                        multiple="multiple">
                         @foreach ($origins as $origin)
                             <option value="{{ $origin->id }}">{{ $origin->name }}</option>
                         @endforeach

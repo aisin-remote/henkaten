@@ -7,7 +7,18 @@
                 </a>
             </li>
             <li class="nav-item d-none d-xl-block">
-                <a href="#" class="text-nowrap nav-link">
+                @php
+                    if (json_decode(auth()->user()->origin_id)) {
+                        if (count(json_decode(auth()->user()->origin_id)) >= 2) {
+                            $links = '/portal';
+                        } else {
+                            $links = '/dashboard';
+                        }
+                    } else {
+                        $links = '/dashboard';
+                    }
+                @endphp
+                <a href="{{ $links }}" class="text-nowrap nav-link">
                     <img src="{{ asset('assets/images/henkaten-logo.svg') }}" class="dark-logo" width="180"
                         alt="" />
                 </a>
@@ -157,7 +168,7 @@
                                     @csrf
                                     @method('POST')
                                     <div class="d-grid py-4 px-7 pt-8">
-                                        <button type="submit" class="btn btn-outline-primary">Log
+                                        <button type="submit" class="btn btn-outline-primary" id="logout">Log
                                             Out</button>
                                     </div>
                                 </form>

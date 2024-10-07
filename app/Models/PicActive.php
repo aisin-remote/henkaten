@@ -29,4 +29,9 @@ class PicActive extends Model
     {
         return $this->belongsTo(Line::class);
     }
+
+    public function attendance()
+    {
+        return $this->hasMany(PicAttendance::class);
+    }
 }

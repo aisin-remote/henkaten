@@ -40,17 +40,18 @@ Route::middleware(['guest'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     // default routes
-    Route::get('/', [DashboardController::class, 'index']);
+    // Route::get('/', [DashboardController::class, 'index']);
+    Route::get('/portal', [DashboardController::class, 'portal']);
     
     // attendance
-    Route::get('/attendance', [EmployeeController::class, 'attendance'])->name('attendance.index');
+    Route::get('/attendance/{originId?}', [EmployeeController::class, 'attendance'])->name('attendance.index');
 
     // dashboard
-    Route::get('/lineDashboard', [DashboardController::class, 'indexLine'])->name('dashboard.indexLine');
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/line/{lineId}/{originId?}', [DashboardController::class, 'dashboardLine'])->name('dashboard.line');
+    Route::get('/lineDashboard/{originId?}', [DashboardController::class, 'indexLine'])->name('dashboard.indexLine');
     Route::prefix('dashboard')->group(function () {
+        Route::get('{originId?}', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::get('report', [DashboardController::class, 'report'])->name('dashboard.report');
-        Route::get('{lineId}', [DashboardController::class, 'dashboardLine'])->name('dashboard.line');
         Route::get('updateStatus/{lineId}', [DashboardController::class, 'updateLineStatus'])->name('dashboard.line.status');
         Route::get('selectTheme/{theme}', [DashboardController::class, 'selectTheme'])->name('dashboard.theme');
         Route::get('selectFirstPic/{id}', [DashboardController::class, 'selectFirstPic'])->name('dashboard.firstPic');
@@ -65,7 +66,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // employees 
-    Route::get('/employee', [EmployeeController::class, 'index'])->name('employee.index');
+    Route::get('/employee/{originId?}', [EmployeeController::class, 'index'])->name('employee.index');
     Route::prefix('/employee')->group(function () {
         // regist employees
         Route::post('/store', [EmployeeController::class, 'employeeStore'])->name('employee.store');
@@ -73,9 +74,9 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/destroy/{id}', [EmployeeController::class, 'destroyEmployee'])->name('employee.destroy');
 
         // planning employees
-        Route::get('/planning', [EmployeeController::class, 'employeePlanning'])->name('employeePlanning.index');
+        Route::get('/planning/{originId?}', [EmployeeController::class, 'employeePlanning'])->name('employeePlanning.index');
         Route::post('/planning/store', [EmployeeController::class, 'employeePlanningStore'])->name('employeePlanning.store');
-        Route::get('/planning/changeShift/{line}/{shift}/{expired}/{newShift}', [EmployeeController::class, 'editPlanning'])->name('planning.edit');        
+        Route::get('/planning/changeShift/{line}/{shift}/{expired}/{newShift}/{newLine?}', [EmployeeController::class, 'editPlanning'])->name('planning.edit');        
 
         // get employee skill from employee
         Route::get('/getSkillEmp', [EmployeeController::class, 'getSkillEmp'])->name('employee.getSkillEmp');
@@ -99,12 +100,12 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // regist employee skill
-    Route::get('/skill', [skillController::class, 'index'])->name('skill.index');
+    Route::get('/skill/{originId?}', [skillController::class, 'index'])->name('skill.index');
     Route::prefix('/skill')->group(function () {
         Route::post('/regist', [skillController::class, 'regist'])->name('skill.regist');
         Route::get('/edit/{old}/{new}', [skillController::class, 'editSkill'])->name('skill.edit');
         Route::get('/checkSkill', [skillController::class, 'checkSkill'])->name('skill.checkSkill');
-        Route::get('/minimum', [skillController::class, 'minimumIndex'])->name('skill.minimum.index');
+        Route::get('/minimum/{originId?}', [skillController::class, 'minimumIndex'])->name('skill.minimum.index');
         Route::post('/minimumRegist', [skillController::class, 'minimumRegist'])->name('skill.minimum.regist');
         Route::get('/minimumRegist/{id}/edit', [skillController::class, 'minimumRegistEdit'])->name('minimumSkill.edit');
         Route::post('/minimumRegist/{id}', [skillController::class, 'minimumRegistUpdate'])->name('minimumSkill.update');
@@ -112,7 +113,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{name}', [skillController::class, 'destroySkill'])->name('skill.destroy');
     });
 
-    Route::get('/history', [HenkatenController::class, 'history'])->name('history');
+    Route::get('/history/{originId?}', [HenkatenController::class, 'history'])->name('history');
 
     // theme
     Route::get('/theme', [themeController::class, 'index'])->name('theme');

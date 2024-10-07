@@ -15,8 +15,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!--  Favicon -->
     <link rel="shortcut icon" type="image/png" href={{ asset('images/favicon.ico') }} />
+    <link rel="stylesheet" href={{ asset('dist/libs/select2/dist/css/select2.min.css') }}>
     <!-- Core Css -->
     <link id="themeColors" rel="stylesheet" href={{ asset('dist/css/style.min.css') }} />
+
 </head>
 
 <body>
@@ -60,6 +62,8 @@
     <script src={{ asset('dist/js/app.min.js') }}></script>
     <script src={{ asset('dist/js/app-style-switcher.js') }}></script>
     <script src={{ asset('dist/js/sidebarmenu.js') }}></script>
+    <script src={{ asset('dist/libs/select2/dist/js/select2.full.min.js') }}></script>
+    <script src={{ asset('dist/js/forms/select2.init.js') }}></script>
 
     <script src={{ asset('dist/js/custom.js') }}></script>
 </body>

@@ -20,9 +20,10 @@
                 <h3 class="card-title mb-0">Add New Skill</h3>
             </div>
             <div class="card-body">
-                <form action="{{ route('skill.regist') }}" method="POST" class="mt-4">
+                <form action="{{ route('skill.regist') }}" method="POST" class="mt-4 skillForm">
                     @csrf
                     @method('POST')
+                    <input type="hidden" name="origin" id="origin">
                     <div class="email-repeater mb-3">
                         <div data-repeater-list="repeater-group">
                             <div data-repeater-item="" class="row mb-3">
@@ -127,6 +128,14 @@
             $("#icon").html($("#addSkillCard").is(":visible") ? '<i class="ti ti-minus"></i>' :
                 '<i class="ti ti-plus"></i>');
         })
+
+        $('.skillForm').on('submit', function() {
+            // Get the value from local storage
+            const origin = localStorage.getItem('origin_id'); // replace with your key
+
+            // Set the value to the hidden input
+            $('#origin').val(origin);
+        });
 
         $('.delete-skill').on('click', function(e) {
             e.preventDefault();

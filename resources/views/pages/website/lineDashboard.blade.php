@@ -160,9 +160,15 @@
     crossorigin="anonymous"></script>
 <script>
     $(document).ready(function() {
+        var storedOriginId = localStorage.getItem('origin_id');
+
         $('.dc-card').on('click', function() {
             let idCard = $(this).attr('id');
-            window.location.replace(`{{ url('/dashboard/${idCard}') }}`);
+            if (storedOriginId) {
+                window.location.replace(`{{ url('/line/${idCard}/${storedOriginId}') }}`);
+            } else {
+                window.location.replace(`{{ url('/line/${idCard}') }}`);
+            }
         });
     });
 </script>

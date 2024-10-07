@@ -147,6 +147,7 @@
                         @csrf
                         @method('POST')
                         <div class="modal-body">
+                            <input type="hidden" name="origin" id="origin">
                             <div class="statusRadio text-center mt-3">
                                 <label class="btn btn-light-primary text-primary font-medium me-2">
                                     <div class="form-check">
@@ -320,12 +321,16 @@
                     @php
                         $photo = $emp->employee->photo;
                     @endphp
-                    <!-- Displaying the employee photo with default position -->
-                    <div style="position: absolute; top: {{ $emp->pos->top }}vh; left: {{ $emp->pos->left }}vh;">
-                        <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
-                            style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};" class="rounded-1"
-                            loading="lazy" />
-                    </div>
+                    @foreach ($attendance as $item)
+                        @if (optional($item)->employee_active_id == $emp->id)
+                            <!-- Displaying the employee photo with default position -->
+                            <div style="position: absolute; top: {{ $emp->pos->top }}vh; left: {{ $emp->pos->left }}vh;">
+                                <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
+                                    style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};"
+                                    class="rounded-1" loading="lazy" />
+                            </div>
+                        @endif
+                    @endforeach
                 @endforeach
             @endif
         </div>
@@ -794,13 +799,14 @@
                         </h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('dashboard.troubleshootHenkaten') }}" method="POST" class="mt-3"
-                        enctype="multipart/form-data">
+                    <form action="{{ route('dashboard.troubleshootHenkaten') }}" method="POST"
+                        class="mt-3 henkatenTroubleshoot" enctype="multipart/form-data">
                         @csrf
                         @method('POST')
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col-12 mb-1">
+                                    <input type="hidden" name="origin" id="origin-troubleshoot">
                                     <input type="hidden" name="henkaten_id" value="{{ $history->henkaten->id }}">
                                     <input type="hidden" name="4M" value="{{ $history->henkaten->{"4M"} }}">
                                     <input type="hidden" name="status" value="{{ $history->henkaten->status }}">
@@ -1128,10 +1134,12 @@
                         </h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('dashboard.troubleshootApproval') }}" method="POST" class="mt-3">
+                    <form action="{{ route('dashboard.troubleshootApproval') }}" method="POST"
+                        class="mt-3 henkatenApproval">
                         @csrf
                         @method('POST')
                         <div class="modal-body">
+                            <input type="hidden" name="origin" id="origin-approval">
                             <input type="hidden" name="henkaten_id" value="{{ $history->henkaten->id }}">
                             <input type="hidden" name="line" value="{{ $history->henkaten->line_id }}">
                             <input type="hidden" name="4M" value="{{ $history->henkaten->{"4M"} }}">
@@ -1668,9 +1676,28 @@
             // Disable the submit button to prevent multiple form submissions
             $('.henkatenSubmitButton').prop('disabled', true);
 
+            const origin = localStorage.getItem('origin_id'); // replace with your key
+
+            // Set the value to the hidden input
+            $('#origin').val(origin);
+
             setTimeout(function() {
                 $('.henkatenSubmitButton').prop('disabled', false);
             }, 5000);
+        });
+
+        $('.henkatenTroubleshoot').submit(function() {
+            const origin = localStorage.getItem('origin_id'); // replace with your key
+
+            // Set the value to the hidden input
+            $('#origin-troubleshoot').val(origin);
+        });
+
+        $('.henkatenApproval').submit(function() {
+            const origin = localStorage.getItem('origin_id'); // replace with your key
+
+            // Set the value to the hidden input
+            $('#origin-approval').val(origin);
         });
 
         var deleteForm; // Variable to store the form to be submitted
