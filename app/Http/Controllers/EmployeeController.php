@@ -14,6 +14,7 @@ use App\Models\Attendance;
 use App\Models\MinimumSkill;
 use Illuminate\Http\Request;
 use App\Models\EmployeeSkill;
+use App\Models\PicAttendance;
 use App\Models\EmployeeActive;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
@@ -40,7 +41,7 @@ class EmployeeController extends Controller
         }
 
         // Paginate employees with eager loading of related skills through EmployeeSkill
-        $masterEmployees = Employee::with(['employeeSkill.skill'])->where('origin_id', $originId)->get();
+        $masterEmployees = Employee::with(['employeeSkill.skill'])->where('origin_id', $empOrigin)->get();
 
         // Prepare employee details including skills and levels
         $employeeDetails = [];

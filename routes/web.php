@@ -66,7 +66,6 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // employees 
-    Route::get('/employee/{originId?}', [EmployeeController::class, 'index'])->name('employee.index');
     Route::prefix('/employee')->group(function () {
         // regist employees
         Route::post('/store', [EmployeeController::class, 'employeeStore'])->name('employee.store');
@@ -75,6 +74,7 @@ Route::middleware(['auth'])->group(function () {
 
         // planning employees
         Route::get('/planning/{originId?}', [EmployeeController::class, 'employeePlanning'])->name('employeePlanning.index');
+        Route::get('/{originId?}', [EmployeeController::class, 'index'])->name('employee.index');
         Route::post('/planning/store', [EmployeeController::class, 'employeePlanningStore'])->name('employeePlanning.store');
         Route::get('/planning/changeShift/{line}/{shift}/{expired}/{newShift}/{newLine?}', [EmployeeController::class, 'editPlanning'])->name('planning.edit');        
 

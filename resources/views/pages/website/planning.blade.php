@@ -375,6 +375,8 @@
         })
 
         $(document).on('click', '#henkatenHistory .edit', function() {
+            var $row = $(this).closest('tr');
+
             // hide span
             $(this).closest('tr').find('.actual').hide();
 
