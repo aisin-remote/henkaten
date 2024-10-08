@@ -42,6 +42,8 @@ Route::middleware(['auth'])->group(function () {
     // default routes
     // Route::get('/', [DashboardController::class, 'index']);
     Route::get('/portal', [DashboardController::class, 'portal']);
+
+    Route::get('line/employees', [EmployeeController::class, 'getEmployees'])->name('line.employees');
     
     // attendance
     Route::get('/attendance/{originId?}', [EmployeeController::class, 'attendance'])->name('attendance.index');
@@ -128,8 +130,6 @@ Route::middleware(['auth'])->group(function () {
     // OPL 
     Route::get('/opl', [OplController::class, 'index']);
     Route::post('/submit-form', [OplController::class, 'handleFormSubmission'])->name('form.submit');
-
-    Route::get('line/employee', [EmployeeController::class, 'getEmployees'])->name('line.employees');
     
     Route::get('/mappingAllLine', function () {
         return view('welcome');
