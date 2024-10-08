@@ -769,7 +769,7 @@
             // ajax request get total employee in line
             $.ajax({
                 type: 'get',
-                url: "{{ url('line/employees') }}",
+                url: "{{ url('line/employee') }}",
                 _token: "{{ csrf_token() }}",
                 dataType: 'json',
                 data: {
