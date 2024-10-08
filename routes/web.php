@@ -129,7 +129,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/opl', [OplController::class, 'index']);
     Route::post('/submit-form', [OplController::class, 'handleFormSubmission'])->name('form.submit');
 
-    Route::get('line/employees', [EmployeeController::class, 'getEmployees'])->name('line.employees');
+    Route::get('line/employee', [EmployeeController::class, 'getEmployees'])->name('line.employees');
     
     Route::get('/mappingAllLine', function () {
         return view('welcome');
