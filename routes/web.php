@@ -44,9 +44,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/portal', [DashboardController::class, 'portal']);
 
     Route::get('line/employees', [EmployeeController::class, 'getEmployees'])->name('line.employees');
-    
-    // attendance
-    Route::get('/attendance/{originId?}', [EmployeeController::class, 'attendance'])->name('attendance.index');
 
     // dashboard
     Route::get('/line/{lineId}/{originId?}', [DashboardController::class, 'dashboardLine'])->name('dashboard.line');
@@ -91,7 +88,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/getPic', [EmployeeController::class, 'getPic'])->name('employee.getPic');
         
         // store attendance
-        Route::get('/attendance', [EmployeeController::class, 'storeAttendance'])->name('attendance.store');
+        Route::get('/attendance/store', [EmployeeController::class, 'storeAttendance'])->name('attendance.store');
 
         // edit employees
         Route::get('/{id}/edit', [EmployeeController::class, 'employeeEdit'])->name('editEmployee');
@@ -100,6 +97,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{id}/detail', [EmployeeController::class, 'employeeDetail'])->name('detailEmployee');
         Route::delete('/planning/destroy', [EmployeeController::class, 'destroyPlanning'])->name('employee.planning.destroy');
     });
+
+    // attendance
+    Route::get('/attendance/{originId?}', [EmployeeController::class, 'attendance'])->name('attendance.index');
 
     // regist employee skill
     Route::get('/skill/{originId?}', [skillController::class, 'index'])->name('skill.index');

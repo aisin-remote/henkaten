@@ -187,7 +187,15 @@ class EmployeeController extends Controller
                 $query->where('npk', $npk);
             })
             ->first();
-        if (!$employeePlanned) {
+            
+        $picPlanned = PicActive::with('employee')
+            ->whereHas('employee', function ($query) use ($npk) {
+                $query->where('npk', $npk);
+            })
+            ->first();
+
+            
+        if (!$employeePlanned && !$picPlanned) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Karyawan belum masuk planning!'
@@ -279,6 +287,7 @@ class EmployeeController extends Controller
             DB::commit();
             return response()->json([
                 'status' => 'success',
+                'time' => Carbon::now()->format('H:i:s'),
                 'message' => 'Data karyawan sudah tersimpan!'
             ]);
         } catch (\Throwable $th) {

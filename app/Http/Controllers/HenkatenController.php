@@ -92,6 +92,17 @@ class HenkatenController extends Controller
 
     public function storeHenkaten(Request $request)
     {
+        $type = $request->planned ? 'planned' : 'unplanned';
+
+        // Use null coalescing operator to simplify date selection
+        $dateRange = $request->planned ?? $request->unplanned;
+        $dates = explode(' - ', $dateRange);
+        
+        // Trim and convert start and end dates to Y-m-d format
+        [$startDate, $endDate] = array_map(function($date) {
+            return Carbon::createFromFormat('m/d/Y', trim($date))->format('Y-m-d');
+        }, $dates);
+
         // get origin id
         if(json_decode(auth()->user()->origin_id)){
             if(count(json_decode(auth()->user()->origin_id)) == 1){
@@ -238,6 +249,7 @@ class HenkatenController extends Controller
             }
 
             $henkaten = Henkaten::create([
+                'type' => $type,
                 '4M' => $request->type,
                 'status' => $request->status,
                 'shift_id' => $shiftId,
@@ -246,6 +258,8 @@ class HenkatenController extends Controller
                 'henkaten_management_id' => $request->henkatenManagement,
                 'abnormality' => $request->abnormality,
                 'photo' => $docName,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
                 'date' => Carbon::now(),
                 'is_done' => '0',
             ]);
@@ -265,10 +279,10 @@ class HenkatenController extends Controller
             $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$line->name*``` %cLINE STATUS   : ```*$status*``` %c4M            : $request->type %cCategory      : $request->category %cABNORMALITY   : $request->abnormality %cTIME          : $date %cPIC           : $pic %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
             
             // dispatch job
-            SendWhatsAppNotification::dispatch($message, $token, $phone);
+            // SendWhatsAppNotification::dispatch($message, $token, $phone);
 
             // push to websocket
-            $this->pushData(true);
+            // $this->pushData(true);
             // $this->mqttConnect('update' , '1');
 
             DB::commit();
@@ -1081,59 +1095,65 @@ class HenkatenController extends Controller
         }
     }
 
-    public function autoUpdateStatus()
-    {
-        $currentStatus = 'henkaten';
-        $newStatus = 'running';
+        public function autoUpdateStatus()
+        {
+            $currentStatus = 'henkaten';
+            $newStatus = 'running';
+            $currentDate = Carbon::today();
 
-        $columnsToUpdate = [
-            'status_man' => $newStatus,
-            'status_method' => $newStatus,
-            'status_material' => $newStatus,
-            'status_machine' => $newStatus,
-        ];
+            $columnsToUpdate = [
+                'status_man' => $newStatus,
+                'status_method' => $newStatus,
+                'status_material' => $newStatus,
+                'status_machine' => $newStatus,
+            ];
 
-        try {
-            DB::beginTransaction();
+            try {
+                DB::beginTransaction();
 
-            // 1. Update lines where origin_id is not ELC
-            $linesToUpdate1 = Line::whereNot('origin_id', env('ORIGIN_ELC'))
-                ->where(function ($query) use ($currentStatus) {
-                    $query->where('status_man', $currentStatus)
-                        ->orWhere('status_method', $currentStatus)
-                        ->orWhere('status_material', $currentStatus)
-                        ->orWhere('status_machine', $currentStatus);
+                // 1. Update lines where origin_id is not ELC
+                $linesToUpdate1 = Line::whereNot('origin_id', env('ORIGIN_ELC'))
+                ->whereHas('henkaten', function ($query) use ($currentStatus, $currentDate) {
+                    $query->whereDate('end_date', $currentDate)  // Check if end_date matches current date
+                        ->where(function ($subQuery) use ($currentStatus) {
+                            $subQuery->where('status_man', $currentStatus)
+                                ->orWhere('status_method', $currentStatus)
+                                ->orWhere('status_material', $currentStatus)
+                                ->orWhere('status_machine', $currentStatus);
+                        });
                 })
                 ->pluck('id');
 
-            if ($linesToUpdate1->isNotEmpty()) {
-                Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
+                if ($linesToUpdate1->isNotEmpty()) {
+                    Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
+                }
+
+                // 2. Update lines where origin_id is ELC and is_done is 1
+                $linesToUpdate2 = Henkaten::whereHas('line', function ($query) use ($currentStatus, $currentDate) {
+                    $query->where('origin_id', env('ORIGIN_ELC'))
+                        ->where('is_done', '1')
+                        ->whereHas('henkaten', function ($subQuery) use ($currentStatus, $currentDate) {
+                            $subQuery->whereDate('end_date', $currentDate) // Check if end_date matches current date
+                                ->where(function ($q) use ($currentStatus) {
+                                    $q->where('status_man', $currentStatus)
+                                        ->orWhere('status_method', $currentStatus)
+                                        ->orWhere('status_material', $currentStatus)
+                                        ->orWhere('status_machine', $currentStatus);
+                                });
+                        });
+                })
+                ->pluck('line.id');
+
+                if ($linesToUpdate2->isNotEmpty()) {
+                    Line::whereIn('id', $linesToUpdate2)->update($columnsToUpdate);
+                }
+
                 DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                dd('Caught an exception: ' . $th->getMessage());
             }
-
-            // 2. Update lines where origin_id is ELC and is_done is 1
-            $linesToUpdate2 = Henkaten::whereHas('line', function ($query) use ($currentStatus) {
-                            $query->where('origin_id', env('ORIGIN_ELC'))
-                                    ->where('is_done', '1')
-                                    ->where(function ($subQuery) use ($currentStatus) {
-                                        $subQuery->where('status_man', $currentStatus)
-                                                ->orWhere('status_method', $currentStatus)
-                                                ->orWhere('status_material', $currentStatus)
-                                                ->orWhere('status_machine', $currentStatus);
-                                    });
-                            })->get()->pluck('line.id');
-
-            if ($linesToUpdate2->isNotEmpty()) {
-                Line::whereIn('id', $linesToUpdate2)->update($columnsToUpdate);
-                DB::commit();
-            }
-
-            DB::commit();
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            dd('Caught an exception: ' . $th->getMessage());
         }
-    }
 
     public function henkatenExport()
     {

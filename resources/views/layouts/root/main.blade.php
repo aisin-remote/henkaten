@@ -26,6 +26,7 @@
     <link href="{{ asset('css/iziToast.min.css') }}" rel="stylesheet">
     <!-- Core Css -->
     <link id="themeColors" rel="stylesheet" href={{ asset('dist/css/style.min.css') }} />
+    <link rel="stylesheet" href={{ asset('dist/css/daterangepicker.css') }} />
     <script src="{{ asset('js/highcharts.js') }}"></script>
     <style>
         .vertical-carousel {
@@ -157,6 +158,125 @@
     <script src={{ asset('dist/libs/select2/dist/js/select2.full.min.js') }}></script>
     <script src={{ asset('dist/js/forms/select2.init.js') }}></script>
     <script src={{ asset('js/bootstrap4-toggle.min.js') }}></script>
+    <script src={{ asset('dist/js/moment.js') }}></script>
+    <script src={{ asset('dist/js/daterangepicker.js') }}></script>
+    <script>
+        /*******************************************/
+        // Basic Date Range Picker
+        /*******************************************/
+        $(".daterange").daterangepicker();
+
+        /*******************************************/
+        // Date & Time
+        /*******************************************/
+        $(".datetime").daterangepicker({
+            timePicker: true,
+            timePickerIncrement: 30,
+            locale: {
+                format: "MM/DD/YYYY h:mm A",
+            },
+        });
+
+        /*******************************************/
+        //Calendars are not linked
+        /*******************************************/
+        $(".timeseconds").daterangepicker({
+            timePicker: true,
+            timePickerIncrement: 30,
+            timePicker24Hour: true,
+            timePickerSeconds: true,
+            locale: {
+                format: "MM-DD-YYYY h:mm:ss",
+            },
+        });
+
+        /*******************************************/
+        // Single Date Range Picker
+        /*******************************************/
+        $(".singledate").daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true,
+        });
+
+        /*******************************************/
+        // Auto Apply Date Range
+        /*******************************************/
+        $(".autoapply").daterangepicker({
+            autoApply: true,
+        });
+
+        /*******************************************/
+        // Calendars are not linked
+        /*******************************************/
+        $(".linkedCalendars").daterangepicker({
+            linkedCalendars: false,
+        });
+
+        /*******************************************/
+        // Date Limit
+        /*******************************************/
+        $(".dateLimit").daterangepicker({
+            dateLimit: {
+                days: 7,
+            },
+        });
+
+        /*******************************************/
+        // Show Dropdowns
+        /*******************************************/
+        $(".showdropdowns").daterangepicker({
+            showDropdowns: true,
+        });
+
+        /*******************************************/
+        // Show Week Numbers
+        /*******************************************/
+        $(".showweeknumbers").daterangepicker({
+            showWeekNumbers: true,
+        });
+
+        /*******************************************/
+        // Top of the form-control open alignment
+        /*******************************************/
+        $(".drops").daterangepicker({
+            drops: "up", // up/down
+        });
+
+        var today = moment().startOf('day'); // Start of today (00:00:00)
+
+        /*******************************************/
+        // Custom button options
+        /*******************************************/
+        $(".buttonClass").daterangepicker({
+            drops: "up",
+            buttonClasses: "btn",
+            applyClass: "btn-info",
+            cancelClass: "btn-danger",
+            minDate: today // Disable days before today
+
+        });
+
+        $('#planned-input').on('apply.daterangepicker', function(ev, picker) {
+            $('#unplanned-input').prop('disabled', true);
+        });
+
+        // On cancel event for planned date picker (in case user cancels the selection)
+        $('#planned-input').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val(''); // Reset value
+            $('#unplanned-input').prop('disabled', false);
+        });
+
+        // On apply event for unplanned date picker
+        $('#unplanned-input').on('apply.daterangepicker', function(ev, picker) {
+            $('#planned-input').prop('disabled', true);
+        });
+
+        // On cancel event for unplanned date picker (in case user cancels the selection)
+        $('#unplanned-input').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val(''); // Reset value
+            $('#planned-input').prop('disabled', false);
+        });
+    </script>
     <script>
         function refreshPage() {
             location.reload(true); // Reload the page with a hard refresh
@@ -232,7 +352,7 @@
                 $('#lineDashboard-link').attr('href', '/lineDashboard/' + storedOriginId);
                 $('#employee-link').attr('href', '/employee/' + storedOriginId);
                 $('#attendance-link').attr('href', '/attendance/' + storedOriginId);
-                $('#history-link').attr('href', '/history/' + storedOriginId);
+                $('.history-link').attr('href', '/history/' + storedOriginId);
                 $('#planning-link').attr('href', '/employee/planning/' + storedOriginId);
                 $('#skill-link').attr('href', '/skill/' + storedOriginId);
                 $('#skillMinimum-link').attr('href', '/skill/minimum/' + storedOriginId);

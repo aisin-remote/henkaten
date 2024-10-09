@@ -921,6 +921,16 @@
 
     let pivot = @json($pivot);
     $(document).ready(function() {
+        var storedOriginId = localStorage.getItem('origin_id');
+
+        $('.dc-card').on('click', function() {
+            let idCard = $(this).attr('id');
+            if (storedOriginId) {
+                window.location.replace(`{{ url('/line/${idCard}/${storedOriginId}') }}`);
+            } else {
+                window.location.replace(`{{ url('/line/${idCard}') }}`);
+            }
+        });
 
         // reload page based on websocket signal
         var pusher = new Pusher('8ee9e8a15df964407aec', {
@@ -1278,11 +1288,6 @@
             }
 
             $('#secondPic').attr('data-bs-target', '#secondPicModal');
-        });
-
-        $('.dc-card').on('click', function() {
-            let idCard = $(this).attr('id');
-            window.location.replace(`{{ url('/dashboard/${idCard}') }}`);
         });
 
         Paho.MQTT.DEBUG = true;

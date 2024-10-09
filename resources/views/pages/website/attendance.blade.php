@@ -24,15 +24,6 @@
                 </div>
             </div>
         </div>
-        {{-- <div class="row">
-            <div class="card">
-                <ul>
-                    @foreach ($pics as $pic)
-                        <li>{{ $pic->employee->name }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        </div> --}}
         <div class="col-md-10 col-sm-12">
             <div class="row">
                 <div class="col-md-4">
@@ -75,7 +66,7 @@
                                     @if ($attendance)
                                         <span
                                             class="badge bg-success text-light fs-2 rounded-4 py-1 px-2 lh-sm mt-3 fw-bold status">
-                                            Hadir
+                                            Hadir - [{{ $attendance->attendance[0]->time_in }}]
                                         </span>
                                     @else
                                         <span
@@ -134,7 +125,7 @@
                                                 @if ($attendance)
                                                     <span
                                                         class="badge bg-success text-light fs-2 rounded-4 py-1 px-2 lh-sm mt-3 fw-bold status">
-                                                        Hadir
+                                                        Hadir - [{{ $attendance->attendance[0]->time_in }}]
                                                     </span>
                                                 @else
                                                     <span
@@ -172,6 +163,18 @@
             $('#code').focus()
         })
 
+        const status = localStorage.getItem('notifStatus');
+        const message = localStorage.getItem('notifMessage');
+
+        if (status && message) {
+            // Show the notification using your notif function
+            notif(status, message);
+
+            // Clear the stored notification so it doesn't show again
+            localStorage.removeItem('notifStatus');
+            localStorage.removeItem('notifMessage');
+        }
+
         // toast
         function notif(status, message) {
             if (status == 'success') {
@@ -198,7 +201,7 @@
                     // ajax request
                     $.ajax({
                         type: 'get',
-                        url: "{{ url('employee/attendance') }}",
+                        url: "{{ url('employee/attendance/store') }}",
                         _token: "{{ csrf_token() }}",
                         data: {
                             npk: npk,
@@ -206,10 +209,11 @@
                         dataType: 'json',
                         success: function(data) {
                             if (data.status == 'success') {
-                                window.location.reload();
-                                setTimeout(() => {
-                                    notif(data.status, data.message);
-                                }, 2000);
+                                // Store the notification message and status in localStorage
+                                localStorage.setItem('notifStatus', data.status);
+                                localStorage.setItem('notifMessage', data.message);
+
+                                window.location.reload(); // Reload after notification
                             } else {
                                 notif(data.status, data.message);
                             }

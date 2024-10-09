@@ -129,7 +129,6 @@
             ],
         ];
     @endphp
-
     {{-- modal henkaten --}}
     @foreach ($modals as $modal)
         <div class="modal fade" id="{{ $modal['modalId'] }}" tabindex="-1" aria-labelledby="bs-example-modal-lg"
@@ -174,6 +173,50 @@
                             </div>
                             <input type="hidden" name="type" value="{{ strtolower($modal['title']) }}">
                             <input type="hidden" name="line" value="{{ $line->id }}">
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-pills nav-fill mt-4" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#planned-{{ $modal['modalId'] }}"
+                                        role="tab" aria-selected="false" tabindex="-1">
+                                        <span>Planned</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#unplanned-{{ $modal['modalId'] }}"
+                                        role="tab" aria-selected="false" tabindex="-1">
+                                        <span>Unplanned</span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content border mt-2">
+                                <div class="tab-pane p-3" id="planned-{{ $modal['modalId'] }}" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="input-group mb-3">
+                                                <input type="text" id="planned-input" class="form-control buttonClass"
+                                                    name="planned" />
+                                                <span class="input-group-text">
+                                                    <i class="ti ti-calendar fs-5"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane p-3" id="unplanned-{{ $modal['modalId'] }}" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="input-group mb-3">
+                                                <input type="text" id="unplanned-input" class="form-control buttonClass"
+                                                    name="unplanned" />
+                                                <span class="input-group-text">
+                                                    <i class="ti ti-calendar fs-5"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="form-group mt-3 pic-form">
                                 <label class="form-label mb-2 fw-semibold">Category</label>
                                 <select class="select2 form-control select2-hidden-accessible category"
@@ -200,14 +243,14 @@
                             </div>
                             <div class="form-group mt-3 mb-3 description">
                                 <label class="form-label mb-2 fw-semibold">Henkaten / Abnormality Content</label>
-                                <input class="form-control" rows="3" placeholder="Abnormality..." name="abnormality"
-                                    id="{{ $modal['modalId'] }}Abnormality" required>
+                                <input class="form-control" rows="3" placeholder="Abnormality..."
+                                    name="abnormality" id="{{ $modal['modalId'] }}Abnormality" required>
                                 </input>
                             </div>
                             <div class="form-group mt-3 mb-3 description">
                                 <label for="formFileSm" class="form-label">Dokumen pendukung</label>
-                                <input class="form-control form-control" type="file" id="{{ $modal['modalId'] }}Photo"
-                                    name="photo">
+                                <input class="form-control form-control" type="file"
+                                    id="{{ $modal['modalId'] }}Photo" name="photo">
                                 <small class="text-danger">*optional</small>
                             </div>
                         </div>
@@ -229,8 +272,8 @@
     {{-- end of modal --}}
 
     {{-- modal error --}}
-    <div class="modal fade" id="manModal-flag" tabindex="-1" aria-labelledby="bs-example-modal-lg" style="display: none;"
-        aria-hidden="true">
+    <div class="modal fade" id="manModal-flag" tabindex="-1" aria-labelledby="bs-example-modal-lg"
+        style="display: none;" aria-hidden="true">
         <div class="modal-dialog modal-sm">
             <div class="modal-content modal-filled bg-light-danger">
                 <div class="modal-body p-4">
@@ -539,7 +582,7 @@
                             <th>Line Status</th>
                             <th>4M</th>
                             <th>Abnormality</th>
-                            <th>Time</th>
+                            <th class="text-center">Time</th>
                             <th class="text-center">Troubleshoot</th>
                             <th>Status</th>
                             <th class="text-center">Detail</th>
@@ -578,7 +621,8 @@
                                 </td>
                                 <td>{{ strtoupper($history->henkaten->{"4M"}) }}</td>
                                 <td>{{ $history->henkaten->abnormality }}</td>
-                                <td>{{ Carbon\Carbon::parse($history->henkaten->date)->format('j F Y, H:i:s') }}</td>
+                                <td>{{ Carbon\Carbon::parse($history->henkaten->date)->format('j F Y, H:i:s') }} -
+                                    {{ Carbon\Carbon::parse($history->henkaten->end_date)->format('j F Y') }}</td>
                                 @if (!$history->henkaten->troubleshoot)
                                     <td class="text-center">
                                         <span class="badge bg-danger">Belum ditangani</span>
@@ -1543,6 +1587,28 @@
         } else if (successMessage) {
             notif('success', successMessage);
         }
+
+        $('#planned-input').on('change', function() {
+            console.log($(this).val());
+            if ($(this).val() !== '') {
+                // Disable the unplanned change when planned has a value
+                $('#unplanned-input').prop('disabled', true);
+            } else {
+                // Enable the unplanned input if planned input is empty
+                $('#unplanned-input').prop('disabled', false);
+            }
+        });
+
+        // When input changes in the unplanned tab
+        $('#unplanned-input').on('change', function() {
+            if ($(this).val() !== '') {
+                // Disable the planned input when unplanned has a value
+                $('#planned-input').prop('disabled', true);
+            } else {
+                // Enable the planned input if unplanned input is empty
+                $('#planned-input').prop('disabled', false);
+            }
+        });
 
         // initialize datatable
         $('#henkatenHistory').DataTable({

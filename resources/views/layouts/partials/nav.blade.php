@@ -56,7 +56,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link" href="/history" aria-expanded="false" id="history-link">
+                    <a class="sidebar-link sidebar-link history-link" href="/history" aria-expanded="false">
                         <span class="rounded-3">
                             <i class="ti ti-history"></i>
                         </span>

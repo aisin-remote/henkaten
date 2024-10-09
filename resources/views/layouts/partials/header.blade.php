@@ -92,7 +92,7 @@
                                             }
                                         @endphp
                                         <div class="d-flex align-items-center justify-content-between">
-                                            <a href="{{ url('/dashboard/' . $henkaten->line->id) }}"
+                                            <a href="{{ url('/line/' . $henkaten->line->id) }}"
                                                 class="py-6 px-7 d-flex align-items-center dropdown-item justify-content-between">
                                                 <span class="badge bg-{{ $color }} me-3">
                                                     <h3 class="text-white box mb-0 fw-bolder">
@@ -119,7 +119,8 @@
                                 @endif
                             </div>
                             <div class="py-6 px-7 mb-1">
-                                <a href="/history" class="btn btn-outline-primary w-100"> See All Abnormality </a>
+                                <a href="/history" class="btn btn-outline-primary w-100 history-link"> See All
+                                    Abnormality </a>
                             </div>
                         </div>
                     </li>
