@@ -370,10 +370,10 @@
 
         if (originId == elcOrigin || originId == seatOrigin || originId == handleOrigin) {
             // Hide the Change Action column and redraw the DataTable
-            table.column('.change-action').visible(false);
+            table.column('.change-action').visible(true);
         } else {
             // Ensure the column is visible in other cases
-            table.column('.change-action').visible(true);
+            table.column('.change-action').visible(false);
         }
 
         $('#addSkill').on('click', function() {
