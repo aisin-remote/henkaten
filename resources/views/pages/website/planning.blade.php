@@ -359,28 +359,19 @@
     }
 
     $(document).ready(function() {
-        var table = $('#yourTableId').DataTable({
-            columnDefs: [{
-                    targets: [5],
-                    visible: true
-                } // Ensure the column starts as visible
-            ]
-        });
-
-        // Get the origin_id from localStorage
         const originId = localStorage.getItem('origin_id');
-        const elcOrigin = "{{ env('ORIGIN_ELC') }}";
+        const elcOrigin = "{{ env('ORIGIN_ELC') }}"; // Getting environment values
         const seatOrigin = "{{ env('ORIGIN_SEAT') }}";
         const handleOrigin = "{{ env('ORIGIN_HANDLE') }}";
 
-        // Conditionally hide or show the Change Action column based on localStorage
-        if (originId === elcOrigin || originId === seatOrigin || originId === handleOrigin) {
-            // Hide the "Change Action" column (index 5, adjust index if needed)
-            table.column(5).visible(true);
-        } else {
-            // Ensure the column is visible otherwise
-            table.column(5).visible(false);
-        }
+        // Initialize DataTables and check if the column should be hidden
+        var table = $('#yourTableId').DataTable({
+            "columnDefs": [{
+                "targets": [5], // Index of the Change Action column (starts from 0)
+                "visible": !(originId == elcOrigin || originId == seatOrigin || originId ==
+                    handleOrigin) // Hide column based on origin
+            }]
+        });
 
         $('#addSkill').on('click', function() {
             $("#addSkillCard").toggle();
