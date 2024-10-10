@@ -144,7 +144,9 @@
                             <th>Planning Date</th>
                             <th class="text-center"><span class="badge bg-info">Employee List</span></th>
                             <th class="text-center">Action</th>
-                            <th class="text-center change-action">Change Action</th>
+                            @if ($origins == env('ORIGIN_ELC') || $origins == env('ORIGIN_SEAT') || $origins == env('ORIGIN_HANDLE'))
+                                <th class="text-center">Change Action</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -359,18 +361,9 @@
     }
 
     $(document).ready(function() {
-        const originId = localStorage.getItem('origin_id');
-        const elcOrigin = "{{ env('ORIGIN_ELC') }}"; // Getting environment values
-        const seatOrigin = "{{ env('ORIGIN_SEAT') }}";
-        const handleOrigin = "{{ env('ORIGIN_HANDLE') }}";
-
-        // Initialize DataTables and check if the column should be hidden
-        var table = $('#yourTableId').DataTable({
-            "columnDefs": [{
-                "targets": [5], // Index of the Change Action column (starts from 0)
-                "visible": !(originId == elcOrigin || originId == seatOrigin || originId ==
-                    handleOrigin) // Hide column based on origin
-            }]
+        // initialize datatable
+        var table = $('#henkatenHistory').DataTable({
+            scrollX: true,
         });
 
         $('#addSkill').on('click', function() {
@@ -387,6 +380,11 @@
             // Set the value to the hidden input
             $('#origin').val(origin);
         });
+
+        const originId = localStorage.getItem('origin_id');
+        const elcOrigin = "{{ env('ORIGIN_ELC') }}"; // Get the ORIGIN_ELC from the environment
+        const seatOrigin = "{{ env('ORIGIN_SEAT') }}"; // Get the ORIGIN_ELC from the environment
+        const handleOrigin = "{{ env('ORIGIN_HANDLE') }}"; // Get the ORIGIN_ELC from the environment
 
         // Conditionally display sections based on localStorage value
         if (originId == elcOrigin) {
