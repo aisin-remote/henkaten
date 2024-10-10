@@ -144,11 +144,7 @@
                             <th>Planning Date</th>
                             <th class="text-center"><span class="badge bg-info">Employee List</span></th>
                             <th class="text-center">Action</th>
-                            @if (request()->segment(3) == env('ORIGIN_ELC') ||
-                                    request()->segment(3) == env('ORIGIN_SEAT') ||
-                                    request()->segment(3) == env('ORIGIN_HANDLE'))
-                                <th class="text-center change-action">Change Action</th>
-                            @endif
+                            <th class="text-center change-action">Change Action</th>
                         </tr>
                     </thead>
                     <tbody>
