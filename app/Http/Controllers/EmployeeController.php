@@ -311,7 +311,6 @@ class EmployeeController extends Controller
         }else{
             $empOrigin = $request->origin ? $request->origin : auth()->user()->origin_id;
         }
-        
 
         $skills = $request->skill_name;
         $levels = $request->level;
@@ -462,6 +461,17 @@ class EmployeeController extends Controller
             'employee_id' => 'required',
             'active_from' => 'required',
         ]);
+
+        // get origin id
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0];
+            }else{
+                $empOrigin = $request->origin;
+            }
+        }else{
+            $empOrigin = $request->origin ? $request->origin : auth()->user()->origin_id;
+        }
         
         $employees = $request->employee_id;
         $pic = $request->pic_name;
@@ -470,11 +480,7 @@ class EmployeeController extends Controller
         // get line name
         $lineName = Line::select('name')->where('id', $request->line)->first();
 
-        // if($pic[0] === 0){
-        //     return redirect()->back()->with('error', 'Isi PIC!');
-        // }
-
-        if(auth()->user()->origin->name !== 'ELECTRIC'){
+        if($empOrigin !== env('ORIGIN_ELC')){
             if($employees[0] === 0 && $employees[1] == '0'){
                 return redirect()->back()->with('error', 'Pos tidak boleh kosong!');
             }

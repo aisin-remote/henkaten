@@ -20,7 +20,7 @@
                 <h3 class="card-title mb-0">Weekly Employees Planning</h3>
             </div>
             <div class="card-body">
-                <form action="{{ route('employeePlanning.store') }}" method="POST" class="mt-4">
+                <form action="{{ route('employeePlanning.store') }}" method="POST" class="mt-4" id="planning-form">
                     @csrf
                     @method('POST')
                     @php
@@ -28,6 +28,7 @@
                         $flag = $origin->name !== 'DC' ? true : false;
                     @endphp
                     <div class="row">
+                        <input type="hidden" name="origin" id="origin">
                         <div class="col-12 mb-3">
                             <select class="select2 form-select select2-hidden-accessible shift"
                                 style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" id="shift"
@@ -373,6 +374,14 @@
             $("#icon").html($("#addSkillCard").is(":visible") ? '<i class="ti ti-minus"></i>' :
                 '<i class="ti ti-plus"></i>');
         })
+
+        $('#planning-form').on('submit', function() {
+            // Get the value from local storage
+            const origin = localStorage.getItem('origin_id'); // replace with your key
+
+            // Set the value to the hidden input
+            $('#origin').val(origin);
+        });
 
         $(document).on('click', '#henkatenHistory .edit', function() {
             var $row = $(this).closest('tr');
