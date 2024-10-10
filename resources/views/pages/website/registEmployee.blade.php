@@ -513,6 +513,7 @@
             if (deleteForm) {
                 // Submit the stored form for deletion
                 if (document.referrer) {
+                    deleteForm.submit();
                     window.location.href = document.referrer; // Redirects to the previous URL
                 } else {
                     window.history.back(); // Fallback to history if referrer is not available
