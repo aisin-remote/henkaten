@@ -236,7 +236,7 @@
                                     </form>
                                 </td>
                                 @if ($origin->id == env('ORIGIN_ELC'))
-                                    <td class="text-center" style="display: none" id="elc">
+                                    <td class="text-center" id="elc">
                                         <button class="btn btn-icon btn-warning edit fw-bolder" id="edit">
                                             Change Shift
                                         </button>
@@ -248,7 +248,7 @@
                                         </button>
                                     </td>
                                 @elseif($origin->id == env('ORIGIN_SEAT') || $origin->id == env('HANDLE'))
-                                    <td class="text-center" style="display: none" id="body">
+                                    <td class="text-center" id="body">
                                         <button class="btn btn-icon btn-warning fw-bolder edit-body" id="edit-body">
                                             Change Line/Shift
                                         </button>
