@@ -144,7 +144,7 @@
                             <th>Planning Date</th>
                             <th class="text-center"><span class="badge bg-info">Employee List</span></th>
                             <th class="text-center">Action</th>
-                            @if ($origins == env('ORIGIN_ELC') || $origins == env('ORIGIN_SEAT') || $origins == env('ORIGIN_HANDLE'))
+                            @if ($origin == env('ORIGIN_ELC') || $origin == env('ORIGIN_SEAT') || $origin == env('ORIGIN_HANDLE'))
                                 <th class="text-center">Change Action</th>
                             @endif
                         </tr>
