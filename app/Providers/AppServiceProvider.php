@@ -40,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
                 } else {
                     $empOrigin = null; // Fallback in case the cookie is not found
                 }
-            }else{
+            }else if(request()->header('cookie') == null){
                 if(json_decode(auth()->user()->origin_id)){
                     if(count(json_decode(auth()->user()->origin_id)) == 1){
                         $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
