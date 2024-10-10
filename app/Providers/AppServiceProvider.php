@@ -31,12 +31,14 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.partials.header', function ($view) {
 
             $currentDate = Carbon::now()->format('Y-m-d');
-            $empOrigin = request()->header('cookie');
+            $empOrigin = request()->header('cookie') ? request()->header('cookie') : auth()->user()->origin_id;
 
-            if (preg_match('/origin=([^;]*)/', $empOrigin, $matches)) {
-                $empOrigin = $matches[1];
-            } else {
-                $empOrigin = null; // Fallback in case the cookie is not found
+            if(request()->header('cookie')){
+                if (preg_match('/origin=([^;]*)/', $empOrigin, $matches)) {
+                    $empOrigin = $matches[1];
+                } else {
+                    $empOrigin = null; // Fallback in case the cookie is not found
+                }
             }
                         
             // get all data from henaktens table that dont have troubleshoot
