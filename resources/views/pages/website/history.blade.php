@@ -4,6 +4,8 @@
     <div class="row mt-3">
         <div class="col-md-12">
             <div class="card card-info shadow-xs" style="padding: 40px;padding-top:60px; border-radius:16px">
+                <h3>Filter</h3>
+                <p class="mb-3">Select field to filter</p>
                 <div class="row">
                     <div class="col-12">
                         <div class="form-group">
