@@ -338,13 +338,13 @@ class EmployeeController extends Controller
             }
         }
 
-        $validatedData =  $request->validate([
-            'name' => 'required|max:255|min:3',
-            'npk' => 'required|max:6|min:6',
-            'role' => 'required',
-            'photo' => 'required|max:3072',
-            'origin_id' => 'required'
-        ]);
+        // $validatedData =  $request->validate([
+        //     'name' => 'required|max:255|min:3',
+        //     'npk' => 'required|max:6|min:6',
+        //     'role' => 'required',
+        //     'photo' => 'required|max:3072',
+        //     'origin_id' => 'required'
+        // ]);
 
         dd($empOrigin);
 
