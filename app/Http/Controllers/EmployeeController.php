@@ -380,10 +380,10 @@ class EmployeeController extends Controller
             }
 
             DB::commit();
-            return redirect()->back()->with('success', 'Karyawan berhasil ditambah!');
+            return redirect()->to(url()->previous())->with('success', 'Karyawan berhasil ditambah!');
         } catch (\Throwable $th) {
             DB::rollback();
-            return redirect()->back()->with('error', $th->getMessage());
+            return redirect()->to(url()->previous())->with('error', $th->getMessage());
         }
     }
 
