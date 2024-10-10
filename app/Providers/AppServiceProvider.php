@@ -47,6 +47,8 @@ class AppServiceProvider extends ServiceProvider
                     }
                 }
             }
+
+            dd($empOrigin);
                         
             // get all data from henaktens table that dont have troubleshoot
             $henkatens = Henkaten::with('line.origin')
