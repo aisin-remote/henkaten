@@ -359,23 +359,27 @@
     }
 
     $(document).ready(function() {
-        const originId = localStorage.getItem('origin_id');
-        const elcOrigin = "{{ env('ORIGIN_ELC') }}"; // Get the ORIGIN_ELC from the environment
-        const seatOrigin = "{{ env('ORIGIN_SEAT') }}"; // Get the ORIGIN_ELC from the environment
-        const handleOrigin = "{{ env('ORIGIN_HANDLE') }}"; // Get the ORIGIN_ELC from the environment
-        // initialize datatable
-        var table = $('#henkatenHistory').DataTable({
-            scrollX: true,
+        var table = $('#yourTableId').DataTable({
+            columnDefs: [{
+                    targets: [5],
+                    visible: true
+                } // Ensure the column starts as visible
+            ]
         });
 
-        if (originId == elcOrigin || originId == seatOrigin || originId == handleOrigin) {
-            console.log('test1');
-            // Hide the Change Action column and redraw the DataTable
-            table.column('.change-action').visible(true);
+        // Get the origin_id from localStorage
+        const originId = localStorage.getItem('origin_id');
+        const elcOrigin = "{{ env('ORIGIN_ELC') }}";
+        const seatOrigin = "{{ env('ORIGIN_SEAT') }}";
+        const handleOrigin = "{{ env('ORIGIN_HANDLE') }}";
+
+        // Conditionally hide or show the Change Action column based on localStorage
+        if (originId === elcOrigin || originId === seatOrigin || originId === handleOrigin) {
+            // Hide the "Change Action" column (index 5, adjust index if needed)
+            table.column(5).visible(false);
         } else {
-            console.log('test2');
-            // Ensure the column is visible in other cases
-            table.column('.change-action').visible(false);
+            // Ensure the column is visible otherwise
+            table.column(5).visible(true);
         }
 
         $('#addSkill').on('click', function() {
