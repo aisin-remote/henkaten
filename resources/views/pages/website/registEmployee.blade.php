@@ -512,9 +512,11 @@
         $('#confirmDelete').on('click', function(event) {
             if (deleteForm) {
                 // Submit the stored form for deletion
-                console.log('Before submit');
-                deleteForm.submit();
-                console.log('After submit');
+                if (document.referrer) {
+                    window.location.href = document.referrer; // Redirects to the previous URL
+                } else {
+                    window.history.back(); // Fallback to history if referrer is not available
+                }
             }
         });
     });
