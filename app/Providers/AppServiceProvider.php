@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Origin;
 use App\Models\Henkaten;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
@@ -38,6 +39,12 @@ class AppServiceProvider extends ServiceProvider
                     $empOrigin = $matches[1];
                 } else {
                     $empOrigin = null; // Fallback in case the cookie is not found
+                }
+            }else{
+                if(json_decode(auth()->user()->origin_id)){
+                    if(count(json_decode(auth()->user()->origin_id)) == 1){
+                        $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
+                    }
                 }
             }
                         
