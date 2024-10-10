@@ -939,10 +939,10 @@ class EmployeeController extends Controller
             EmployeeSkill::where('employee_id', $employee->id)->whereIn('skill_id', $skillsToDelete)->delete();
 
             DB::commit();
-            return redirect('employee')->with('success', 'Karyawan berhasil diperbarui!');
+            return redirect()->to(url()->previous())->with('success', 'Karyawan berhasil diperbarui!');
         } catch (\Throwable $th) {
             DB::rollback();
-            return redirect()->back()->with('error', $th->getMessage());
+            return redirect()->to(url()->previous())->with('error', $th->getMessage());
         }
     }
 
