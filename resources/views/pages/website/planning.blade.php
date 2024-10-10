@@ -237,31 +237,31 @@
                                         </button>
                                     </form>
                                 </td>
-                                @if (request()->segment(3) == env('ORIGIN_ELC'))
-                                    <td class="text-center">
-                                        <button class="btn btn-icon btn-warning edit fw-bolder" id="edit">
-                                            Change Shift
-                                        </button>
-                                        <button class="btn btn-icon btn-success save mb-1" style="display: none">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                        <button class="btn btn-icon btn-danger cancel mb-1" style="display: none">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </td>
-                                @elseif(request()->segment(3) == env('ORIGIN_SEAT') || request()->segment(3) == env('HANDLE'))
-                                    <td class="text-center">
-                                        <button class="btn btn-icon btn-warning fw-bolder edit-body" id="edit-body">
-                                            Change Line/Shift
-                                        </button>
-                                        <button class="btn btn-icon btn-success save-body mb-1" style="display: none">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                        <button class="btn btn-icon btn-danger cancel-body mb-1" style="display: none">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </td>
-                                @endif
+                                {{-- @if (request()->segment(3) == env('ORIGIN_ELC')) --}}
+                                <td class="text-center" style="display: none" id="elc">
+                                    <button class="btn btn-icon btn-warning edit fw-bolder" id="edit">
+                                        Change Shift
+                                    </button>
+                                    <button class="btn btn-icon btn-success save mb-1" style="display: none">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-icon btn-danger cancel mb-1" style="display: none">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                                {{-- @elseif(request()->segment(3) == env('ORIGIN_SEAT') || request()->segment(3) == env('HANDLE')) --}}
+                                <td class="text-center" style="display: none" id="body">
+                                    <button class="btn btn-icon btn-warning fw-bolder edit-body" id="edit-body">
+                                        Change Line/Shift
+                                    </button>
+                                    <button class="btn btn-icon btn-success save-body mb-1" style="display: none">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-icon btn-danger cancel-body mb-1" style="display: none">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                                {{-- @endif --}}
                             </tr>
                         @endforeach
                     </tbody>
@@ -382,6 +382,21 @@
             // Set the value to the hidden input
             $('#origin').val(origin);
         });
+
+        const originId = localStorage.getItem('origin_id');
+        const elcOrigin = "{{ env('ORIGIN_ELC') }}"; // Get the ORIGIN_ELC from the environment
+        const seatOrigin = "{{ env('ORIGIN_SEAT') }}"; // Get the ORIGIN_ELC from the environment
+        const handleOrigin = "{{ env('ORIGIN_HANDLE') }}"; // Get the ORIGIN_ELC from the environment
+
+        // Conditionally display sections based on localStorage value
+        if (originId == elcOrigin) {
+            // Show the section for ORIGIN_ELC
+            $('#elc').show();
+        }
+        elseif(originId == seatOrigin || originId == handleOrigin) {
+            // Show the section for other origins
+            $('#body').show();
+        }
 
         $(document).on('click', '#henkatenHistory .edit', function() {
             var $row = $(this).closest('tr');
