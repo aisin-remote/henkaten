@@ -1001,10 +1001,10 @@ class EmployeeController extends Controller
             Employee::where('id', $id)->delete();
 
             DB::commit();
-            return redirect('/employee')->with('success', 'Employee deleted successfully!');
+            return redirect()->to(url()->previous())->with('success', 'Employee deleted successfully!');
         } catch (\Throwable $th) {
             DB::rollback();
-            return redirect('/employee')->with('error', $th->getMessage());
+            return redirect()->to(url()->previous())->with('error', $th->getMessage());
         }
     }
 }
