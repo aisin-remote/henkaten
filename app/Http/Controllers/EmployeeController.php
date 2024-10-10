@@ -313,8 +313,6 @@ class EmployeeController extends Controller
         }
         
 
-        dd($empOrigin);
-
         $skills = $request->skill_name;
         $levels = $request->level;
         $arraySkill = [];
@@ -368,6 +366,9 @@ class EmployeeController extends Controller
 
         try {
             DB::beginTransaction();
+
+            dd($empOrigin);
+
 
             // insert into employee table
             $employee = Employee::create($validatedData);
