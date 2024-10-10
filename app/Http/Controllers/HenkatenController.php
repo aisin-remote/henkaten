@@ -1095,65 +1095,59 @@ class HenkatenController extends Controller
         }
     }
 
-        public function autoUpdateStatus()
-        {
-            $currentStatus = 'henkaten';
-            $newStatus = 'running';
-            $currentDate = Carbon::today();
+    public function autoUpdateStatus()
+    {
+        $currentStatus = 'henkaten';
+        $newStatus = 'running';
 
-            $columnsToUpdate = [
-                'status_man' => $newStatus,
-                'status_method' => $newStatus,
-                'status_material' => $newStatus,
-                'status_machine' => $newStatus,
-            ];
+        $columnsToUpdate = [
+            'status_man' => $newStatus,
+            'status_method' => $newStatus,
+            'status_material' => $newStatus,
+            'status_machine' => $newStatus,
+        ];
 
-            try {
-                DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
-                // 1. Update lines where origin_id is not ELC
-                $linesToUpdate1 = Line::whereNot('origin_id', env('ORIGIN_ELC'))
-                ->whereHas('henkaten', function ($query) use ($currentStatus, $currentDate) {
-                    $query->whereDate('end_date', $currentDate)  // Check if end_date matches current date
-                        ->where(function ($subQuery) use ($currentStatus) {
-                            $subQuery->where('status_man', $currentStatus)
-                                ->orWhere('status_method', $currentStatus)
-                                ->orWhere('status_material', $currentStatus)
-                                ->orWhere('status_machine', $currentStatus);
-                        });
+            // 1. Update lines where origin_id is not ELC
+            $linesToUpdate1 = Line::whereNot('origin_id', env('ORIGIN_ELC'))
+                ->where(function ($query) use ($currentStatus) {
+                    $query->where('status_man', $currentStatus)
+                        ->orWhere('status_method', $currentStatus)
+                        ->orWhere('status_material', $currentStatus)
+                        ->orWhere('status_machine', $currentStatus);
                 })
                 ->pluck('id');
 
-                if ($linesToUpdate1->isNotEmpty()) {
-                    Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
-                }
-
-                // 2. Update lines where origin_id is ELC and is_done is 1
-                $linesToUpdate2 = Henkaten::whereHas('line', function ($query) use ($currentStatus, $currentDate) {
-                    $query->where('origin_id', env('ORIGIN_ELC'))
-                        ->where('is_done', '1')
-                        ->whereHas('henkaten', function ($subQuery) use ($currentStatus, $currentDate) {
-                            $subQuery->whereDate('end_date', $currentDate) // Check if end_date matches current date
-                                ->where(function ($q) use ($currentStatus) {
-                                    $q->where('status_man', $currentStatus)
-                                        ->orWhere('status_method', $currentStatus)
-                                        ->orWhere('status_material', $currentStatus)
-                                        ->orWhere('status_machine', $currentStatus);
-                                });
-                        });
-                })
-                ->pluck('line.id');
-
-                if ($linesToUpdate2->isNotEmpty()) {
-                    Line::whereIn('id', $linesToUpdate2)->update($columnsToUpdate);
-                }
-
+            if ($linesToUpdate1->isNotEmpty()) {
+                Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
                 DB::commit();
-            } catch (\Throwable $th) {
-                DB::rollBack();
-                dd('Caught an exception: ' . $th->getMessage());
             }
+
+            // 2. Update lines where origin_id is ELC and is_done is 1
+            $linesToUpdate2 = Henkaten::whereHas('line', function ($query) use ($currentStatus) {
+                            $query->where('origin_id', env('ORIGIN_ELC'))
+                                    ->where('is_done', '1')
+                                    ->where(function ($subQuery) use ($currentStatus) {
+                                        $subQuery->where('status_man', $currentStatus)
+                                                ->orWhere('status_method', $currentStatus)
+                                                ->orWhere('status_material', $currentStatus)
+                                                ->orWhere('status_machine', $currentStatus);
+                                    });
+                            })->pluck('id');
+
+            if ($linesToUpdate2->isNotEmpty()) {
+                Line::whereIn('id', $linesToUpdate2)->update($columnsToUpdate);
+                DB::commit();
+            }
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            dd('Caught an exception: ' . $th->getMessage());
         }
+    }
 
     public function henkatenExport()
     {
