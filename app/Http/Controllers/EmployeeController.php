@@ -964,7 +964,7 @@ class EmployeeController extends Controller
             $employee = Employee::findOrFail($id);
             $employee->delete();
 
-            return redirect('/employee')->with('success', 'Employee deleted successfully!');
+            return redirect()->to(url()->previous())->with('success', 'Employee deleted successfully!');
         } else {
             // Handle unsupported methods
             return response()->json(['error' => 'Method not allowed'], 405);
