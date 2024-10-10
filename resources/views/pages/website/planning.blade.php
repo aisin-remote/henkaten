@@ -369,9 +369,11 @@
         });
 
         if (originId == elcOrigin || originId == seatOrigin || originId == handleOrigin) {
+            console.log('test1');
             // Hide the Change Action column and redraw the DataTable
             table.column('.change-action').visible(true);
         } else {
+            console.log('test2');
             // Ensure the column is visible in other cases
             table.column('.change-action').visible(false);
         }
