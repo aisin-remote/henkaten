@@ -312,6 +312,9 @@ class EmployeeController extends Controller
             $empOrigin = $request->origin ? $request->origin : auth()->user()->origin_id;
         }
         
+
+        dd($empOrigin);
+
         $skills = $request->skill_name;
         $levels = $request->level;
         $arraySkill = [];
