@@ -338,8 +338,6 @@ class EmployeeController extends Controller
             }
         }
 
-        dd($empOrigin);
-
         $validatedData =  $request->validate([
             'name' => 'required|max:255|min:3',
             'npk' => 'required|max:6|min:6',
@@ -350,6 +348,8 @@ class EmployeeController extends Controller
 
         // set origin id for new employee
         $validated['origin_id'] = $empOrigin;
+
+        dd($empOrigin);
 
         // npk exist
         $existingNpk = Employee::where('npk', $validatedData['npk'])->first();
