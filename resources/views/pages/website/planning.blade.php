@@ -392,8 +392,7 @@
         if (originId == elcOrigin) {
             // Show the section for ORIGIN_ELC
             $('#elc').show();
-        }
-        elseif(originId == seatOrigin || originId == handleOrigin) {
+        } else if (originId == seatOrigin || originId == handleOrigin) {
             // Show the section for other origins
             $('#body').show();
         }
