@@ -498,7 +498,7 @@
         let deleteForm; // Variable to store the form to be submitted
 
         // Handle click on delete button
-        $('.delete-button').on('click', function(event) {
+        $(document).on('click', '.delete-button', function(event) {
             event.preventDefault(); // Prevent the default form submission
 
             // Store the form associated with the delete button
