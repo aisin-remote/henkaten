@@ -34,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
             $currentDate = Carbon::now()->format('Y-m-d');
             $empOrigin = request()->header('cookie') ? request()->header('cookie') : auth()->user()->origin_id;
 
+            dd(request()->header('cookie'));
+
             if(request()->header('cookie')){
                 if (preg_match('/origin=([^;]*)/', $empOrigin, $matches)) {
                     $empOrigin = $matches[1];
