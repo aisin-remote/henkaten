@@ -346,10 +346,10 @@ class EmployeeController extends Controller
             'origin_id' => 'required'
         ]);
 
+        dd($empOrigin);
+
         // set origin id for new employee
         $validated['origin_id'] = $empOrigin;
-
-        dd($empOrigin);
 
         // npk exist
         $existingNpk = Employee::where('npk', $validatedData['npk'])->first();
