@@ -31,8 +31,14 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.partials.header', function ($view) {
 
             $currentDate = Carbon::now()->format('Y-m-d');
-            $empOrigin = auth()->user()->origin_id;
-            
+            $empOrigin = request()->header('cookie');
+
+            if (preg_match('/origin=([^;]*)/', $empOrigin, $matches)) {
+                $empOrigin = $matches[1];
+            } else {
+                $empOrigin = null; // Fallback in case the cookie is not found
+            }
+                        
             // get all data from henaktens table that dont have troubleshoot
             $henkatens = Henkaten::with('line.origin')
                         ->with('shift')

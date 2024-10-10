@@ -199,6 +199,9 @@
             // Store the origin_id in local storage
             localStorage.setItem('origin_id', originId);
 
+            // store the origin_id to cookie
+            document.cookie = "origin=" + localStorage.getItem('origin_id') + "; path=/";
+
             // Optionally redirect to the link after setting the local storage
             window.location.href = $(this).attr('href');
         });
