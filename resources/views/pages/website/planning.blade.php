@@ -376,10 +376,10 @@
         // Conditionally hide or show the Change Action column based on localStorage
         if (originId === elcOrigin || originId === seatOrigin || originId === handleOrigin) {
             // Hide the "Change Action" column (index 5, adjust index if needed)
-            table.column(5).visible(false);
+            table.column(5).visible(true);
         } else {
             // Ensure the column is visible otherwise
-            table.column(5).visible(true);
+            table.column(5).visible(false);
         }
 
         $('#addSkill').on('click', function() {
