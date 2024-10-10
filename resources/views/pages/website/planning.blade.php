@@ -144,11 +144,7 @@
                             <th>Planning Date</th>
                             <th class="text-center"><span class="badge bg-info">Employee List</span></th>
                             <th class="text-center">Action</th>
-                            @php
-
-                                dd($origin);
-                            @endphp
-                            @if ($origin == env('ORIGIN_ELC') || $origin == env('ORIGIN_SEAT') || $origin == env('ORIGIN_HANDLE'))
+                            @if ($origin->id == env('ORIGIN_ELC') || $origin->id == env('ORIGIN_SEAT') || $origin->id == env('ORIGIN_HANDLE'))
                                 <th class="text-center">Change Action</th>
                             @endif
                         </tr>
@@ -239,7 +235,7 @@
                                         </button>
                                     </form>
                                 </td>
-                                @if ($origin == env('ORIGIN_ELC'))
+                                @if ($origin->id == env('ORIGIN_ELC'))
                                     <td class="text-center" style="display: none" id="elc">
                                         <button class="btn btn-icon btn-warning edit fw-bolder" id="edit">
                                             Change Shift
@@ -251,7 +247,7 @@
                                             <i class="fas fa-times"></i>
                                         </button>
                                     </td>
-                                @elseif($origin == env('ORIGIN_SEAT') || $origin == env('HANDLE'))
+                                @elseif($origin->id == env('ORIGIN_SEAT') || $origin->id == env('HANDLE'))
                                     <td class="text-center" style="display: none" id="body">
                                         <button class="btn btn-icon btn-warning fw-bolder edit-body" id="edit-body">
                                             Change Line/Shift
