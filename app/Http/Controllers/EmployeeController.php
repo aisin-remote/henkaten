@@ -338,6 +338,8 @@ class EmployeeController extends Controller
             }
         }
 
+        dd($empOrigin);
+
         $validatedData =  $request->validate([
             'name' => 'required|max:255|min:3',
             'npk' => 'required|max:6|min:6',
@@ -366,9 +368,6 @@ class EmployeeController extends Controller
 
         try {
             DB::beginTransaction();
-
-            dd($empOrigin);
-
 
             // insert into employee table
             $employee = Employee::create($validatedData);
