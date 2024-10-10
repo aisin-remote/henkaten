@@ -343,10 +343,7 @@ class EmployeeController extends Controller
             'npk' => 'required|max:6|min:6',
             'role' => 'required',
             'photo' => 'required|max:3072',
-            'origin_id' => 'required'
         ]);
-
-        dd($empOrigin);
 
         // set origin id for new employee
         $validatedData['origin_id'] = $empOrigin;
