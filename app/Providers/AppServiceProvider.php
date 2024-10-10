@@ -32,21 +32,21 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.partials.header', function ($view) {
 
             $currentDate = Carbon::now()->format('Y-m-d');
-            $empOrigin = null;
+            $empOrigin = request()->header('cookie') ? request()->header('cookie') : auth()->user()->origin_id;
 
-            // Check for the 'origin' cookie in the request headers
-            if (preg_match('/origin=([^;]*)/', request()->header('cookie', ''), $matches)) {
-                $empOrigin = $matches[1];  // Extract the origin from the cookie
-            } else {
-                // Fallback to authenticated user's origin_id
-                $userOrigin = json_decode(auth()->user()->origin_id);
-
-                if (is_array($userOrigin) && count($userOrigin) === 1) {
-                    $empOrigin = $userOrigin[0];  // Use the first origin if only one exists
+            if(request()->header('cookie')){
+                if (preg_match('/origin=([^;]*)/', $empOrigin, $matches)) {
+                    $empOrigin = $matches[1];
+                } else {
+                    $empOrigin = null; // Fallback in case the cookie is not found
+                }
+            }else if(request()->header('cookie') == null){
+                if(json_decode(auth()->user()->origin_id)){
+                    if(count(json_decode(auth()->user()->origin_id)) == 1){
+                        $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
+                    }
                 }
             }
-
-            dd($empOrigin);
                         
             // get all data from henaktens table that dont have troubleshoot
             $henkatens = Henkaten::with('line.origin')
