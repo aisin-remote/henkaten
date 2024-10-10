@@ -32,19 +32,20 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.partials.header', function ($view) {
 
             $currentDate = Carbon::now()->format('Y-m-d');
-            $empOrigin = request()->header('cookie') ? request()->header('cookie') : auth()->user()->origin_id;
+            $cookieHeader = request()->header('cookie', ''); // Get the cookie header with a default value
+            $empOrigin = null;
 
-            if(request()->header('cookie')){
-                if (preg_match('/origin=([^;]*)/', $empOrigin, $matches)) {
-                    $empOrigin = $matches[1];
+            // Check if the cookie contains the 'origin' value
+            if (preg_match('/origin=([^;]*)/', $cookieHeader, $matches)) {
+                $empOrigin = $matches[1]; // Extract the origin from the cookie
+            } else {
+                // Decode the user's origin_id and check for a single value
+                $userOrigin = json_decode(auth()->user()->origin_id);
+
+                if (is_array($userOrigin) && count($userOrigin) === 1) {
+                    $empOrigin = $userOrigin[0]; // Use the first origin if only one exists
                 } else {
-                    $empOrigin = null; // Fallback in case the cookie is not found
-                }
-            }else if(request()->header('cookie') == null){
-                if(json_decode(auth()->user()->origin_id)){
-                    if(count(json_decode(auth()->user()->origin_id)) == 1){
-                        $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
-                    }
+                    $empOrigin = auth()->user()->origin_id; // Fallback to the user's origin_id
                 }
             }
                         
