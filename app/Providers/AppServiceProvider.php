@@ -34,13 +34,13 @@ class AppServiceProvider extends ServiceProvider
             $currentDate = Carbon::now()->format('Y-m-d');
             $empOrigin = request()->header('cookie') ? request()->header('cookie') : auth()->user()->origin_id;
 
-            if(request()->cookie('origin')){
+            if(request()->header('cookie')){
                 if (preg_match('/origin=([^;]*)/', $empOrigin, $matches)) {
                     $empOrigin = $matches[1];
                 } else {
                     $empOrigin = null; // Fallback in case the cookie is not found
                 }
-            }else if(request()->cookie('origin') == null){
+            }else if(request()->header('cookie') == null){
                 if(json_decode(auth()->user()->origin_id)){
                     if(count(json_decode(auth()->user()->origin_id)) == 1){
                         $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
