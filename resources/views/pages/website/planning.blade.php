@@ -144,7 +144,11 @@
                             <th>Planning Date</th>
                             <th class="text-center"><span class="badge bg-info">Employee List</span></th>
                             <th class="text-center">Action</th>
-                            <th class="text-center" style="display: none" id="change-action">Change Action</th>
+                            @if (request()->segment(3) == env('ORIGIN_ELC') ||
+                                    request()->segment(3) == env('ORIGIN_SEAT') ||
+                                    request()->segment(3) == env('ORIGIN_HANDLE'))
+                                <th class="text-center change-action">Change Action</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -359,10 +363,22 @@
     }
 
     $(document).ready(function() {
+        const originId = localStorage.getItem('origin_id');
+        const elcOrigin = "{{ env('ORIGIN_ELC') }}"; // Get the ORIGIN_ELC from the environment
+        const seatOrigin = "{{ env('ORIGIN_SEAT') }}"; // Get the ORIGIN_ELC from the environment
+        const handleOrigin = "{{ env('ORIGIN_HANDLE') }}"; // Get the ORIGIN_ELC from the environment
         // initialize datatable
         var table = $('#henkatenHistory').DataTable({
             scrollX: true,
         });
+
+        if (originId == elcOrigin || originId == seatOrigin || originId == handleOrigin) {
+            // Hide the Change Action column and redraw the DataTable
+            table.column('.change-action-column').visible(false);
+        } else {
+            // Ensure the column is visible in other cases
+            table.column('.change-action-column').visible(true);
+        }
 
         $('#addSkill').on('click', function() {
             $("#addSkillCard").toggle();
@@ -379,11 +395,6 @@
             $('#origin').val(origin);
         });
 
-        const originId = localStorage.getItem('origin_id');
-        const elcOrigin = "{{ env('ORIGIN_ELC') }}"; // Get the ORIGIN_ELC from the environment
-        const seatOrigin = "{{ env('ORIGIN_SEAT') }}"; // Get the ORIGIN_ELC from the environment
-        const handleOrigin = "{{ env('ORIGIN_HANDLE') }}"; // Get the ORIGIN_ELC from the environment
-
         // Conditionally display sections based on localStorage value
         if (originId == elcOrigin) {
             // Show the section for ORIGIN_ELC
@@ -391,10 +402,6 @@
         } else if (originId == seatOrigin || originId == handleOrigin) {
             // Show the section for other origins
             $('#body').show();
-        }
-
-        if (originId == seatOrigin || originId == handleOrigin || originId == elcOrigin) {
-            $('#change-action').show();
         }
 
         $(document).on('click', '#henkatenHistory .edit', function() {
