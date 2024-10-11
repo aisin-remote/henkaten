@@ -552,7 +552,7 @@
                     <div class="col-lg-12 col-sm-12 mt-3" id="firstPicContainer">
                         <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#firstPicModal"
                             id="firstPic">
-                            <a href="{{ route('employeePlanning.index') }}" class="dropzone dz-clickable p-3 rounded-1">
+                            <a class="dropzone dz-clickable p-3 rounded-1 planning-link">
                                 <p class="text-center pt-3 text-danger">Create Employee Planning</p>
                             </a>
                         </div>

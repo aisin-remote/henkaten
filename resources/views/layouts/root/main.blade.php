@@ -354,6 +354,7 @@
                 $('#attendance-link').attr('href', '/attendance/' + storedOriginId);
                 $('.history-link').attr('href', '/history/' + storedOriginId);
                 $('#planning-link').attr('href', '/employee/planning/' + storedOriginId);
+                $('.planning-link').attr('href', '/employee/planning/' + storedOriginId);
                 $('#skill-link').attr('href', '/skill/' + storedOriginId);
                 $('#skillMinimum-link').attr('href', '/skill/minimum/' + storedOriginId);
             }
