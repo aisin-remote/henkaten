@@ -980,11 +980,11 @@ class EmployeeController extends Controller
                 // delete employee
                 EmployeeActive::where('employee_id', $request->employees_id[$i])->where('active_from', $request->active_from)->delete();
             }
-        dd($request);
-
 
             // delete pic
             PicActive::where('shift_id', $request->shift)->where('line_id', $request->line)->delete();
+
+            dd($request);
 
             DB::commit();
             return redirect()->to(url()->previous())->with('success', 'Planning deleted successfully!');
