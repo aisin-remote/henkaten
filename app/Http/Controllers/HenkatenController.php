@@ -279,10 +279,10 @@ class HenkatenController extends Controller
             $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$line->name*``` %cLINE STATUS   : ```*$status*``` %c4M            : $request->type %cCategory      : $request->category %cABNORMALITY   : $request->abnormality %cTIME          : $date %cPIC           : $pic %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
             
             // dispatch job
-            // SendWhatsAppNotification::dispatch($message, $token, $phone);
+            SendWhatsAppNotification::dispatch($message, $token, $phone);
 
             // push to websocket
-            // $this->pushData(true);
+            $this->pushData(true);
             // $this->mqttConnect('update' , '1');
 
             DB::commit();
