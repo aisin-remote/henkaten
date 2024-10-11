@@ -973,6 +973,7 @@ class EmployeeController extends Controller
 
     public function destroyPlanning(Request $request)
     {
+        dd($request);
         try {
             DB::beginTransaction();
 
@@ -985,10 +986,10 @@ class EmployeeController extends Controller
             PicActive::where('shift_id', $request->shift)->where('line_id', $request->line)->delete();
 
             DB::commit();
-            return redirect('/employee/planning')->with('success', 'Planning deleted successfully!');
+            return redirect()->to(url()->previous())->with('success', 'Planning deleted successfully!');
         } catch (\Throwable $th) {
             DB::rollback();
-            return redirect('/employee/planning')->with('error', $th->getMessage());
+            return redirect()->to(url()->previous())->with('error', $th->getMessage());
         }
     }
     
