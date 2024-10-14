@@ -393,9 +393,9 @@ class DashboardController extends Controller
     {
         $onOffSwitch = $request->onOffSwitch;
 
-        dd($onOffSwitch);
-
         $line = Line::findOrFail($lineId->id);
+
+        dd($line);
 
         // get current status of each status
         $status_man = $line->status_man;
