@@ -395,8 +395,6 @@ class DashboardController extends Controller
 
         $line = Line::findOrFail($lineId->id);
 
-        dd($line);
-
         // get current status of each status
         $status_man = $line->status_man;
         $status_method = $line->status_method;
@@ -417,6 +415,8 @@ class DashboardController extends Controller
                 array_push($stat_to_update, $key);
             }
         }
+
+        dd($stat_to_update);
 
         try {
             DB::beginTransaction();
