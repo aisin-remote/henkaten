@@ -1428,7 +1428,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal Title</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Change Status</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -1519,7 +1519,7 @@
 
             $.ajax({
                 type: 'GET',
-                url: 'updateStatus/' + myid.id,
+                url: 'dashboard/updateStatus/' + myid.id,
                 data: {
                     onOffSwitch: formDataVal
                 },
