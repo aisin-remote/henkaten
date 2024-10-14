@@ -411,12 +411,12 @@ class DashboardController extends Controller
         $stat_to_update = [];
         
         foreach($all_stat as $key => $value){
-            if($value == 'off'){
+            if($value == 'off'|| $value == 'running'){
                 array_push($stat_to_update, $key);
             }
         }
 
-        dd($all_stat);
+        dd($stat_to_update);
 
         try {
             DB::beginTransaction();
