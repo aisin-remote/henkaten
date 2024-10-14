@@ -1519,7 +1519,7 @@
 
             $.ajax({
                 type: 'GET',
-                url: 'dashboard/updateStatus/' + myid.id,
+                url: "{{ url('dashboard/updateStatus') }}" + "/" + myid.id,
                 data: {
                     onOffSwitch: formDataVal
                 },
