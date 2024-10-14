@@ -413,10 +413,13 @@ class DashboardController extends Controller
         foreach($all_stat as $key => $value){
             if($value == 'off'|| $value == 'running'){
                 array_push($stat_to_update, $key);
+            }else{
+                return [
+                    'status' => 'error',
+                    'message' => 'Status Line harus OFF atau running!'
+                ];
             }
         }
-
-        dd($stat_to_update);
 
         try {
             DB::beginTransaction();

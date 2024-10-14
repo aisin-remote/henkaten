@@ -1525,10 +1525,10 @@
                 },
                 success: function(data) {
                     // Handle the response from the controller
-                    // window.location.reload();
+                    window.location.reload();
                 },
                 error: function(error) {
-                    console.error('Error:', error);
+                    console.error('Gagal:', error);
                 }
             });
         } else {
