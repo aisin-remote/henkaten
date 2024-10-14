@@ -416,7 +416,7 @@ class DashboardController extends Controller
             }
         }
 
-        dd($stat_to_update);
+        dd($all_stat);
 
         try {
             DB::beginTransaction();
