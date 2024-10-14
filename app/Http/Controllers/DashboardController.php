@@ -411,7 +411,7 @@ class DashboardController extends Controller
         $stat_to_update = [];
         
         foreach($all_stat as $key => $value){
-            if($value === 'off'){
+            if($value == 'off'){
                 array_push($stat_to_update, $key);
             }
         }
