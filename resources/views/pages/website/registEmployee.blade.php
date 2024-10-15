@@ -457,6 +457,7 @@
                             return parseInt(item, 10);
                         });
                         chart.series[0].setData(numericData);
+                        console.log(numericData);
                     }
                 },
                 error: function(xhr) {
