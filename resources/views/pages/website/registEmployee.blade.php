@@ -456,8 +456,8 @@
                         var numericData = data.y.map(function(item) {
                             return parseInt(item, 10);
                         });
-                        chart.series[0].setData(numericData);
                         console.log(numericData);
+                        chart.series[0].setData(numericData);
                     }
                 },
                 error: function(xhr) {
