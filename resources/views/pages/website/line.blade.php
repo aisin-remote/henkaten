@@ -244,8 +244,7 @@
                             <div class="form-group mt-3 mb-3 description">
                                 <label class="form-label mb-2 fw-semibold">Henkaten / Abnormality Content</label>
                                 <textarea type="text" class="form-control" rows="3" name="abnormality"
-                                    id="{{ $modal['modalId'] }}Abnormality" required>
-                                </textarea>
+                                    id="{{ $modal['modalId'] }}Abnormality" required></textarea>
                             </div>
                             <div class="form-group mt-3 mb-3 description">
                                 <label for="formFileSm" class="form-label">Dokumen pendukung</label>
@@ -858,8 +857,7 @@
                                     <div class="form-group mt-3 mb-3 description" style="display: none;">
                                         <label class="form-label fw-semibold">Troubleshoot</label>
                                         <textarea class="form-control" rows="3" name="troubleshoot" id="troubleshoot"
-                                            value="{{ optional($history->henkaten->troubleshoot)->troubleshoot }}" required>
-                                        </textarea>
+                                            value="{{ optional($history->henkaten->troubleshoot)->troubleshoot }}" required></textarea>
                                     </div>
                                 </div>
                             </div>
