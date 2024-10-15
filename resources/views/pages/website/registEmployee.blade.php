@@ -300,6 +300,7 @@
 <script src={{ asset('js/exporting.js') }}></script>
 <script src={{ asset('js/export-data.js') }}></script>
 <script src={{ asset('js/accessibility.js') }}></script>
+<script src="{{ asset('js/iziToast.min.js') }}"></script>
 <script>
     $(document).ready(function() {
         $('.view-employee').on('click', function() {
