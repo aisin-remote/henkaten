@@ -243,9 +243,9 @@
                             </div>
                             <div class="form-group mt-3 mb-3 description">
                                 <label class="form-label mb-2 fw-semibold">Henkaten / Abnormality Content</label>
-                                <input class="form-control" rows="3" placeholder="Abnormality..."
-                                    name="abnormality" id="{{ $modal['modalId'] }}Abnormality" required>
-                                </input>
+                                <textarea type="text" class="form-control" rows="3" placeholder="Abnormality..." name="abnormality"
+                                    id="{{ $modal['modalId'] }}Abnormality" required>
+                                </textarea>
                             </div>
                             <div class="form-group mt-3 mb-3 description">
                                 <label for="formFileSm" class="form-label">Dokumen pendukung</label>
@@ -857,11 +857,9 @@
                                     <input type="hidden" name="line" value="{{ $history->henkaten->line_id }}">
                                     <div class="form-group mt-3 mb-3 description" style="display: none;">
                                         <label class="form-label fw-semibold">Troubleshoot</label>
-                                        <input class="form-control" rows="3" placeholder="Troubleshoot..."
-                                            name="troubleshoot" id="troubleshoot"
-                                            value="{{ optional($history->henkaten->troubleshoot)->troubleshoot }}"
-                                            required>
-                                        </input>
+                                        <textarea class="form-control" rows="3" placeholder="Troubleshoot..." name="troubleshoot" id="troubleshoot"
+                                            value="{{ optional($history->henkaten->troubleshoot)->troubleshoot }}" required>
+                                        </textarea>
                                     </div>
                                 </div>
                             </div>
