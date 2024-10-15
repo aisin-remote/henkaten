@@ -7,7 +7,7 @@
                 <div class="row">
                     <div class="col-10">
                         <h4 class="fw-4">
-                            Master Skill
+                            Master Skill/Job
                             <h6 class="text-muted">
                                 {{ Carbon\Carbon::now()->format('l, j F Y') }}
                             </h6>

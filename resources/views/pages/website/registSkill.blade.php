@@ -17,7 +17,7 @@
         @endif
         <div class="card shadow" id="addSkillCard" style="display: none">
             <div class="border-bottom title-part-padding">
-                <h3 class="card-title mb-0">Add New Skill</h3>
+                <h3 class="card-title mb-0">Add New Skill/Job</h3>
             </div>
             <div class="card-body">
                 <form action="{{ route('skill.regist') }}" method="POST" class="mt-4 skillForm">
@@ -28,7 +28,7 @@
                         <div data-repeater-list="repeater-group">
                             <div data-repeater-item="" class="row mb-3">
                                 <div class="col-lg-11 col-sm-12">
-                                    <label class="mb-1">Skill Name</label>
+                                    <label class="mb-1">Skill/Job Name</label>
                                     <input type="text" class="form-control" placeholder="Skill Name" name="name"
                                         required>
                                 </div>
@@ -66,7 +66,7 @@
                 <div class="row">
                     <div class="col-10">
                         <h4 class="fw-4">
-                            Registered Skill
+                            Registered Skill/Job
                         </h4>
                     </div>
                     <div class="col-2 text-end">
@@ -74,7 +74,7 @@
                             <span class="rounded-3 pe-2" id="icon">
                                 <i class="ti ti-plus"></i>
                             </span>
-                            <span class="d-none d-sm-inline-block">Add Skill</span>
+                            <span class="d-none d-sm-inline-block">Add Skill/Job</span>
                         </button>
                     </div>
                 </div>

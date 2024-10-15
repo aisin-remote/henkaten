@@ -94,7 +94,7 @@
                         <li class="sidebar-item">
                             <a href="/skill" class="sidebar-link" id="skill-link">
                                 <i class="ti ti-barbell"></i>
-                                <span class="hide-menu">Skill</span>
+                                <span class="hide-menu">Skill/Job</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
