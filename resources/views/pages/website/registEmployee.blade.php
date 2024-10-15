@@ -444,7 +444,7 @@
 
             $.ajax({
                 type: 'get',
-                url: "{{ url('employee/getSkill') }}",
+                url: "{{ url('getSkill/') }}",
                 _token: "{{ csrf_token() }}",
                 dataType: 'json',
                 data: {

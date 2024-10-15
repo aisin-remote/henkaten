@@ -64,6 +64,9 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('destroy', [HenkatenController::class, 'destroy'])->name('dashboard.henkaten.destroy');
     });
 
+    // get skill for skill matrix
+    Route::get('/getSkill', [EmployeeController::class, 'getSkill'])->name('employee.getSkill');
+
     // employees 
     Route::prefix('/employee')->group(function () {
         // regist employees
@@ -80,9 +83,6 @@ Route::middleware(['auth'])->group(function () {
         // get employee skill from employee
         Route::get('/getSkillEmp', [EmployeeController::class, 'getSkillEmp'])->name('employee.getSkillEmp');
         Route::get('/getSkillPos', [EmployeeController::class, 'getSkillPos'])->name('employee.getSkillPos');
-
-        // get skill for skill matrix
-        Route::get('/getSkill', [EmployeeController::class, 'getSkill'])->name('employee.getSkill');
 
         // get PIC
         Route::get('/getPic', [EmployeeController::class, 'getPic'])->name('employee.getPic');
