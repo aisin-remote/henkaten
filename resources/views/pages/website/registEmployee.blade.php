@@ -572,4 +572,20 @@
             $('#confirmationModal').modal('show');
         });
     }
+
+    function notif(type, message) {
+        if (type === 'error') {
+            iziToast.error({
+                title: 'Error!',
+                message: message,
+                position: 'bottomRight'
+            });
+        } else if (type === 'success') {
+            iziToast.success({
+                title: 'Success!',
+                message: message,
+                position: 'bottomRight'
+            });
+        }
+    }
 </script>
