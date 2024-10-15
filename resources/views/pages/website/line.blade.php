@@ -243,7 +243,7 @@
                             </div>
                             <div class="form-group mt-3 mb-3 description">
                                 <label class="form-label mb-2 fw-semibold">Henkaten / Abnormality Content</label>
-                                <textarea type="text" class="form-control" rows="3" placeholder="Abnormality..." name="abnormality"
+                                <textarea type="text" class="form-control" rows="3" name="abnormality"
                                     id="{{ $modal['modalId'] }}Abnormality" required>
                                 </textarea>
                             </div>
@@ -857,7 +857,7 @@
                                     <input type="hidden" name="line" value="{{ $history->henkaten->line_id }}">
                                     <div class="form-group mt-3 mb-3 description" style="display: none;">
                                         <label class="form-label fw-semibold">Troubleshoot</label>
-                                        <textarea class="form-control" rows="3" placeholder="Troubleshoot..." name="troubleshoot" id="troubleshoot"
+                                        <textarea class="form-control" rows="3" name="troubleshoot" id="troubleshoot"
                                             value="{{ optional($history->henkaten->troubleshoot)->troubleshoot }}" required>
                                         </textarea>
                                     </div>
