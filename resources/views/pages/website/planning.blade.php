@@ -247,7 +247,7 @@
                                             <i class="fas fa-times"></i>
                                         </button>
                                     </td>
-                                @elseif($origin->id == env('ORIGIN_SEAT') || $origin->id == env('HANDLE'))
+                                @elseif($origin->id == env('ORIGIN_SEAT') || $origin->id == env('ORIGIN_HANDLE'))
                                     <td class="text-center" id="body">
                                         <button class="btn btn-icon btn-warning fw-bolder edit-body" id="edit-body">
                                             Change Line/Shift
