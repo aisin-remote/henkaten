@@ -785,6 +785,8 @@
                 success: function(data) {
                     if (data.status == 'success') {
 
+                        console.log(data);
+
                         // add form based on employee
                         let html = '';
                         for (let i = 1; i <= data.total; i++) {
