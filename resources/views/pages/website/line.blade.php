@@ -493,12 +493,11 @@
                                             $emp->pos->pos === $line->total_emp
                                         ) {
                                             $pos_name = 'LAST MAN';
+                                            dd($pos_name);
                                             $pos_number = false;
                                         } else {
                                             $pos_name = 'POS';
                                         }
-
-                                        dd($line->total_emp);
 
                                     @endphp
                                     <div class="col-lg-{{ $col }} col-md-12">
