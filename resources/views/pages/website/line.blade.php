@@ -491,7 +491,7 @@
                                         if (
                                             substr($line->name, 0, 2) === 'AS' &&
                                             substr($line->name, 2, 1) !== '0' &&
-                                            $i === $line->total_emp
+                                            $emp->pos->pos === $line->total_emp
                                         ) {
                                             $pos_name = 'LAST MAN';
                                             $pos_number = false;
