@@ -118,18 +118,73 @@ class DatabaseSeeder extends Seeder
         //     ]);
         // }
         
-        $lines = Line::select('id')->where('origin_id', '9ac7fcde-8689-4bcc-9770-4847253355a2')->get();
+        // $lines = Line::select('id')->where('id', '9ceeffec-2c80-495b-92a9-b0fcdd31f054')->get();
         
-        // for($i=1; $i<=5; $i++) {
-        foreach($lines as $line) {
+        //AS548
+        for($i=2; $i<=3; $i++) {
+        // foreach($lines as $line) {
             Position::create([
-                'line_id' => $line->id,
-                'pos' => '1',
+                'line_id' => '9cedaa5f-48d4-4f96-953e-21f1cde50d44',
+                'pos' => $i,
                 'top' => 65,
                 'left' => 50,
                 'size' => 80
             ]);
         }
+        
+        //AS547
+        for($i=2; $i<=3; $i++) {
+        // foreach($lines as $line) {
+            Position::create([
+                'line_id' => '9ceeffec-2c80-495b-92a9-b0fcdd31f054',
+                'pos' => $i,
+                'top' => 65,
+                'left' => 50,
+                'size' => 80
+            ]);
+        }
+        
+        //AS561
+        for($i=2; $i<=3; $i++) {
+        // foreach($lines as $line) {
+            Position::create([
+                'line_id' => '9cedaa5f-4a51-4555-93ea-b8f94ed1bd23',
+                'pos' => $i,
+                'top' => 65,
+                'left' => 50,
+                'size' => 80
+            ]);
+        }
+        
+        //AS600
+        for($i=2; $i<=4; $i++) {
+        // foreach($lines as $line) {
+            Position::create([
+                'line_id' => '9cedaa5f-4a9c-4333-ad9a-88587a08db43',
+                'pos' => $i,
+                'top' => 65,
+                'left' => 50,
+                'size' => 80
+            ]);
+        }
+
+        // AS546
+        Position::create([
+            'line_id' => '9ceeffec-2c80-495b-92a9-b0fcdd31f053',
+            'pos' => '2',
+            'top' => 65,
+            'left' => 50,
+            'size' => 80
+        ]);
+        
+        // AS549
+        Position::create([
+            'line_id' => '9ceeffec-2c80-495b-92a9-b0fcdd31f055',
+            'pos' => '2',
+            'top' => 65,
+            'left' => 50,
+            'size' => 80
+        ]);
         // }
         
         // for($i=1; $i<=2; $i++) {
