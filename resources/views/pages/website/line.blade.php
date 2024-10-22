@@ -487,6 +487,14 @@
                                         if ($line->name === 'DSAA01-02' && $emp->pos->pos == '1') {
                                             $pos_name = 'HAITO';
                                             $pos_number = false;
+                                        }
+                                        if (
+                                            substr($line->name, 0, 2) === 'AS' &&
+                                            substr($line->name, 2, 1) !== '0' &&
+                                            $i === $line->total_emp
+                                        ) {
+                                            $pos_name = 'LAST MAN';
+                                            $pos_number = false;
                                         } else {
                                             $pos_name = 'POS';
                                         }
