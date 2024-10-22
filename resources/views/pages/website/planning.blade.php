@@ -785,8 +785,6 @@
                 success: function(data) {
                     if (data.status == 'success') {
 
-                        console.log(data);
-
                         // add form based on employee
                         let html = '';
                         for (let i = 1; i <= data.total; i++) {
@@ -796,6 +794,11 @@
                                     `<input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="${name}" disabled>`
                             } else if (line === 'ASAN01' && i == 6) {
                                 name = 'MH';
+                                tag =
+                                    `<input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="${name}" disabled>`;
+                            } else if (line.startsWith('AS') && line.charAt(2) !== '0' &&
+                                i === data.total && data.total !== 1) {
+                                name = 'Last Man';
                                 tag =
                                     `<input type="text" class="form-control" placeholder="Employee Name" name="pos[]" value="${name}" disabled>`;
                             } else {
