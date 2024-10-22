@@ -349,6 +349,9 @@
 
                 @foreach ($activeEmployees as $emp)
                     @php
+                        dd($emp->pos->top);
+                    @endphp
+                    @php
                         $photo = $photoMap[$emp->employee_id] ?? $emp->employee->photo;
                     @endphp
 
@@ -364,9 +367,6 @@
                             </div>
                         @endif
                     @else
-                        @php
-                            dd($emp->pos->top);
-                        @endphp
                         <div style="position: absolute; top: {{ $emp->pos->top }}vh; left: {{ $emp->pos->left }}vh;">
                             <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
                                 style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};" class="rounded-1"
@@ -381,7 +381,6 @@
                         $positionStyle = "position: absolute; top: {$emp->pos->top}vh; left: {$emp->pos->left}vh;";
                         $sizeStyle = "width: {$emp->pos->size}; height: {$emp->pos->size};";
                     @endphp
-
                     @if ($origin->id !== env('ORIGIN_SEAT') && $origin->id !== env('ORIGIN_HANDLE'))
                         @php
                             $isPresent = $attendance->contains('employee_active_id', $emp->id);
