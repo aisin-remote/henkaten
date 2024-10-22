@@ -352,11 +352,24 @@
                         $photo = $photoMap[$emp->employee_id] ?? $emp->employee->photo;
                     @endphp
 
-                    <div style="position: absolute; top: {{ $emp->pos->top }}vh; left: {{ $emp->pos->left }}vh;">
-                        <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
-                            style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};" class="rounded-1"
-                            loading="lazy" />
-                    </div>
+                    @if ($origin->id !== env('ORIGIN_SEAT') && $origin->id !== env('ORIGIN_HANDLE'))
+                        @php
+                            $isPresent = $attendance->contains('employee_active_id', $emp->id);
+                        @endphp
+                        @if ($isPresent)
+                            <div style="position: absolute; top: {{ $emp->pos->top }}vh; left: {{ $emp->pos->left }}vh;">
+                                <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
+                                    style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};"
+                                    class="rounded-1" loading="lazy" />
+                            </div>
+                        @endif
+                    @else
+                        <div style="position: absolute; top: {{ $emp->pos->top }}vh; left: {{ $emp->pos->left }}vh;">
+                            <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
+                                style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};" class="rounded-1"
+                                loading="lazy" />
+                        </div>
+                    @endif
                 @endforeach
             @else
                 @foreach ($activeEmployees as $emp)
