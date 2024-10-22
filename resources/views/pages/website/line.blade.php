@@ -374,7 +374,7 @@
             @else
                 @foreach ($activeEmployees as $emp)
                     @php
-                        dd($emp->pos->top);
+                        dd($activeEmployees);
                     @endphp
                     @php
                         $photo = $emp->employee->photo;
