@@ -362,17 +362,26 @@
                 @foreach ($activeEmployees as $emp)
                     @php
                         $photo = $emp->employee->photo;
+                        $positionStyle = "position: absolute; top: {$emp->pos->top}vh; left: {$emp->pos->left}vh;";
+                        $sizeStyle = "width: {$emp->pos->size}; height: {$emp->pos->size};";
                     @endphp
-                    @foreach ($attendance as $item)
-                        @if (optional($item)->employee_active_id == $emp->id)
-                            <!-- Displaying the employee photo with default position -->
-                            <div style="position: absolute; top: {{ $emp->pos->top }}vh; left: {{ $emp->pos->left }}vh;">
+
+                    @if ($origin->id !== env('ORIGIN_SEAT') && $origin->id !== env('ORIGIN_HANDLE'))
+                        @php
+                            $isPresent = $attendance->contains('employee_active_id', $emp->id);
+                        @endphp
+                        @if ($isPresent)
+                            <div style="{{ $positionStyle }}">
                                 <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
-                                    style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};"
-                                    class="rounded-1" loading="lazy" />
+                                    style="{{ $sizeStyle }}" class="rounded-1" loading="lazy" />
                             </div>
                         @endif
-                    @endforeach
+                    @else
+                        <div style="{{ $positionStyle }}">
+                            <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
+                                style="{{ $sizeStyle }}" class="rounded-1" loading="lazy" />
+                        </div>
+                    @endif
                 @endforeach
             @endif
         </div>

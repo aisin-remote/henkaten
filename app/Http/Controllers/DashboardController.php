@@ -370,6 +370,7 @@ class DashboardController extends Controller
         $attendance = Attendance::whereDate('created_at', $currentDate)->get();
 
         return view('pages.website.line', [
+            'origin' => $origins,
             'attendance' => $attendance,
             'line' => Line::findOrFail($lineId->id),
             'lineMap' => Line::where('id', $lineId->id)->first(),
