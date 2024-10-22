@@ -374,9 +374,6 @@
             @else
                 @foreach ($activeEmployees as $emp)
                     @php
-                        dd($activeEmployees);
-                    @endphp
-                    @php
                         $photo = $emp->employee->photo;
                         $positionStyle = "position: absolute; top: {$emp->pos->top}vh; left: {$emp->pos->left}vh;";
                         $sizeStyle = "width: {$emp->pos->size}; height: {$emp->pos->size};";
