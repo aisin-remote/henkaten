@@ -349,9 +349,6 @@
 
                 @foreach ($activeEmployees as $emp)
                     @php
-                        dd($emp->pos->top);
-                    @endphp
-                    @php
                         $photo = $photoMap[$emp->employee_id] ?? $emp->employee->photo;
                     @endphp
 
@@ -376,6 +373,9 @@
                 @endforeach
             @else
                 @foreach ($activeEmployees as $emp)
+                    @php
+                        dd($emp->pos->top);
+                    @endphp
                     @php
                         $photo = $emp->employee->photo;
                         $positionStyle = "position: absolute; top: {$emp->pos->top}vh; left: {$emp->pos->left}vh;";
