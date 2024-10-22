@@ -498,12 +498,6 @@
                                             $pos_name = 'POS';
                                         }
 
-                                        dd(
-                                            substr($line->name, 0, 2) === 'AS' &&
-                                                substr($line->name, 2, 1) !== '0' &&
-                                                $emp->pos->pos == $line->total_emp,
-                                        );
-
                                     @endphp
                                     <div class="col-lg-{{ $col }} col-md-12">
                                         <div class="item">
