@@ -364,6 +364,9 @@
                             </div>
                         @endif
                     @else
+                        @php
+                            dd($emp->pos->top);
+                        @endphp
                         <div style="position: absolute; top: {{ $emp->pos->top }}vh; left: {{ $emp->pos->left }}vh;">
                             <img src="{{ asset('uploads/doc/' . $photo) }}" alt="Employee Photo"
                                 style="width: {{ $emp->pos->size }}; height: {{ $emp->pos->size }};" class="rounded-1"
