@@ -192,16 +192,22 @@
                         </div>
                     </div>
 
-                    {{-- @if ($overall_status == 'RUNNING')
+                    @if ($overall_status == 'RUNNING' || $overall_status == 'OFF')
                         <div class="position-absolute top-0 end-0 m-2">
                             <div class="d-flex align-items-center">
+                                @if ($overall_status === 'RUNNING')
+                                    <span class="text-white" style="margin-right: -25px">OFF</span>
+                                @endif
                                 <label class="form-switch me-2 mb-0">
-                                    <input type="checkbox" id="toggleSwitch{{ $line->id }}">
+                                    <input type="checkbox" id="toggleSwitch{{ $line->id }}"
+                                        {{ $overall_status === 'RUNNING' ? 'checked' : '' }}>
                                 </label>
-                                <span class="text-white">ON/OFF</span>
+                                @if ($overall_status === 'OFF')
+                                    <span class="text-white">ON</span>
+                                @endif
                             </div>
                         </div>
-                    @endif --}}
+                    @endif
 
                 </div>
             </div>
@@ -231,7 +237,7 @@
             let isChecked = switchElement.is(':checked'); // Check if the switch is on or off
 
             // Prepare data to send to the server
-            let switchStatus = isChecked ? 1 : 0; // 1 for ON, 0 for OFF
+            let switchStatus = isChecked ? 'running' : 'off'; // 'on' for ON, 'off' for OFF
 
             // Send an AJAX request to update the status
             $.ajax({
@@ -242,7 +248,7 @@
                 },
                 success: function(response) {
                     // Handle success response (optional)
-                    // window.location.reload();
+                    window.location.reload();
 
                     console.log('Status updated successfully:', response);
                 },

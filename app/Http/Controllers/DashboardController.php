@@ -439,7 +439,7 @@ class DashboardController extends Controller
             DB::rollBack();
             return [
                 'status' => 'error',
-                'message' => $th->getMessage
+                'message' => $th->getMessage()
             ];
         } 
     }
