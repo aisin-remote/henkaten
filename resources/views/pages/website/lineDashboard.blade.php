@@ -192,15 +192,15 @@
                         </div>
                     </div>
 
-                    @if ($overall_status == 'RUNNING' || $overall_status == 'OFF')
+                    @if ($overall_status == 'RUNNING' || $overall_status == 'OFF' || $overall_status == 'NO HENKATEN')
                         <div class="position-absolute top-0 end-0 m-2">
                             <div class="d-flex align-items-center">
-                                @if ($overall_status === 'RUNNING')
+                                @if ($overall_status === 'RUNNING' || $overall_status === 'NO HENKATEN')
                                     <span class="text-white" style="margin-right: -25px">OFF</span>
                                 @endif
                                 <label class="form-switch me-2 mb-0">
                                     <input type="checkbox" id="toggleSwitch{{ $line->id }}"
-                                        {{ $overall_status === 'RUNNING' ? 'checked' : '' }}>
+                                        {{ $overall_status === 'RUNNING' || $overall_status === 'NO HENKATEN' ? 'checked' : '' }}>
                                 </label>
                                 @if ($overall_status === 'OFF')
                                     <span class="text-white">ON</span>
