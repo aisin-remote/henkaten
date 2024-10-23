@@ -273,6 +273,7 @@ class DashboardController extends Controller
         if(json_decode(auth()->user()->origin_id)){
             if(count(json_decode(auth()->user()->origin_id)) == 1){
                 $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
+                $origins = Origin::where('id', $empOrigin)->first();
             }else{
                 $empOrigin = $originId ? $originId : auth()->user()->origin_id;
                 $origins = Origin::where('id', $empOrigin)->first();
@@ -423,7 +424,7 @@ class DashboardController extends Controller
             }
         }
 
-        try {
+        try {   
             DB::beginTransaction();
 
             for($i = 0; $i < count($stat_to_update); $i++) {

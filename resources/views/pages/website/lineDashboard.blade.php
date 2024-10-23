@@ -1,4 +1,44 @@
 @extends('layouts.root.main')
+<style>
+    /* Style for the toggle switch */
+    .form-switch input[type="checkbox"] {
+        position: relative;
+        width: 50px;
+        height: 25px;
+        -webkit-appearance: none;
+        appearance: none;
+        background-color: #ddd;
+        outline: none;
+        cursor: pointer;
+        border-radius: 50px;
+        transition: background-color 0.3s ease;
+    }
+
+    /* Toggle circle (inside the switch) */
+    .form-switch input[type="checkbox"]::before {
+        content: "";
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        top: 2.5px;
+        left: 2.5px;
+        background-color: #fff;
+        transition: left 0.3s ease;
+    }
+
+    /* Toggle switch active state (pastel green) */
+    .form-switch input[type="checkbox"]:checked {
+        background-color: #b0e57c;
+        /* Pastel green */
+    }
+
+    /* Move the circle when checked */
+    .form-switch input[type="checkbox"]:checked::before {
+        left: 27.5px;
+    }
+</style>
+
 
 @section('main')
     <div class="row">
@@ -151,6 +191,18 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- @if ($overall_status == 'RUNNING')
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <div class="d-flex align-items-center">
+                                <label class="form-switch me-2 mb-0">
+                                    <input type="checkbox" id="toggleSwitch{{ $line->id }}">
+                                </label>
+                                <span class="text-white">ON/OFF</span>
+                            </div>
+                        </div>
+                    @endif --}}
+
                 </div>
             </div>
         @endforeach
@@ -169,6 +221,36 @@
             } else {
                 window.location.replace(`{{ url('/line/${idCard}') }}`);
             }
+        });
+
+        $('.form-switch input').on('click', function(event) {
+            event.stopPropagation(); // Prevent the card click event
+
+            let switchElement = $(this);
+            let cardId = switchElement.closest('.dc-card').attr('id'); // Get the card ID
+            let isChecked = switchElement.is(':checked'); // Check if the switch is on or off
+
+            // Prepare data to send to the server
+            let switchStatus = isChecked ? 1 : 0; // 1 for ON, 0 for OFF
+
+            // Send an AJAX request to update the status
+            $.ajax({
+                url: "{{ url('dashboard/updateStatus') }}" + "/" + cardId,
+                type: "GET",
+                data: {
+                    onOffSwitch: switchStatus,
+                },
+                success: function(response) {
+                    // Handle success response (optional)
+                    // window.location.reload();
+
+                    console.log('Status updated successfully:', response);
+                },
+                error: function(xhr, status, error) {
+                    // Handle error response (optional)
+                    console.log('Error updating status:', error);
+                }
+            });
         });
     });
 </script>
