@@ -92,7 +92,7 @@
                                             }
                                         @endphp
                                         <div class="d-flex align-items-center justify-content-between">
-                                            <a class="py-6 px-7 d-flex align-items-center dropdown-item justify-content-between dc-card"
+                                            <a class="btn py-6 px-7 d-flex align-items-center dropdown-item justify-content-between dc-card"
                                                 id="{{ $henkaten->line->id }}">
                                                 <span class="badge bg-{{ $color }} me-3">
                                                     <h3 class="text-white box mb-0 fw-bolder">
