@@ -92,8 +92,8 @@
                                             }
                                         @endphp
                                         <div class="d-flex align-items-center justify-content-between">
-                                            <a href="{{ url('/line/' . $henkaten->line->id) }}"
-                                                class="py-6 px-7 d-flex align-items-center dropdown-item justify-content-between">
+                                            <a class="py-6 px-7 d-flex align-items-center dropdown-item justify-content-between dc-card"
+                                                id="{{ $henkaten->line->id }}">
                                                 <span class="badge bg-{{ $color }} me-3">
                                                     <h3 class="text-white box mb-0 fw-bolder">
                                                         <i class="ti ti-{{ $shape }}"></i>
@@ -182,7 +182,20 @@
     </nav>
 </header>
 
+<script src={{ asset('js/jquery-3.6.3.min.js') }} integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+    crossorigin="anonymous"></script>
 <script>
+    var storedOriginId = localStorage.getItem('origin_id');
+
+    $('.dc-card').on('click', function() {
+        let idCard = $(this).attr('id');
+        if (storedOriginId) {
+            window.location.replace(`{{ url('/line/${idCard}/${storedOriginId}') }}`);
+        } else {
+            window.location.replace(`{{ url('/line/${idCard}') }}`);
+        }
+    });
+
     function updateShift() {
         var shiftElement = document.getElementById("shift");
         var currentDate = new Date();
