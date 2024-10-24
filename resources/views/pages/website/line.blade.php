@@ -1222,7 +1222,11 @@
                             Do you really want to approve?
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-secondary">Approve</button>
+                            <button type="submit" class="btn btn-secondary approveSubmitButton">
+                                <span class="spinner-border spinner-border-sm d-none" role="status"
+                                    aria-hidden="true"></span>
+                                <span class="button-text">Approve</span>
+                            </button>
                             <button type="button"
                                 class="btn btn-light-danger text-danger font-medium waves-effect text-start"
                                 data-bs-dismiss="modal">
@@ -1805,10 +1809,20 @@
         });
 
         $('.henkatenApproval').submit(function() {
+            const submitButton = $(this).find('.approveSubmitButton');
+            const spinner = submitButton.find('.spinner-border');
+            const buttonText = submitButton.find('.button-text');
+
+            // Disable button, show spinner, and change text to "Loading..."
+            submitButton.prop('disabled', true);
+            spinner.removeClass('d-none');
+            buttonText.text('Loading...');
             const origin = localStorage.getItem('origin_id'); // replace with your key
 
             // Set the value to the hidden input
             $('#origin-approval').val(origin);
+
+            return true
         });
 
         var deleteForm; // Variable to store the form to be submitted
