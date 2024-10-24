@@ -99,8 +99,6 @@ class DashboardController extends Controller
         $originIds = json_decode(auth()->user()->origin_id); // Decode the JSON field
         $origins = Origin::with('line.henkaten')->whereIn('id', $originIds)->get(); // Retrieve the origins based on IDs
 
-        // dd($origins); //
-        
         return view('pages.website.portal',[
             'origins' => $origins,
         ]);
@@ -121,7 +119,11 @@ class DashboardController extends Controller
             $empOrigin = $originId ? $originId : auth()->user()->origin_id;
             $origins = Origin::where('id', $empOrigin)->first();
         }
-
+        
+        if($origins == null){
+            return $this->portal();
+        }
+        
         // get current pivot
         $currentTime = Carbon::now()->format('H:i:s');
         
