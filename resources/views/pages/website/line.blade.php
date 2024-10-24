@@ -255,8 +255,11 @@
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-secondary henkatenSubmitButton"
-                                id="{{ $modal['modalId'] }}Submit">Save
-                                changes</button>
+                                id="{{ $modal['modalId'] }}Submit">
+                                <span class="spinner-border spinner-border-sm d-none" id="{{ $modal['modalId'] }}Spinner"
+                                    role="status" aria-hidden="true"></span>
+                                <span class="button-text">Save changes</span>
+                            </button>
                             <button type="button"
                                 class="btn btn-light-danger text-danger font-medium waves-effect text-start"
                                 data-bs-dismiss="modal">
@@ -1176,8 +1179,11 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-secondary">Save
-                                changes</button>
+                            <button type="submit" class="btn btn-secondary troubleshootSubmitButton">
+                                <span class="spinner-border spinner-border-sm d-none" role="status"
+                                    aria-hidden="true"></span>
+                                <span class="button-text">Save changes</span>
+                            </button>
                             <button type="button"
                                 class="btn btn-light-danger text-danger font-medium waves-effect text-start"
                                 data-bs-dismiss="modal">
@@ -1764,24 +1770,38 @@
         });
 
         $('.henkatenForm').submit(function() {
-            // Disable the submit button to prevent multiple form submissions
-            $('.henkatenSubmitButton').prop('disabled', true);
+            const submitButton = $(this).find('.henkatenSubmitButton');
+            const spinner = submitButton.find('.spinner-border');
+            const buttonText = submitButton.find('.button-text');
+
+            // Disable button, show spinner, and change text to "Loading..."
+            submitButton.prop('disabled', true);
+            spinner.removeClass('d-none');
+            buttonText.text('Loading...');
 
             const origin = localStorage.getItem('origin_id'); // replace with your key
 
             // Set the value to the hidden input
             $('#origin').val(origin);
 
-            setTimeout(function() {
-                $('.henkatenSubmitButton').prop('disabled', false);
-            }, 5000);
+            return true;
         });
 
         $('.henkatenTroubleshoot').submit(function() {
+            const submitButton = $(this).find('.troubleshootSubmitButton');
+            const spinner = submitButton.find('.spinner-border');
+            const buttonText = submitButton.find('.button-text');
+
+            // Disable button, show spinner, and change text to "Loading..."
+            submitButton.prop('disabled', true);
+            spinner.removeClass('d-none');
+            buttonText.text('Loading...');
             const origin = localStorage.getItem('origin_id'); // replace with your key
 
             // Set the value to the hidden input
             $('#origin-troubleshoot').val(origin);
+
+            return true;
         });
 
         $('.henkatenApproval').submit(function() {

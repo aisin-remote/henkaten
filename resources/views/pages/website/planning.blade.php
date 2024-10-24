@@ -98,11 +98,12 @@
                                 min="{{ date('Y-m-d') }}">
                         </div>
                         <div class="mb-3">
-                            <button
-                                class="btn rounded-pill px-4 btn-success text-light font-weight-medium waves-effect waves-light submit-planning"
-                                type="submit">
-                                <i class="ti ti-send fs-5"></i>
-                                Submit
+                            <button type="submit"
+                                class="btn rounded-pill px-4 btn-success text-light font-weight-medium waves-effect waves-light submit-planning">
+                                <span class="spinner-border spinner-border-sm d-none" role="status"
+                                    aria-hidden="true"></span>
+                                <i class="ti ti-send fs-5 pe-2"></i>
+                                <span class="button-text">Submit</span>
                             </button>
                         </div>
                     </div>
@@ -618,6 +619,19 @@
                 }
             });
         }
+
+        $('#planning-form').on('submit', function() {
+            const submitButton = $(this).find('.submit-planning');
+            const spinner = submitButton.find('.spinner-border');
+            const buttonText = submitButton.find('.button-text');
+
+            // Disable button, show spinner, and change text to "Loading..."
+            submitButton.prop('disabled', true);
+            spinner.removeClass('d-none');
+            buttonText.text('Loading...');
+
+            return true;
+        });
 
         // Usage
         const keysToKeep = ['origin_id'];
