@@ -187,8 +187,19 @@
 
 <!-- Load jQuery -->
 <script src="{{ asset('js/jquery-3.6.3.min.js') }}"></script>
+<script src={{ asset('js/pusher.min.js') }}></script>
 <script>
     $(document).ready(function() {
+        var pusher = new Pusher('8ee9e8a15df964407aec', {
+            cluster: 'ap1',
+            forceTLS: true
+        });
+
+        // websocket
+        pusher.subscribe('henkaten').bind('DashboardUpdated', function(data) {
+            // reload the page
+            window.location.reload();
+        });
         // Use class selector for origin buttons
         $(document).on('click', '.origin-btn', function(e) {
             e.preventDefault(); // Prevent the default behavior
