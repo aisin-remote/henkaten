@@ -436,7 +436,7 @@ class EmployeeController extends Controller
         return view('pages.website.planning', [
             'origin' => $origins,
             'operators' => Employee::select('id', 'name')
-                ->whereIn('role', ['Operator'])
+                ->whereIn('role', ['Operator','JP'])
                 ->where('origin_id', $empOrigin)
                 ->get(),
             'pics' =>  Employee::select('id', 'name')
