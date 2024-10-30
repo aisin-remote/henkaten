@@ -378,9 +378,10 @@ class DashboardController extends Controller
             'attendance' => $attendance,
             'line' => Line::findOrFail($lineId->id),
             'lineMap' => Line::where('id', $lineId->id)->first(),
-            'employees' => Employee::doesntHave('employeeActive')
-                ->where('origin_id', $empOrigin)
-                ->get(),
+            'employees' => Employee::where('origin_id', $empOrigin)->get(),
+            // 'employees' => Employee::doesntHave('employeeActive')
+            //     ->where('origin_id', $empOrigin)
+            //     ->get(),
             'activeEmployees' => $activeEmployees,
             'activePic' => $activePic,
             'histories' => $histories,
