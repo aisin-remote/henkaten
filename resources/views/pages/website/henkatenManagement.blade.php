@@ -86,15 +86,15 @@
                     </div>
                     <div class="col-4 d-flex justify-content-end">
                         {{-- <form action="{{ route('henkaten.import') }}" method="POST" enctype="multipart/form-data" --}}
-                        <form action=""" method="POST" enctype="multipart/form-data" class="me-2">
-                            @csrf
-                            <button class="btn btn-warning px-4 py-2">
-                                <span class="rounded-3 pe-2" id="icon">
-                                    <i class="ti ti-plane"></i>
-                                </span>
-                                <span class="d-none d-sm-inline-block">Import Henkaten Item</span>
-                            </button>
-                        </form>
+                        {{-- <form action="" method="POST" enctype="multipart/form-data" class="me-2">
+                            @csrf --}}
+                        <button class="btn btn-warning px-4 py-2">
+                            <span class="rounded-3 pe-2" id="icon">
+                                <i class="ti ti-plane"></i>
+                            </span>
+                            <span class="d-none d-sm-inline-block">Import Henkaten Item</span>
+                        </button>
+                        {{-- </form> --}}
                         <button class="btn btn-primary px-4 py-2" id="addSkill">
                             <span class="rounded-3 pe-2" id="icon">
                                 <i class="ti ti-plus"></i>
