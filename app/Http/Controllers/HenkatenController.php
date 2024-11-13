@@ -1121,7 +1121,8 @@ class HenkatenController extends Controller
                 })
                 ->pluck('id');
 
-            if ($linesToUpdate1->isNotEmpty()) {
+
+            if (!$linesToUpdate1->isEmpty()) {
                 Line::whereIn('id', $linesToUpdate1)->update($columnsToUpdate);
                 DB::commit();
             }
@@ -1136,7 +1137,7 @@ class HenkatenController extends Controller
             $oppositeLines = Henkaten::whereNotIn('line_id', $linesNotToUpdate)
                             ->pluck('line_id');
                             
-            if ($oppositeLines->isNotEmpty()) {
+            if (!$oppositeLines->isEmpty()) {
                 Line::whereIn('id', $oppositeLines)->update($columnsToUpdate);
                 DB::commit();
             }
