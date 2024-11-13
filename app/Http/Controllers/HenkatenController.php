@@ -1127,19 +1127,19 @@ class HenkatenController extends Controller
             }
 
             // 2. Update lines where origin_id is ELC and is_done is 1
-            // $linesNotToUpdate = Henkaten::whereHas('line', function ($query) use ($currentStatus) {
-            //                             $query->where('origin_id', env('ORIGIN_ELC'));
-            //                             })
-            //                             ->where('is_done', '0')
-            //                             ->pluck('line_id');
+            $linesNotToUpdate = Henkaten::whereHas('line', function ($query) use ($currentStatus) {
+                                        $query->where('origin_id', env('ORIGIN_ELC'))
+                                                ->where('is_done', '0');
+                                        })
+                                        ->pluck('line_id');
 
-            // $oppositeLines = Henkaten::whereNotIn('line_id', $linesNotToUpdate)
-            //                 ->pluck('line_id');
+            $oppositeLines = Henkaten::whereNotIn('line_id', $linesNotToUpdate)
+                            ->pluck('line_id');
                             
-            // if ($oppositeLines->isEmpty() == false) {
-            //     Line::whereIn('id', $oppositeLines)->update($columnsToUpdate);
-            //     DB::commit();
-            // }
+            if ($oppositeLines->isEmpty() == false) {
+                Line::whereIn('id', $oppositeLines)->update($columnsToUpdate);
+                DB::commit();
+            }
 
             DB::commit();
         } catch (\Throwable $th) {
