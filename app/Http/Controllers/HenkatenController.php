@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Jobs\SendWhatsAppNotification;
 use PhpMqtt\Client\ConnectionSettings;
+use App\Imports\HenkatenManagementImport;
 
 class HenkatenController extends Controller
 {
@@ -1126,19 +1127,17 @@ class HenkatenController extends Controller
             }
 
             // 2. Update lines where origin_id is ELC and is_done is 1
-            $linesToUpdate2 = Henkaten::whereHas('line', function ($query) use ($currentStatus) {
-                            $query->where('origin_id', env('ORIGIN_ELC'))
-                                    ->where('is_done', '1')
-                                    ->where(function ($subQuery) use ($currentStatus) {
-                                        $subQuery->where('status_man', $currentStatus)
-                                                ->orWhere('status_method', $currentStatus)
-                                                ->orWhere('status_material', $currentStatus)
-                                                ->orWhere('status_machine', $currentStatus);
-                                    });
-                            })->pluck('line_id');
+            $linesNotToUpdate = Henkaten::whereHas('line', function ($query) use ($currentStatus) {
+                                        $query->where('origin_id', env('ORIGIN_ELC'));
+                                        })
+                                        ->where('is_done', '0')
+                                        ->pluck('line_id');
 
-            if ($linesToUpdate2->isNotEmpty()) {
-                Line::whereIn('id', $linesToUpdate2)->update($columnsToUpdate);
+            $oppositeLines = Henkaten::whereNotIn('line_id', $linesNotToUpdate)
+                            ->pluck('line_id');
+                            
+            if ($oppositeLines->isNotEmpty()) {
+                Line::whereIn('id', $oppositeLines)->update($columnsToUpdate);
                 DB::commit();
             }
 
@@ -1147,6 +1146,17 @@ class HenkatenController extends Controller
             DB::rollBack();
             dd('Caught an exception: ' . $th->getMessage());
         }
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv|max:2048',
+        ]);
+
+        Excel::import(new HenkatenManagementImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Henkaten data imported successfully!');
     }
 
     public function henkatenExport()

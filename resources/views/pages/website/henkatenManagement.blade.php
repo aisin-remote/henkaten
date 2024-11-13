@@ -76,15 +76,25 @@
         </div>
     </div>
     <div class="row">
-        <div class="card shadow">
+        <div class="card shadow p-3">
             <div class="card-header" style="background-color: white !important">
                 <div class="row">
-                    <div class="col-10">
+                    <div class="col-8">
                         <h4 class="fw-4">
                             Registered Henkaten Item
                         </h4>
                     </div>
-                    <div class="col-2 text-end">
+                    <div class="col-4 d-flex justify-content-end">
+                        <form action="{{ route('henkaten.import') }}" method="POST" enctype="multipart/form-data"
+                            class="me-2">
+                            @csrf
+                            <button class="btn btn-warning px-4 py-2">
+                                <span class="rounded-3 pe-2" id="icon">
+                                    <i class="ti ti-plane"></i>
+                                </span>
+                                <span class="d-none d-sm-inline-block">Import Henkaten Item</span>
+                            </button>
+                        </form>
                         <button class="btn btn-primary px-4 py-2" id="addSkill">
                             <span class="rounded-3 pe-2" id="icon">
                                 <i class="ti ti-plus"></i>
