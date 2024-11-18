@@ -1135,7 +1135,7 @@ class HenkatenController extends Controller
 
             $oppositeLines = Henkaten::whereHas('line', function ($query) use ($currentStatus, $linesNotToUpdate) {
                             $query->where('origin_id', env('ORIGIN_ELC'))
-                                    ->where('is_done', '0')
+                                    ->where('is_done', '1')
                                     ->whereNotIn('line_id', $linesNotToUpdate);
                             })
                             ->pluck('line_id');
