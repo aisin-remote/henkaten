@@ -756,7 +756,7 @@
                                             @endif
                                         @else
                                             <span class="mb-1 badge bg-light-success text-success">
-                                                Done Approval
+                                                Done Approval {{ $currentStatus }}
                                             </span>
                                         @endif
                                     </td>
