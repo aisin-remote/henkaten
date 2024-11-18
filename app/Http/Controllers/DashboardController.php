@@ -293,7 +293,7 @@ class DashboardController extends Controller
 
         // get all history
         $histories = Approval::with(['henkaten.troubleshoot.employee', 'henkaten.henkatenManagement'])
-                ->where('status', '<>', 'Manager')
+                ->whereNot('status', 'Manager')
                 ->whereHas('henkaten', function ($query) use ($lineId, $currentDate) {
                     $query->where(function ($q) use ($lineId,  $currentDate) {
                         $q->where('line_id', $lineId->id)
