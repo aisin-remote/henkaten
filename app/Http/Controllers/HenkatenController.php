@@ -1187,7 +1187,9 @@ class HenkatenController extends Controller
             'file' => 'required|mimes:xlsx,csv|max:2048',
         ]);
 
-        Excel::import(new HenkatenManagementImport, $request->file('file'));
+        $origin = $request->origin;
+
+        Excel::import(new HenkatenManagementImport($origin), $request->file('file'));
 
         return redirect()->back()->with('success', 'Henkaten data imported successfully!');
     }

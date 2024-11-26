@@ -16,6 +16,13 @@ class HenkatenManagementImport implements ToCollection, WithHeadingRow
     *
     * @return \Illuminate\Database\Eloquent\Model|null
     */
+    protected $origin;
+
+    public function __construct($origin)
+    {
+        $this->origin = $origin;
+    }
+    
     public function collection(Collection $rows)
     {
         try {
@@ -28,6 +35,7 @@ class HenkatenManagementImport implements ToCollection, WithHeadingRow
                         '4M' => $row['type'],            // Matching criteria
                     ],
                     [
+                        'origin_id' => $this->origin, // Correctly use $this->origin
                         'henkaten_item' => $row['henkaten_item'], // Fields to update
                     ]
                 );

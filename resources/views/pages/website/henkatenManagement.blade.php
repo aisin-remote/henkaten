@@ -155,7 +155,7 @@
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <form action="{{ route('henkaten.import') }}" method="POST" enctype="multipart/form-data"
-                    class="me-2">
+                    class="me-2 importForm">
                     @method('POST')
                     @csrf
                     <div class="modal-header d-flex align-items-center">
@@ -165,6 +165,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                        <input type="hidden" name="origin" id="origin">
                         <input class="form-control" type="file" id="formFile" name="file">
                     </div>
                     <div class="modal-footer">
@@ -197,6 +198,14 @@
             $("#icon").html($("#addSkillCard").is(":visible") ? '<i class="ti ti-minus"></i>' :
                 '<i class="ti ti-plus"></i>');
         })
+
+        $('.importForm').on('submit', function() {
+            // Get the value from local storage
+            const origin = localStorage.getItem('origin_id'); // replace with your key
+
+            // Set the value to the hidden input
+            $('#origin').val(origin);
+        });
     });
 
     function notif(type, message) {
