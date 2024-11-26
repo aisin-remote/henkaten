@@ -620,12 +620,14 @@
                             @if (auth()->user()->role !== 'JP')
                                 <th class="text-center">Action</th>
                             @endif
+                            @php
+                                dd('test');
+                            @endphp
                         </tr>
                     </thead>
                     <tbody style="font-size: 15px">
                         @foreach ($histories as $history)
                             @php
-                                dd($history);
                                 $statusColor = [
                                     'running' => 'success',
                                     'henkaten' => 'warning',
