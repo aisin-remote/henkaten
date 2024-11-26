@@ -1162,17 +1162,17 @@ class HenkatenController extends Controller
             }
 
             // check if there is henkaten with end date not current date
-            // $rangeHenkaten = Henkaten::select('line_id','4M')->where('end_date', '<', Carbon::now()->format('Y-m-d'))->get();
-            // $updates = [];
-            // foreach ($rangeHenkaten as $henkaten) {
-            //     if (isset($henkaten->line_id, $henkaten->{"4M"})) {
-            //         $updates[$henkaten->line_id]['status_' . $henkaten->{"4M"}] = 'henkaten';
-            //     }
-            // }
+            $rangeHenkaten = Henkaten::select('line_id','4M')->where('end_date', '<', Carbon::now()->format('Y-m-d'))->get();
+            $updates = [];
+            foreach ($rangeHenkaten as $henkaten) {
+                if (isset($henkaten->line_id, $henkaten->{"4M"})) {
+                    $updates[$henkaten->line_id]['status_' . $henkaten->{"4M"}] = 'henkaten';
+                }
+            }
 
-            // foreach ($updates as $lineId => $fields) {
-            //     Line::where('id', $lineId)->update($fields);
-            // }
+            foreach ($updates as $lineId => $fields) {
+                Line::where('id', $lineId)->update($fields);
+            }
 
             DB::commit();
         } catch (\Throwable $th) {
