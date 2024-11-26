@@ -1128,7 +1128,7 @@ class HenkatenController extends Controller
             DB::beginTransaction();
 
             // 1. Update lines where origin_id is not ELC
-            $linesToUpdate1 = Line::whereNotIn('origin_id', [env('ORIGIN_ELC'),env('ORIGIN_SEAT'), env('ORIGIN_HANDLER')])
+            $linesToUpdate1 = Line::whereNot('origin_id', env('ORIGIN_ELC'))
                 ->where(function ($query) use ($currentStatus) {
                     $query->where('status_man', $currentStatus)
                         ->orWhere('status_method', $currentStatus)
