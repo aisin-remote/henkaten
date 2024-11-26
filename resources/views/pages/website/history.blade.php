@@ -125,7 +125,7 @@
                                     @endif
                                 </td>
                                 <td>{{ $henkaten->category }}</td>
-                                <td class="text-center">{{ $henkaten->henkatenManagement->table_no }}</td>
+                                <td class="text-center">{{ optional($henkaten->henkatenManagement)->table_no }}</td>
                                 @php
                                     if ($henkaten->troubleshoot === null) {
                                         $colorApp = 'danger';
