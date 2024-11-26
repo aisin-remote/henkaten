@@ -303,9 +303,7 @@ class DashboardController extends Controller
                         });
                     });
                 })
-                ->latest()
-                ->get();
-
+                ->latest();
 
         // get man power at spesific line and range of time
         $shifts = [
@@ -384,7 +382,7 @@ class DashboardController extends Controller
             //     ->get(),
             'activeEmployees' => $activeEmployees,
             'activePic' => $activePic,
-            'histories' => $histories,
+            'histories' => $histories->where('status', '!=', 'Manager')->get(),
             'manHenkaten' => $manHenkaten,
             'henkatenManagements' => HenkatenManagement::all(),
         ]);
