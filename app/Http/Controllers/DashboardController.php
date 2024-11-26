@@ -382,7 +382,7 @@ class DashboardController extends Controller
             //     ->get(),
             'activeEmployees' => $activeEmployees,
             'activePic' => $activePic,
-            'histories' => $histories->where('status', '!=', 'Manager')->get(),
+            'histories' => $histories->where('status', '<>', 'Manager')->get(),
             'manHenkaten' => $manHenkaten,
             'henkatenManagements' => HenkatenManagement::all(),
         ]);
