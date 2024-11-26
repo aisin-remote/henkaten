@@ -300,10 +300,10 @@ class DashboardController extends Controller
                         ->orWhere(function ($q2) use ($lineId, $currentDate) {
                             $q2->where('line_id', $lineId->id)
                                 ->whereDate('date', $currentDate);
-                        });
+                        })
+                        ->orWhere('status', '!=', 'Manager');
                     });
                 })
-                ->where('status', '!=', 'Manager') // Corrected this line
                 ->latest()
                 ->get();
 
