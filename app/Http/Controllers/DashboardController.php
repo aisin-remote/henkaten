@@ -294,8 +294,8 @@ class DashboardController extends Controller
         // get all history
         $histories = Approval::with(['henkaten.troubleshoot.employee', 'henkaten.henkatenManagement'])
                 ->whereNull('ldr') // Corrected to use whereNull
-                ->whereNull('spv') // Corrected to use whereNull
-                ->whereNull('mgr') // Corrected to use whereNull
+                ->orWhereNull('spv') // Corrected to use whereNull
+                ->orWhereNull('mgr') // Corrected to use whereNull
                 ->whereHas('henkaten', function ($query) use ($lineId, $currentDate) {
                     $query->where(function ($q) use ($lineId,  $currentDate) {
                         $q->where('line_id', $lineId->id)
