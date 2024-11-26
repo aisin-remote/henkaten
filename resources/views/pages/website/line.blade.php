@@ -621,7 +621,7 @@
                                 <th class="text-center">Action</th>
                             @endif
                             @php
-                                dd('test');
+                                dd($histories);
                             @endphp
                         </tr>
                     </thead>
