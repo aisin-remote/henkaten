@@ -80,7 +80,7 @@
                     </a>
                     <ul aria-expanded="false" class="collapse first-level">
                         <li class="sidebar-item">
-                            <a href="/henkatenManagement" class="sidebar-link">
+                            <a href="/henkatenManagement" class="sidebar-link" id="henkatenManagement-link">
                                 <i class="ti ti-book"></i>
                                 <span class="hide-menu">Henkaten Management</span>
                             </a>

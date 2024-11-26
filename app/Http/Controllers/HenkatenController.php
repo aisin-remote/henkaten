@@ -902,7 +902,7 @@ class HenkatenController extends Controller
             $origins = Origin::where('id', $empOrigin)->first();
         }
 
-        $henkatenHistory = Henkaten::with(['line.origin', 'approval'])
+        $henkatenHistory = Henkaten::with(['line.origin', 'approval', 'henkatenManagement'])
                         ->whereHas('line', function ($query) use ($empOrigin) {
                             $query->where('origin_id', $empOrigin);
                         })
@@ -915,10 +915,26 @@ class HenkatenController extends Controller
         ]);
     }
 
-    public function henkatenManagementIndex()
+    public function henkatenManagementIndex($originId = null)
     {
-        $henkatenManagement = HenkatenManagement::all();
-        return view('pages.website.henkatenManagement', ['henkatenManagements' => $henkatenManagement]);
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
+                $origins = Origin::where('id', $empOrigin)->first();
+            }else{
+                $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+                $origins = Origin::where('id', $empOrigin)->first();
+            }
+        }else{
+            $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+            $origins = Origin::where('id', $empOrigin)->first();
+        }
+        
+        $henkatenManagement = HenkatenManagement::where('origin_id', $origins->id)->get();
+        
+        return view('pages.website.henkatenManagement', [
+            'henkatenManagements' => $henkatenManagement
+        ]);
     }
 
     public function henkatenManagementStore(Request $request)
@@ -1112,7 +1128,7 @@ class HenkatenController extends Controller
             DB::beginTransaction();
 
             // 1. Update lines where origin_id is not ELC
-            $linesToUpdate1 = Line::whereNot('origin_id', env('ORIGIN_ELC'))
+            $linesToUpdate1 = Line::whereNotIn('origin_id', [env('ORIGIN_ELC'),env('ORIGIN_SEAT'), env('ORIGIN_HANDLER')])
                 ->where(function ($query) use ($currentStatus) {
                     $query->where('status_man', $currentStatus)
                         ->orWhere('status_method', $currentStatus)
@@ -1134,7 +1150,7 @@ class HenkatenController extends Controller
                                         ->pluck('line_id');
 
             $oppositeLines = Henkaten::whereHas('line', function ($query) use ($currentStatus, $linesNotToUpdate) {
-                            $query->where('origin_id', env('ORIGIN_ELC'))
+                            $query->whereIn('origin_id', [env('ORIGIN_ELC'), env('ORIGIN_SEAT'), env('ORIGIN_HANDLER')])
                                     ->where('is_done', '1')
                                     ->whereNotIn('line_id', $linesNotToUpdate);
                             })
@@ -1145,6 +1161,19 @@ class HenkatenController extends Controller
                 DB::commit();
             }
 
+            // check if there is henkaten with end date not current date
+            $rangeHenkaten = Henkaten::select('line_id','4M')->where('end_date', '<', Carbon::now()->format('Y-m-d'))->get();
+            $updates = [];
+            foreach ($rangeHenkaten as $henkaten) {
+                if (isset($henkaten->line_id, $henkaten->{"4M"})) {
+                    $updates[$henkaten->line_id]['status_' . $henkaten->{"4M"}] = 'henkaten';
+                }
+            }
+
+            foreach ($updates as $lineId => $fields) {
+                Line::where('id', $lineId)->update($fields);
+            }
+
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -1152,7 +1181,7 @@ class HenkatenController extends Controller
         }
     }
 
-    public function import(Request $request)
+    public function henkatenImport(Request $request)
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,csv|max:2048',
@@ -1171,5 +1200,42 @@ class HenkatenController extends Controller
             // Optionally, return a response indicating the failure
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function editHankatenManagement($table , $type, $item, $newTable, $newType, $newItem)
+    {
+        $newTable = $newTable ?? $table;
+        $newType = $newType ?? $type;
+        $newItem = $newItem?? $item;
+
+        try {
+            DB::beginTransaction();
+
+            HenkatenManagement::where('table_no', $table)
+                                ->where('4M', $type)
+                                ->where('henkaten_item', $item)
+                                ->update([
+                                    'table_no' => $newTable,
+                                    '4M' => $newType,
+                                    'henkaten_item' => $newItem,
+                                ]);
+
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'table' => $newTable,
+                'type' => $newType,
+                'item' => $newItem,
+                'message' => 'Data berhasil diupdate!'
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+        
     }
 }

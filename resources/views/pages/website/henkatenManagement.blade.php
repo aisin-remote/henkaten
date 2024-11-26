@@ -85,16 +85,13 @@
                         </h4>
                     </div>
                     <div class="col-4 d-flex justify-content-end">
-                        {{-- <form action="{{ route('henkaten.import') }}" method="POST" enctype="multipart/form-data" --}}
-                        {{-- <form action="" method="POST" enctype="multipart/form-data" class="me-2">
-                            @csrf --}}
-                        <button class="btn btn-warning px-4 py-2">
+                        <button class="btn btn-warning px-4 py-2 me-3" data-bs-toggle="modal"
+                            data-bs-target="#bs-example-modal-sm">
                             <span class="rounded-3 pe-2" id="icon">
                                 <i class="ti ti-plane"></i>
                             </span>
                             <span class="d-none d-sm-inline-block">Import Henkaten Item</span>
                         </button>
-                        {{-- </form> --}}
                         <button class="btn btn-primary px-4 py-2" id="addSkill">
                             <span class="rounded-3 pe-2" id="icon">
                                 <i class="ti ti-plus"></i>
@@ -111,14 +108,39 @@
                             <th>Table No.</th>
                             <th>4M</th>
                             <th>Henkaten Item</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($henkatenManagements as $master)
                             <tr>
-                                <td>{{ $master->table_no }}</td>
-                                <td>{{ $master->{"4M"} }}</td>
-                                <td>{{ $master->henkaten_item }}</td>
+                                <td>
+                                    <span class="actualTable"
+                                        data-table-id="{{ $master->table_no }}">{{ $master->table_no }}</span>
+                                    <input type="text" class="form-control editTable" style="display: none">
+                                </td>
+                                <td>
+                                    <span class="actual4M" data-type-id="{{ $master->{"4M"} }}">{{ $master->{"4M"} }}</span>
+                                    <input type="text" class="form-control edit4M" style="display: none">
+                                </td>
+                                <td>
+                                    <span class="actualItem"
+                                        data-item-id="{{ $master->henkaten_item }}">{{ $master->henkaten_item }}</span>
+                                    <input type="text" class="form-control editItem" style="display: none">
+                                </td>
+                                <td>
+                                    <button class="btn btn-warning edit">
+                                        <span class="rounded-3" id="icon">
+                                            <i class="ti ti-edit"></i>
+                                        </span>
+                                    </button>
+                                    <button class="btn btn-icon btn-success save mb-1" style="display: none">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-icon btn-danger cancel mb-1" style="display: none">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -126,9 +148,42 @@
             </div>
         </div>
     </div>
+
+    {{-- modal import --}}
+    <div class="modal fade" id="bs-example-modal-sm" tabindex="-1" aria-labelledby="mySmallModalLabel"
+        style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <form action="{{ route('henkaten.import') }}" method="POST" enctype="multipart/form-data"
+                    class="me-2">
+                    @method('POST')
+                    @csrf
+                    <div class="modal-header d-flex align-items-center">
+                        <h4 class="modal-title" id="myModalLabel">
+                            Import Henkaten Item
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input class="form-control" type="file" id="formFile" name="file">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary font-medium waves-effect">Import</button>
+                        <button type="button" class="btn btn-light-danger text-danger font-medium waves-effect"
+                            data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 @endsection
 <script src={{ asset('js/jquery-3.6.3.min.js') }} integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
     crossorigin="anonymous"></script>
+<script src="{{ asset('js/iziToast.min.js') }}"></script>
 <script>
     $(document).ready(function() {
         // initialize datatable
@@ -143,6 +198,22 @@
                 '<i class="ti ti-plus"></i>');
         })
     });
+
+    function notif(type, message) {
+        if (type === 'error') {
+            iziToast.error({
+                title: 'Error!',
+                message: message,
+                position: 'bottomRight'
+            });
+        } else if (type === 'success') {
+            iziToast.success({
+                title: 'Success!',
+                message: message,
+                position: 'bottomRight'
+            });
+        }
+    }
 
     $(document).ready(function() {
         $('.delete-skill').on('click', function(e) {
@@ -168,6 +239,118 @@
                     }
                 });
             }
+        });
+
+        $(document).on('click', '#masterSkill .edit', function() {
+            var $row = $(this).closest('tr');
+
+            // hide span
+            $(this).closest('tr').find('.actualTable').hide();
+            $(this).closest('tr').find('.actual4M').hide();
+            $(this).closest('tr').find('.actualItem').hide();
+
+            var currentTableValue = $row.find('.actualTable').data('table-id');
+            var current4MValue = $row.find('.actual4M').data('type-id');
+            var currentItemValue = $row.find('.actualItem').data('item-id');
+
+            $row.find('.editTable').val(currentTableValue);
+            $row.find('.edit4M').val(current4MValue);
+            $row.find('.editItem').val(currentItemValue);
+
+            // show input
+            $(this).closest('tr').find('.editTable').show();
+            $(this).closest('tr').find('.edit4M').show();
+            $(this).closest('tr').find('.editItem').show();
+
+            // show save button
+            $(this).closest('tr').find('.save').css({
+                display: 'inline'
+            });
+
+            // show cancel button
+            $(this).closest('tr').find('.cancel').css({
+                display: 'inline'
+            });
+
+            // hide edit button
+            $(this).closest('tr').find('.edit').hide();
+        });
+
+        $(document).on('click', '#masterSkill .cancel', function() {
+            let $row = $(this).closest('tr');
+
+            // show span
+            $row.find('.actualTable').show();
+            $row.find('.actual4M').show();
+            $row.find('.actualItem').show();
+
+            // hide input
+            $row.find('.editTable').hide();
+            $row.find('.edit4M').hide();
+            $row.find('.editItem').hide();
+
+            // hide save button
+            $row.find('.save').hide();
+
+            // hide cancel button
+            $row.find('.cancel').hide();
+
+            // show edit button
+            $row.find('.edit').show();
+        });
+
+        $(document).on('click', '#masterSkill .save', function() {
+            let $row = $(this).closest('tr');
+
+            let table = $row.find('.actualTable').html();
+            let type = $row.find('.actual4M').html();
+            let item = $row.find('.actualItem').html();
+            let newTable = $row.find('.editTable').val();
+            let newType = $row.find('.edit4M').val();
+            let newItem = $row.find('.editItem').val();
+
+            let requestOptions = {
+                method: 'GET', // Adjust the method if needed
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                        'content') // Add CSRF token for security
+                }
+            };
+
+            fetch(`/henkatenManagement/edit/${table}/${type}/${item}/${newTable}/${newType}/${newItem}`,
+                    requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        notif('success', data.message);
+
+                        // update span content
+                        $row.find('.actualTable').html(data.table).show();
+                        $row.find('.actual4M').html(data.type).show();
+                        $row.find('.actualItem').html(data.item).show();
+
+                        // hide input
+                        $row.find('.editTable').hide();
+                        $row.find('.edit4M').hide();
+                        $row.find('.editItem').hide();
+
+                        // hide save button
+                        $row.find('.save').hide();
+
+                        // hide cancel button
+                        $row.find('.cancel').hide();
+
+                        // show edit button
+                        $row.find('.edit').show();
+
+                    } else if (data.status === 'error') {
+                        notif('error', data.message);
+                    }
+                })
+                .catch(error => {
+                    notif('error', error.message);
+                });
         });
     });
 </script>
