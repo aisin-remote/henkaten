@@ -625,6 +625,7 @@
                     <tbody style="font-size: 15px">
                         @foreach ($histories as $history)
                             @php
+                                dd($history);
                                 $statusColor = [
                                     'running' => 'success',
                                     'henkaten' => 'warning',
