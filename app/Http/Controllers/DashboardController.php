@@ -304,7 +304,7 @@ class DashboardController extends Controller
                         });
                     });
                 })
-                ->latest()
+                // ->latest()
                 ->get();
 
 
