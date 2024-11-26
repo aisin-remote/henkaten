@@ -303,8 +303,9 @@ class DashboardController extends Controller
                                 $q->where('line_id', $lineId->id)
                                 ->where('is_done', '0')
                                 ->orWhere(function ($q2) use ($lineId, $currentDate) {
-                                    $q2->where('line_id', $lineId->id);
-                                        // ->whereDate('date', $currentDate);
+                                    $q2->where('line_id', $lineId->id)
+                                        ->whereMonth('date', now()->month) // Current month
+                                        ->whereYear('date', now()->year); // Current year
                                 });
                             });
                         })
