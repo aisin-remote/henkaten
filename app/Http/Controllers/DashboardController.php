@@ -303,7 +303,7 @@ class DashboardController extends Controller
                         });
                     });
                 })
-                ->whereNot('status', 'Manager')
+                ->where('status', '!=', 'Manager') // Corrected this line
                 ->latest()
                 ->get();
 
