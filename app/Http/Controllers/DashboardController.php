@@ -293,22 +293,23 @@ class DashboardController extends Controller
 
         // get all history
         $histories = Approval::with(['henkaten.troubleshoot.employee', 'henkaten.henkatenManagement'])
-                ->whereNull('ldr') // Corrected to use whereNull
-                ->orWhereNull('spv') // Corrected to use whereNull
-                ->orWhereNull('mgr') // Corrected to use whereNull
-                ->whereHas('henkaten', function ($query) use ($lineId, $currentDate) {
-                    $query->where(function ($q) use ($lineId,  $currentDate) {
-                        $q->where('line_id', $lineId->id)
-                        ->where('is_done', '0')
-                        ->orWhere(function ($q2) use ($lineId, $currentDate) {
-                            $q2->where('line_id', $lineId->id)
-                                ->whereDate('date', $currentDate);
-                        });
-                    });
-                })
-                ->latest()
-                ->get();
-
+                        ->where(function ($query) {
+                            $query->whereNull('ldr')
+                                ->orWhereNull('spv')
+                                ->orWhereNull('mgr');
+                        })
+                        ->whereHas('henkaten', function ($query) use ($lineId, $currentDate) {
+                            $query->where(function ($q) use ($lineId, $currentDate) {
+                                $q->where('line_id', $lineId->id)
+                                ->where('is_done', '0')
+                                ->orWhere(function ($q2) use ($lineId, $currentDate) {
+                                    $q2->where('line_id', $lineId->id)
+                                        ->whereDate('date', $currentDate);
+                                });
+                            });
+                        })
+                        ->latest()
+                        ->get();
 
         // get man power at spesific line and range of time
         $shifts = [
