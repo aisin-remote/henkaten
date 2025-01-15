@@ -143,7 +143,7 @@
                                 // Get the latest henkaten
                                 $latestHenkaten = $line
                                     ->henkaten()
-                                    // ->whereDate('created_at', Carbon\Carbon::today())
+                                    ->whereDate('created_at', Carbon\Carbon::today())
                                     ->first();
 
                                 if ($overall_status == 'HENKATEN') {
