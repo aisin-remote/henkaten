@@ -141,10 +141,7 @@
                                 }
 
                                 // Get the latest henkaten
-                                $latestHenkaten = $line
-                                    ->henkaten()
-                                    ->whereDate('created_at', Carbon\Carbon::today())
-                                    ->first();
+                                $latestHenkaten = $line->henkaten()->where('is_done', 0)->first();
 
                                 if ($overall_status == 'HENKATEN') {
                                     $color = 'warning';
