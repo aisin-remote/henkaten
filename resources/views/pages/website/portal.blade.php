@@ -141,7 +141,7 @@
                                 }
 
                                 // Get the latest henkaten
-                                $latestHenkaten = $line->henkaten()->where('is_done', 0)->first();
+                                $latestHenkaten = $line->henkaten()->latest()->first();
 
                                 if ($overall_status == 'HENKATEN') {
                                     $color = 'warning';
