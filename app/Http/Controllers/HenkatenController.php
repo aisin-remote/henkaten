@@ -1144,7 +1144,7 @@ class HenkatenController extends Controller
 
             // 2. Update lines where origin_id is ELC and is_done is 1
             $linesNotToUpdate = Henkaten::whereHas('line', function ($query) use ($currentStatus) {
-                                        $query->where('origin_id', env('ORIGIN_ELC'))
+                                        $query->whereIn('origin_id', [env('ORIGIN_ELC'), env('ORIGIN_SEAT'), env('ORIGIN_HANDLER')])
                                                 ->where('is_done', '0');
                                         })
                                         ->pluck('line_id');
