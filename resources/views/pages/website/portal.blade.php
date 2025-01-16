@@ -147,7 +147,7 @@
                                 }
 
                             @endphp
-                            @if ($overall_status_all_lines !== 'RUNNING' && $latestHenkaten)
+                            @if ($latestHenkaten)
                                 <div class="accordion accordion-flush" id="accordionFlushExample">
                                     <div class="accordion-item">
                                         <h2 class="accordion-header" id="flush-headingOne">
@@ -160,6 +160,17 @@
                                                 <span class="mb-1 badge bg-warning">
                                                     {{ $latestHenkaten->category }}
                                                 </span>
+                                                @if ($overall_status_all_lines == 'RUNNING' && $latestHenkaten)
+                                                    @if (!$latestHenkaten->troubleshoot)
+                                                        <span class="mb-1 badge bg-danger">
+                                                            Waiting Troubleshoot
+                                                        </span>
+                                                    @else
+                                                        <span class="mb-1 badge bg-danger">
+                                                            Waiting Approval
+                                                        </span>
+                                                    @endif
+                                                @endif
                                             </button>
                                         </h2>
                                         <div id="{{ $line->name }}" class="accordion-collapse collapse"
