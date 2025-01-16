@@ -160,20 +160,6 @@
                                                 <span class="mb-1 badge bg-warning">
                                                     {{ $latestHenkaten->category }}
                                                 </span>
-                                                @if ($latestHenkaten)
-                                                    <span class="mb-1 badge bg-danger">
-                                                        Waiting Troubleshoot
-                                                    </span>
-                                                    @if (!$latestHenkaten->troubleshoot)
-                                                        <span class="mb-1 badge bg-danger">
-                                                            Waiting Troubleshoot
-                                                        </span>
-                                                    @else
-                                                        <span class="mb-1 badge bg-danger">
-                                                            Waiting Approval
-                                                        </span>
-                                                    @endif
-                                                @endif
                                             </button>
                                         </h2>
                                         <div id="{{ $line->name }}" class="accordion-collapse collapse"
