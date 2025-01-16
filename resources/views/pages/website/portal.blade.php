@@ -93,11 +93,19 @@
                         </a>
                     </div>
                     <div class="card-footer text-info bg-white">
-                        <div class="row mb-3">
-                            <div class="col-12 text-center">
-                                <h6 class="text-center" style="font-weight: bolder">Latest Henkaten</h6>
+                        @if ($overall_status_all_lines == 'HENKATEN' || $overall_status_all_lines == 'STOP')
+                            <div class="row mb-3">
+                                <div class="col-12 text-center">
+                                    <h6 class="text-center" style="font-weight: bolder">Latest Henkaten</h6>
+                                </div>
                             </div>
-                        </div>
+                        @else
+                            <div class="row mb-3">
+                                <div class="col-12 text-center">
+                                    <h6 class="text-center" style="font-weight: bolder">No Henkaten</h6>
+                                </div>
+                            </div>
+                        @endif
                         @foreach ($origin->line as $line)
                             @php
                                 $statusMappings = [
@@ -147,7 +155,7 @@
                                 }
 
                             @endphp
-                            @if ($latestHenkaten)
+                            @if ($overall_status_all_lines !== 'RUNNING' && $latestHenkaten)
                                 <div class="accordion accordion-flush" id="accordionFlushExample">
                                     <div class="accordion-item">
                                         <h2 class="accordion-header" id="flush-headingOne">
@@ -157,20 +165,9 @@
                                                 <span class="mb-1 badge bg-dark me-2">
                                                     {{ $line->name }}
                                                 </span>
-                                                <span class="mb-1 badge bg-warning">
+                                                <span class="mb-1 badge bg-danger">
                                                     {{ $latestHenkaten->category }}
                                                 </span>
-                                                @if ($overall_status_all_lines == 'RUNNING' && $latestHenkaten)
-                                                    @if (!$latestHenkaten->troubleshoot)
-                                                        <span class="mb-1 badge bg-danger">
-                                                            Waiting Troubleshoot
-                                                        </span>
-                                                    @else
-                                                        <span class="mb-1 badge bg-danger">
-                                                            Waiting Approval
-                                                        </span>
-                                                    @endif
-                                                @endif
                                             </button>
                                         </h2>
                                         <div id="{{ $line->name }}" class="accordion-collapse collapse"
