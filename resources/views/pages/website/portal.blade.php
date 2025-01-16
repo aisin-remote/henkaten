@@ -160,7 +160,7 @@
                                                 <span class="mb-1 badge bg-warning">
                                                     {{ $latestHenkaten->category }}
                                                 </span>
-                                                @if ($overall_status == 'RUNNING' && $latestHenkaten)
+                                                @if ($latestHenkaten)
                                                     <span class="mb-1 badge bg-danger">
                                                         Waiting Troubleshoot
                                                     </span>
