@@ -161,6 +161,9 @@
                                                     {{ $latestHenkaten->category }}
                                                 </span>
                                                 @if ($overall_status == 'RUNNING' && $latestHenkaten)
+                                                    <span class="mb-1 badge bg-danger">
+                                                        Waiting Troubleshoot
+                                                    </span>
                                                     @if (!$latestHenkaten->troubleshoot)
                                                         <span class="mb-1 badge bg-danger">
                                                             Waiting Troubleshoot
