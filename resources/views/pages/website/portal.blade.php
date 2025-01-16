@@ -76,6 +76,11 @@
                 }
 
                 $overall_status_all_lines = $overall_status_all_lines ? $overall_status_all_lines : 'No Lines Detected';
+                if ($overall_status_all_lines == 'RUNNING') {
+                    $status = 'No Henkaten';
+                } else {
+                    $status = $overall_status_all_lines;
+                }
             @endphp
             <div class="col-md-4 mt-4">
                 <div class="card bg-{{ $color }} card-hover">
@@ -83,24 +88,16 @@
                         <a href="/dashboard/{{ $origin->id }}" class="origin-btn" data-origin-id="{{ $origin->id }}">
                             <div class="text-white p-3">
                                 <h2 class="text-white fs-7" style="font-weight: bolder">{{ $origin->name }}</h2>
-                                <h5 class="fw-light text-white">{{ $overall_status_all_lines }}</h5>
+                                <h5 class="fw-light text-white">{{ $status }}</h5>
                             </div>
                         </a>
                     </div>
                     <div class="card-footer text-info bg-white">
-                        @if ($overall_status_all_lines == 'HENKATEN' || $overall_status_all_lines == 'STOP')
-                            <div class="row mb-3">
-                                <div class="col-12 text-center">
-                                    <h6 class="text-center" style="font-weight: bolder">Latest Henkaten</h6>
-                                </div>
+                        <div class="row mb-3">
+                            <div class="col-12 text-center">
+                                <h6 class="text-center" style="font-weight: bolder">Latest Henkaten</h6>
                             </div>
-                        @else
-                            <div class="row mb-3">
-                                <div class="col-12 text-center">
-                                    <h6 class="text-center" style="font-weight: bolder">No Henkaten</h6>
-                                </div>
-                            </div>
-                        @endif
+                        </div>
                         @foreach ($origin->line as $line)
                             @php
                                 $statusMappings = [
