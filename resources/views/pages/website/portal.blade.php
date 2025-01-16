@@ -147,7 +147,7 @@
                                 }
 
                             @endphp
-                            @if ($overall_status !== 'RUNNING' && $latestHenkaten)
+                            @if ($overall_status_all_lines !== 'RUNNING' && $latestHenkaten)
                                 <div class="accordion accordion-flush" id="accordionFlushExample">
                                     <div class="accordion-item">
                                         <h2 class="accordion-header" id="flush-headingOne">
