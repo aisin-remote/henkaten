@@ -1,6 +1,49 @@
 @extends('layouts.root.main')
 
 @section('main')
+    <style>
+        .toggle-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100px;
+            height: 40px;
+        }
+
+        .toggle-input {
+            display: none;
+        }
+
+        .toggle-label {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-color: #dc3545;
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        .toggle-label::before {
+            content: "Belum Hadir";
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            transition: opacity 0.3s;
+        }
+
+        .toggle-input:checked+.toggle-label {
+            background-color: #198754;
+        }
+
+        .toggle-input:checked+.toggle-label::before {
+            content: "Hadir";
+        }
+    </style>
     <div class="row mt-1">
         <div class="col-md-2">
             <div class="card shadow" style="padding: 40px;border-radius:16px">
@@ -69,10 +112,19 @@
                                             Hadir - [{{ $attendance->attendance[0]->time_in }}]
                                         </span>
                                     @else
-                                        <span
-                                            class="badge bg-danger text-light fs-2 rounded-4 py-1 px-2 lh-sm mt-3 fw-bold status">
-                                            Belum hadir
-                                        </span>
+                                        <div class="dropdown">
+                                            <button class="btn btn-danger dropdown-toggle" type="button"
+                                                id="attendanceDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                                data-npk="{{ $employee->employee->npk }}">
+                                                Belum Hadir
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#" data-value="Belum Hadir">Belum
+                                                        Hadir</a></li>
+                                                <li><a class="dropdown-item" href="#" data-value="Hadir">Hadir</a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     @endif
                                 </div>
                             </div>
@@ -128,10 +180,20 @@
                                                         Hadir - [{{ $attendance->attendance[0]->time_in }}]
                                                     </span>
                                                 @else
-                                                    <span
-                                                        class="badge bg-danger text-light fs-2 rounded-4 py-1 px-2 lh-sm mt-3 fw-bold status">
-                                                        Belum hadir
-                                                    </span>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-danger dropdown-toggle" type="button"
+                                                            id="attendanceDropdown" data-bs-toggle="dropdown"
+                                                            aria-expanded="false"
+                                                            data-npk="{{ $employee->employee->npk }}">
+                                                            Belum Hadir
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a class="dropdown-item" href="#"
+                                                                    data-value="Belum Hadir">Belum Hadir</a></li>
+                                                            <li><a class="dropdown-item" href="#"
+                                                                    data-value="Hadir">Hadir</a></li>
+                                                        </ul>
+                                                    </div>
                                                 @endif
                                             </div>
                                         </div>
@@ -159,10 +221,6 @@
             scrollX: true,
         });
 
-        $(document).on('click', function() {
-            $('#code').focus()
-        })
-
         const status = localStorage.getItem('notifStatus');
         const message = localStorage.getItem('notifMessage');
 
@@ -187,6 +245,57 @@
                 });
             }
         }
+
+        $(document).on('click', ".dropdown-item", function() {
+            let selectedValue = $(this).data("value");
+            let btn = $(this).closest(".dropdown").find("button");
+            let npk = btn.data("npk"); // Retrieve `npk` from button's data attribute
+
+            // Change text
+            btn.text(selectedValue);
+
+            // Change button color
+            if (selectedValue === "Hadir") {
+                btn.removeClass("btn-danger").addClass("btn-success");
+            } else {
+                btn.removeClass("btn-success").addClass("btn-danger");
+            }
+
+            console.log(npk);
+
+            // **Send AJAX request only if "Hadir" is selected**
+            if (selectedValue === "Hadir") {
+                $.ajax({
+                    type: 'GET',
+                    url: "{{ url('employee/attendance/store') }}",
+                    _token: "{{ csrf_token() }}",
+                    data: {
+                        npk: npk,
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.status === 'success') {
+                            // Store notification in localStorage
+                            localStorage.setItem('notifStatus', data.status);
+                            localStorage.setItem('notifMessage', data.message);
+
+                            // Reload the page
+                            window.location.reload();
+                        } else {
+                            notif(data.status, data.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr);
+                        if (xhr.status === 0) {
+                            notif("error", 'Connection Error');
+                        } else {
+                            notif("error", xhr.status);
+                        }
+                    }
+                });
+            }
+        });
 
         var barcode = "";
         $('#code').keypress(function(e) {
