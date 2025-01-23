@@ -89,6 +89,7 @@ Route::middleware(['auth'])->group(function () {
         
         // store attendance
         Route::get('/attendance/store', [EmployeeController::class, 'storeAttendance'])->name('attendance.store');
+        Route::get('/attendance/rollback', [EmployeeController::class, 'rollbackAttendance'])->name('attendance.rollback');
 
         // edit employees
         Route::get('/{id}/edit', [EmployeeController::class, 'employeeEdit'])->name('editEmployee');

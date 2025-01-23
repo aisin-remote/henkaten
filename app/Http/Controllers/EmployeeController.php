@@ -288,10 +288,55 @@ class EmployeeController extends Controller
             return response()->json([
                 'status' => 'success',
                 'time' => Carbon::now()->format('H:i:s'),
-                'message' => 'Data karyawan sudah tersimpan!'
+                'message' => 'Data absen karyawan sudah tersimpan!'
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ]);
+        }
+    }
+
+    public function rollbackAttendance(Request $request)
+    {
+        $attendanceId = $request->id;
+
+        try {
+            DB::beginTransaction();
+
+            // Check if attendance exists
+            $attendance = Attendance::find($attendanceId);
+            $picAttendance = PicAttendance::find($attendanceId);
+
+            if (!$attendance && !$picAttendance) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Attendance record with ID $attendanceId not found."
+                ], 404);
+            }
+
+            // Check if pic_attendance exists
+            if (!$picAttendance && $attendance) {
+                 // Delete records
+                $attendance->delete();
+            }else if(!is_null($picAttendance) && !is_null($attendance)){
+                // Delete records
+                $attendance->delete();
+                $picAttendance->delete();
+            }else if($picAttendance && !$attendance){
+                // Delete records
+                $picAttendance->delete();
+            }
+
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data absen karyawan sudah terhapus!'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollback();
             return response()->json([
                 'status' => 'error',
                 'message' => $th->getMessage(),

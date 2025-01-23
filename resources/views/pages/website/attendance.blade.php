@@ -107,10 +107,19 @@
                                 </div>
                                 <div class="status-container">
                                     @if ($attendance)
-                                        <span
-                                            class="badge bg-success text-light fs-2 rounded-4 py-1 px-2 lh-sm mt-3 fw-bold status">
-                                            Hadir - [{{ $attendance->attendance[0]->time_in }}]
-                                        </span>
+                                        <div class="dropdown">
+                                            <button class="btn btn-success dropdown-toggle" type="button"
+                                                id="attendanceDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                                data-id="{{ $attendance->attendance[0]->id ?? '' }}">
+                                                Hadir - [{{ $attendance->attendance[0]->time_in }}]
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item rollback-dropdown" href="#"
+                                                        data-value="Belum Hadir">Belum
+                                                        Hadir</a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     @else
                                         <div class="dropdown">
                                             <button class="btn btn-danger dropdown-toggle" type="button"
@@ -119,8 +128,6 @@
                                                 Belum Hadir
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="#" data-value="Belum Hadir">Belum
-                                                        Hadir</a></li>
                                                 <li><a class="dropdown-item" href="#" data-value="Hadir">Hadir</a>
                                                 </li>
                                             </ul>
@@ -175,10 +182,23 @@
                                             </div>
                                             <div class="status-container">
                                                 @if ($attendance)
-                                                    <span
-                                                        class="badge bg-success text-light fs-2 rounded-4 py-1 px-2 lh-sm mt-3 fw-bold status">
-                                                        Hadir - [{{ $attendance->attendance[0]->time_in }}]
-                                                    </span>
+                                                    {{-- @php
+                                                        dd($attendance);
+                                                    @endphp --}}
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-success dropdown-toggle" type="button"
+                                                            id="attendanceDropdown" data-bs-toggle="dropdown"
+                                                            aria-expanded="false"
+                                                            data-id="{{ $attendance->attendance[0]->id ?? '' }}">
+                                                            Hadir - [{{ $attendance->attendance[0]->time_in }}]
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a class="dropdown-item rollback-dropdown" href="#"
+                                                                    data-value="Belum Hadir">Belum Hadir</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 @else
                                                     <div class="dropdown">
                                                         <button class="btn btn-danger dropdown-toggle" type="button"
@@ -188,8 +208,6 @@
                                                             Belum Hadir
                                                         </button>
                                                         <ul class="dropdown-menu">
-                                                            <li><a class="dropdown-item" href="#"
-                                                                    data-value="Belum Hadir">Belum Hadir</a></li>
                                                             <li><a class="dropdown-item" href="#"
                                                                     data-value="Hadir">Hadir</a></li>
                                                         </ul>
@@ -246,6 +264,55 @@
             }
         }
 
+        $(document).on('click', ".rollback-dropdown", function() {
+            let selectedValue = $(this).data("value");
+            let btn = $(this).closest(".dropdown").find("button");
+            let id = btn.data("id"); // Retrieve `npk` from button's data attribute
+
+            // Change text
+            btn.text(selectedValue);
+
+            // Change button color
+            if (selectedValue === "Hadir") {
+                btn.removeClass("btn-danger").addClass("btn-success");
+            } else {
+                btn.removeClass("btn-success").addClass("btn-danger");
+            }
+
+            // **Send AJAX request only if "Hadir" is selected**
+            if (selectedValue === "Belum Hadir") {
+                $.ajax({
+                    type: 'GET',
+                    url: "{{ url('employee/attendance/rollback') }}",
+                    _token: "{{ csrf_token() }}",
+                    data: {
+                        id: id,
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.status === 'success') {
+                            // Store notification in localStorage
+                            localStorage.setItem('notifStatus', data.status);
+                            localStorage.setItem('notifMessage', data.message);
+
+                            // Reload the page
+                            window.location.reload();
+                        } else {
+                            notif(data.status, data.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr);
+                        if (xhr.status === 0) {
+                            notif("error", 'Connection Error');
+                        } else {
+                            notif("error", xhr.status);
+                        }
+                    }
+                });
+            }
+        });
+
         $(document).on('click', ".dropdown-item", function() {
             let selectedValue = $(this).data("value");
             let btn = $(this).closest(".dropdown").find("button");
@@ -260,8 +327,6 @@
             } else {
                 btn.removeClass("btn-success").addClass("btn-danger");
             }
-
-            console.log(npk);
 
             // **Send AJAX request only if "Hadir" is selected**
             if (selectedValue === "Hadir") {
