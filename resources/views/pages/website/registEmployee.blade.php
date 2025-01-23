@@ -104,7 +104,23 @@
                                 <i class="ti ti-circle-plus ms-1 fs-5"></i>
                             </div>
                         </button>
-                        <div class="mb-3">
+                        <div class="position-relative text-center my-4">
+                            <p class="mb-0 fs-4 px-3 d-inline-block bg-white text-dark z-index-5 position-relative">
+                                Or Import</p>
+                            <span class="border-top w-100 position-absolute top-50 start-50 translate-middle"></span>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <div class="col-5">
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input class="form-control" type="file" id="formFile">
+                                    </div>
+                                    <button class="btn btn-light-info text-info font-medium" type="button">Donwload
+                                        Template</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 mt-3">
                             <button
                                 class="btn rounded-pill px-4 btn-success text-light font-weight-medium waves-effect waves-light"
                                 type="submit">

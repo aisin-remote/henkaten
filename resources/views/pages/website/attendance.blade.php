@@ -115,7 +115,7 @@
                                         <div class="dropdown">
                                             <button class="btn btn-danger dropdown-toggle" type="button"
                                                 id="attendanceDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                                                data-npk="{{ $employee->employee->npk }}">
+                                                data-npk="{{ $pic->employee->npk ?? '' }}">
                                                 Belum Hadir
                                             </button>
                                             <ul class="dropdown-menu">
@@ -184,7 +184,7 @@
                                                         <button class="btn btn-danger dropdown-toggle" type="button"
                                                             id="attendanceDropdown" data-bs-toggle="dropdown"
                                                             aria-expanded="false"
-                                                            data-npk="{{ $employee->employee->npk }}">
+                                                            data-npk="{{ $employee->employee->npk ?? '' }}">
                                                             Belum Hadir
                                                         </button>
                                                         <ul class="dropdown-menu">
