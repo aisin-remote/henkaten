@@ -159,6 +159,15 @@
                                             $colorApp = 'warning';
                                             $text = 'Pending Approval';
                                         }
+
+                                        $userRole = auth()->user()->role;
+                                        $isLeader = $userRole === 'LDR';
+                                        $isSupervisor = $userRole === 'SPV';
+                                        $isManager = $userRole === 'MGR';
+
+                                        $ldrApproved = $henkaten->approval->ldr !== null;
+                                        $spvApproved = $henkaten->approval->spv !== null;
+                                        $mgrApproved = $henkaten->approval->mgr !== null;
                                     @endphp
                                     <td style="max-width: 300px; white-space: normal;">
                                         {{ $henkaten->troubleshoot ? $henkaten->troubleshoot->troubleshoot : 'N/A' }}
@@ -202,36 +211,57 @@
                                             class="badge bg-light-{{ $colorAfter }} text-{{ $colorAfter }}">{{ $henkaten->troubleshoot->after_treatment }}</span>
                                     </td>
                                     <td class="text-center">{{ $henkaten->troubleshoot->employee->name }}</td>
-                                    <td class="text-center">
-                                        @if ($henkaten->approval->ldr !== null)
-                                            <span class="btn btn-success fw-bolder" data-toggle="tooltip"
-                                                title="approved by {{ $henkaten->approval->ldr }}">
-                                                <i class="ti ti-check"></i>
-                                            </span>
-                                        @else
-                                            Waiting...
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        @if ($henkaten->approval->spv !== null)
-                                            <span class="btn btn-success fw-bolder" data-toggle="tooltip"
-                                                title="approved by {{ $henkaten->approval->spv }}">
-                                                <i class="ti ti-check"></i>
-                                            </span>
-                                        @else
-                                            Waiting...
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        @if ($henkaten->approval->mgr !== null)
-                                            <span class="btn btn-success fw-bolder" data-toggle="tooltip"
-                                                title="approved by {{ $henkaten->approval->mgr }}">
-                                                <i class="ti ti-check"></i>
-                                            </span>
-                                        @else
-                                            Waiting...
-                                        @endif
-                                    </td>
+                                    @php
+                                        $approvals = [
+                                            'ldr' => [
+                                                'approved' => $henkaten->approval->ldr,
+                                                'waiting' => null,
+                                                'canApprove' => $isLeader,
+                                            ],
+                                            'spv' => [
+                                                'approved' => $henkaten->approval->spv,
+                                                'waiting' => !$ldrApproved ? 'Waiting LDR' : null,
+                                                'canApprove' => $isSupervisor,
+                                            ],
+                                            'mgr' => [
+                                                'approved' => $henkaten->approval->mgr,
+                                                'waiting' => !$ldrApproved
+                                                    ? 'Waiting LDR'
+                                                    : (!$spvApproved
+                                                        ? 'Waiting SPV'
+                                                        : null),
+                                                'canApprove' => $isManager,
+                                            ],
+                                        ];
+                                    @endphp
+
+                                    @foreach ($approvals as $role => $data)
+                                        <td class="text-center">
+                                            @if ($data['approved'])
+                                                <span class="btn btn-success fw-bolder" data-toggle="tooltip"
+                                                    title="approved by {{ $data['approved'] }}">
+                                                    <i class="ti ti-check"></i>
+                                                </span>
+                                            @else
+                                                @if ($data['waiting'])
+                                                    <button class="btn btn-danger approve"
+                                                        data-history-id="{{ $henkaten->id }}" disabled>
+                                                        {{ $data['waiting'] }}
+                                                    </button>
+                                                @elseif ($data['canApprove'])
+                                                    <button class="btn btn-danger approve"
+                                                        data-history-id="{{ $henkaten->id }}">
+                                                        Approve
+                                                    </button>
+                                                @else
+                                                    <button class="btn btn-danger approve"
+                                                        data-history-id="{{ $henkaten->id }}" disabled>
+                                                        Waiting {{ strtoupper($role) }}
+                                                    </button>
+                                                @endif
+                                            @endif
+                                        </td>
+                                    @endforeach
                                 @else
                                     <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">N/A</td>
@@ -259,6 +289,47 @@
     </div>
 
     @foreach ($henkatenHistory as $henkaten)
+        {{-- modal approve --}}
+        <div class="modal fade modal-md" id="{{ $henkaten->id }}Approve" tabindex="-1"
+            aria-labelledby="bs-example-modal-xl" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header d-flex align-items-center">
+                        <h4 class="modal-title" id="myLargeModalLabel">
+                            Approval
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('dashboard.troubleshootApproval') }}" method="POST"
+                        class="mt-3 henkatenApproval">
+                        @csrf
+                        @method('POST')
+                        <div class="modal-body">
+                            <input type="hidden" name="origin" id="origin-approval">
+                            <input type="hidden" name="henkaten_id" value="{{ $henkaten->id }}">
+                            <input type="hidden" name="line" value="{{ $henkaten->line_id }}">
+                            <input type="hidden" name="4M" value="{{ $henkaten->{"4M"} }}">
+                            <input type="hidden" name="status" value="{{ $henkaten->status }}">
+                            Do you really want to approve?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-secondary approveSubmitButton">
+                                <span class="spinner-border spinner-border-sm d-none" role="status"
+                                    aria-hidden="true"></span>
+                                <span class="button-text">Approve</span>
+                            </button>
+                            <button type="button"
+                                class="btn btn-light-danger text-danger font-medium waves-effect text-start"
+                                data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {{-- end of modal --}}
+
         @if ($henkaten)
             <div class="modal fade modal-lg" id="{{ $henkaten->id }}Photo" tabindex="-1"
                 aria-labelledby="bs-example-modal-xl" style="display: none;" aria-hidden="true">
@@ -328,6 +399,28 @@
 
             table.draw();
         })
+
+        $(document).on('click', '.approve', function() {
+            const historyId = $(this).data('history-id');
+            $(`#${historyId}Approve`).modal('show');
+        });
+
+        $('.henkatenApproval').submit(function() {
+            const submitButton = $(this).find('.approveSubmitButton');
+            const spinner = submitButton.find('.spinner-border');
+            const buttonText = submitButton.find('.button-text');
+
+            // Disable button, show spinner, and change text to "Loading..."
+            submitButton.prop('disabled', true);
+            spinner.removeClass('d-none');
+            buttonText.text('Loading...');
+            const origin = localStorage.getItem('origin_id'); // replace with your key
+
+            // Set the value to the hidden input
+            $('#origin-approval').val(origin);
+
+            return true
+        });
 
         $('#type').on('change', function() {
             // get all filter values
