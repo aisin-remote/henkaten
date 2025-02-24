@@ -146,7 +146,12 @@
                                 }
 
                                 // Get the latest henkaten
-                                $latestHenkaten = $line->henkaten()->latest()->first();
+                                // $latestHenkaten = $line->henkaten()->latest()->first();
+                                $latestHenkaten = $line
+                                    ->henkaten()
+                                    ->whereDate('created_at', now()->toDateString()) // Filter by current date
+                                    ->latest()
+                                    ->first();
 
                                 if ($overall_status == 'HENKATEN') {
                                     $color = 'warning';

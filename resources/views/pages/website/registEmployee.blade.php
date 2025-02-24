@@ -110,14 +110,8 @@
                             <span class="border-top w-100 position-absolute top-50 start-50 translate-middle"></span>
                         </div>
                         <div class="d-flex justify-content-center">
-                            <div class="col-5">
-                                <div class="input-group">
-                                    <div class="custom-file">
-                                        <input class="form-control" type="file" id="formFile">
-                                    </div>
-                                    <button class="btn btn-light-info text-info font-medium" type="button">Donwload
-                                        Template</button>
-                                </div>
+                            <div class="col-4">
+                                <input class="form-control" type="file" id="formFile">
                             </div>
                         </div>
                         <div class="mb-3 mt-3">

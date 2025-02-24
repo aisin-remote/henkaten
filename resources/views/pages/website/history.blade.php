@@ -74,6 +74,7 @@
                                 Troubleshoot
                             </th>
                             <th rowspan="2" class="align-middle text-center">Troubleshoot Document</th>
+                            <th rowspan="2" class="align-middle text-center">Troubleshoot Time</th>
                             <th rowspan="2" class="align-middle text-center">status</th>
                             <th class="text-center">Safety</th>
                             <th colspan="4" class="text-center">Quality Inspection</th>
@@ -193,6 +194,14 @@
                                         @endif
                                     </td>
                                     <td class="text-center">
+                                        <span class="d-block fw-bold text-dark">
+                                            {{ Carbon\Carbon::parse($henkaten->troubleshoot->created_at)->format('Y-m-d') }}
+                                        </span>
+                                        <span class="text-primary small fw-bold">
+                                            {{ Carbon\Carbon::parse($henkaten->troubleshoot->created_at)->format('H:i:s') }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
                                         <span class="badge bg-{{ $colorApp }}">
                                             {{ $text }}
                                         </span>
@@ -263,6 +272,7 @@
                                         </td>
                                     @endforeach
                                 @else
+                                    <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">N/A</td>
                                     <td class="text-center text-danger">
