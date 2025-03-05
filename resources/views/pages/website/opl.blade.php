@@ -100,24 +100,23 @@
                                 <td>
                                     @if (in_array($fileExtension, ['pdf', 'jpg', 'jpeg', 'png', 'gif']))
                                         <!-- Open in Modal -->
-                                        <button class="btn btn-primary btn-sm view-file" data-file="{{ $filePath }}"
+                                        <button class="btn btn-info view-file" data-file="{{ $filePath }}"
                                             data-type="{{ $fileExtension }}">
-                                            View
+                                            <i class="fas fa-eye"></i> View
                                         </button>
                                     @elseif (in_array($fileExtension, ['xls', 'xlsx', 'csv']))
                                         <!-- Download Excel -->
-                                        <a href="{{ $filePath }}" class="btn btn-success btn-sm" download>
-                                            Download
+                                        <a href="{{ $filePath }}" class="btn btn-info" download>
+                                            <i class="fas fa-file-excel"></i> Download
                                         </a>
                                     @else
-                                        <a href="{{ $filePath }}" class="btn btn-info btn-sm" target="_blank">
-                                            View
+                                        <a href="{{ $filePath }}" class="btn btn-info" target="_blank">
+                                            <i class="fas fa-external-link-alt"></i> View
                                         </a>
                                     @endif
                                 </td>
                             </tr>
                         @endforeach
-
                     </tbody>
                 </table>
             </div>
