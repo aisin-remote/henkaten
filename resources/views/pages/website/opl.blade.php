@@ -91,18 +91,49 @@
                     </thead>
                     <tbody>
                         @foreach ($opls as $opl)
+                            @php
+                                $filePath = asset('uploads/opl/' . $opl->file);
+                                $fileExtension = pathinfo($opl->file, PATHINFO_EXTENSION);
+                            @endphp
                             <tr>
                                 <td>{{ $opl->file }}</td>
                                 <td>
-                                    <a href="{{ asset('uploads/opl/' . $opl->file) }}" class="text-blue-500 underline"
-                                        download>
-                                        Lihat
-                                    </a>
+                                    @if (in_array($fileExtension, ['pdf', 'jpg', 'jpeg', 'png', 'gif']))
+                                        <!-- Open in Modal -->
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#fileModal" data-file="{{ $filePath }}">
+                                            View
+                                        </button>
+                                    @elseif (in_array($fileExtension, ['xls', 'xlsx', 'csv']))
+                                        <!-- Download Excel -->
+                                        <a href="{{ $filePath }}" class="btn btn-success btn-sm" download>
+                                            Download
+                                        </a>
+                                    @else
+                                        <a href="{{ $filePath }}" class="btn btn-info btn-sm" target="_blank">
+                                            View
+                                        </a>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fileModalLabel">File Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="fileViewer" src="" style="width:100%; height:500px; border:none;"></iframe>
+                </div>
             </div>
         </div>
     </div>
@@ -122,6 +153,12 @@
             $("#icon").html($("#addSkillCard").is(":visible") ? '<i class="ti ti-minus"></i>' :
                 '<i class="ti ti-plus"></i>');
         })
+
+        $(".view-file").click(function() {
+            var fileSrc = $(this).data("file");
+            $("#fileViewer").attr("src", fileSrc);
+            $("#fileModal").modal("show");
+        });
     });
 
     $(document).ready(function() {
