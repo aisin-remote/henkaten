@@ -93,15 +93,15 @@
                         @foreach ($opls as $opl)
                             @php
                                 $filePath = asset('uploads/opl/' . $opl->file);
-                                $fileExtension = pathinfo($opl->file, PATHINFO_EXTENSION);
+                                $fileExtension = strtolower(pathinfo($opl->file, PATHINFO_EXTENSION));
                             @endphp
                             <tr>
                                 <td>{{ $opl->file }}</td>
                                 <td>
                                     @if (in_array($fileExtension, ['pdf', 'jpg', 'jpeg', 'png', 'gif']))
                                         <!-- Open in Modal -->
-                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#fileModal" data-file="{{ $filePath }}">
+                                        <button class="btn btn-primary btn-sm view-file" data-file="{{ $filePath }}"
+                                            data-type="{{ $fileExtension }}">
                                             View
                                         </button>
                                     @elseif (in_array($fileExtension, ['xls', 'xlsx', 'csv']))
@@ -117,6 +117,7 @@
                                 </td>
                             </tr>
                         @endforeach
+
                     </tbody>
                 </table>
             </div>
@@ -131,8 +132,10 @@
                     <h5 class="modal-title" id="fileModalLabel">File Preview</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <iframe id="fileViewer" src="" style="width:100%; height:500px; border:none;"></iframe>
+                <div class="modal-body text-center">
+                    <iframe id="fileViewer" src=""
+                        style="width:100%; height:500px; border:none; display:none;"></iframe>
+                    <img id="imageViewer" src="" style="max-width:100%; height:auto; display:none;" />
                 </div>
             </div>
         </div>
@@ -156,7 +159,20 @@
 
         $(".view-file").click(function() {
             var fileSrc = $(this).data("file");
-            $("#fileViewer").attr("src", fileSrc);
+            var fileType = $(this).data("type");
+
+            // Reset viewer
+            $("#fileViewer").hide();
+            $("#imageViewer").hide();
+
+            // Show appropriate viewer
+            if (fileType === "pdf") {
+                $("#fileViewer").attr("src", fileSrc).show();
+            } else {
+                $("#imageViewer").attr("src", fileSrc).show();
+            }
+
+            // Show modal
             $("#fileModal").modal("show");
         });
     });
