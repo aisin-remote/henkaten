@@ -126,7 +126,7 @@
 
     <!-- Modal -->
     <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" style="width: 200rem">
+        <div class="modal-dialog modal-xl" style="width: 200rem">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="fileModalLabel">File Preview</h5>
