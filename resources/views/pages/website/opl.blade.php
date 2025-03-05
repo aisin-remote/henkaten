@@ -134,7 +134,7 @@
                 </div>
                 <div class="modal-body text-center">
                     <iframe id="fileViewer" src=""
-                        style="width:100%; height:1000px; border:none; display:none;"></iframe>
+                        style="width:1000px; height:500px; border:none; display:none;"></iframe>
                     <img id="imageViewer" src="" style="max-width:100%; height:auto; display:none;" />
                 </div>
             </div>
