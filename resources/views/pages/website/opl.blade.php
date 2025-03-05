@@ -126,7 +126,7 @@
 
     <!-- Modal -->
     <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" style="width: 20rem">
+        <div class="modal-dialog modal-lg" style="width: 20em">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="fileModalLabel">File Preview</h5>
@@ -134,7 +134,7 @@
                 </div>
                 <div class="modal-body text-center">
                     <iframe id="fileViewer" src=""
-                        style="width:100%; height:1000px; border:none; display:none;"></iframe>
+                        style="width:100%; height:500px; border:none; display:none;"></iframe>
                     <img id="imageViewer" src="" style="max-width:100%; height:auto; display:none;" />
                 </div>
             </div>
