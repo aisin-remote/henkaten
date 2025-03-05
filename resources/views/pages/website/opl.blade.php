@@ -102,16 +102,19 @@
                                         <!-- Open in Modal -->
                                         <button class="btn btn-info view-file" data-file="{{ $filePath }}"
                                             data-type="{{ $fileExtension }}">
-                                            <i class="fas fa-eye"></i> View
+                                            View
+                                            <i class="fas fa-eye ps-2"></i>
                                         </button>
                                     @elseif (in_array($fileExtension, ['xls', 'xlsx', 'csv']))
                                         <!-- Download Excel -->
                                         <a href="{{ $filePath }}" class="btn btn-info" download>
-                                            <i class="fas fa-file-excel"></i> Download
+                                            Download
+                                            <i class="fas fa-file-excel ps-2"></i>
                                         </a>
                                     @else
                                         <a href="{{ $filePath }}" class="btn btn-info" target="_blank">
-                                            <i class="fas fa-external-link-alt"></i> View
+                                            View
+                                            <i class="fas fa-external-link-alt ps-2"></i>
                                         </a>
                                     @endif
                                 </td>
