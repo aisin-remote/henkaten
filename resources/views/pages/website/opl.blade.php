@@ -125,7 +125,7 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal modal-lg fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
+    <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -133,8 +133,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
-                    <iframe id="fileViewer" src=""
-                        style="width:100%; height:500px; border:none; display:none;"></iframe>
+                    <iframe id="fileViewer" src="" style="width:100%; border:none; display:none;"></iframe>
                     <img id="imageViewer" src="" style="max-width:100%; height:auto; display:none;" />
                 </div>
             </div>
