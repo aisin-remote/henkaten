@@ -369,6 +369,8 @@
             if (code == 13) {
                 barcodecomplete = barcode;
                 barcode = "";
+                console.log(barcodecomplete.length)
+                console.log(barcodecomplete)
                 if (barcodecomplete.length === 13) {
                     // substr barcode
                     let npk = barcodecomplete.substr(0, 6);
