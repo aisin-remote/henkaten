@@ -821,9 +821,10 @@ class HenkatenController extends Controller
                         DB::beginTransaction();
 
                         // change line status if status before is 'stop'
+                        // change to henkaten, not running
                         if ($request->status) {
                             Line::where('id', $request->line)->update([
-                                'status_' . $request->{"4M"} => 'running',
+                                'status_' . $request->{"4M"} => 'henkaten',
                             ]);
                         }
 
@@ -879,7 +880,6 @@ class HenkatenController extends Controller
                 ->with('success', 'Berhasil diapprove!');
         } catch (\Throwable $th) {
             DB::rollback();
-            // dd($th->getMessage());
             return redirect()
                     ->back()
                     ->with('error', 'Gagal diapprove!');

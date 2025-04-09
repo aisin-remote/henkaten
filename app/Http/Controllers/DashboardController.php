@@ -178,7 +178,7 @@ class DashboardController extends Controller
         }
 
         // get active employee
-        $activeEmployees = EmployeeActive::with(['shift', 'employee', 'pos'])
+        $activeEmployees = EmployeeActive::with(['shift', 'employee', 'pos','line'])
                     ->where('active_from', '<=', Carbon::now())
                     ->where('expired_at', '>=', Carbon::now())
                     ->whereHas('shift', function ($query) use ($currentShifts) {
@@ -187,7 +187,19 @@ class DashboardController extends Controller
                     ->whereHas('employee', function($query) use ($empOrigin){
                         $query->where('origin_id', $empOrigin);
                     })
-                    ->count();
+                    ->get();
+                    
+        // get active PIC
+        $activePic= PicActive::with(['shift', 'employee' ,'line'])
+                    ->where('active_from', '<=', Carbon::now())
+                    ->where('expired_at', '>=', Carbon::now())
+                    ->whereHas('shift', function ($query) use ($currentShifts) {
+                        $query->whereIn('name', $currentShifts);
+                    })
+                    ->whereHas('employee', function($query) use ($empOrigin){
+                        $query->where('origin_id', $empOrigin);
+                    })
+                    ->get();
 
         // get henkaten where status still active
         $activeProblems = Henkaten::with(['shift', 'line.origin'])
@@ -231,6 +243,7 @@ class DashboardController extends Controller
             'origin' => $origins,
             'pivot' => $pivot,
             'activeEmployees' => $activeEmployees,
+            'activePics' => $activePic,
             'themes' => Theme::all(),
             'employees' => Employee::select('id', 'name')
                 ->where('origin_id', $empOrigin)

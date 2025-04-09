@@ -366,7 +366,7 @@
         <div class="col-lg-1 col-sm-12">
             <div class="card shadow-md card-hover" id="firstPic">
                 <div class="card-body p-4 d-flex align-items-center gap-1">
-                    <h2 class="fw-bolder">{{ $activeEmployees }}</h2>
+                    <h2 class="fw-bolder">{{ $activeEmployees->count() }}</h2>
                     <small class="me-3">MP</small>
                 </div>
             </div>
@@ -791,6 +791,39 @@
                                                     <i class="ti ti-{{ $shape_material }} fs-7 mb-2"></i>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="position-relative text-center my-4 mx-4">
+                                    <span
+                                        class="border-top w-100 position-absolute top-50 start-50 translate-middle"></span>
+                                </div>
+                                <div class="row g-3 mx-3 mb-3">
+                                    <!-- Person In Charge Panel -->
+                                    <div class="col-md-6">
+                                        <div class="p-3 bg-light-warning rounded text-center">
+                                            <i class="bi bi-person-fill fs-3 text-warning"></i>
+                                            <h6 class="text-uppercase text-muted mt-2 mb-1">JP</h6>
+                                            @php
+                                                $pic = $activePics->where('line.id', $line->id)->first();
+                                            @endphp
+                                            @if ($pic && $pic->employee->name)
+                                                <div class="fw-bold text-dark fs-5">{{ $pic->employee->name }}</div>
+                                            @else
+                                                <div class="text-danger fs-5">N/A</div>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <!-- Total Employees Panel -->
+                                    <div class="col-md-6">
+                                        <div class="p-3 bg-light-success rounded text-center">
+                                            <i class="bi bi-people-fill fs-3 text-success"></i>
+                                            <h6 class="text-uppercase text-muted mt-2 mb-1">Total Employees</h6>
+                                            {{-- <span
+                                                class="badge bg-success">{{ $activeEmployees->where('line.id', $line->id)->count() }}</span> --}}
+                                            <div class="fw-bolder text-dark fs-5">
+                                                {{ $activeEmployees->where('line.id', $line->id)->count() }}</div>
                                         </div>
                                     </div>
                                 </div>
