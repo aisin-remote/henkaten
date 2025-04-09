@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Opl;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Opl;
 
 class OplController extends Controller
 {
@@ -15,6 +15,7 @@ class OplController extends Controller
 
         return view('pages.website.opl', compact('opls'));
     }
+    
     public function handleFormSubmission(Request $request)
     {
         // Validate the form data

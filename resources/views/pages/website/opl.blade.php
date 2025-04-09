@@ -20,7 +20,7 @@
                 <h3 class="card-title mb-0">OPL</h3>
             </div>
             <div class="card-body">
-                <form action="{{ route('form.submit') }}" method="POST" class="mt-4" enctype="multipart/form-data">
+                <form action="{{ route('opl.submit') }}" method="POST" class="mt-4" enctype="multipart/form-data">
                     @csrf
                     @method('POST')
                     <div class="email-repeater mb-3">

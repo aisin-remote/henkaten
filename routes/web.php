@@ -11,7 +11,9 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\HenkatenController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\StandardController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SkillMatrixController;
 
 /*
 |--------------------------------------------------------------------------
@@ -131,8 +133,21 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/henkatenImport', [HenkatenController::class, 'henkatenImport'])->name('henkaten.import');
     
     // OPL 
-    Route::get('/opl', [OplController::class, 'index']);
-    Route::post('/submit-form', [OplController::class, 'handleFormSubmission'])->name('form.submit');
+    Route::prefix('/opl')->group(function () {
+        Route::get('/', [OplController::class, 'index']);
+        Route::post('/submit-form', [OplController::class, 'handleFormSubmission'])->name('opl.submit');
+    });
+
+    Route::prefix('/standard')->group(function () {
+        Route::get('/', [StandardController::class, 'index']);
+        Route::post('/submit-form', [StandardController::class, 'handleFormSubmission'])->name('standard.submit');
+    });
+
+    Route::prefix('/skillMatrix')->group(function () {
+        Route::get('/', [SkillMatrixController::class, 'index']);
+        Route::post('/submit-form', [SkillMatrixController::class, 'handleFormSubmission'])->name('skillMatrix.submit');
+    });
+
     
     Route::get('/mappingAllLine', function () {
         return view('welcome');

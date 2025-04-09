@@ -115,6 +115,18 @@
                                 <span class="hide-menu">OPL</span>
                             </a>
                         </li>
+                        <li class="sidebar-item">
+                            <a href="/standard" class="sidebar-link">
+                                <i class="ti ti-list-check"></i>
+                                <span class="hide-menu">Standard</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="/skillMatrix" class="sidebar-link">
+                                <i class="ti ti-grid-dots"></i>
+                                <span class="hide-menu">Skill Matrix</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>
