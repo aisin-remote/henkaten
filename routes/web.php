@@ -119,6 +119,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::get('/history/{originId?}', [HenkatenController::class, 'history'])->name('history');
+    Route::get('/safetyThemeHistory/{originId?}', [DashboardController::class, 'safetyThemeHistory'])->name('safety.history');
 
     // theme
     Route::get('/theme', [themeController::class, 'index'])->name('theme');

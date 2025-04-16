@@ -435,161 +435,210 @@
                     </div>
                 @endforeach
             </div>
-            <h5 class="text-muted mb-2 fw-bolder">Man Power</h5>
-            <div class="row">
-                @if (!$activeEmployees->isEmpty())
-                    <div class="col-lg-8 col-md-12">
-                        <div class="owl-carousel owl-theme" id="carousel">
-                            <div class="row temp-row">
-                                @foreach ($activeEmployees as $emp)
-                                    @php
-                                        $photo = $emp->employee->photo;
-                                        $role = $emp->employee->role;
-                                        $name = $emp->employee->name;
-                                        $npk = $emp->employee->npk;
+        </div>
+        <div class="row">
+            @if (!$activeEmployees->isEmpty())
+                <h5 class="text-muted mb-2 fw-bolder">Man Power</h5>
+                <div class="col-lg-6 col-md-12">
+                    <div class="owl-carousel owl-theme" id="carousel">
+                        <div class="row temp-row">
+                            @foreach ($activeEmployees as $emp)
+                                @php
+                                    $photo = $emp->employee->photo;
+                                    $role = $emp->employee->role;
+                                    $name = $emp->employee->name;
+                                    $npk = $emp->employee->npk;
 
-                                        foreach ($manHenkaten as $man) {
-                                            if ($man->henkaten->is_done === '1') {
-                                                $henkatenEmployeeId = $man->employee_before_id;
-                                                $activeEmployeeId = $emp->employee_id;
+                                    foreach ($manHenkaten as $man) {
+                                        if ($man->henkaten->is_done === '1') {
+                                            $henkatenEmployeeId = $man->employee_before_id;
+                                            $activeEmployeeId = $emp->employee_id;
 
-                                                if ($activeEmployeeId == $henkatenEmployeeId) {
-                                                    $photo = $man->manAfter->photo;
-                                                    $role = $man->manAfter->role;
-                                                    $name = $man->manAfter->name;
-                                                    $npk = $man->manAfter->npk;
-                                                }
+                                            if ($activeEmployeeId == $henkatenEmployeeId) {
+                                                $photo = $man->manAfter->photo;
+                                                $role = $man->manAfter->role;
+                                                $name = $man->manAfter->name;
+                                                $npk = $man->manAfter->npk;
                                             }
                                         }
+                                    }
 
-                                        if (!function_exists('mapRoleToColor')) {
-                                            function mapRoleToColor($role)
-                                            {
-                                                switch ($role) {
-                                                    case 'JP':
-                                                        return 'danger';
-                                                    case 'Operator':
-                                                        return 'warning';
-                                                    case 'Leader':
-                                                        return 'dark';
-                                                    default:
-                                                        return 'dark';
-                                                }
+                                    if (!function_exists('mapRoleToColor')) {
+                                        function mapRoleToColor($role)
+                                        {
+                                            switch ($role) {
+                                                case 'JP':
+                                                    return 'danger';
+                                                case 'Operator':
+                                                    return 'warning';
+                                                case 'Leader':
+                                                    return 'dark';
+                                                default:
+                                                    return 'dark';
                                             }
                                         }
+                                    }
 
-                                        $color = mapRoleToColor($role);
-                                        if ($line->total_emp !== 2) {
-                                            $col = '12';
-                                        } else {
-                                            $col = '6';
-                                        }
+                                    $color = mapRoleToColor($role);
+                                    if ($line->total_emp !== 2) {
+                                        $col = '12';
+                                    } else {
+                                        $col = '6';
+                                    }
 
-                                        $pos_number = true;
-                                        $appear = '';
-                                        if ($line->name === 'DSAA01-02' && $emp->pos->pos == '1') {
-                                            $pos_name = 'HAITO';
-                                            $pos_number = false;
-                                        } elseif (
-                                            substr($line->name, 0, 2) === 'AS' &&
-                                            substr($line->name, 2, 1) !== '0' &&
-                                            $emp->pos->pos == $line->total_emp &&
-                                            $line->total_emp !== 1
-                                        ) {
-                                            $pos_name = 'LAST MAN';
-                                            $pos_number = false;
-                                        } else {
-                                            $pos_name = 'POS';
-                                        }
+                                    $pos_number = true;
+                                    $appear = '';
+                                    if ($line->name === 'DSAA01-02' && $emp->pos->pos == '1') {
+                                        $pos_name = 'HAITO';
+                                        $pos_number = false;
+                                    } elseif (
+                                        substr($line->name, 0, 2) === 'AS' &&
+                                        substr($line->name, 2, 1) !== '0' &&
+                                        $emp->pos->pos == $line->total_emp &&
+                                        $line->total_emp !== 1
+                                    ) {
+                                        $pos_name = 'LAST MAN';
+                                        $pos_number = false;
+                                    } else {
+                                        $pos_name = 'POS';
+                                    }
 
-                                    @endphp
-                                    <div class="col-lg-{{ $col }} col-md-12">
-                                        <div class="item">
-                                            <div class="card text-center">
-                                                <div class="card-body">
-                                                    <img src="{{ asset('uploads/doc/' . $photo) }}"
-                                                        class="rounded-1 center" height="100"
-                                                        style="width: 100px !important; margin-left: auto;
+                                @endphp
+                                <div class="col-lg-{{ $col }} col-md-12">
+                                    <div class="item">
+                                        <div class="card text-center">
+                                            <div class="card-body">
+                                                <img src="{{ asset('uploads/doc/' . $photo) }}" class="rounded-1 center"
+                                                    height="100"
+                                                    style="width: 100px !important; margin-left: auto;
                                                     margin-right: auto;"
-                                                        loading="lazy">
-                                                    <div class="mt-n2">
-                                                        <span
-                                                            class="badge bg-{{ $color }}">{{ strtoupper($role) }}</span>
-                                                        <h3 class="card-title mt-3">{{ ucwords($name) }}</h3>
-                                                        <h6 class="card-subtitle">{{ $npk }}</h6>
-                                                    </div>
-                                                    <div class="row mt-4">
-                                                        <div class="col-12">
-                                                            <button class="btn btn-light-danger text-danger"
-                                                                style="width: 100% !important">{{ $pos_name }}
-                                                                @if ($pos_number)
-                                                                    {{ strtoupper($emp->pos->pos) }}
-                                                                @endif
-                                                            </button>
-                                                        </div>
+                                                    loading="lazy">
+                                                <div class="mt-n2">
+                                                    <span
+                                                        class="badge bg-{{ $color }}">{{ strtoupper($role) }}</span>
+                                                    <h3 class="card-title mt-3">{{ ucwords($name) }}</h3>
+                                                    <h6 class="card-subtitle">{{ $npk }}</h6>
+                                                </div>
+                                                <div class="row mt-4">
+                                                    <div class="col-12">
+                                                        <button class="btn btn-light-danger text-danger"
+                                                            style="width: 100% !important">{{ $pos_name }}
+                                                            @if ($pos_number)
+                                                                {{ strtoupper($emp->pos->pos) }}
+                                                            @endif
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                @endforeach
-                            </div>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
-                    @if ($activePic !== null)
-                        @php
-                            $picColor = mapRoleToColor($activePic->employee->role);
-                            $picPhoto = $activePic->employee->photo;
-                            $picRole = $activePic->employee->role;
-                            $picName = $activePic->employee->name;
-                            $picNpk = $activePic->employee->npk;
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="row">
+                        @if ($activeMh !== null)
+                            @php
+                                $mhColor = mapRoleToColor($activeMh->employee->role);
+                                $mhPhoto = $activeMh->employee->photo;
+                                $mhRole = $activeMh->employee->role;
+                                $mhName = $activeMh->employee->name;
+                                $mhNpk = $activeMh->employee->npk;
 
-                            foreach ($manHenkaten as $man) {
-                                if ($man->henkaten->is_done === '1') {
-                                    $henkatenEmployeeId = $man->pic_before_id;
-                                    $activeEmployeeId = $activePic->employee_id;
+                                foreach ($manHenkaten as $man) {
+                                    if ($man->henkaten->is_done === '1') {
+                                        $henkatenEmployeeId = $man->mh_before_id;
+                                        $activeEmployeeId = $activeMh->employee_id;
 
-                                    if ($activeEmployeeId == $henkatenEmployeeId) {
-                                        $picPhoto = $man->picAfter->photo;
-                                        $picRole = $man->picAfter->role;
-                                        $picName = $man->picAfter->name;
-                                        $picNpk = $man->picAfter->npk;
+                                        if ($activeEmployeeId == $henkatenEmployeeId) {
+                                            $mhPhoto = $man->mhAfter->photo;
+                                            $mhRole = $man->mhAfter->role;
+                                            $mhName = $man->mhAfter->name;
+                                            $mhNpk = $man->mhAfter->npk;
+                                        }
                                     }
                                 }
-                            }
 
-                        @endphp
-                        <div class="col-lg-4 col-md-12">
-                            <div class="card text-center">
-                                <div class="card-body">
-                                    <img src="{{ asset('uploads/doc/' . $picPhoto) }}" class="rounded-1" width="100"
-                                        height="100" loading="lazy">
-                                    <div class="mt-n2">
-                                        <span class="badge bg-{{ $picColor }}">{{ strtoupper($picRole) }}</span>
-                                        <h3 class="card-title mt-3">{{ ucwords($picName) }}</h3>
-                                        <h6 class="card-subtitle">{{ $picNpk }}</h6>
-                                    </div>
-                                    <div class="row mt-4">
-                                        <div class="col-12">
-                                            <button class="btn btn-dark" style="width: 100% !important">
-                                                {{ strtoupper('JP') }}</button>
+                            @endphp
+                            <div class="col-lg-6 col-md-12">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <img src="{{ asset('uploads/doc/' . $mhPhoto) }}" class="rounded-1"
+                                            width="100" height="100" loading="lazy">
+                                        <div class="mt-n2">
+                                            <span class="badge bg-info">MH</span>
+                                            <h3 class="card-title mt-3">{{ ucwords($mhName) }}</h3>
+                                            <h6 class="card-subtitle">{{ $mhNpk }}</h6>
+                                        </div>
+                                        <div class="row mt-4">
+                                            <div class="col-12">
+                                                <button class="btn btn-info" style="width: 100% !important">
+                                                    {{ strtoupper('Material Handling') }}</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    @endif
-                @else
-                    <div class="col-lg-12 col-sm-12 mt-3" id="firstPicContainer">
-                        <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#firstPicModal"
-                            id="firstPic">
-                            <a class="dropzone dz-clickable p-3 rounded-1 planning-link">
-                                <p class="text-center pt-3 text-danger">Create Employee Planning</p>
-                            </a>
-                        </div>
+                        @endif
+                        @if ($activePic !== null)
+                            @php
+                                $picColor = mapRoleToColor($activePic->employee->role);
+                                $picPhoto = $activePic->employee->photo;
+                                $picRole = $activePic->employee->role;
+                                $picName = $activePic->employee->name;
+                                $picNpk = $activePic->employee->npk;
+
+                                foreach ($manHenkaten as $man) {
+                                    if ($man->henkaten->is_done === '1') {
+                                        $henkatenEmployeeId = $man->pic_before_id;
+                                        $activeEmployeeId = $activePic->employee_id;
+
+                                        if ($activeEmployeeId == $henkatenEmployeeId) {
+                                            $picPhoto = $man->picAfter->photo;
+                                            $picRole = $man->picAfter->role;
+                                            $picName = $man->picAfter->name;
+                                            $picNpk = $man->picAfter->npk;
+                                        }
+                                    }
+                                }
+
+                            @endphp
+                            <div class="col-lg-6 col-md-12">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <img src="{{ asset('uploads/doc/' . $picPhoto) }}" class="rounded-1"
+                                            width="100" height="100" loading="lazy">
+                                        <div class="mt-n2">
+                                            <span class="badge bg-{{ $picColor }}">{{ strtoupper($picRole) }}</span>
+                                            <h3 class="card-title mt-3">{{ ucwords($picName) }}</h3>
+                                            <h6 class="card-subtitle">{{ $picNpk }}</h6>
+                                        </div>
+                                        <div class="row mt-4">
+                                            <div class="col-12">
+                                                <button class="btn btn-dark" style="width: 100% !important">
+                                                    {{ strtoupper('JP') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
-                @endif
-            </div>
+                </div>
+            @else
+                <div class="col-6"></div>
+                <div class="col-lg-6 col-sm-12" id="firstPicContainer">
+                    <h5 class="text-muted mb-2 fw-bolder mb-3">Man Power</h5>
+                    <div class="card shadow-md card-hover" data-bs-toggle="modal" data-bs-target="#firstPicModal"
+                        id="firstPic">
+                        <a class="dropzone dz-clickable p-3 rounded-1 planning-link">
+                            <p class="text-center pt-3 text-danger">Create Employee Planning</p>
+                        </a>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
     <div class="row">

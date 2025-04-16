@@ -358,6 +358,7 @@
                 $('#skill-link').attr('href', '/skill/' + storedOriginId);
                 $('#skillMinimum-link').attr('href', '/skill/minimum/' + storedOriginId);
                 $('#henkatenManagement-link').attr('href', '/henkatenManagement/' + storedOriginId);
+                $('#safety-theme-link').attr('href', '/safetyThemeHistory/' + storedOriginId);
             }
         })
 

@@ -12,6 +12,7 @@ use App\Models\Origin;
 use App\Models\Approval;
 use App\Models\Employee;
 use App\Models\Henkaten;
+use App\Models\MhActive;
 use App\Models\Position;
 use App\Models\PicActive;
 use App\Models\Attendance;
@@ -156,6 +157,7 @@ class DashboardController extends Controller
             'Shift 1 Long' => ['start' => '06:00:00', 'end' => '18:00:00'],
             'Shift 2' => ['start' => '14:16:00', 'end' => '22:15:00'],
             'Shift 3' => ['start' => '22:16:00', 'end' => '06:00:00'], // Spanning midnight
+            'Shift 3 Long' => ['start' => '18:00:00', 'end' => '06:00:00'],
         ];
         
         // Initialize current shifts
@@ -333,6 +335,7 @@ class DashboardController extends Controller
             'Shift 1 Long' => ['start' => '06:00:00', 'end' => '18:00:00'],
             'Shift 2' => ['start' => '14:16:00', 'end' => '22:15:00'],
             'Shift 3' => ['start' => '22:16:00', 'end' => '06:00:00'], // Spanning midnight
+            'Shift 3 Long' => ['start' => '18:00:00', 'end' => '06:00:00'],
         ];
         
         // Initialize current shift
@@ -377,6 +380,16 @@ class DashboardController extends Controller
                 $query->whereIn('name', $currentShifts);
             })
             ->first();
+            
+        // get active mh
+        $activeMh = MhActive::with(['shift', 'employee'])
+            ->where('active_from', '<=', Carbon::now())
+            ->where('expired_at', '>=', Carbon::now())
+            ->where('line_id', $lineId->id)
+            ->whereHas('shift', function ($query) use ($currentShifts) {
+                $query->whereIn('name', $currentShifts);
+            })
+            ->first();
 
         // get man henkaten
         $manHenkaten = Troubleshoot::with(['henkaten.shift', 'manAfter', 'manBefore', 'picAfter', 'picBefore'])
@@ -403,6 +416,7 @@ class DashboardController extends Controller
             //     ->get(),
             'activeEmployees' => $activeEmployees,
             'activePic' => $activePic,
+            'activeMh' => $activeMh,
             'histories' => $histories,
             'manHenkaten' => $manHenkaten,
             'henkatenManagements' => HenkatenManagement::all(),
@@ -934,5 +948,31 @@ class DashboardController extends Controller
             ],
             200
         );
+    }
+
+    public function safetyThemeHistory($originId = null)
+    {
+        // Get the origin id from the authenticated user
+        if(json_decode(auth()->user()->origin_id)){
+            if(count(json_decode(auth()->user()->origin_id)) == 1){
+                $empOrigin = json_decode(auth()->user()->origin_id)[0]; // Get the first origin ID from the JSON field
+                $origins = Origin::where('id', $empOrigin)->first();
+            }else{
+                $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+                $origins = Origin::where('id', $empOrigin)->first();
+            }
+        }else{
+            $empOrigin = $originId ? $originId : auth()->user()->origin_id;
+            $origins = Origin::where('id', $empOrigin)->first();
+        }
+
+        $safetyThemeHistory = Pivot::where('origin_id', $empOrigin)
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+                        
+        return view('pages.website.safetyThemeHistory', [
+            'safetyThemeHistories' => $safetyThemeHistory,
+            'lines' => Line::where('origin_id', $empOrigin)->get(),
+        ]);
     }
 }

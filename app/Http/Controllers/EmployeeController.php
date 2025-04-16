@@ -8,6 +8,7 @@ use App\Models\Shift;
 use App\Models\Skill;
 use App\Models\Origin;
 use App\Models\Employee;
+use App\Models\MhActive;
 use App\Models\Position;
 use App\Models\PicActive;
 use App\Models\Attendance;
@@ -465,6 +466,22 @@ class EmployeeController extends Controller
                 })
                 ->whereBetween('employee_active.active_from', [$firstDay, $lastDay])
                 ->get();
+
+        $activePic = PicActive::with(['line','employee'])
+                ->where('active_from', '<=', Carbon::now())
+                ->where('expired_at', '>=', Carbon::now())
+                ->whereHas('line', function($query) use ($empOrigin){
+                    $query->where('origin_id', $empOrigin);
+                })
+                ->get();
+                
+        $activeMh = MhActive::with(['line','employee'])
+                ->where('active_from', '<=', Carbon::now())
+                ->where('expired_at', '>=', Carbon::now())  
+                ->whereHas('line', function($query) use ($empOrigin){
+                    $query->where('origin_id', $empOrigin);
+                })
+                ->get();
     
         // Manually group by shift, line, and week
         $groupedEmployees = $activeEmployees->groupBy(function ($employee) {
@@ -491,6 +508,8 @@ class EmployeeController extends Controller
             'shifts' => Shift::select('id', 'name')->get(),
             'lines' => Line::select('id', 'name')->where('origin_id', $empOrigin)->get(),
             'skills' => Skill::select('name')->groupBy('name')->get(),
+            'activePics' => $activePic,
+            'activeMhs' => $activeMh,
             'groupedArray' => $groupedArray,
             'allSkills' => $allSkills,
             'empSkills' => $empSkills,
@@ -507,6 +526,10 @@ class EmployeeController extends Controller
             'employee_id' => 'required',
             'active_from' => 'required',
         ]);
+
+        if($request->mh_name == null || !$request->mh_name){
+            return redirect()->back()->with('error', 'MH tidak boleh kosong!');
+        }
 
         // get origin id
         if(json_decode(auth()->user()->origin_id)){
@@ -661,6 +684,7 @@ class EmployeeController extends Controller
                 ]);
             }
             
+            // add to pic table
             if($pic[0] !== "0"){
                 PicActive::create([
                     'employee_id' => $pic[0],
@@ -670,6 +694,15 @@ class EmployeeController extends Controller
                     'expired_at' => $endDate
                 ]);
             }
+
+            // add to mh table
+            MhActive::create([
+                'employee_id' => $request->mh_name,
+                'shift_id' => $request->shift,
+                'line_id' => $request->line,
+                'active_from' => $request->active_from,
+                'expired_at' => $endDate
+            ]);
 
             DB::commit();
             return redirect()->back()->with('success', 'Planning berhasil dibuat!');
@@ -709,6 +742,15 @@ class EmployeeController extends Controller
 
             // Update PicActive with the new shift and line
             PicActive::where('line_id', $lineId)
+                            ->where('shift_id', $shiftId)
+                            ->where('expired_at', $expired)
+                            ->update([
+                                'shift_id' => $newShift,
+                                'line_id' => $newLineId, // Update to new line if applicable
+                            ]);
+                            
+            // update Mhactive
+            MhActive::where('line_id', $lineId)
                             ->where('shift_id', $shiftId)
                             ->where('expired_at', $expired)
                             ->update([

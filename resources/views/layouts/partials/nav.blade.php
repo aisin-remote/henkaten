@@ -56,12 +56,26 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link history-link" href="/history" aria-expanded="false">
-                        <span class="rounded-3">
-                            <i class="ti ti-history"></i>
+                    <a href="/history" class="sidebar-link has-arrow" aria-expanded="false">
+                        <span>
+                            <i class="ti ti-clock-history"></i>
                         </span>
                         <span class="hide-menu">History</span>
                     </a>
+                    <ul aria-expanded="false" class="collapse first-level">
+                        <li class="sidebar-item">
+                            <a href="/history" class="sidebar-link history-link">
+                                <i class="ti ti-notebook"></i>
+                                <span class="hide-menu">Henkaten</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="/safetyThemeHistory" class="sidebar-link" id="safety-theme-link">
+                                <i class="ti ti-shield"></i>
+                                <span class="hide-menu">Safety Theme</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link" href="/attendance" aria-expanded="false" id="attendance-link">

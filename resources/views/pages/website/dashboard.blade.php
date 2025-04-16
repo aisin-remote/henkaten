@@ -806,9 +806,16 @@
                                             <h6 class="text-uppercase text-muted mt-2 mb-1">JP</h6>
                                             @php
                                                 $pic = $activePics->where('line.id', $line->id)->first();
+
+                                                $fullName = $pic->employee->name ?? '';
+                                                $words = explode(' ', $fullName);
+                                                $displayName =
+                                                    count($words) > 2
+                                                        ? implode(' ', array_slice($words, 0, 2))
+                                                        : $fullName;
                                             @endphp
                                             @if ($pic && $pic->employee->name)
-                                                <div class="fw-bold text-dark fs-5">{{ $pic->employee->name }}</div>
+                                                <div class="fw-bold text-dark fs-5">{{ $displayName }}</div>
                                             @else
                                                 <div class="text-danger fs-5">N/A</div>
                                             @endif

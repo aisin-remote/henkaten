@@ -61,6 +61,18 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="row mb-3">
+                                <div class="col-lg-12 col-sm-12">
+                                    <select class="select2 form-select select2-hidden-accessible pic"
+                                        style="width: 100%; height: 36px" tabindex="-1" aria-hidden="true" id="mh_name"
+                                        name="mh_name" required>
+                                        <option value="0">Select MH</option>
+                                        @foreach ($operators as $employee)
+                                            <option value="{{ $employee->id }}">{{ $employee->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         <div class="repeater-mp-container">
                             @if ($flag === false)
@@ -144,6 +156,8 @@
                             <th>Shift</th>
                             <th>Planning Date</th>
                             <th class="text-center"><span class="badge bg-info">Employee List</span></th>
+                            <th class="text-center"><span class="badge bg-warning">JP</span></th>
+                            <th class="text-center"><span class="badge bg-danger">MH</span></th>
                             <th class="text-center">Action</th>
                             @if ($origin->id == env('ORIGIN_ELC') || $origin->id == env('ORIGIN_SEAT') || $origin->id == env('ORIGIN_HANDLE'))
                                 <th class="text-center">Change Action</th>
@@ -158,7 +172,7 @@
                                 $modalId = Str::slug($shift . $line . $start . $end . $line_id . $shift_id);
                             @endphp
                             <tr>
-                                <td class="w-20">
+                                <td class="w-10">
                                     <span class="actual-line line"
                                         data-line-id="{{ $line_id }}">{{ $line }}</span>
                                     <select id="editActualLine" class="form-select editActualLine"
@@ -168,7 +182,7 @@
                                         @endforeach
                                     </select>
                                 </td>
-                                <td class="w-20">
+                                <td class="w-10">
                                     <span class="actual shift"
                                         data-shift-id="{{ $shift_id }}">{{ $shift }}</span>
                                     <select id="editActual" class="form-select editActual"
@@ -179,32 +193,47 @@
                                     </select>
                                 </td>
                                 <td>
-                                    {{ Carbon\Carbon::parse($start)->format('j F Y') }}
+                                    {{ Carbon\Carbon::parse($start)->format('j F') }}
                                     -
-                                    {{ Carbon\Carbon::parse($end)->format('j F Y') }}
+                                    {{ Carbon\Carbon::parse($end)->format('j F') }}
                                     <input type="hidden" value="{{ $end }}" class="expired">
                                 </td>
                                 <td>
                                     <div class="row">
-                                        <div class="col-6">
-                                            <ul class="list-group">
-                                                @foreach (array_slice($employees, 0, 4) as $employee)
-                                                    <li class="list-group-item">
-                                                        {{ $employee->name }}
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                        <div class="col-6">
-                                            <ul class="list-group">
-                                                @foreach (array_slice($employees, 4, 3) as $employee)
-                                                    <li class="list-group-item">
-                                                        {{ $employee->name }}
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
+                                        @foreach (array_chunk($employees, ceil(count($employees) / 2)) as $chunk)
+                                            <div class="col-6">
+                                                <ul class="list-group">
+                                                    @foreach ($chunk as $employee)
+                                                        <li class="list-group-item text-break">
+                                                            {{ $employee->name }}
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endforeach
                                     </div>
+                                </td>
+                                <td>
+                                    <ul class="list-group">
+                                        <li class="list-group-item text-center">
+                                            @foreach ($activePics as $activePic)
+                                                @if ($activePic->line_id == $line_id && $activePic->shift_id == $shift_id)
+                                                    {{ $activePic->employee->name }}
+                                                @endif
+                                            @endforeach
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul class="list-group">
+                                        <li class="list-group-item text-center">
+                                            @foreach ($activeMhs as $activeMh)
+                                                @if ($activeMh->line_id == $line_id && $activeMh->shift_id == $shift_id)
+                                                    {{ $activeMh->employee->name }}
+                                                @endif
+                                            @endforeach
+                                        </li>
+                                    </ul>
                                 </td>
                                 <td class="text-center">
                                     <a class="btn btn-secondary view-employee mb-1" data-bs-toggle="modal"
