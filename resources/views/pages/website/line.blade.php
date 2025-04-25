@@ -252,16 +252,6 @@
                                     id="{{ $modal['modalId'] }}Photo" name="photo">
                                 <small class="text-danger">*optional</small>
                             </div>
-                            <div class="form-group mt-3 mb-3 description">
-                                <label for="{{ $modal['modalId'] }}Pic" class="form-label">PIC</label>
-                                <input class="form-control" list="{{ $modal['modalId'] }}PicList"
-                                    id="{{ $modal['modalId'] }}Pic" name="pic" placeholder="Input PIC ...">
-                                <datalist id="{{ $modal['modalId'] }}PicList">
-                                    <option value="Saiful">
-                                    <option value="ikhsanudin">
-                                        <!-- Tambahkan pilihan lainnya sesuai kebutuhan -->
-                                </datalist>
-                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-secondary henkatenSubmitButton"
@@ -947,8 +937,9 @@
                                     <input type="hidden" name="line" value="{{ $history->henkaten->line_id }}">
                                     <div class="form-group mt-3 mb-3 description" style="display: none;">
                                         <label class="form-label fw-semibold">Troubleshoot</label>
-                                        <textarea class="form-control" rows="3" name="troubleshoot" id="troubleshoot"
-                                            value="{{ optional($history->henkaten->troubleshoot)->troubleshoot }}" required></textarea>
+                                        <textarea class="form-control" rows="3" name="troubleshoot" id="troubleshoot" required>
+                                            {{ optional($history->henkaten->troubleshoot)->troubleshoot }}
+                                        </textarea>
                                     </div>
                                 </div>
                             </div>
@@ -1037,6 +1028,19 @@
                                                                 </select>
                                                             </div>
                                                         </div>
+                                                        <div class="col-12 mb-3">
+                                                            <div class="form-group mt-3 mb-3 description">
+                                                                <label class="form-label">PIC</label>
+                                                                <input class="form-control" list="pic_quality"
+                                                                    name="picQuality" placeholder="Input PIC ..."
+                                                                    id="pic_quality" required
+                                                                    value="{{ optional($history->henkaten->troubleshoot)->pic_quality }}">
+                                                                <datalist id="pic_quality">
+                                                                    <option value="saiful">
+                                                                        <!-- Tambahkan pilihan lainnya sesuai kebutuhan -->
+                                                                </datalist>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1076,6 +1080,21 @@
                                                                         @if (optional($history->henkaten->troubleshoot)->result_check == 'ng') selected @endif>
                                                                         NG</option>
                                                                 </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12 mb-3">
+                                                            <div class="col-12 mb-3">
+                                                                <div class="form-group mt-3 mb-3 description">
+                                                                    <label class="form-label">PIC</label>
+                                                                    <input class="form-control" list="pic_safety"
+                                                                        name="picSafety" placeholder="Input PIC ..."
+                                                                        id="pic_safety" required
+                                                                        value="{{ optional($history->henkaten->troubleshoot)->pic_safety }}">
+                                                                    <datalist id="pic_safety">
+                                                                        <option value="saiful">
+                                                                            <!-- Tambahkan pilihan lainnya sesuai kebutuhan -->
+                                                                    </datalist>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1220,19 +1239,17 @@
                                             <small class="text-danger">*optional</small>
                                         </div>
                                     </div>
-                                    <div class="col-12 mt-2">
-                                        <label class="form-label fw-semibold">Done By</label>
-                                        <select class="select2 form-control" style="width: 100%; height: 36px"
-                                            tabindex="-1" aria-hidden="true" id="{{ $history->henkaten->id }}DoneBy"
-                                            name="doneBy" required>
-                                            <option value="0">-- Select Employee--</option>
-                                            @foreach ($employees as $employee)
-                                                <option value="{{ $employee->id }}"
-                                                    @if (optional($history->henkaten->troubleshoot)->done_by == $employee->id) selected @endif>
-                                                    {{ $employee->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                    <div class="col-12 mb-3">
+                                        <div class="form-group mt-3 mb-3 description">
+                                            <label class="form-label">Done By</label>
+                                            <input class="form-control" list="doneBy" name="doneBy"
+                                                placeholder="Input Name..." id="doneBy" required
+                                                value="{{ optional($history->henkaten->troubleshoot)->done_by }}">
+                                            <datalist id="doneBy">
+                                                <option value="saiful">
+                                                    <!-- Tambahkan pilihan lainnya sesuai kebutuhan -->
+                                            </datalist>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1422,12 +1439,25 @@
                                                     <textarea class="form-control fw-bolder" disabled>{{ strtoupper($history->henkaten->troubleshoot->troubleshoot) }}</textarea>
                                                     <label for="tb-fname">Troubleshoot</label>
                                                 </div>
-                                                <div class="form-floating mb-3">
-                                                    <input type="text" class="form-control fw-bolder" id="tb-fname"
-                                                        placeholder="Enter Name here"
-                                                        value="{{ strtoupper($history->henkaten->troubleshoot->result_check) }}"
-                                                        disabled>
-                                                    <label for="tb-fname">Result Check</label>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control fw-bolder"
+                                                                id="tb-fname" placeholder="Enter Name here"
+                                                                value="{{ strtoupper($history->henkaten->troubleshoot->result_check) }}"
+                                                                disabled>
+                                                            <label for="tb-fname">Result Check</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control fw-bolder"
+                                                                id="tb-fname" placeholder="Enter Name here"
+                                                                value="{{ strtoupper($history->henkaten->troubleshoot->pic_safety) }}"
+                                                                disabled>
+                                                            <label for="tb-fname">PIC Safety</label>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div class="form-floating mb-3">
                                                     <input type="text" class="form-control fw-bolder" id="tb-fname"
@@ -1466,7 +1496,14 @@
                                                 <div class="form-floating mb-3">
                                                     <input type="text" class="form-control fw-bolder" id="tb-fname"
                                                         placeholder="Enter Name here"
-                                                        value="{{ strtoupper($history->henkaten->troubleshoot->employee->name) }}"
+                                                        value="{{ strtoupper($history->henkaten->troubleshoot->done_by) }}"
+                                                        disabled>
+                                                    <label for="tb-fname">PIC Quality</label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control fw-bolder" id="tb-fname"
+                                                        placeholder="Enter Name here"
+                                                        value="{{ strtoupper($history->henkaten->troubleshoot->done_by) }}"
                                                         disabled>
                                                     <label for="tb-fname">Done By</label>
                                                 </div>

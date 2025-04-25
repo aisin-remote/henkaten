@@ -493,10 +493,12 @@ class HenkatenController extends Controller
                         'henkaten_id' => $request->henkaten_id,
                         'troubleshoot' => $request->troubleshoot,
                         'result_check' => $request->resultCheck,
+                        'pic_safety' => $request->picSafety,
                         'inspection_report' => $request->inspection,
                         'part' => $request->part,
                         'before_treatment' => $request->beforeTreatment,
                         'after_treatment' => $request->afterTreatment,
+                        'pic_quality' => $request->picQuality,
                         'done_by' => $request->doneBy,
                         'photo'=> $docName
                     ];
@@ -529,10 +531,12 @@ class HenkatenController extends Controller
                     $troubleshootData = [
                         'troubleshoot' => $request->troubleshoot,
                         'result_check' => $request->resultCheck,
+                        'pic_safety' => $request->picSafety,
                         'inspection_report' => $request->inspection,
                         'part' => $request->part,
                         'before_treatment' => $request->beforeTreatment,
                         'after_treatment' => $request->afterTreatment,
+                        'pic_quality' => $request->picQuality,
                         'done_by' => $request->doneBy,
                         'photo' => $docName
                     ];
@@ -570,10 +574,12 @@ class HenkatenController extends Controller
                         'henkaten_id' => $request->henkaten_id,
                         'troubleshoot' => $request->troubleshoot,
                         'result_check' => $request->resultCheck,
+                        'pic_safety' => $request->picSafety,
                         'inspection_report' => $request->inspection,
                         'part' => $request->part,
                         'before_treatment' => $request->beforeTreatment,
                         'after_treatment' => $request->afterTreatment,
+                        'pic_quality' => $request->picQuality,
                         'photo' => $docName,
                         'done_by' => $request->doneBy,
                     ]);
@@ -581,10 +587,12 @@ class HenkatenController extends Controller
                     Troubleshoot::where('henkaten_id', $request->henkaten_id)->update([
                         'troubleshoot' => $request->troubleshoot,
                         'result_check' => $request->resultCheck,
+                        'pic_safety' => $request->picSafety,
                         'inspection_report' => $request->inspection,
                         'part' => $request->part,
                         'before_treatment' => $request->beforeTreatment,
                         'after_treatment' => $request->afterTreatment,
+                        'pic_quality' => $request->picQuality,
                         'photo' => $docName,
                         'done_by' => $request->doneBy,
                     ]);
@@ -592,11 +600,6 @@ class HenkatenController extends Controller
 
                 DB::commit();
             }
-
-            // get employee
-            $doneBy = Employee::select('name')
-                ->where('id', $request->doneBy)
-                ->first();
 
             // get all troubleshoot value
             $lineName = $henkatenInfo->line->name;
@@ -611,7 +614,7 @@ class HenkatenController extends Controller
             $part = $request->part;
             $beforeTreatment = $request->beforeTreatment;
             $afterTreatment = $request->afterTreatment;
-            $doneBy = $doneBy->name;
+            $doneBy = $request->doneBy;
             $troubleshootTime = Carbon::now()->format('j F Y, g:i A');
 
             if ($request->status === 'stop') {
@@ -648,7 +651,7 @@ class HenkatenController extends Controller
                             curl_setopt_array($curl, [
                                 CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
                                 CURLOPT_RETURNTRANSFER => true,
-                                CURLOPT_ENCODING => '',
+                                CURLOPT_ENCODING => '', 
                                 CURLOPT_MAXREDIRS => 10,
                                 CURLOPT_TIMEOUT => 0,
                                 CURLOPT_FOLLOWLOCATION => true,
@@ -762,7 +765,9 @@ class HenkatenController extends Controller
         $part = $henkatenInfo->troubleshoot->part;
         $beforeTreatment = $henkatenInfo->troubleshoot->before_treatment;
         $afterTreatment = $henkatenInfo->troubleshoot->after_treatment;
-        $doneBy = $henkatenInfo->troubleshoot->employee->name;
+        $picSafety = $henkatenInfo->troubleshoot->pic_safety;
+        $picQuality = $henkatenInfo->troubleshoot->pic_quality;
+        $doneBy = $henkatenInfo->troubleshoot->done_by;
         $pic = auth()->user()->name;
 
         try {
@@ -784,8 +789,8 @@ class HenkatenController extends Controller
                 $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
                 $phone = $groupId;
                 $message = sprintf(
-                    "```------ ```*AIIA HENKATEN ALERT*``` ------ %s%sLINE          : ```*%s*``` %sLINE STATUS   : ```*%s*``` %s4M            : %s %sCategory      : %s %sABNORMALITY   : %s %sTIME          : %s %sPIC           : %s %s%s         ```*TROUBLESHOOT*```    %s%sTROUBLESHOOT       : %s %sTIME               : %s %sRESULT CHECK       : %s %sINSPECTION REPORT  : %s %sPART               : %s %sBEFORE TREATMENT   : %s %sAFTER TREATMENT    : %s   %sDONE BY            : %s %s%s------ BY AISIN BISA ------```",
-                    "\n", "\n", $lineName, "\n", $status, "\n", $type, "\n", $category, "\n", $abnormality, "\n", $time, "\n", $pic, "\n", "\n", "\n", "\n", $troubleshoot, "\n", $troubleshootTime, "\n", $resultCheck, "\n", $inspectionCheck, "\n", $part, "\n", $beforeTreatment, "\n", $afterTreatment, "\n", $doneBy, "\n", "\n"
+                    "```------ ```*AIIA HENKATEN ALERT*``` ------ %s%sLINE          : ```*%s*``` %sLINE STATUS   : ```*%s*``` %s4M            : %s %sCategory      : %s %sABNORMALITY   : %s %sTIME          : %s %sPIC           : %s %s%s         ```*TROUBLESHOOT*```    %s%sTROUBLESHOOT       : %s %sTIME               : %s %sRESULT CHECK       : %s %sPIC SAFETY         : %s %sINSPECTION REPORT  : %s %sPART               : %s %sBEFORE TREATMENT   : %s %sAFTER TREATMENT    : %s %sPIC QUALITY        : %s   %sDONE BY            : %s %s%s------ BY AISIN BISA ------```",
+                    "\n", "\n", $lineName, "\n", $status, "\n", $type, "\n", $category, "\n", $abnormality, "\n", $time, "\n", $pic, "\n", "\n", "\n", "\n", $troubleshoot, "\n", $troubleshootTime, "\n", $resultCheck, "\n", $picSafety, "\n", $inspectionCheck, "\n", $part, "\n", $beforeTreatment, "\n", $afterTreatment, "\n", $picQuality, "\n", $doneBy, "\n", "\n"
                 );     
                 
                  // dispatch job
