@@ -1,9 +1,11 @@
 <?php
 
+use App\Models\Yell;
 use App\Models\Skill;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OplController;
+use App\Http\Controllers\YellController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\skillController;
 use App\Http\Controllers\themeController;
@@ -125,6 +127,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/theme', [themeController::class, 'index'])->name('theme');
     Route::post('/themeStore', [themeController::class, 'regist'])->name('theme.regist');
     Route::post('/theme/{id}', [themeController::class, 'destroy'])->name('theme.destroy');
+    
+    // theme
+    Route::get('/yell', [YellController::class, 'index'])->name('yell');
+    Route::post('/yellStore', [YellController::class, 'regist'])->name('yell.regist');
+    Route::post('/yell/{id}', [YellController::class, 'destroy'])->name('yell.destroy');
+    Route::post('/yell/edit', [YellController::class, 'editYell']);
     
     // henkaten management
     Route::get('/henkatenManagement/{originId?}', [HenkatenController::class, 'henkatenManagementIndex'])->name('henkatenManagement.index');

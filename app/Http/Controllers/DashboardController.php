@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Pusher\Pusher;
 use App\Models\Line;
+use App\Models\Yell;
 use App\Models\Pivot;
 use App\Models\Shift;
 use App\Models\Theme;
@@ -125,6 +126,11 @@ class DashboardController extends Controller
             return $this->portal();
         }
         
+        $today = Carbon::now()->day; // hanya ambil tanggal (tanpa bulan/tahun)
+
+        // Ambil record yang tanggal-nya sama dengan hari ini
+        $yell = Yell::whereDay('date', $today)->first(); // kalau lebih dari satu, bisa pakai get()
+        
         // get current pivot
         $currentTime = Carbon::now()->format('H:i:s');
         
@@ -202,6 +208,18 @@ class DashboardController extends Controller
                         $query->where('origin_id', $empOrigin);
                     })
                     ->get();
+                    
+        // get active MH
+        $activeMh= MhActive::with(['shift', 'employee' ,'line'])
+                    ->where('active_from', '<=', Carbon::now())
+                    ->where('expired_at', '>=', Carbon::now())
+                    ->whereHas('shift', function ($query) use ($currentShifts) {
+                        $query->whereIn('name', $currentShifts);
+                    })
+                    ->whereHas('employee', function($query) use ($empOrigin){
+                        $query->where('origin_id', $empOrigin);
+                    })
+                    ->get();
 
         // get henkaten where status still active
         $activeProblems = Henkaten::with(['shift', 'line.origin'])
@@ -246,7 +264,9 @@ class DashboardController extends Controller
             'pivot' => $pivot,
             'activeEmployees' => $activeEmployees,
             'activePics' => $activePic,
+            'activeMhs' => $activeMh,
             'themes' => Theme::all(),
+            'yell' => $yell,
             'employees' => Employee::select('id', 'name')
                 ->where('origin_id', $empOrigin)
                 ->whereIn('role', ['Leader', 'JP'])

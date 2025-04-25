@@ -8,56 +8,31 @@
     <!-- theme modal -->
     <div class="modal fade" id="modalTheme" tabindex="-1" aria-labelledby="themeModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="themeModalLabel">{{ $modalTitle }}</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content shadow-sm border-0 rounded-3">
+                <div class="modal-header bg-primary text-white border-0 rounded-top-1">
+                    <h5 class="modal-title mb-0 fw-bolder" style="color: white !important" id="themeModalLabel">Yel-yel Hari
+                        Ini
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
-                <form class="submitForm">
-                    <div class="modal-body">
-                        <div id="formModalTheme">
-                            @php
-                                $themeName = $pivot->theme->name ?? ($pivot->custom_theme ?? 'Set Theme');
-                            @endphp
-                            @if ($themeName !== 'Set Theme')
-                                <div class="mb-3">
-                                    <label class="mb-2">Current Theme</label>
-                                    <input type="text" class="form-control" placeholder="" disabled
-                                        value="{{ $themeName }}">
-                                </div>
-                            @endif
-                        </div>
-
-                        <label class="mb-2">New Theme</label>
-                        <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
-                            tabindex="-1" aria-hidden="true" id="themeSelect">
-                            <option value="null">Select</option>
-                            @foreach ($themes as $theme)
-                                <option value="{{ $theme->id }}">{{ $theme->name }}</option>
-                            @endforeach
-                        </select>
-
-                        <div class="position-relative text-center my-4">
-                            <p class="mb-0 fs-4 px-3 d-inline-block bg-white text-dark z-index-5 position-relative">
-                                or set with custom theme
-                            </p>
-                            <span class="border-top w-100 position-absolute top-50 start-50 translate-middle"></span>
-                        </div>
-
-                        <div class="mt-3">
-                            <label class="mb-2">Custom Theme</label>
-                            <input type="text" class="form-control" id="customThemeInput" placeholder="Custom Theme"
-                                name="custom_theme">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary submitButton" id="themeForm">Save changes</button>
-                    </div>
-                </form>
+                <div class="modal-body px-4 py-4 bg-light rounded-bottom-1">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item fw-semibold fs-6 bg-white mb-2 shadow-sm">
+                            {{ $yell->item_no_1 }}
+                        </li>
+                        <li class="list-group-item fw-semibold fs-6 bg-white mb-2 shadow-sm">
+                            {{ $yell->item_no_2 }}
+                        </li>
+                        <li class="list-group-item fw-semibold fs-6 bg-white shadow-sm">
+                            {{ $yell->item_no_3 }}
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
+
     {{-- end of modal --}}
 
     @php
@@ -197,56 +172,6 @@
         $modalTitle = $pivot && $pivot->theme ? 'Change Theme' : 'Add Theme';
     @endphp
 
-    <!-- theme modal -->
-    <div class="modal fade" id="modalTheme" tabindex="-1" aria-labelledby="themeModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="themeModalLabel">{{ $modalTitle }}</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form class="submitForm">
-                    <div class="modal-body">
-                        @if ($pivot && $pivot->theme)
-                            <div class="mb-3">
-                                <label class="mb-2">Current Theme</label>
-                                <input type="text" class="form-control" placeholder="" disabled
-                                    value="{{ $pivot->theme->name }}">
-                            </div>
-                        @endif
-
-                        <label class="mb-2">New Theme</label>
-                        <select class="select2 form-control select2-hidden-accessible" style="width: 100%; height: 36px"
-                            tabindex="-1" aria-hidden="true" id="themeSelect">
-                            <option>Select</option>
-                            @foreach ($themes as $theme)
-                                <option value="{{ $theme->id }}">{{ $theme->name }}</option>
-                            @endforeach
-                        </select>
-
-                        <div class="position-relative text-center my-4">
-                            <p class="mb-0 fs-4 px-3 d-inline-block bg-white text-dark z-index-5 position-relative">
-                                or set with custom theme
-                            </p>
-                            <span class="border-top w-100 position-absolute top-50 start-50 translate-middle"></span>
-                        </div>
-
-                        <div class="mt-3">
-                            <label class="mb-2">Custom Theme</label>
-                            <input type="text" class="form-control" id="customThemeInput" placeholder="Custom Theme"
-                                name="custom_theme">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary submitButton" id="themeForm">Save changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    {{-- end of modal --}}
-
     @php
         $modalTitle = $pivot && $pivot->firstPic ? 'Change PIC' : 'Add Leader';
     @endphp
@@ -338,39 +263,46 @@
     {{-- end of modal --}}
 
     <div class="row" style="margin-top: -30px">
-        <div class="col-lg-5 col-md-12 col-12">
+        <div class="col-lg-4 col-md-12 col-12">
             <div class="card shadow-md card-hover">
                 <div class="card-body p-3 d-flex align-items-center gap-3" id="themeContainer">
                     <div>
-                        <h5 class="fw-semibold mb-0">Tema Safety</h5>
-                        <span
-                            class="fs-2 d-flex align-items-center py-1 d-inline">{{ Carbon\Carbon::now()->format('j F Y') }}
-                            <span id="time" class="fs-2 px-2"></span></span>
+                        <button type="button" class="btn btn-primary py-2 px-5 ms-auto" data-bs-toggle="modal"
+                            data-bs-target="#modalTheme">
+                            <h4 class="fw-bolder pt-1" style="color: white">
+                                {{ $yell->item_no_1 ?? 'Belum ada tema untuk hari ini' }}
+                            </h4>
+                        </button>
                     </div>
-                    @php
-                        $themeName = $pivot->theme->name ?? ($pivot->custom_theme ?? 'Set Theme');
-                    @endphp
-
-                    <button type="button"
-                        class="btn btn-{{ $themeName !== 'Set Theme' ? 'secondary' : 'light' }} py-2 px-5 ms-auto"
-                        data-bs-toggle="modal" data-bs-target="#modalTheme"
-                        style="border: 3px {{ $themeName !== 'Set Theme' ? 'none' : 'dotted' }} {{ $themeName !== 'Set Theme' ? 'lightgrey' : '#686868' }}">
-                        <h4 class="fw-bolder pt-1" style="color: {{ $themeName !== 'Set Theme' ? 'white' : '#686868' }}">
-                            {{ $themeName !== 'Set Theme' ? $themeName : 'Set Theme' }}
-                        </h4>
-                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-1 col-sm-12">
+
+        <div class="col-lg-2 col-sm-12">
             <div class="card shadow-md card-hover" id="firstPic">
-                <div class="card-body p-4 d-flex align-items-center gap-1">
-                    <h2 class="fw-bolder">{{ $activeEmployees->count() }}</h2>
-                    <small class="me-3">MP</small>
+                <div class="card-body p-4 d-flex">
+                    <!-- Kolom inline -->
+                    <div class="w-50 text-center">
+                        <div class="mb-1 text-muted">inline</div>
+                        <h2 class="fw-bolder">{{ $activeEmployees->count() }} <small class="text-muted"
+                                style="font-size: 12px !important">MP</small>
+                        </h2>
+                    </div>
+
+                    <!-- Garis vertikal -->
+                    <div class="border-start mx-3"></div>
+
+                    <!-- Kolom Outline -->
+                    <div class="w-50 text-center">
+                        <div class="mb-1 text-muted">outline</div>
+                        <h2 class="fw-bolder">{{ $activeMhs->merge($activePics)->unique('employee_id')->count() }} <small
+                                class="text-muted" style="font-size: 12px !important">MP</small> </h2>
+                    </div>
                 </div>
             </div>
         </div>
+
 
         @php
             $supervisor = $pivot ? $pivot->supervisor : null;
@@ -801,24 +733,49 @@
                                 <div class="row g-3 mx-3 mb-3">
                                     <!-- Person In Charge Panel -->
                                     <div class="col-md-6">
-                                        <div class="p-3 bg-light-warning rounded text-center">
-                                            <i class="bi bi-person-fill fs-3 text-warning"></i>
-                                            <h6 class="text-uppercase text-muted mt-2 mb-1">JP</h6>
-                                            @php
-                                                $pic = $activePics->where('line.id', $line->id)->first();
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="p-3 bg-light-warning rounded text-center">
+                                                    <i class="bi bi-person-fill fs-3 text-warning"></i>
+                                                    <h6 class="text-uppercase text-muted mt-2 mb-1">JP</h6>
+                                                    @php
+                                                        $pic = $activePics->where('line.id', $line->id)->first();
 
-                                                $fullName = $pic->employee->name ?? '';
-                                                $words = explode(' ', $fullName);
-                                                $displayName =
-                                                    count($words) > 2
-                                                        ? implode(' ', array_slice($words, 0, 2))
-                                                        : $fullName;
-                                            @endphp
-                                            @if ($pic && $pic->employee->name)
-                                                <div class="fw-bold text-dark fs-5">{{ $displayName }}</div>
-                                            @else
-                                                <div class="text-danger fs-5">N/A</div>
-                                            @endif
+                                                        $fullName = $pic->employee->name ?? '';
+                                                        $words = explode(' ', $fullName);
+                                                        $displayName =
+                                                            count($words) > 2
+                                                                ? implode(' ', array_slice($words, 0, 1))
+                                                                : $fullName;
+                                                    @endphp
+                                                    @if ($pic && $pic->employee->name)
+                                                        <div class="fw-bold text-dark fs-5">{{ $displayName }}</div>
+                                                    @else
+                                                        <div class="text-danger fs-5">N/A</div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="p-3 bg-light-danger rounded text-center">
+                                                    <i class="bi bi-person-fill fs-3 text-warning"></i>
+                                                    <h6 class="text-uppercase text-muted mt-2 mb-1">MH</h6>
+                                                    @php
+                                                        $mh = $activeMhs->where('line.id', $line->id)->first();
+
+                                                        $fullName = $mh->employee->name ?? '';
+                                                        $words = explode(' ', $fullName);
+                                                        $displayName =
+                                                            count($words) > 2
+                                                                ? implode(' ', array_slice($words, 0, 1))
+                                                                : $fullName;
+                                                    @endphp
+                                                    @if ($mh && $mh->employee->name)
+                                                        <div class="fw-bold text-dark fs-5">{{ $displayName }}</div>
+                                                    @else
+                                                        <div class="text-danger fs-5">N/A</div>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 

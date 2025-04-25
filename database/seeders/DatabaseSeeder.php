@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use Carbon\Carbon;
 use App\Models\Line;
+use App\Models\Yell;
 use App\Models\Pivot;
 use App\Models\Shift;
 use App\Models\Skill;
@@ -24,220 +25,42 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // Shift::create([
-        //     'name' => 'Shift 1',
-        //     'time_start' => '06:00:00',
-        //     'time_end' => '14:15:00'
-        // ]);
+        $yells = [
+            ['item_no_1' => 'Lakukan SCW bila terjadi abnormal.','item_no_2' => 'Lakukan SCW bila terjadi abnormal.','item_no_3' => 'Lakukan SCW bila terjadi abnormal.','date' => '2025-05-01'],
+            ['item_no_1' => 'Angkat benda berat dengan cara yang benar.', 'item_no_2' => 'Jangan gunakan api di area dilarang api.', 'item_no_3' => 'Lakukan "One Cycle Progress" sebelum berhenti bekerja.', 'date' => '2025-05-02'],
+            ['item_no_1' => 'Lakukan cek safety device dan emergency stop sebelum bekerja.', 'item_no_2' => 'Kendaraan yang dipakai kerja sesuai dengan standart.', 'item_no_3' => 'Selalu berkonsentrasi dalam bekerja.', 'date' => '2025-05-03'],
+            ['item_no_1' => 'Berjalan di jalur pejalan kaki.', 'item_no_2' => 'Tempatkan Bahan B3 pada tempat yang sudah ditentukan.', 'item_no_3' => 'Letakkan part sesuai dengan tempat dan name plate.', 'date' => '2025-05-05'],
+            ['item_no_1' => 'Kunci kedua roda trolley saat berhenti.', 'item_no_2' => 'Matikan kipas angin dan lampu ketika tidak dipakai.', 'item_no_3' => 'Beri tag atau marking merah pada part NG.', 'date' => '2025-05-05'],
+            ['item_no_1' => 'Lakukan pekerjaan sesuai dengan WI/S.', 'item_no_2' => 'Jangan menutupi APAR dengan benda lain.', 'item_no_3' => 'Tidak ngobrol saat melakukan proses produksi.', 'date' => '2025-05-06'],
+            ['item_no_1' => 'Pekerjaan abnormal hanya dilakukan oleh MP yang sudah ditunjuk.', 'item_no_2' => 'Berdoa sebelum berkendara.', 'item_no_3' => 'Masukan part/packing ke dalam box NG.', 'date' => '2025-05-07'],
+            ['item_no_1' => 'Tidak membawa part yang melebihi pandangan mata.', 'item_no_2' => 'Lapor atasan ketika ada kabel terkelupas.', 'item_no_3' => 'Tidak mencampur part NG dan OK dalam satu box.', 'date' => '2025-05-08'],
+            ['item_no_1' => 'Tengok kanan kiri sebelum menyeberang.', 'item_no_2' => 'Bahan B3 harus ada MSDS, bila tidak ada segera SCW.', 'item_no_3' => 'Update papan hentikan setiap awal shift.', 'date' => '2025-05-09'],
+            ['item_no_1' => 'Tidak menaiki kereta atau trolley.', 'item_no_2' => 'Matikan mesin ketika tidak dipakai.', 'item_no_3' => 'Gunakan lampu andon untuk memanggil atasan.', 'date' => '2025-05-10'],
+            ['item_no_1' => 'Tidak berlari di dalam pabrik.', 'item_no_2' => 'Bersihkan tumpahan atau ceceran bahan B3.', 'item_no_3' => 'Next proses adalah customer.', 'date' => '2025-05-11'],
+            ['item_no_1' => 'Menggunakan body harness ketika kerja di ketinggian.', 'item_no_2' => 'Jangan meletakkan benda lain di depan box panel.', 'item_no_3' => 'Lakukan pengecekan periodik sesuai standardnya.', 'date' => '2025-05-12'],
+            ['item_no_1' => 'Tidak menumpuk barang melebihi standart ketinggiannya.', 'item_no_2' => 'Pastikan surat-surat kendaraan dan SIM masih berlaku.', 'item_no_3' => 'Tidak ngobrol saat berproduksi.', 'date' => '2025-05-13'],
+            ['item_no_1' => 'Tidak memasuki area berpagar atau bahaya tanpa memasang LoTo.', 'item_no_2' => 'Laporkan atasan jika melihat kebocoran oli atau coolant.', 'item_no_3' => 'Beri marking pada part yang sudah dilakukan pengecekan.', 'date' => '2025-05-14'],
+            ['item_no_1' => 'Tidak mengoperasikan HP sambil berjalan.', 'item_no_2' => 'Matikan laptop ketika tidak dipakai.', 'item_no_3' => 'Lakukan preventive mesin dan mould sesuai standard waktunya.', 'date' => '2025-05-15'],
+            ['item_no_1' => 'Tidak duduk di chute atau kereta.', 'item_no_2' => 'Teriak yang kencang ketika melihat api.', 'item_no_3' => 'Lakukan pekerjaan sesuai dengan WI/S.', 'date' => '2025-05-16'],
+            ['item_no_1' => 'Lakukan 3F bila ada keluhan atau kecemasan dalam bekerja.', 'item_no_2' => 'Hati-hati dalam berkendara saat hujan.', 'item_no_3' => 'Pastikan part OK sebelum dikirim ke next proses.', 'date' => '2025-05-17'],
+            ['item_no_1' => 'Lakukan SCW bila terjadi abnormal.', 'item_no_2' => 'Lakukan SCW bila terjadi abnormal.', 'item_no_3' => 'Lakukan SCW bila terjadi abnormal.', 'date' => '2025-05-18'],
+            ['item_no_1' => 'Gunakan APD yang sesuai ketika masuk area kerja.', 'item_no_2' => 'Segera lapor atasan jika terkena cipratan bahan B3 ke mata.', 'item_no_3' => 'Tidak menggunakan tool yang rusak.', 'date' => '2025-05-19'],
+            ['item_no_1' => 'Jangan dibawah objek yang sedang loading atau tergantung.', 'item_no_2' => 'Improve line stop untuk meningkatkan efisiensi (hemat waktu - hemat listrik).', 'item_no_3' => 'Lakukan first quality check sebelum produksi dalam jumlah banyak.', 'date' => '2025-05-20'],
+            ['item_no_1' => 'Tidak memasukkan tangan ke saku celana ketika berjalan.', 'item_no_2' => 'Bersihkan kipas angin sesuai standartnya.', 'item_no_3' => 'Isi cek sheet parameter di awal shift.', 'date' => '2025-05-21'],
+            ['item_no_1' => 'Jangan menyentuh benda yang sedang bergerak.', 'item_no_2' => 'Pastikan paham kondisi jalan saat berkendara.', 'item_no_3' => 'Lakukan 3 point check sebelum mengambil atau melekatkan part.', 'date' => '2025-05-22'],
+            ['item_no_1' => 'Jangan menyentuh benda yang akan bergerak.', 'item_no_2' => 'Tidak mencolok charger HP di sembarang tempat.', 'item_no_3' => 'Lakukan cek mesin secara berkala sesuai ketentuannya.', 'date' => '2025-05-23'],
+            ['item_no_1' => 'Jangan palingkan mata dari tangan yang sedang bekerja.', 'item_no_2' => 'Gunakan Helm yang sesuai standart.', 'item_no_3' => 'Tidak menjalankan proses produksi yang bukan menjadi tugasnya.', 'date' => '2025-05-24'],
+            ['item_no_1' => 'Pegang hand rail ketika naik turun tangga.', 'item_no_2' => 'Buang sampah sesuai dengan tempatnya.', 'item_no_3' => 'Lakukan pengecekan part secara periodik saat bekerja.', 'date' => '2025-05-25'],
+            ['item_no_1' => 'Tidak berdiri atau berjalan di atas roller.', 'item_no_2' => 'Matikan kipas ketika tidak dipakai.', 'item_no_3' => 'Cuci muka bila mengantuk.', 'date' => '2025-05-26'],
+            ['item_no_1' => 'Lakukan pengecekan sling tiap awal shift.', 'item_no_2' => 'Tidak meletakkan barang mudah terbakar di area panas.', 'item_no_3' => 'Lakukan cek alat ukur sebelum dipakai.', 'date' => '2025-05-27'],
+            ['item_no_1' => 'Tidak mengoperasikan mesin yang bukan tugasnya.', 'item_no_2' => 'Utamakan keselamatan bukan kecepatan.', 'item_no_3' => 'Lakukan pekerjaan sesuai dengan WI/S.', 'date' => '2025-05-28'],
+            ['item_no_1' => 'Tidak masuk jalur merah, jalur forklift dan truck (selain PIC).', 'item_no_2' => 'Tidak memakai bahan B3 bila belum mengerti MSDSnya.', 'item_no_3' => 'Utamakan kualitas bukan kuantitas.', 'date' => '2025-05-29'],
+            ['item_no_1' => 'Irregular job harus mendapat pengarahan dari minimal leader.', 'item_no_2' => 'Tidak men-setting kipas terlalu kencang.', 'item_no_3' => 'Tidak mengoperasikan HP saat produksi.', 'date' => '2025-05-30'],
+            ['item_no_1' => 'Tidak menggunakan cutter yang tidak teregistrasi.', 'item_no_2' => 'Membantu mencari APAR jika terjadi kebakaran di area kerja.', 'item_no_3' => 'Tidak melakukan repair part tanpa perintah atasan.', 'date' => '2025-05-31']
+        ];
         
-        // Shift::create([
-        //     'name' => 'Shift 2',
-        //     'time_start' => '14:10:00',
-        //     'time_end' => '22:15:00'
-        // ]);
-
-        // Shift::create([
-        //     'name' => 'Shift 3',
-        //     'time_start' => '22:10:00',
-        //     'time_end' => '06:05:00'
-        // ]);
-
-        // Shift::create([
-        //     'name' => 'Shift 1 Long',
-        //     'time_start' => '05:55:00',
-        //     'time_end' => '18:00:00'
-        // ]);
-
-        // Shift::create([
-        //     'name' => 'Shift 3 Long',
-        //     'time_start' => '18:30:00',
-        //     'time_end' => '07:00:00'
-        // ]);
-
-        // Shift::create([
-        //     'name' => 'Non Shift',
-        //     'time_start' => '07:15:00',
-        //     'time_end' => '16:20:00'
-        // ]);
-            
-        // Line
-        // $origin = Origin::select('id')->where('name', 'HANDLE')->first();
-        // $lines = Line::where('origin_id', $origin->id)->get();
-
-        // Position::whereNull('size')->update([
-        //     'size' => 80
-        // ]);
-
-        // foreach ($lines as $line) {
-        //     for($i=1; $i<=2; $i++) {
-        //         if($i == 1){
-        //             Position::create([
-        //                 'line_id' => $line->id,
-        //                 'pos' => $i,
-        //                 'top' => 51,
-        //                 'left' => 14,
-        //                 'size' => 70
-        //             ]);
-        //         }else{
-        //             Position::create([
-        //                 'line_id' => $line->id,
-        //                 'pos' => $i,
-        //                 'top' => 58,
-        //                 'left' => 34,
-        //                 'size' => 70
-        //             ]);
-        //         }
-        //     }
-        // }
-
-        // Position::create([
-        //     'line_id' => '9ac830ff-4e03-44e1-b26f-2a9e36946f3a',
-        //     'pos' => 1,
-        //     'top' => 51,
-        //     'left' => 14,
-        //     'size' => 70
-        // ]);
-        
-        // for($i=1; $i<=3; $i++) {
-        //     Position::create([
-        //         'line_id' => '9ac830ff-5540-469a-acc6-8c86d751ed3d',
-        //         'pos' => $i,
-        //         'top' => 51,
-        //         'left' => 14,
-        //         'size' => 70
-        //     ]);
-        // }
-        
-        // for($i=1; $i<=6; $i++) {
-        //     Position::create([
-        //         'line_id' => '9ac830ff-563b-44f5-8273-7a1ea624b6cd',
-        //         'pos' => $i,
-        //         'top' => 51,
-        //         'left' => 14,
-        //         'size' => 70
-        //     ]);
-        // }
-        
-        // $lines = Line::select('id')->where('id', '9ceeffec-2c80-495b-92a9-b0fcdd31f054')->get();
-        
-        //AS548
-        for($i=2; $i<=3; $i++) {
-        // foreach($lines as $line) {
-            Position::create([
-                'line_id' => '9cedaa5f-48d4-4f96-953e-21f1cde50d44',
-                'pos' => $i,
-                'top' => 65,
-                'left' => 50,
-                'size' => 80
-            ]);
+        foreach ($yells as $yell) {
+            Yell::create($yell);
         }
-        
-        //AS547
-        for($i=2; $i<=3; $i++) {
-        // foreach($lines as $line) {
-            Position::create([
-                'line_id' => '9ceeffec-2c80-495b-92a9-b0fcdd31f054',
-                'pos' => $i,
-                'top' => 65,
-                'left' => 50,
-                'size' => 80
-            ]);
-        }
-        
-        //AS561
-        for($i=2; $i<=3; $i++) {
-        // foreach($lines as $line) {
-            Position::create([
-                'line_id' => '9cedaa5f-4a51-4555-93ea-b8f94ed1bd23',
-                'pos' => $i,
-                'top' => 65,
-                'left' => 50,
-                'size' => 80
-            ]);
-        }
-        
-        //AS600
-        for($i=2; $i<=4; $i++) {
-        // foreach($lines as $line) {
-            Position::create([
-                'line_id' => '9cedaa5f-4a9c-4333-ad9a-88587a08db43',
-                'pos' => $i,
-                'top' => 65,
-                'left' => 50,
-                'size' => 80
-            ]);
-        }
-
-        // AS546
-        Position::create([
-            'line_id' => '9ceeffec-2c80-495b-92a9-b0fcdd31f053',
-            'pos' => '2',
-            'top' => 65,
-            'left' => 50,
-            'size' => 80
-        ]);
-        
-        // AS549
-        Position::create([
-            'line_id' => '9ceeffec-2c80-495b-92a9-b0fcdd31f055',
-            'pos' => '2',
-            'top' => 65,
-            'left' => 50,
-            'size' => 80
-        ]);
-        // }
-        
-        // for($i=1; $i<=2; $i++) {
-        //         Line::create([
-        //             'origin_id' => $origin->id,
-        //             'name' => 'ASAN0' . $i
-        //         ]);
-        // }
-
-        // Line::create([
-        //     'origin_id' => $origin->id,
-        //     'name' => 'AS501'
-        // ]);
-        
-        // for($i=521; $i<529; $i++) {
-        //     Line::create([
-        //         'origin_id' => $origin->id,
-        //         'name' => 'AS' . $i
-        //     ]);
-        // }
-        
-        // for($i=0; $i<1; $i++) {
-        //     Line::create([
-        //         'origin_id' => $origin->id,
-        //         'name' => 'ASIP0' . $i+1
-        //     ]);
-        // }
-        
-        // for($i=0; $i<1; $i++) {
-        //     Line::create([
-        //         'origin_id' => $origin->id,
-        //         'name' => 'ASMP0' . $i+1
-        //     ]);
-        // }
-        
-        // for($i=0; $i<1; $i++) {
-        //     Line::create([
-        //         'origin_id' => $origin->id,
-        //         'name' => 'ASVP0' . $i+1
-        //     ]);
-        // }
-
-        // Origin::create([
-        //     'name' => 'DC'
-        // ]);
-        // Origin::create([
-        //     'name' => 'MA'
-        // ]);
-        // Origin::create([
-        //     'name' => 'ASSY'
-        // ]);
-        // Origin::create([
-        //     'name' => 'ELECTRIC'
-        // ]);
     }
 }

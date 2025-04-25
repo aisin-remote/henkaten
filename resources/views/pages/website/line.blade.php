@@ -252,6 +252,16 @@
                                     id="{{ $modal['modalId'] }}Photo" name="photo">
                                 <small class="text-danger">*optional</small>
                             </div>
+                            <div class="form-group mt-3 mb-3 description">
+                                <label for="{{ $modal['modalId'] }}Pic" class="form-label">PIC</label>
+                                <input class="form-control" list="{{ $modal['modalId'] }}PicList"
+                                    id="{{ $modal['modalId'] }}Pic" name="pic" placeholder="Input PIC ...">
+                                <datalist id="{{ $modal['modalId'] }}PicList">
+                                    <option value="Saiful">
+                                    <option value="ikhsanudin">
+                                        <!-- Tambahkan pilihan lainnya sesuai kebutuhan -->
+                                </datalist>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-secondary henkatenSubmitButton"
@@ -611,7 +621,7 @@
                                         <img src="{{ asset('uploads/doc/' . $picPhoto) }}" class="rounded-1"
                                             width="100" height="100" loading="lazy">
                                         <div class="mt-n2">
-                                            <span class="badge bg-{{ $picColor }}">{{ strtoupper($picRole) }}</span>
+                                            <span class="badge bg-dark">{{ strtoupper($picRole) }}</span>
                                             <h3 class="card-title mt-3">{{ ucwords($picName) }}</h3>
                                             <h6 class="card-subtitle">{{ $picNpk }}</h6>
                                         </div>

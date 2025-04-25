@@ -124,6 +124,12 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
+                            <a href="/yell" class="sidebar-link" id="skill-link">
+                                <i class="ti ti-volume"></i>
+                                <span class="hide-menu">yel-yel</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
                             <a href="/opl" class="sidebar-link">
                                 <i class="ti ti-file-import"></i>
                                 <span class="hide-menu">OPL</span>
