@@ -78,7 +78,6 @@
                                     <option value="2">2</option>
                                     <option value="3">3</option>
                                     <option value="4">4</option>
-                                    <option value="5">5</option>
                                 </select>
                             </div>
                             <div class="col-lg-1 col-sm-12">
@@ -146,10 +145,7 @@
                     <tbody>
                         @foreach ($minimumSkills as $minimumSkill)
                             @php
-                                $lineName = $line
-                                    ->where('id', $minimumSkill->line_id)
-                                    ->pluck('name')
-                                    ->first();
+                                $lineName = $line->where('id', $minimumSkill->line_id)->pluck('name')->first();
                                 $skill = $skill->where('id', $minimumSkill->skill_id)->first();
                             @endphp
                             <tr>

@@ -110,7 +110,7 @@ class skillController extends Controller
             DB::beginTransaction();
 
             foreach ($skills as $skill) {
-                for ($i = 1; $i <= 5; $i++) {
+                for ($i = 1; $i <= 4; $i++) {
                     Skill::create([
                         'origin_id' => $empOrigin,
                         'name' => $skill['name'],
