@@ -740,14 +740,10 @@
                                                     <h6 class="text-uppercase text-muted mt-2 mb-1">JP</h6>
                                                     @php
                                                         $pic = $activePics->where('line.id', $line->id)->first();
-
                                                         $fullName = $pic->employee->name ?? '';
-                                                        $words = explode(' ', $fullName);
-                                                        $displayName =
-                                                            count($words) > 2
-                                                                ? implode(' ', array_slice($words, 0, 0))
-                                                                : $fullName;
+                                                        $displayName = explode(' ', trim($fullName))[0] ?? '';
                                                     @endphp
+
                                                     @if ($pic && $pic->employee->name)
                                                         <div class="fw-bold text-dark fs-5">{{ $displayName }}</div>
                                                     @else
@@ -761,19 +757,16 @@
                                                     <h6 class="text-uppercase text-muted mt-2 mb-1">MH</h6>
                                                     @php
                                                         $mh = $activeMhs->where('line.id', $line->id)->first();
-
                                                         $fullName = $mh->employee->name ?? '';
-                                                        $words = explode(' ', $fullName);
-                                                        $displayName =
-                                                            count($words) > 2
-                                                                ? implode(' ', array_slice($words, 0, 0))
-                                                                : $fullName;
+                                                        $displayName = explode(' ', trim($fullName))[0] ?? '';
                                                     @endphp
+
                                                     @if ($mh && $mh->employee->name)
                                                         <div class="fw-bold text-dark fs-5">{{ $displayName }}</div>
                                                     @else
                                                         <div class="text-danger fs-5">N/A</div>
                                                     @endif
+
                                                 </div>
                                             </div>
                                         </div>
