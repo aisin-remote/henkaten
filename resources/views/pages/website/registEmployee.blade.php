@@ -87,7 +87,6 @@
                                         <option value="2">2</option>
                                         <option value="3">3</option>
                                         <option value="4">4</option>
-                                        <option value="5">5</option>
                                     </select>
                                 </div>
                                 <div class="col-lg-1 col-sm-12">
@@ -278,7 +277,7 @@
                                                     @forelse ($employeeDetails[$emp->id]->skills as $skill)
                                                         <div class="progress mb-2" style="height: 15px; width: 8vw">
                                                             <div class="progress-bar" role="progressbar"
-                                                                style="width: {{ $skill->level * 20 }}%;"
+                                                                style="width: {{ $skill->level * 25 }}%;"
                                                                 aria-valuenow="{{ $skill->level }}" aria-valuemin="0"
                                                                 aria-valuemax="5">
                                                                 {{ $skill->level }}
@@ -340,7 +339,6 @@
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
-                    <option value="5">5</option>
                 </select>
             </div>
             <div class="col-lg-1 col-sm-12">

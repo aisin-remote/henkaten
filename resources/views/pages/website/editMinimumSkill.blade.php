@@ -37,10 +37,7 @@
                         </div>
                         <div class="col-lg-3 col-sm-12">
                             <?php
-                            $lineName = $line
-                                ->where('id', $minimumSkill->line_id)
-                                ->pluck('name')
-                                ->first();
+                            $lineName = $line->where('id', $minimumSkill->line_id)->pluck('name')->first();
                             $skillName = $skillName->where('id', $minimumSkill->skill_id)->first();
                             ?>
                             <label class="mb-1">Skill</label>
@@ -62,7 +59,6 @@
                                 <option value="2" {{ $skillName->level == '2' ? 'selected' : '' }}>2</option>
                                 <option value="3" {{ $skillName->level == '3' ? 'selected' : '' }}>3</option>
                                 <option value="4" {{ $skillName->level == '4' ? 'selected' : '' }}>4</option>
-                                <option value="5" {{ $skillName->level == '5' ? 'selected' : '' }}>5</option>
                             </select>
                         </div>
                     </div>

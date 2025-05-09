@@ -219,7 +219,9 @@
                                     <td class="text-center"><span
                                             class="badge bg-light-{{ $colorAfter }} text-{{ $colorAfter }}">{{ $henkaten->troubleshoot->after_treatment }}</span>
                                     </td>
-                                    <td class="text-center">{{ $henkaten->troubleshoot->employee->name }}</td>
+                                    <td class="text-center">
+                                        {{ $henkaten->troubleshoot->employee->name ?? $henkaten->troubleshoot->done_by }}
+                                    </td>
                                     @php
                                         $approvals = [
                                             'ldr' => [
