@@ -284,7 +284,7 @@
                 <div class="card-body p-4 d-flex">
                     <!-- Kolom inline -->
                     <div class="w-50 text-center">
-                        <div class="mb-1 text-muted">inline</div>
+                        <div class="mb-1 text-muted">Inline</div>
                         <h2 class="fw-bolder">{{ $activeEmployees->count() }} <small class="text-muted"
                                 style="font-size: 12px !important">MP</small>
                         </h2>
@@ -295,7 +295,7 @@
 
                     <!-- Kolom Outline -->
                     <div class="w-50 text-center">
-                        <div class="mb-1 text-muted">outline</div>
+                        <div class="mb-1 text-muted">Outline</div>
                         <h2 class="fw-bolder">{{ $activeMhs->merge($activePics)->unique('employee_id')->count() }} <small
                                 class="text-muted" style="font-size: 12px !important">MP</small> </h2>
                     </div>
