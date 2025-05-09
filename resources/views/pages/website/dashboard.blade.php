@@ -745,7 +745,7 @@
                                                         $words = explode(' ', $fullName);
                                                         $displayName =
                                                             count($words) > 2
-                                                                ? implode(' ', array_slice($words, 0, 1))
+                                                                ? implode(' ', array_slice($words, 0, 0))
                                                                 : $fullName;
                                                     @endphp
                                                     @if ($pic && $pic->employee->name)
@@ -766,7 +766,7 @@
                                                         $words = explode(' ', $fullName);
                                                         $displayName =
                                                             count($words) > 2
-                                                                ? implode(' ', array_slice($words, 0, 1))
+                                                                ? implode(' ', array_slice($words, 0, 0))
                                                                 : $fullName;
                                                     @endphp
                                                     @if ($mh && $mh->employee->name)
