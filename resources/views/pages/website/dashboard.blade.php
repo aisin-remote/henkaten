@@ -994,15 +994,15 @@
         }
     }
 
-    function updateTime() {
-        const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        const seconds = now.getSeconds().toString().padStart(2, '0');
-        const formattedTime = `${hours}:${minutes}:${seconds}`;
-        const timeElement = document.getElementById('time');
-        timeElement.textContent = formattedTime;
-    }
+    // function updateTime() {
+    //     const now = new Date();
+    //     const hours = now.getHours().toString().padStart(2, '0');
+    //     const minutes = now.getMinutes().toString().padStart(2, '0');
+    //     const seconds = now.getSeconds().toString().padStart(2, '0');
+    //     const formattedTime = `${hours}:${minutes}:${seconds}`;
+    //     const timeElement = document.getElementById('time');
+    //     timeElement.textContent = formattedTime;
+    // }
 
     $(document).ready(function() {
         initApp();
@@ -1026,11 +1026,11 @@
 
         $('#overallShape').html(getShape(overallStatus));
 
-        // Update the time every second
-        setInterval(updateTime, 1000);
+        // // Update the time every second
+        // setInterval(updateTime, 1000);
 
-        // Initial call to display the time immediately
-        updateTime();
+        // // Initial call to display the time immediately
+        // updateTime();
 
         $('#themeSelect').select2({
             dropdownParent: $('#modalTheme')
