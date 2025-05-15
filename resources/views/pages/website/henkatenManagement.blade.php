@@ -92,12 +92,25 @@
                             </span>
                             <span class="d-none d-sm-inline-block">Import Henkaten Item</span>
                         </button>
-                        <button class="btn btn-primary px-4 py-2" id="addSkill">
+                        <button class="btn btn-primary px-4 py-2 me-3" id="addSkill">
                             <span class="rounded-3 pe-2" id="icon">
                                 <i class="ti ti-plus"></i>
                             </span>
                             <span class="d-none d-sm-inline-block">Add Henkaten Item</span>
                         </button>
+                        <form action="{{ route('henkatenManagement.remove') }}" method="POST"
+                            onsubmit="return confirm('Are you sure you want to delete all data?')">
+                            @csrf
+                            @method('DELETE')
+                            <input type="hidden" name="origin_id"
+                                value="{{ optional($henkatenManagements->first())->origin_id }}">
+                            <button class="btn btn-danger px-4 py-2">
+                                <span class="rounded-3 pe-2" id="icon">
+                                    <i class="ti ti-trash"></i>
+                                </span>
+                                <span class="d-none d-sm-inline-block">Remove All</span>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -120,7 +133,8 @@
                                     <input type="text" class="form-control editTable" style="display: none">
                                 </td>
                                 <td>
-                                    <span class="actual4M" data-type-id="{{ $master->{"4M"} }}">{{ $master->{"4M"} }}</span>
+                                    <span class="actual4M"
+                                        data-type-id="{{ $master->{"4M"} }}">{{ $master->{"4M"} }}</span>
                                     <input type="text" class="form-control edit4M" style="display: none">
                                 </td>
                                 <td>

@@ -40,7 +40,7 @@
         <div class="card">
             <div class="card-header" style="background-color: white;">
                 <div class="row">
-                    <div class="col-10">
+                    <div class="col-8">
                         <h4 class="fw-4">
                             Henkaten History
                             <h6 class="text-muted">
@@ -48,9 +48,30 @@
                             </h6>
                         </h4>
                     </div>
-                    {{-- <div class="col-2 text-end">
-                        <a href="{{ route('henkaten.export') }}" class="btn btn-primary">Export</a>
-                    </div> --}}
+                    <div class="col-4 text-end">
+                        <form action="{{ route('henkaten.export') }}" method="GET">
+                            <div class="row align-items-end">
+                                <div class="col-md-4 text-center">
+                                    <label for="start_date" class="form-label">Start Date</label>
+                                    <input type="date" id="start_date" name="start_date" class="form-control" required>
+                                </div>
+
+                                <div class="col-md-4 text-center">
+                                    <label for="end_date" class="form-label">End Date</label>
+                                    <input type="date" id="end_date" name="end_date" class="form-control" required>
+                                </div>
+
+                                <input type="hidden" name="origin_id"
+                                    value="{{ $henkatenHistory->first()->line->origin_id }}">
+
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-info w-100">
+                                        <i class="fas fa-file-excel me-2"></i>Export
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
             <div class="card-body p-3">

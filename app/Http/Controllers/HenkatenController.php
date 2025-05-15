@@ -1016,6 +1016,13 @@ class HenkatenController extends Controller
         }
     }
 
+    public function henkatenManagementRemove(Request $request)
+    {
+        HenkatenManagement::where('origin_id', $request->origin_id)->delete();
+
+        return redirect()->back()->with('success', 'All records for your origin have been removed.');
+    }
+
     public function getNextShiftUuid($currentShiftUuid)
     {
         // Assuming Shift is your model name and it has 'name' and 'id' columns
@@ -1199,14 +1206,13 @@ class HenkatenController extends Controller
         return redirect()->back()->with('success', 'Henkaten data imported successfully!');
     }
 
-    public function henkatenExport()
+    public function export(Request $request)
     {
-        try {
-            return Excel::download(new HenkatenExport, 'henkaten.xlsx');
-        } catch (\Exception $e) {
-            // Optionally, return a response indicating the failure
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        $originId = $request->input('origin_id');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+    
+        return Excel::download(new HenkatenExport($originId, $startDate, $endDate), 'henkaten.xlsx');
     }
 
     public function editHankatenManagement($table , $type, $item, $newTable, $newType, $newItem)

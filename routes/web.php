@@ -138,8 +138,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/henkatenManagement/{originId?}', [HenkatenController::class, 'henkatenManagementIndex'])->name('henkatenManagement.index');
     Route::post('/henkatenManagement/store', [HenkatenController::class, 'henkatenManagementStore'])->name('henkatenManagement.store');
     Route::get('/henkatenManagement/edit/{table}/{type}/{item}/{newTable}/{newType}/{newItem}', [HenkatenController::class, 'editHankatenManagement'])->name('henkatenManagement.edit');        
-    Route::get('/henkatenExport', [HenkatenController::class, 'henkatenExport'])->name('henkaten.export');
+    Route::get('/henkatenExport', [HenkatenController::class, 'export'])->name('henkaten.export');
     Route::post('/henkatenImport', [HenkatenController::class, 'henkatenImport'])->name('henkaten.import');
+    Route::delete('/henkatenManagement/remove', [HenkatenController::class, 'henkatenManagementRemove'])->name('henkatenManagement.remove');
     
     // OPL 
     Route::prefix('/opl')->group(function () {
