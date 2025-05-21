@@ -107,20 +107,35 @@
                                 </div>
                                 <div class="status-container">
                                     @if ($attendance)
+                                        @php
+                                            $att = $attendance->attendance[0] ?? null;
+                                            $timeIn = $att?->time_in;
+                                            $timeOut = $att?->time_out;
+                                            $status = $timeOut ? 'Pulang' : 'Hadir';
+                                        @endphp
                                         <div class="dropdown">
-                                            <button class="btn btn-success dropdown-toggle" type="button"
-                                                id="attendanceDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                                                data-id="{{ $attendance->attendance[0]->id ?? '' }}">
-                                                Hadir - [{{ $attendance->attendance[0]->time_in }}]
+                                            <button
+                                                class="btn {{ $status === 'Pulang' ? 'btn-secondary' : 'btn-success' }} dropdown-toggle"
+                                                type="button" id="attendanceDropdown" data-bs-toggle="dropdown"
+                                                aria-expanded="false" data-id="{{ $att->id ?? '' }}"
+                                                data-npk="{{ $pic->employee->npk ?? '' }}">
+                                                {{ $status }} -
+                                                [{{ \Carbon\Carbon::parse($status === 'Pulang' ? $timeOut : $timeIn)->format('H:i') }}]
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item rollback-dropdown" href="#"
-                                                        data-value="Belum Hadir">Belum
-                                                        Hadir</a>
-                                                </li>
+                                                @if ($status === 'Hadir')
+                                                    <li><a class="dropdown-item rollback-dropdown" href="#"
+                                                            data-value="Belum Hadir">Belum Hadir</a></li>
+                                                    <li><a class="dropdown-item rollback-dropdown" href="#"
+                                                            data-value="Pulang">Pulang</a></li>
+                                                @elseif ($status === 'Pulang')
+                                                    <li><a class="dropdown-item rollback-dropdown" href="#"
+                                                            data-value="Hadir">Hadir</a></li>
+                                                @endif
                                             </ul>
                                         </div>
                                     @else
+                                        {{-- Status: Belum Hadir --}}
                                         <div class="dropdown">
                                             <button class="btn btn-danger dropdown-toggle" type="button"
                                                 id="attendanceDropdown" data-bs-toggle="dropdown" aria-expanded="false"
@@ -182,24 +197,36 @@
                                             </div>
                                             <div class="status-container">
                                                 @if ($attendance)
-                                                    {{-- @php
-                                                        dd($attendance);
-                                                    @endphp --}}
+                                                    @php
+                                                        $att = $attendance->attendance[0] ?? null;
+                                                        $timeIn = $att?->time_in;
+                                                        $timeOut = $att?->time_out;
+                                                        $status = $timeOut ? 'Pulang' : 'Hadir';
+                                                    @endphp
                                                     <div class="dropdown">
-                                                        <button class="btn btn-success dropdown-toggle" type="button"
-                                                            id="attendanceDropdown" data-bs-toggle="dropdown"
-                                                            aria-expanded="false"
-                                                            data-id="{{ $attendance->attendance[0]->id ?? '' }}">
-                                                            Hadir - [{{ $attendance->attendance[0]->time_in }}]
+                                                        <button
+                                                            class="btn {{ $status === 'Pulang' ? 'btn-secondary' : 'btn-success' }} dropdown-toggle"
+                                                            type="button" id="attendanceDropdown" data-bs-toggle="dropdown"
+                                                            aria-expanded="false" data-id="{{ $att->id ?? '' }}"
+                                                            data-npk="{{ $employee->employee->npk ?? '' }}">
+                                                            {{ $status }} -
+                                                            [{{ \Carbon\Carbon::parse($status === 'Pulang' ? $timeOut : $timeIn)->format('H:i') }}]
                                                         </button>
                                                         <ul class="dropdown-menu">
-                                                            <li>
-                                                                <a class="dropdown-item rollback-dropdown" href="#"
-                                                                    data-value="Belum Hadir">Belum Hadir</a>
-                                                            </li>
+                                                            @if ($status === 'Hadir')
+                                                                <li><a class="dropdown-item rollback-dropdown"
+                                                                        href="#" data-value="Belum Hadir">Belum
+                                                                        Hadir</a></li>
+                                                                <li><a class="dropdown-item rollback-dropdown"
+                                                                        href="#" data-value="Pulang">Pulang</a></li>
+                                                            @elseif ($status === 'Pulang')
+                                                                <li><a class="dropdown-item rollback-dropdown"
+                                                                        href="#" data-value="Hadir">Hadir</a></li>
+                                                            @endif
                                                         </ul>
                                                     </div>
                                                 @else
+                                                    {{-- Status: Belum Hadir --}}
                                                     <div class="dropdown">
                                                         <button class="btn btn-danger dropdown-toggle" type="button"
                                                             id="attendanceDropdown" data-bs-toggle="dropdown"
@@ -270,13 +297,15 @@
             let id = btn.data("id"); // Retrieve `npk` from button's data attribute
 
             // Change text
-            btn.text(selectedValue);
+            btn.text(`${selectedValue}`);
 
             // Change button color
             if (selectedValue === "Hadir") {
-                btn.removeClass("btn-danger").addClass("btn-success");
+                btn.removeClass("btn-danger btn-warning").addClass("btn-success");
+            } else if (selectedValue === "Pulang") {
+                btn.removeClass("btn-danger btn-success").addClass("btn-warning");
             } else {
-                btn.removeClass("btn-success").addClass("btn-danger");
+                btn.removeClass("btn-success btn-warning").addClass("btn-danger");
             }
 
             // **Send AJAX request only if "Hadir" is selected**
@@ -287,6 +316,7 @@
                     _token: "{{ csrf_token() }}",
                     data: {
                         id: id,
+                        status: "Belum Hadir"
                     },
                     dataType: 'json',
                     success: function(data) {
@@ -310,7 +340,25 @@
                         }
                     }
                 });
+            } else if (selectedValue === "Pulang") {
+                $.ajax({
+                    type: 'GET',
+                    url: "{{ url('employee/attendance/rollback') }}",
+                    data: {
+                        id: id,
+                        status: "Pulang",
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.status === 'success') {
+                            localStorage.setItem('notifStatus', data.status);
+                            localStorage.setItem('notifMessage', data.message);
+                            location.reload(); // refresh biar waktu pulang update
+                        }
+                    }
+                });
             }
+
         });
 
         $(document).on('click', ".dropdown-item", function() {

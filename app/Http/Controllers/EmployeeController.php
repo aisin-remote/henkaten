@@ -245,10 +245,21 @@ class EmployeeController extends Controller
             $attendance = Attendance::where('employee_active_id', $activeEmployee->id)
                 ->where('created_at', 'LIKE', $currentDate . '%')
                 ->first();
-            if ($attendance) {
+            if ($attendance->time_out == null) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Karyawan npk ' . $npk . ' sudah absen!'
+                ]);
+            }else{
+                $attendance->time_out = null;
+                $attendance->save();
+
+                DB::commit();
+
+                return response()->json([
+                    'status' => 'success',
+                    'time' => Carbon::now()->format('H:i:s'),
+                    'message' => 'Data absen karyawan sudah tersimpan!'
                 ]);
             }
         }
@@ -257,14 +268,26 @@ class EmployeeController extends Controller
             $picAttendance = PicAttendance::where('pic_active_id', $activePic->id)
                 ->where('created_at', 'LIKE', $currentDate . '%')
                 ->first();
-            if ($picAttendance) {
+
+            if ($picAttendance->time_out == null) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Karyawan npk ' . $npk . ' sudah absen!'
                 ]);
+            }else{
+                $picAttendance->time_out = null;
+                $picAttendance->save();
+
+                DB::commit();
+
+                return response()->json([
+                    'status' => 'success',
+                    'time' => Carbon::now()->format('H:i:s'),
+                    'message' => 'Data absen karyawan sudah tersimpan!'
+                ]);
             }
         }
-
+        
         // Insert into the appropriate table
         try {
             DB::beginTransaction();
@@ -303,14 +326,16 @@ class EmployeeController extends Controller
     public function rollbackAttendance(Request $request)
     {
         $attendanceId = $request->id;
+        $status = $request->status;
 
         try {
             DB::beginTransaction();
 
-            // Check if attendance exists
+            // Ambil data attendance dan pic_attendance
             $attendance = Attendance::find($attendanceId);
             $picAttendance = PicAttendance::find($attendanceId);
 
+            // Jika keduanya tidak ditemukan, kembalikan error
             if (!$attendance && !$picAttendance) {
                 return response()->json([
                     'status' => 'error',
@@ -318,23 +343,35 @@ class EmployeeController extends Controller
                 ], 404);
             }
 
-            // Check if pic_attendance exists
-            if (!$picAttendance && $attendance) {
-                 // Delete records
-                $attendance->delete();
-            }else if(!is_null($picAttendance) && !is_null($attendance)){
-                // Delete records
-                $attendance->delete();
-                $picAttendance->delete();
-            }else if($picAttendance && !$attendance){
-                // Delete records
-                $picAttendance->delete();
+            // Jika status adalah "Pulang", update time_out
+            if (strtolower($status) === 'pulang') {
+                if ($attendance) {
+                    $attendance->update([
+                        'time_out' => now()
+                    ]);
+                }
+
+                if ($picAttendance) {
+                    $picAttendance->update([
+                        'time_out' => now()
+                    ]);
+                }
+
+            } else {
+                // Jika bukan pulang, lakukan penghapusan seperti sebelumnya
+                if ($attendance) {
+                    $attendance->delete();
+                }
+
+                if ($picAttendance) {
+                    $picAttendance->delete();
+                }
             }
 
             DB::commit();
             return response()->json([
                 'status' => 'success',
-                'message' => 'Data absen karyawan sudah terhapus!'
+                'message' => $status === 'Pulang' ? 'Jam pulang berhasil dicatat!' : 'Data absen karyawan sudah terhapus!'
             ]);
         } catch (\Throwable $th) {
             DB::rollback();
@@ -344,6 +381,7 @@ class EmployeeController extends Controller
             ]);
         }
     }
+
 
     public function employeeStore(Request $request)
     {
