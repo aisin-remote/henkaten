@@ -240,82 +240,73 @@ class EmployeeController extends Controller
             ]);
         }
 
-        // Check if already marked attendance in the respective table
-        if ($activeEmployee) {
-            $attendance = Attendance::where('employee_active_id', $activeEmployee->id)
-                ->where('created_at', 'LIKE', $currentDate . '%')
-                ->first();
-            if ($attendance) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Karyawan npk ' . $npk . ' sudah absen!'
-                ]);
-            }else{
-                $attendance->time_out = null;
-                $attendance->save();
-
-                DB::commit();
-
-                return response()->json([
-                    'status' => 'success',
-                    'time' => Carbon::now()->format('H:i:s'),
-                    'message' => 'Data absen karyawan sudah tersimpan!'
-                ]);
-            }
-        }
-
-        if ($activePic) {
-            $picAttendance = PicAttendance::where('pic_active_id', $activePic->id)
-                ->where('created_at', 'LIKE', $currentDate . '%')
-                ->first();
-
-            if ($picAttendance) {
-                if($picAttendance->time_out == null){
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'Karyawan npk ' . $npk . ' sudah absen!'
-                    ]);
-                }
-            }else{
-                $picAttendance->time_out = null;
-                $picAttendance->save();
-
-                DB::commit();
-
-                return response()->json([
-                    'status' => 'success',
-                    'time' => Carbon::now()->format('H:i:s'),
-                    'message' => 'Data absen karyawan sudah tersimpan!'
-                ]);
-            }
-        }
-        
         // Insert into the appropriate table
         try {
             DB::beginTransaction();
 
+            // Check if already marked attendance in the respective table
             if ($activeEmployee) {
-                // Insert into Attendance table
-                Attendance::create([
-                    'employee_active_id' => $activeEmployee->id,
-                    'time_in' => Carbon::now()->format('H:i:s'),
-                ]);
+                $attendance = Attendance::where('employee_active_id', $activeEmployee->id)
+                    ->where('created_at', 'LIKE', $currentDate . '%')
+                    ->first();
+                if ($attendance) {
+                    if($attendance->time_out == null){     
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Karyawan npk ' . $npk . ' sudah absen!'
+                        ]);
+                    }else{
+                        $attendance->time_out = null;
+                        $attendance->save();
+                    }
+                }else{
+                    Attendance::create([
+                        'employee_active_id' => $activeEmployee->id,
+                        'time_in' => Carbon::now()->format('H:i:s'),
+                    ]);
+
+                    DB::commit();
+
+                    return response()->json([
+                        'status' => 'success',
+                        'time' => Carbon::now()->format('H:i:s'),
+                        'message' => 'Data absen karyawan sudah tersimpan!'
+                    ]);
+                }
             }
 
             if ($activePic) {
-                // Insert into PicAttendance table
-                PicAttendance::create([
-                    'pic_active_id' => $activePic->id,
-                    'time_in' => Carbon::now()->format('H:i:s'),
-                ]);
-            }
+                $picAttendance = PicAttendance::where('pic_active_id', $activePic->id)
+                    ->where('created_at', 'LIKE', $currentDate . '%')
+                    ->first();
 
-            DB::commit();
-            return response()->json([
-                'status' => 'success',
-                'time' => Carbon::now()->format('H:i:s'),
-                'message' => 'Data absen karyawan sudah tersimpan!'
-            ]);
+                if ($picAttendance) {
+                    if($picAttendance->time_out == null){
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Karyawan npk ' . $npk . ' sudah absen!'
+                        ]);
+                    }else{
+                        $picAttendance->time_out = null;
+                        $picAttendance->save();
+                    }
+                }else{
+                // Insert into PicAttendance table
+                    PicAttendance::create([
+                        'pic_active_id' => $activePic->id,
+                        'time_in' => Carbon::now()->format('H:i:s'),
+                    ]);
+
+                    DB::commit();
+
+                    return response()->json([
+                        'status' => 'success',
+                        'time' => Carbon::now()->format('H:i:s'),
+                        'message' => 'Data absen karyawan sudah tersimpan!'
+                    ]);
+                }
+            }
+            
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
