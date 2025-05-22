@@ -245,7 +245,7 @@ class EmployeeController extends Controller
             $attendance = Attendance::where('employee_active_id', $activeEmployee->id)
                 ->where('created_at', 'LIKE', $currentDate . '%')
                 ->first();
-            if ($attendance->time_out == null) {
+            if ($attendance && $attendance->time_out == null) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Karyawan npk ' . $npk . ' sudah absen!'
@@ -269,7 +269,7 @@ class EmployeeController extends Controller
                 ->where('created_at', 'LIKE', $currentDate . '%')
                 ->first();
 
-            if ($picAttendance->time_out == null) {
+            if ($picAttendance && $picAttendance->time_out == null) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Karyawan npk ' . $npk . ' sudah absen!'
