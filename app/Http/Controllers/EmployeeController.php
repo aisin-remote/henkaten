@@ -246,7 +246,7 @@ class EmployeeController extends Controller
                 ->where('created_at', 'LIKE', $currentDate . '%')
                 ->first();
 
-                dd('test');
+                dd($attendance);
             if ($attendance && $attendance->time_out == null) {
                 return response()->json([
                     'status' => 'error',
