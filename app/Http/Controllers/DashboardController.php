@@ -224,16 +224,17 @@ class DashboardController extends Controller
         // get henkaten where status still active
         $activeProblems = Henkaten::with(['shift', 'line.origin'])
             ->where(function ($query) use ($empOrigin, $currentTime, $current_date) {
-                    $query->whereHas('line', function ($q) use ($empOrigin) {
-                        $q->where('origin_id', $empOrigin);
-                    })
-                    ->whereHas('shift', function ($q) use ($currentTime) {
-                        $q->where(function ($subQuery) use ($currentTime) {
-                            $subQuery->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
-                        });
-                    })
-                    ->where('date', 'LIKE', $current_date . '%')
-                    ->where('status', 'henkaten');
+                $query->whereHas('line', function ($q) use ($empOrigin) {
+                    $q->where('origin_id', $empOrigin);
+                })
+                ->whereHas('shift', function ($q) use ($currentTime) {
+                    $q->where(function ($subQuery) use ($currentTime) {
+                        $subQuery->where('time_start', '<=', $currentTime)
+                                ->where('time_end', '>=', $currentTime);
+                    });
+                })
+                ->where('date', 'LIKE', $current_date . '%')
+                ->where('status', 'henkaten');
             })
             ->orWhere(function ($query) use ($empOrigin) {
                 $query->whereHas('line', function ($q) {
@@ -241,22 +242,29 @@ class DashboardController extends Controller
                 })
                 ->where('is_done', '0')
                 ->where(function ($subQuery) use ($empOrigin) {
-                    // Additional condition to match empOrigin if needed
                     $subQuery->whereHas('line', function ($q) use ($empOrigin) {
                         $q->where('origin_id', $empOrigin);
                     });
                 });
             })
-            // Handle status = stop for non-ELC origin_id
-            ->orWhere(function ($query) use ($empOrigin) {
-                $query->where('status', 'stop')
-                    ->where('is_done', '0')
-                    ->whereHas('line', function ($q) use ($empOrigin) {
-                        $q->where('origin_id', $empOrigin);
-                    });
-            })
             ->take(2)
             ->get();
+
+        // Ambil hanya 1 data terakhir untuk status = stop & is_done = 1
+        $lastStopDone = Henkaten::with(['shift', 'line.origin'])
+            ->where('status', 'stop')
+            ->where('is_done', '1')
+            ->whereHas('line', function ($q) use ($empOrigin) {
+                $q->where('origin_id', $empOrigin);
+            })
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        // Gabungkan jika ada
+        if ($lastStopDone) {
+            $activeProblems->prepend($lastStopDone);
+            $activeProblems = $activeProblems->unique('id')->take(2);
+        }
 
         // in this page we will get all line status
         return view('pages.website.dashboard', [
