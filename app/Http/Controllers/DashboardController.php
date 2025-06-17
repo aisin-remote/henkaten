@@ -222,6 +222,7 @@ class DashboardController extends Controller
                     ->get();
 
         // get henkaten where status still active
+        // Query utama (tidak diubah)
         $activeProblems = Henkaten::with(['shift', 'line.origin'])
             ->where(function ($query) use ($empOrigin, $currentTime, $current_date) {
                 $query->whereHas('line', function ($q) use ($empOrigin) {
@@ -250,22 +251,20 @@ class DashboardController extends Controller
             ->take(2)
             ->get();
 
-        // Ambil hanya 1 data terakhir untuk status = stop & is_done = 1
-        $lastStopDone = Henkaten::with(['shift', 'line.origin'])
+        // Ambil 2 data terakhir dari status stop dan sudah done, hanya untuk hari ini
+        $latestStopDone = Henkaten::with(['shift', 'line.origin'])
             ->where('status', 'stop')
             ->where('is_done', '1')
-            ->whereDate('date', $current_date) // hanya untuk hari ini
+            ->whereDate('date', $current_date)
             ->whereHas('line', function ($q) use ($empOrigin) {
                 $q->where('origin_id', $empOrigin);
             })
             ->orderBy('created_at', 'desc')
-            ->first();
+            ->take(2)
+            ->get();
 
-        // Gabungkan jika ada
-        if ($lastStopDone) {
-            $activeProblems->prepend($lastStopDone);
-            $activeProblems = $activeProblems->unique('id')->take(2);
-        }
+        // Gabungkan dan pastikan tidak duplikat
+        $activeProblems = $latestStopDone->merge($activeProblems)->unique('id')->take(2);
 
         // in this page we will get all line status
         return view('pages.website.dashboard', [
