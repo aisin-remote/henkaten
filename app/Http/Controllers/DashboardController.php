@@ -222,7 +222,6 @@ class DashboardController extends Controller
                     ->get();
 
         // get henkaten where status still active
-        // Query utama (tidak diubah)
         $activeProblems = Henkaten::with(['shift', 'line.origin'])
             ->where(function ($query) use ($empOrigin, $currentTime, $current_date) {
                 $query->whereHas('line', function ($q) use ($empOrigin) {
@@ -247,6 +246,14 @@ class DashboardController extends Controller
                         $q->where('origin_id', $empOrigin);
                     });
                 });
+            })
+            ->orWhere(function ($query) use ($empOrigin, $current_date) {
+                $query->where('status', 'stop')
+                    ->where('is_done', '0')
+                    ->whereDate('date', $current_date) // opsional: hanya hari ini
+                    ->whereHas('line', function ($q) use ($empOrigin) {
+                        $q->where('origin_id', $empOrigin);
+                    });
             })
             ->take(2)
             ->get();
