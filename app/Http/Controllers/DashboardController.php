@@ -254,6 +254,7 @@ class DashboardController extends Controller
         $lastStopDone = Henkaten::with(['shift', 'line.origin'])
             ->where('status', 'stop')
             ->where('is_done', '1')
+            ->whereDate('date', $current_date) // hanya untuk hari ini
             ->whereHas('line', function ($q) use ($empOrigin) {
                 $q->where('origin_id', $empOrigin);
             })
