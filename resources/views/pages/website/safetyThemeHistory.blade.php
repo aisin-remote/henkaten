@@ -48,7 +48,10 @@
                         @foreach ($safetyThemeHistories as $safetyThemeHistory)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td id="date">{{ \Carbon\Carbon::parse($safetyThemeHistory->date)->format('d') }}</td>
+                                <td>
+                                    {{ \Carbon\Carbon::parse($safetyThemeHistory->date)->format('d') }}
+                                    {{ \Carbon\Carbon::now()->format('F Y') }}
+                                </td>
                                 <td>
                                     {{ $safetyThemeHistory->item_no_1 }}
                                 </td>
