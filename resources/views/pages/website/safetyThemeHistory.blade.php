@@ -27,7 +27,7 @@
                 <div class="row">
                     <div class="col-12">
                         <h4 class="fw-4">
-                            Safet Theme History
+                            Safety Theme History
                             <h6 class="text-muted">
                                 {{ Carbon\Carbon::now()->format('l, j F Y') }}
                             </h6>
@@ -48,9 +48,9 @@
                         @foreach ($safetyThemeHistories as $safetyThemeHistory)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td id="date">{{ $safetyThemeHistory->active_date }}</td>
+                                <td id="date">{{ \Carbon\Carbon::parse($safetyThemeHistory->date)->format('d') }}</td>
                                 <td>
-                                    {{ $safetyThemeHistory->custom_theme ?: ($safetyThemeHistory->theme ? $safetyThemeHistory->theme->name : '-') }}
+                                    {{ $safetyThemeHistory->item_no_1 }}
                                 </td>
                             </tr>
                         @endforeach

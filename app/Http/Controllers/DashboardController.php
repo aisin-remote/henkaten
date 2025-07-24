@@ -1001,9 +1001,7 @@ class DashboardController extends Controller
             $origins = Origin::where('id', $empOrigin)->first();
         }
 
-        $safetyThemeHistory = Pivot::where('origin_id', $empOrigin)
-                        ->orderBy('created_at', 'desc')
-                        ->get();
+        $safetyThemeHistory = Yell::all();
                         
         return view('pages.website.safetyThemeHistory', [
             'safetyThemeHistories' => $safetyThemeHistory,
