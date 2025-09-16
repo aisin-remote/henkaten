@@ -30,6 +30,10 @@ use App\Http\Controllers\SkillMatrixController;
 Route::get('/auto-update', [HenkatenController::class, 'autoUpdate'])->name('auto-update');
 Route::get('/auto-update-status', [HenkatenController::class, 'autoUpdateStatus'])->name('auto-update-status');
 
+Route::get('/admin', function () {
+    return view('pages.admin.index');
+});
+
 Route::middleware(['guest'])->group(function () {
     Route::get('/', function () {
         return view('pages.auth.login');

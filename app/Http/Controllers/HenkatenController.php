@@ -118,11 +118,11 @@ class HenkatenController extends Controller
         $docName = null;
         
         $originToGroupIdMap = [
-            env('ORIGIN_MA') => env('GROUP_ID_MA'),
-            env('ORIGIN_DC') => env('GROUP_ID_DC'),
-            env('ORIGIN_ELC') => env('GROUP_ID_ELC'),
-            env('ORIGIN_SEAT') => env('GROUP_ID_BODY'),
-            env('ORIGIN_HANDLE') => env('GROUP_ID_BODY'),
+            env('ORIGIN_MA') => env('GROUP_ID_MA') . '@g.us',
+            env('ORIGIN_DC') => env('GROUP_ID_DC') . '@g.us',
+            env('ORIGIN_ELC') => env('GROUP_ID_ELC') . '@g.us',
+            env('ORIGIN_SEAT') => env('GROUP_ID_BODY') . '@g.us',
+            env('ORIGIN_HANDLE') => env('GROUP_ID_BODY') . '@g.us',
         ];
         
         // Use the origin to get the group ID directly from the map, if available
@@ -275,9 +275,17 @@ class HenkatenController extends Controller
             $pic = auth()->user()->name;
 
             // send WA notif
-            $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
+            $token = '793D30579A77D4A0E12648872BFBB085';
             $phone = $groupId;
-            $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$line->name*``` %cLINE STATUS   : ```*$status*``` %c4M            : $request->type %cCategory      : $request->category %cABNORMALITY   : $request->abnormality %cTIME          : $date %cPIC           : $pic %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+            $message = "```---- ``` *AIIA HENKATEN ALERT* ``` ----\n"
+                . "LINE          : ``` *$line->name* ```\n"
+                . "LINE STATUS   : ``` *$status* ```\n"
+                . "4M            : $request->type\n"
+                . "Category      : $request->category\n"
+                . "ABNORMALITY   : $request->abnormality\n"
+                . "TIME          : $date\n"
+                . "PIC           : $pic\n"
+                . "------------------------------```";
             
             // dispatch job
             SendWhatsAppNotification::dispatch($message, $token, $phone);
@@ -394,11 +402,11 @@ class HenkatenController extends Controller
         $docName = null;
 
         $originToGroupIdMap = [
-            env('ORIGIN_MA') => env('GROUP_ID_MA'),
-            env('ORIGIN_DC') => env('GROUP_ID_DC'),
-            env('ORIGIN_ELC') => env('GROUP_ID_ELC'),
-            env('ORIGIN_SEAT') => env('GROUP_ID_BODY'),
-            env('ORIGIN_HANDLE') => env('GROUP_ID_BODY'),
+            env('ORIGIN_MA') => env('GROUP_ID_MA') . '@g.us',
+            env('ORIGIN_DC') => env('GROUP_ID_DC') . '@g.us',
+            env('ORIGIN_ELC') => env('GROUP_ID_ELC') . '@g.us',
+            env('ORIGIN_SEAT') => env('GROUP_ID_BODY') . '@g.us',
+            env('ORIGIN_HANDLE') => env('GROUP_ID_BODY') . '@g.us',
         ];
         
         // Use the origin to get the group ID directly from the map, if available
@@ -644,9 +652,29 @@ class HenkatenController extends Controller
                                 'status_' . $request->{"4M"} => $otherStat->status,
                             ]);
 
-                            $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
+                            $token = '793D30579A77D4A0E12648872BFBB085';
                             $phone = $groupId;
-                            $message = sprintf("```------ ```*AIIA HENKATEN ALERT*``` ------ %c%cLINE          : ```*$lineName*``` %cLINE STATUS   : ```*$status*``` %c4M            : $type %cCategory      : $category %cABNORMALITY   : $abnormality %cTIME          : $time %cPIC           : $firstPic %c%c         ```*TROUBLESHOOT*```    %c%cTROUBLESHOOT       : $troubleshoot %cTIME               : $troubleshootTime %cRESULT CHECK       : $resultCheck %cINSPECTION REPORT  : $inspectionCheck %cPART               : $part %cBEFORE TREATMENT   : $beforeTreatment %cAFTER TREATMENT    : $afterTreatment   %cDONE BY            : $doneBy %c%c------ BY AISIN BISA ------```", 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+                            $message = "```------ ``` *AIIA HENKATEN ALERT* ``` ------\n"
+                                . "LINE          : ``` *$lineName* ```\n"
+                                . "LINE STATUS   : ``` *$status* ```\n"
+                                . "4M            : $type\n"
+                                . "Category      : $category\n"
+                                . "ABNORMALITY   : $abnormality\n"
+                                . "TIME          : $time\n"
+                                . "PIC           : $firstPic\n"
+                                . "\n"
+                                . "```*TROUBLESHOOT*```\n"
+                                . "\n"
+                                . "TROUBLESHOOT       : $troubleshoot\n"
+                                . "TIME               : $troubleshootTime\n"
+                                . "RESULT CHECK       : $resultCheck\n"
+                                . "INSPECTION REPORT  : $inspectionCheck\n"
+                                . "PART               : $part\n"
+                                . "BEFORE TREATMENT   : $beforeTreatment\n"
+                                . "AFTER TREATMENT    : $afterTreatment\n"
+                                . "DONE BY            : $doneBy\n"
+                                . "\n"
+                                . "------ BY AISIN BISA ------```";
                             $curl = curl_init();
                             curl_setopt_array($curl, [
                                 CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
@@ -657,7 +685,7 @@ class HenkatenController extends Controller
                                 CURLOPT_FOLLOWLOCATION => true,
                                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                                 CURLOPT_CUSTOMREQUEST => 'POST',
-                                CURLOPT_POSTFIELDS => 'token=' . $token . '&number=' . $phone . '&message=' . $message,
+                                CURLOPT_POSTFIELDS => 'api_key=' . $token . '&phone=' . $phone . '&message=' . $message,
                             ]);
 
                             $response = curl_exec($curl);
@@ -699,11 +727,11 @@ class HenkatenController extends Controller
         }
 
         $originToGroupIdMap = [
-            env('ORIGIN_MA') => env('GROUP_ID_MA'),
-            env('ORIGIN_DC') => env('GROUP_ID_DC'),
-            env('ORIGIN_ELC') => env('GROUP_ID_ELC'),
-            env('ORIGIN_SEAT') => env('GROUP_ID_BODY'),
-            env('ORIGIN_HANDLE') => env('GROUP_ID_BODY'),
+            env('ORIGIN_MA') => env('GROUP_ID_MA') . '@g.us',
+            env('ORIGIN_DC') => env('GROUP_ID_DC') . '@g.us',
+            env('ORIGIN_ELC') => env('GROUP_ID_ELC') . '@g.us',
+            env('ORIGIN_SEAT') => env('GROUP_ID_BODY') . '@g.us',
+            env('ORIGIN_HANDLE') => env('GROUP_ID_BODY') . '@g.us',
         ];
         
         // Use the origin to get the group ID directly from the map, if available
@@ -786,12 +814,31 @@ class HenkatenController extends Controller
                 ]);
 
                 // send whatsapp notification
-                $token = 'v2n49drKeWNoRDN4jgqcdsR8a6bcochcmk6YphL6vLcCpRZdV1';
+                $token = '793D30579A77D4A0E12648872BFBB085';
                 $phone = $groupId;
-                $message = sprintf(
-                    "```------ ```*AIIA HENKATEN ALERT*``` ------ %s%sLINE          : ```*%s*``` %sLINE STATUS   : ```*%s*``` %s4M            : %s %sCategory      : %s %sABNORMALITY   : %s %sTIME          : %s %sPIC           : %s %s%s         ```*TROUBLESHOOT*```    %s%sTROUBLESHOOT       : %s %sTIME               : %s %sRESULT CHECK       : %s %sPIC SAFETY         : %s %sINSPECTION REPORT  : %s %sPART               : %s %sBEFORE TREATMENT   : %s %sAFTER TREATMENT    : %s %sPIC QUALITY        : %s   %sDONE BY            : %s %s%s------ BY AISIN BISA ------```",
-                    "\n", "\n", $lineName, "\n", $status, "\n", $type, "\n", $category, "\n", $abnormality, "\n", $time, "\n", $pic, "\n", "\n", "\n", "\n", $troubleshoot, "\n", $troubleshootTime, "\n", $resultCheck, "\n", $picSafety, "\n", $inspectionCheck, "\n", $part, "\n", $beforeTreatment, "\n", $afterTreatment, "\n", $picQuality, "\n", $doneBy, "\n", "\n"
-                );     
+                $message = "```------ ``` *AIIA HENKATEN ALERT* ``` ------\n"
+                    . "LINE          : ``` *$lineName* ```\n"
+                    . "LINE STATUS   : ``` *$status* ```\n"
+                    . "4M            : $type\n"
+                    . "Category      : $category\n"
+                    . "ABNORMALITY   : $abnormality\n"
+                    . "TIME          : $time\n"
+                    . "PIC           : $pic\n"
+                    . "\n"
+                    . "```*TROUBLESHOOT*```\n"
+                    . "\n"
+                    . "TROUBLESHOOT       : $troubleshoot\n"
+                    . "TIME               : $troubleshootTime\n"
+                    . "RESULT CHECK       : $resultCheck\n"
+                    . "PIC SAFETY         : $picSafety\n"
+                    . "INSPECTION REPORT  : $inspectionCheck\n"
+                    . "PART               : $part\n"
+                    . "BEFORE TREATMENT   : $beforeTreatment\n"
+                    . "AFTER TREATMENT    : $afterTreatment\n"
+                    . "PIC QUALITY        : $picQuality\n"
+                    . "DONE BY            : $doneBy\n"
+                    . "\n"
+                    . "------ BY AISIN BISA ------```";
                 
                  // dispatch job
                 SendWhatsAppNotification::dispatch($message, $token, $phone);

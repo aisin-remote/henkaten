@@ -37,7 +37,7 @@ class SendWhatsAppNotification implements ShouldQueue
     {
         $curl = curl_init();
         curl_setopt_array($curl, [
-            CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
+            CURLOPT_URL => 'https://app.fastwa.com/api/v1/4D9AF7CE224B91C9CE14FFDDB55D248D/send_text',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -45,7 +45,7 @@ class SendWhatsAppNotification implements ShouldQueue
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => 'token=' . $this->token . '&number=' . $this->phone . '&message=' . $this->message,
+            CURLOPT_POSTFIELDS => 'api_key=' . $this->token . '&phone=' . $this->phone . '&message=' . $this->message,
         ]);
 
         curl_exec($curl);
