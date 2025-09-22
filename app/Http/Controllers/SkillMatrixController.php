@@ -16,28 +16,32 @@ class SkillMatrixController extends Controller
     
     public function handleFormSubmission(Request $request)
     {
-        // Validate the form data
+        // 1) Validasi: pastikan list & tiap file valid
         $request->validate([
-            'repeater-group.*.name' => 'required|mimes:pdf,xls,xlsx', // Adjust the file types and size as needed
+            'repeater-group'            => 'required|array|min:1',
+            'repeater-group.*.name'     => 'required|file|mimes:pdf,xls,xlsx,csv|max:20480',
         ]);
 
-        $repeaterData = $request->file('repeater-group');
+        // 2) Ambil semua file secara aman (nested & hyphen friendly)
+        $allFiles = $request->allFiles();
+        $rows = $allFiles['repeater-group'] ?? []; // array: [ ['name' => UploadedFile], ... ]
 
-        foreach ($repeaterData as $fileData) {
-            $file = $fileData['name'];
-            $originalName = $file->getClientOriginalName();
+        // 3) Simpan pakai Storage disk 'public'
+        foreach ($rows as $row) {
+            $file = $row['name'] ?? null;
+            if (!$file || !$file->isValid()) {
+                continue; // atau throw jika mau strict
+            }
 
-            $fileName = $originalName;
+            // Simpan ke storage/app/public/skill_matrix
+            $path = $file->store('skill_matrix', 'public'); // butuh `php artisan storage:link` saat setup pertama
 
-            // Store or process each file as needed
-            $file->move(public_path('uploads/skill_matrix'), $fileName);
-
-            // Create a new Opl instance
+            // Simpan ke DB
             $skillMatrix = new SkillMatrix();
-            $skillMatrix->file = $fileName;
+            $skillMatrix->file = $path; // simpan PATH, bukan cuma nama file
             $skillMatrix->save();
         }
 
-        return redirect()->back()->with('success', 'Form submitted successfully!');
+        return back()->with('success', 'Form submitted successfully!');
     }
 }
