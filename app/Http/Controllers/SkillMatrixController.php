@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\SkillMatrix;
 use Illuminate\Http\Request;
 
@@ -16,32 +17,45 @@ class SkillMatrixController extends Controller
     
     public function handleFormSubmission(Request $request)
     {
-        // 1) Validasi: pastikan list & tiap file valid
-        $request->validate([
-            'repeater-group'            => 'required|array|min:1',
-            'repeater-group.*.name'     => 'required|file|mimes:pdf,xls,xlsx,csv|max:20480',
-        ]);
+        try {
+            // 1) Validasi
+            $request->validate([
+                'repeater-group'            => 'required|array|min:1',
+                'repeater-group.*.name'     => 'required|file|mimes:pdf,xls,xlsx,csv|max:20480',
+            ]);
 
-        // 2) Ambil semua file secara aman (nested & hyphen friendly)
-        $allFiles = $request->allFiles();
-        $rows = $allFiles['repeater-group'] ?? []; // array: [ ['name' => UploadedFile], ... ]
+            // 2) Ambil semua file
+            $allFiles = $request->allFiles();
+            $rows = $allFiles['repeater-group'] ?? [];
 
-        // 3) Simpan pakai Storage disk 'public'
-        foreach ($rows as $row) {
-            $file = $row['name'] ?? null;
-            if (!$file || !$file->isValid()) {
-                continue; // atau throw jika mau strict
+            if (empty($rows)) {
+                throw new Exception('Tidak ada file yang diterima.');
             }
 
-            // Simpan ke storage/app/public/skill_matrix
-            $path = $file->store('skill_matrix', 'public'); // butuh `php artisan storage:link` saat setup pertama
+            // 3) Loop simpan
+            foreach ($rows as $row) {
+                $file = $row['name'] ?? null;
+                if (!$file || !$file->isValid()) {
+                    throw new Exception('File tidak valid.');
+                }
 
-            // Simpan ke DB
-            $skillMatrix = new SkillMatrix();
-            $skillMatrix->file = $path; // simpan PATH, bukan cuma nama file
-            $skillMatrix->save();
+                // Simpan file
+                $path = $file->store('skill_matrix', 'public');
+
+                // Simpan ke DB
+                $skillMatrix = new SkillMatrix();
+                $skillMatrix->file = $path;
+                $skillMatrix->save();
+            }
+
+            return back()->with('success', 'Form submitted successfully!');
+        } catch (Exception $e) {
+            // Log error supaya bisa dicek di storage/logs/laravel.log
+            \Log::error('SkillMatrix submission error: '.$e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return back()->with('error', 'Terjadi kesalahan: '.$e->getMessage());
         }
-
-        return back()->with('success', 'Form submitted successfully!');
     }
 }
