@@ -1102,7 +1102,10 @@ class EmployeeController extends Controller
 
             // delete pic
             PicActive::where('shift_id', $request->shift)->where('line_id', $request->line)->delete();
-
+            
+            // delete MH
+            MhActive::where('shift_id', $request->shift)->where('line_id', $request->line)->delete();
+            
             DB::commit();
             return redirect()->to(url()->previous())->with('success', 'Planning deleted successfully!');
         } catch (\Throwable $th) {
