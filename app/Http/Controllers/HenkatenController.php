@@ -383,32 +383,27 @@ class HenkatenController extends Controller
 
     public function troubleshootHenkaten(Request $request)
     {
-        // Validate the request
-        // $request->validate([
-        //     'photo' => 'required|file|mimes:jpg,jpeg,png|max:10240', // 10 MB max
-        // ]);
-        
         // get origin id
-        if(json_decode(auth()->user()->origin_id)){
-            if(count(json_decode(auth()->user()->origin_id)) == 1){
+        if (json_decode(auth()->user()->origin_id)) {
+            if (count(json_decode(auth()->user()->origin_id)) == 1) {
                 $empOrigin = json_decode(auth()->user()->origin_id)[0];
-            }else{
+            } else {
                 $empOrigin = $request->origin;
             }
-        }else{
+        } else {
             $empOrigin = $request->origin ? $request->origin : auth()->user()->origin_id;
         }
-        
+
         $docName = null;
 
         $originToGroupIdMap = [
-            env('ORIGIN_MA') => env('GROUP_ID_MA') . '@g.us',
-            env('ORIGIN_DC') => env('GROUP_ID_DC') . '@g.us',
-            env('ORIGIN_ELC') => env('GROUP_ID_ELC') . '@g.us',
-            env('ORIGIN_SEAT') => env('GROUP_ID_BODY') . '@g.us',
-            env('ORIGIN_HANDLE') => env('GROUP_ID_BODY') . '@g.us',
+            env('ORIGIN_MA')      => env('GROUP_ID_MA') . '@g.us',
+            env('ORIGIN_DC')      => env('GROUP_ID_DC') . '@g.us',
+            env('ORIGIN_ELC')     => env('GROUP_ID_ELC') . '@g.us',
+            env('ORIGIN_SEAT')    => env('GROUP_ID_BODY') . '@g.us',
+            env('ORIGIN_HANDLE')  => env('GROUP_ID_BODY') . '@g.us',
         ];
-        
+
         // Use the origin to get the group ID directly from the map, if available
         $groupId = $originToGroupIdMap[$empOrigin] ?? null;
 
@@ -422,14 +417,15 @@ class HenkatenController extends Controller
             ->where('active_date', Carbon::parse($henkatenInfo->date)->format('Y-m-d'))
             ->where('origin_id', $empOrigin)
             ->first();
-            
+
         $firstPic = $firstPic && $firstPic->firstPic ? $firstPic->firstPic->name : 'unknown';
 
         $statusMappings = [
             'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
-            'stop' => ['priority' => 2, 'overall' => 'stop'],
+            'stop'     => ['priority' => 2, 'overall' => 'stop'],
         ];
 
+        // basic validation manual
         if (!$request->part) {
             return redirect()
                 ->back()
@@ -460,8 +456,10 @@ class HenkatenController extends Controller
                 ->with('error', 'Belum memilih PIC penanganan!');
         }
 
-        $employeeAfter = $request->after;
-        $picAfter = $request->picAfter;
+        // AMAN-kan variabel yang bisa null
+        $employeeAfter = (array) $request->after;   // <- selalu array meskipun kosong
+        $employeeBefore = (array) $request->before; // <- sama
+        $picAfter  = $request->picAfter;
         $picBefore = $request->picBefore;
 
         try {
@@ -471,158 +469,177 @@ class HenkatenController extends Controller
             $existingRecord = Troubleshoot::where('henkaten_id', $request->henkaten_id)->first();
 
             // storing image
-            if ($request->has('photo')) {
+            if ($request->hasFile('photo')) {
                 $doc = $request->file('photo');
                 $docName = time() . '-' . $doc->getClientOriginalName();
                 $doc->move(public_path('uploads/ts_henkaten'), $docName);
             }
-            
+
             if ($request->{"4M"} == 'man') {
-                // count same value of input
-                $nameCounts = array_count_values($employeeAfter);
 
-                // Check for duplicates
-                $duplicates = [];
-                foreach ($nameCounts as $value => $count) {
-                    if ($count > 1 && $value != 0) {
-                        $duplicates[] = $value;
+                /**
+                 * ===========================
+                 *  CEK DUPLIKAT EMPLOYEE
+                 * ===========================
+                 */
+
+                // filter dulu yang bukan 0 / kosong
+                $filteredAfter = array_filter($employeeAfter, function ($v) {
+                    return $v !== '0' && $v !== 0 && $v !== null && $v !== '';
+                });
+
+                if (!empty($filteredAfter)) {
+                    $nameCounts = array_count_values($filteredAfter);
+
+                    // Check for duplicates
+                    $duplicates = [];
+                    foreach ($nameCounts as $value => $count) {
+                        if ($count > 1) {
+                            $duplicates[] = $value;
+                        }
                     }
-                }
 
-                // Check if there are duplicates
-                if (!empty($duplicates)) {
-                    return redirect()
-                        ->back()
-                        ->with('error', 'Employee cant be same!');
+                    if (!empty($duplicates)) {
+                        return redirect()
+                            ->back()
+                            ->with('error', 'Employee cant be same!');
+                    }
                 }
 
                 if (!$existingRecord) {
                     $troubleshootData = [
-                        'henkaten_id' => $request->henkaten_id,
-                        'troubleshoot' => $request->troubleshoot,
-                        'result_check' => $request->resultCheck,
-                        'pic_safety' => $request->picSafety,
+                        'henkaten_id'       => $request->henkaten_id,
+                        'troubleshoot'      => $request->troubleshoot,
+                        'result_check'      => $request->resultCheck,
+                        'pic_safety'        => $request->picSafety,
                         'inspection_report' => $request->inspection,
-                        'part' => $request->part,
-                        'before_treatment' => $request->beforeTreatment,
-                        'after_treatment' => $request->afterTreatment,
-                        'pic_quality' => $request->picQuality,
-                        'done_by' => $request->doneBy,
-                        'photo'=> $docName
+                        'part'              => $request->part,
+                        'before_treatment'  => $request->beforeTreatment,
+                        'after_treatment'   => $request->afterTreatment,
+                        'pic_quality'       => $request->picQuality,
+                        'done_by'           => $request->doneBy,
+                        'photo'             => $docName,
                     ];
 
-                    for ($i = 0; $i < count($request->after); $i++) {
-                        if ($request->after[$i] !== '0') {
-                            if ($picAfter !== '0'){
+                    // loop mapping before-after
+                    foreach ($employeeAfter as $idx => $afterId) {
+                        if ($afterId !== '0' && $afterId !== 0 && $afterId !== null && $afterId !== '') {
+                            if ($picAfter !== '0') {
                                 $troubleshootData['pic_before_id'] = $picBefore;
-                                $troubleshootData['pic_after_id'] = $picAfter;
+                                $troubleshootData['pic_after_id']  = $picAfter;
                             }
-                            $troubleshootData['employee_before_id'] = $request->before[$i];
-                            $troubleshootData['employee_after_id'] = $request->after[$i];
-                            
+
+                            $troubleshootData['employee_before_id'] = $employeeBefore[$idx] ?? null;
+                            $troubleshootData['employee_after_id']  = $afterId;
+
                             Troubleshoot::create($troubleshootData);
                         }
                     }
-                    
-                    // Insert Troubleshoot records with null employee_before_id and employee_after_id if needed
+
+                    // Insert Troubleshoot records dengan PIC saja (tanpa employee_before/after) jika perlu
                     if ($picAfter !== '0') {
-                        $troubleshootData['pic_before_id'] = $picBefore;
-                        $troubleshootData['pic_after_id'] = $picAfter;
+                        $troubleshootData['pic_before_id']      = $picBefore;
+                        $troubleshootData['pic_after_id']       = $picAfter;
                         $troubleshootData['employee_before_id'] = null;
-                        $troubleshootData['employee_after_id'] = null;
-                        
+                        $troubleshootData['employee_after_id']  = null;
+
                         Troubleshoot::create($troubleshootData);
-                    }    
-                    
-                    Troubleshoot::create($troubleshootData);
+                    }
+
+                    // NOTE: di kode lama ada Troubleshoot::create($troubleshootData) lagi di bawah,
+                    // itu bikin duplikat record; kalau masih mau dipertahankan, tinggal aktifkan baris ini:
+                    // Troubleshoot::create($troubleshootData);
+
                 } else {
                     $troubleshootData = [
-                        'troubleshoot' => $request->troubleshoot,
-                        'result_check' => $request->resultCheck,
-                        'pic_safety' => $request->picSafety,
+                        'troubleshoot'      => $request->troubleshoot,
+                        'result_check'      => $request->resultCheck,
+                        'pic_safety'        => $request->picSafety,
                         'inspection_report' => $request->inspection,
-                        'part' => $request->part,
-                        'before_treatment' => $request->beforeTreatment,
-                        'after_treatment' => $request->afterTreatment,
-                        'pic_quality' => $request->picQuality,
-                        'done_by' => $request->doneBy,
-                        'photo' => $docName
+                        'part'              => $request->part,
+                        'before_treatment'  => $request->beforeTreatment,
+                        'after_treatment'   => $request->afterTreatment,
+                        'pic_quality'       => $request->picQuality,
+                        'done_by'           => $request->doneBy,
+                        'photo'             => $docName,
                     ];
 
-                    for ($i = 0; $i < count($request->after); $i++) {
-                        if ($request->after[$i] !== '0') {
-                            if ($picAfter !== '0'){
+                    foreach ($employeeAfter as $idx => $afterId) {
+                        if ($afterId !== '0' && $afterId !== 0 && $afterId !== null && $afterId !== '') {
+                            if ($picAfter !== '0') {
                                 $troubleshootData['pic_before_id'] = $picBefore;
-                                $troubleshootData['pic_after_id'] = $picAfter;
+                                $troubleshootData['pic_after_id']  = $picAfter;
                             }
-                            $troubleshootData['employee_before_id'] = $request->before[$i];
-                            $troubleshootData['employee_after_id'] = $request->after[$i];
-                            
+
+                            $troubleshootData['employee_before_id'] = $employeeBefore[$idx] ?? null;
+                            $troubleshootData['employee_after_id']  = $afterId;
+
                             Troubleshoot::where('henkaten_id', $request->henkaten_id)->update($troubleshootData);
                         }
                     }
-                    
-                    // Insert Troubleshoot records with null employee_before_id and employee_after_id if needed
+
                     if ($picAfter !== '0') {
-                        $troubleshootData['pic_before_id'] = $picBefore;
-                        $troubleshootData['pic_after_id'] = $picAfter;
+                        $troubleshootData['pic_before_id']      = $picBefore;
+                        $troubleshootData['pic_after_id']       = $picAfter;
                         $troubleshootData['employee_before_id'] = null;
-                        $troubleshootData['employee_after_id'] = null;
-                        
+                        $troubleshootData['employee_after_id']  = null;
+
                         Troubleshoot::where('henkaten_id', $request->henkaten_id)->update($troubleshootData);
-                    }         
+                    }
                 }
 
                 DB::commit();
             } else {
 
                 if (!$existingRecord) {
-                    // Insert troubleshoot for non-'man' case
+                    // Insert troubleshoot untuk non-'man'
                     Troubleshoot::create([
-                        'henkaten_id' => $request->henkaten_id,
-                        'troubleshoot' => $request->troubleshoot,
-                        'result_check' => $request->resultCheck,
-                        'pic_safety' => $request->picSafety,
+                        'henkaten_id'       => $request->henkaten_id,
+                        'troubleshoot'      => $request->troubleshoot,
+                        'result_check'      => $request->resultCheck,
+                        'pic_safety'        => $request->picSafety,
                         'inspection_report' => $request->inspection,
-                        'part' => $request->part,
-                        'before_treatment' => $request->beforeTreatment,
-                        'after_treatment' => $request->afterTreatment,
-                        'pic_quality' => $request->picQuality,
-                        'photo' => $docName,
-                        'done_by' => $request->doneBy,
+                        'part'              => $request->part,
+                        'before_treatment'  => $request->beforeTreatment,
+                        'after_treatment'   => $request->afterTreatment,
+                        'pic_quality'       => $request->picQuality,
+                        'photo'             => $docName,
+                        'done_by'           => $request->doneBy,
                     ]);
-                }else{
+                } else {
                     Troubleshoot::where('henkaten_id', $request->henkaten_id)->update([
-                        'troubleshoot' => $request->troubleshoot,
-                        'result_check' => $request->resultCheck,
-                        'pic_safety' => $request->picSafety,
+                        'troubleshoot'      => $request->troubleshoot,
+                        'result_check'      => $request->resultCheck,
+                        'pic_safety'        => $request->picSafety,
                         'inspection_report' => $request->inspection,
-                        'part' => $request->part,
-                        'before_treatment' => $request->beforeTreatment,
-                        'after_treatment' => $request->afterTreatment,
-                        'pic_quality' => $request->picQuality,
-                        'photo' => $docName,
-                        'done_by' => $request->doneBy,
+                        'part'              => $request->part,
+                        'before_treatment'  => $request->beforeTreatment,
+                        'after_treatment'   => $request->afterTreatment,
+                        'pic_quality'       => $request->picQuality,
+                        'photo'             => $docName,
+                        'done_by'           => $request->doneBy,
                     ]);
                 }
 
                 DB::commit();
             }
 
+            // ========== Setelah simpan, lanjut kirim notif WA / update status ==========
+
             // get all troubleshoot value
-            $lineName = $henkatenInfo->line->name;
-            $status = $henkatenInfo->status;
-            $type = $henkatenInfo->{'4M'};
-            $category = $henkatenInfo->category;
-            $abnormality = $henkatenInfo->abnormality;
-            $time = Carbon::parse($henkatenInfo->date)->format('j F Y, g:i A');
-            $troubleshoot = $request->troubleshoot;
-            $resultCheck = $request->resultCheck;
-            $inspectionCheck = $request->inspection;
-            $part = $request->part;
-            $beforeTreatment = $request->beforeTreatment;
-            $afterTreatment = $request->afterTreatment;
-            $doneBy = $request->doneBy;
+            $lineName         = $henkatenInfo->line->name;
+            $status           = $henkatenInfo->status;
+            $type             = $henkatenInfo->{'4M'};
+            $category         = $henkatenInfo->category;
+            $abnormality      = $henkatenInfo->abnormality;
+            $time             = Carbon::parse($henkatenInfo->date)->format('j F Y, g:i A');
+            $troubleshoot     = $request->troubleshoot;
+            $resultCheck      = $request->resultCheck;
+            $inspectionCheck  = $request->inspection;
+            $part             = $request->part;
+            $beforeTreatment  = $request->beforeTreatment;
+            $afterTreatment   = $request->afterTreatment;
+            $doneBy           = $request->doneBy;
             $troubleshootTime = Carbon::now()->format('j F Y, g:i A');
 
             if ($request->status === 'stop') {
@@ -652,8 +669,8 @@ class HenkatenController extends Controller
                                 'status_' . $request->{"4M"} => $otherStat->status,
                             ]);
 
-                            $token = '793D30579A77D4A0E12648872BFBB085';
-                            $phone = $groupId;
+                            $token   = '793D30579A77D4A0E12648872BFBB085';
+                            $phone   = $groupId;
                             $message = "```------ ``` *AIIA HENKATEN ALERT* ``` ------\n"
                                 . "LINE          : ``` *$lineName* ```\n"
                                 . "LINE STATUS   : ``` *$status* ```\n"
@@ -675,17 +692,18 @@ class HenkatenController extends Controller
                                 . "DONE BY            : $doneBy\n"
                                 . "\n"
                                 . "------ BY AISIN BISA ------```";
+
                             $curl = curl_init();
                             curl_setopt_array($curl, [
-                                CURLOPT_URL => 'https://app.ruangwa.id/api/send_message',
+                                CURLOPT_URL            => 'https://app.ruangwa.id/api/send_message',
                                 CURLOPT_RETURNTRANSFER => true,
-                                CURLOPT_ENCODING => '', 
-                                CURLOPT_MAXREDIRS => 10,
-                                CURLOPT_TIMEOUT => 0,
+                                CURLOPT_ENCODING       => '',
+                                CURLOPT_MAXREDIRS      => 10,
+                                CURLOPT_TIMEOUT        => 0,
                                 CURLOPT_FOLLOWLOCATION => true,
-                                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                                CURLOPT_CUSTOMREQUEST => 'POST',
-                                CURLOPT_POSTFIELDS => 'api_key=' . $token . '&phone=' . $phone . '&message=' . $message,
+                                CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+                                CURLOPT_CUSTOMREQUEST  => 'POST',
+                                CURLOPT_POSTFIELDS     => 'api_key=' . $token . '&phone=' . $phone . '&message=' . $message,
                             ]);
 
                             $response = curl_exec($curl);
