@@ -118,30 +118,54 @@ class EmployeeController extends Controller
         $currentDate = Carbon::now()->format('Y-m-d');
         $currentTime = Carbon::now()->format('H:i:s');
         
-        // get shift
-        $shift = Shift::where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime)->first();
+
+        $shifts = [
+            'Non Shift' => ['start' => '07:15:00', 'end' => '16:20:00'],
+            'Shift 1' => ['start' => '06:00:00', 'end' => '14:15:00'],
+            'Shift 1 Long' => ['start' => '06:00:00', 'end' => '18:00:00'],
+            'Shift 2' => ['start' => '14:16:00', 'end' => '22:15:00'],
+            'Shift 3' => ['start' => '22:16:00', 'end' => '06:00:00'], // Spanning midnight
+            'Shift 3 Long' => ['start' => '18:00:00', 'end' => '06:00:00'],
+        ];
         
-        $activeEmployees = EmployeeActive::with('shift')
-            ->with('employee')
-            ->with('pos')
-            ->with('line')
-            ->where('active_from', '<=', $currentDate)
-            ->where('expired_at', '>=', $currentDate)
-            ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
+        // Initialize current shift
+        $currentShifts = [];
+        
+        // Determine the current shifts
+        foreach ($shifts as $shiftName => $shiftTimes) {
+            $startTime = $shiftTimes['start'];
+            $endTime = $shiftTimes['end'];
+            
+            if ($startTime > $endTime) { // Shift spans midnight
+                if (($currentTime >= $startTime && $currentTime <= '23:59:59') || ($currentTime >= '00:00:00' && $currentTime <= $endTime)) {
+                    $currentShifts[] = $shiftName;
+                }
+            } else { // Regular shift within the same day
+                if ($currentTime >= $startTime && $currentTime <= $endTime) {
+                    $currentShifts[] = $shiftName;
+                }
+            }
+        }
+        
+        // get shift
+        // $shift = Shift::where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime)->first();
+        
+        $activeEmployees = EmployeeActive::with(['shift', 'employee', 'pos'])
+            ->where('active_from', '<=', Carbon::now())
+            ->where('expired_at', '>=', Carbon::now())
+            ->whereHas('shift', function ($query) use ($currentShifts) {
+                $query->whereIn('name', $currentShifts);
             })
             ->whereHas('employee', function($query) use ($empOrigin){
                 $query->where('origin_id', $empOrigin);
             })
             ->get();
             
-        $activePics = PicActive::with('shift')
-            ->with('employee')
-            ->with('line')
-            ->where('active_from', '<=', $currentDate)
-            ->where('expired_at', '>=', $currentDate)
-            ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime);
+        $activePic = PicActive::with(['shift', 'employee'])
+            ->where('active_from', '<=', Carbon::now())
+            ->where('expired_at', '>=', Carbon::now())
+            ->whereHas('shift', function ($query) use ($currentShifts) {
+                $query->whereIn('name', $currentShifts);
             })
             ->whereHas('employee', function($query) use ($empOrigin){
                 $query->where('origin_id', $empOrigin);
@@ -203,34 +227,88 @@ class EmployeeController extends Controller
             ]);
         }
 
-        // check activeEmployee
-        $activeEmployee = EmployeeActive::with('shift')
-            ->with('employee')
-            ->with('pos')
-            ->where('active_from', '<=', $currentDate)
-            ->where('expired_at', '>=', $currentDate)
-            ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)
-                    ->where('time_end', '>=', $currentTime);
+        // get man power at spesific line and range of time
+        $shifts = [
+            'Non Shift' => ['start' => '07:15:00', 'end' => '16:20:00'],
+            'Shift 1' => ['start' => '06:00:00', 'end' => '14:15:00'],
+            'Shift 1 Long' => ['start' => '06:00:00', 'end' => '18:00:00'],
+            'Shift 2' => ['start' => '14:16:00', 'end' => '22:15:00'],
+            'Shift 3' => ['start' => '22:16:00', 'end' => '06:00:00'], // Spanning midnight
+            'Shift 3 Long' => ['start' => '18:00:00', 'end' => '06:00:00'],
+        ];
+        
+        // Initialize current shift
+        $currentShifts = [];
+        
+        // Determine the current shifts
+        foreach ($shifts as $shiftName => $shiftTimes) {
+            $startTime = $shiftTimes['start'];
+            $endTime = $shiftTimes['end'];
+            
+            if ($startTime > $endTime) { // Shift spans midnight
+                if (($currentTime >= $startTime && $currentTime <= '23:59:59') || ($currentTime >= '00:00:00' && $currentTime <= $endTime)) {
+                    $currentShifts[] = $shiftName;
+                }
+            } else { // Regular shift within the same day
+                if ($currentTime >= $startTime && $currentTime <= $endTime) {
+                    $currentShifts[] = $shiftName;
+                }
+            }
+        }
+
+        // get active employee
+        $activeEmployee = EmployeeActive::with(['shift', 'employee', 'pos'])
+            ->where('active_from', '<=', Carbon::now())
+            ->where('expired_at', '>=', Carbon::now())
+            ->whereHas('shift', function ($query) use ($currentShifts) {
+                $query->whereIn('name', $currentShifts);
             })
             ->whereHas('employee', function ($query) use ($npk) {
                 $query->where('npk', $npk);
             })
             ->first();
 
-        // check activePic
-        $activePic = PicActive::with('shift')
-            ->with('employee')
-            ->where('active_from', '<=', $currentDate)
-            ->where('expired_at', '>=', $currentDate)
-            ->whereHas('shift', function ($query) use ($currentTime) {
-                $query->where('time_start', '<=', $currentTime)
-                    ->where('time_end', '>=', $currentTime);
+
+        // get active pic
+        $activePic = PicActive::with(['shift', 'employee'])
+            ->where('active_from', '<=', Carbon::now())
+            ->where('expired_at', '>=', Carbon::now())
+            ->whereHas('shift', function ($query) use ($currentShifts) {
+                $query->whereIn('name', $currentShifts);
             })
             ->whereHas('employee', function ($query) use ($npk) {
                 $query->where('npk', $npk);
             })
             ->first();
+
+        // check activeEmployee
+        // $activeEmployee = EmployeeActive::with('shift')
+        //     ->with('employee')
+        //     ->with('pos')
+        //     ->where('active_from', '<=', $currentDate)
+        //     ->where('expired_at', '>=', $currentDate)
+        //     ->whereHas('shift', function ($query) use ($currentTime) {
+        //         $query->where('time_start', '<=', $currentTime)
+        //             ->where('time_end', '>=', $currentTime);
+        //     })
+        //     ->whereHas('employee', function ($query) use ($npk) {
+        //         $query->where('npk', $npk);
+        //     })
+        //     ->first();
+
+        // // check activePic
+        // $activePic = PicActive::with('shift')
+        //     ->with('employee')
+        //     ->where('active_from', '<=', $currentDate)
+        //     ->where('expired_at', '>=', $currentDate)
+        //     ->whereHas('shift', function ($query) use ($currentTime) {
+        //         $query->where('time_start', '<=', $currentTime)
+        //             ->where('time_end', '>=', $currentTime);
+        //     })
+        //     ->whereHas('employee', function ($query) use ($npk) {
+        //         $query->where('npk', $npk);
+        //     })
+        //     ->first();
 
         // check if neither activeEmployee nor activePic exists
         if (!$activeEmployee && !$activePic) {
