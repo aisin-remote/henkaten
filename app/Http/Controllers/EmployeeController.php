@@ -148,7 +148,7 @@ class EmployeeController extends Controller
         }
         
         // get shift
-        // $shift = Shift::where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime)->first();
+        $shift = Shift::where('time_start', '<=', $currentTime)->where('time_end', '>=', $currentTime)->first();
         
         $activeEmployees = EmployeeActive::with(['shift', 'employee', 'pos'])
             ->where('active_from', '<=', Carbon::now())
