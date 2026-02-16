@@ -161,7 +161,7 @@ class EmployeeController extends Controller
             })
             ->get();
             
-        $activePic = PicActive::with(['shift', 'employee'])
+        $activePics = PicActive::with(['shift', 'employee'])
             ->where('active_from', '<=', Carbon::now())
             ->where('expired_at', '>=', Carbon::now())
             ->whereHas('shift', function ($query) use ($currentShifts) {
