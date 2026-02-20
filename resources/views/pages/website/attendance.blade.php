@@ -85,16 +85,20 @@
                         @foreach ($pics as $pic)
                             @php
                                 $currentDate = Carbon\Carbon::now()->format('Y-m-d');
+
                                 $attendance = $pic
-                                    ->with('attendance')
+                                    ->with([
+                                        'attendance' => function ($query) use ($pic, $currentDate) {
+                                            $query
+                                                ->where('pic_active_id', $pic->id)
+                                                ->whereDate('created_at', $currentDate);
+                                        },
+                                    ])
                                     ->whereHas('attendance', function ($query) use ($pic, $currentDate) {
-                                        $query
-                                            ->where('pic_active_id', $pic->id)
-                                            ->where('created_at', 'LIKE', $currentDate . '%');
+                                        $query->where('pic_active_id', $pic->id)->whereDate('created_at', $currentDate);
                                     })
                                     ->has('attendance')
                                     ->first();
-
                             @endphp
                             <div class="d-flex align-items-center justify-content-between mt-4">
                                 <div class="d-flex gap-3">
@@ -169,15 +173,22 @@
                                     @foreach ($employees[$line->id] as $employee)
                                         @php
                                             $currentDate = Carbon\Carbon::now()->format('Y-m-d');
+
                                             $attendance = $employee
-                                                ->with('attendance')
+                                                ->with([
+                                                    'attendance' => function ($query) use ($employee, $currentDate) {
+                                                        $query
+                                                            ->where('employee_active_id', $employee->id)
+                                                            ->whereDate('created_at', $currentDate);
+                                                    },
+                                                ])
                                                 ->whereHas('attendance', function ($query) use (
                                                     $employee,
                                                     $currentDate,
                                                 ) {
                                                     $query
                                                         ->where('employee_active_id', $employee->id)
-                                                        ->where('created_at', 'LIKE', $currentDate . '%');
+                                                        ->whereDate('created_at', $currentDate);
                                                 })
                                                 ->has('attendance')
                                                 ->first();
