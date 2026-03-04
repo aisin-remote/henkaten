@@ -122,7 +122,7 @@
                 'color' => $color_machine,
                 'status' => $status_machine,
                 'shape' => $shape_machine,
-            ],
+            ]
         ];
     @endphp
 
@@ -678,7 +678,7 @@
                                     'running' => 'success',
                                     'henkaten' => 'warning',
                                     'stop' => 'danger',
-                                    'default' => 'dark',
+                                    'default' => 'dark'
                                 ];
                                 $color = $statusColor[$history->henkaten->status] ?? $statusColor['default'];
 
