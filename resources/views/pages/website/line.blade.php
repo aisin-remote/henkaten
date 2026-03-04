@@ -1727,15 +1727,15 @@
 
         function notif(status, message) {
             if (!message) return;
-            if (status === 'success') {
-                toastr.success(message, "Success!", {
-                    progressBar: true
-                });
-            } else {
-                toastr.error(message, "Error!", {
-                    progressBar: true
-                });
-            }
+            // if (status === 'success') {
+            //     toastr.success(message, "Success!", {
+            //         progressBar: true
+            //     });
+            // } else {
+            //     toastr.error(message, "Error!", {
+            //         progressBar: true
+            //     });
+            // }
         }
 
         $(document).ready(function() {
