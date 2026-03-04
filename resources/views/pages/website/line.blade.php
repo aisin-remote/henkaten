@@ -935,12 +935,10 @@
                                     <input type="hidden" name="4M" value="{{ $history->henkaten->{"4M"} }}">
                                     <input type="hidden" name="status" value="{{ $history->henkaten->status }}">
                                     <input type="hidden" name="line" value="{{ $history->henkaten->line_id }}">
-                                    {{-- <div class="form-group mt-3 mb-3 description" style="display: none;"> --}}
                                     <label class="form-label fw-semibold">Troubleshoot</label>
                                     <textarea class="form-control" rows="3" name="troubleshoot" id="troubleshoot" required>
                                             {{ optional($history->henkaten->troubleshoot)->troubleshoot }}
                                         </textarea>
-                                    {{-- </div> --}}
                                 </div>
                             </div>
                             <div class="accordion accordion-flush position-relative overflow-hidden mt-2"

@@ -541,6 +541,8 @@ class HenkatenController extends Controller
 
             $existingRecord = Troubleshoot::where('henkaten_id', $request->input('henkaten_id'))->first();
 
+            dd('test');
+
             // payload utama (dipakai untuk create/update)
             $baseData = [
                 'henkaten_id'       => $request->input('henkaten_id'),
