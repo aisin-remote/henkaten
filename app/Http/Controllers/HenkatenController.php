@@ -457,7 +457,7 @@ class HenkatenController extends Controller
          * - inspection/picQuality/picSafety juga sebaiknya required
          */
         $rules = [
-            'henkaten_id'      => 'required|integer',
+            'henkaten_id'      => 'required',
             '4M'               => 'required|string|in:man,machine,method,material',
             'status'           => 'required|string|in:henkaten,stop,running,off',
             'line'             => 'required|integer',
