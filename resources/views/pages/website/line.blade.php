@@ -122,7 +122,7 @@
                 'color' => $color_machine,
                 'status' => $status_machine,
                 'shape' => $shape_machine,
-            ]
+            ],
         ];
     @endphp
 
@@ -678,7 +678,7 @@
                                     'running' => 'success',
                                     'henkaten' => 'warning',
                                     'stop' => 'danger',
-                                    'default' => 'dark'
+                                    'default' => 'dark',
                                 ];
                                 $color = $statusColor[$history->henkaten->status] ?? $statusColor['default'];
 
@@ -1468,7 +1468,7 @@
     {{-- end of modal --}}
 @endsection
 
-@push('scripts')
+{{-- @push('scripts')
     <script src="{{ asset('js/jquery-3.6.3.min.js') }}" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
         crossorigin="anonymous"></script>
 
@@ -1690,6 +1690,226 @@
                 if (deleteForm) deleteForm.submit();
             });
 
+        });
+    </script>
+@endpush --}}
+
+@push('scripts')
+    <script src="{{ asset('js/jquery-3.6.3.min.js') }}" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+        crossorigin="anonymous"></script>
+
+    <script>
+        function submitLineForm() {
+            const offSwitchChecked = $("#OffSwitch").is(':checked');
+            const runningSwitchChecked = $("#RunningSwitch").is(':checked');
+            const myid = @json(['id' => $line->id]);
+
+            if (offSwitchChecked || runningSwitchChecked) {
+                const formDataVal = offSwitchChecked ? $("#OffSwitch").val() : $("#RunningSwitch").val();
+
+                $.ajax({
+                    type: 'GET',
+                    url: "{{ url('dashboard/updateStatus') }}" + "/" + myid.id,
+                    data: {
+                        onOffSwitch: formDataVal
+                    },
+                    success: function() {
+                        window.location.reload();
+                    },
+                    error: function(error) {
+                        console.error('Gagal:', error);
+                    }
+                });
+            } else {
+                alert("Please select an option");
+            }
+        }
+
+        function notif(status, message) {
+            if (!message) return;
+            if (status === 'success') {
+                toastr.success(message, "Success!", {
+                    progressBar: true
+                });
+            } else {
+                toastr.error(message, "Error!", {
+                    progressBar: true
+                });
+            }
+        }
+
+        $(document).ready(function() {
+            // pakai @json agar aman dari quote/newline
+            const lineName = @json($line->name);
+            const totalEmp = @json($line->total_emp);
+
+            if (Number(totalEmp) > 2) {
+                $('.temp-row').children().unwrap();
+                $('.owl-carousel').owlCarousel({
+                    margin: 25,
+                    autoplay: true,
+                    loop: true,
+                    autoWidth: false,
+                    items: 2
+                });
+            } else {
+                $('#carousel').removeClass('owl-carousel owl-theme');
+            }
+
+            // set shift to local storage (kalau elemen #shift ada)
+            if ($('#shift').length) {
+                localStorage.setItem('shift', $('#shift').html());
+            }
+
+            // ===== FIX: session + validation errors safe
+            const sessionError = @json(session('error'));
+            const sessionSuccess = @json(session('success'));
+            const firstError = @json($errors->first());
+
+            if (firstError) {
+                notif('error', firstError);
+            } else if (sessionError) {
+                notif('error', sessionError);
+            } else if (sessionSuccess) {
+                notif('success', sessionSuccess);
+            }
+
+            // ===== init datatable (tanpa trailing comma)
+            $('#henkatenHistory').DataTable({
+                scrollX: true,
+                columnDefs: [{
+                    orderable: false,
+                    targets: 6
+                }]
+            });
+
+            // planned/unplanned disable per modal (class-based)
+            $(document).on('change', '.planned-input', function() {
+                const modal = $(this).closest('.modal');
+                const val = $(this).val();
+                modal.find('.unplanned-input').prop('disabled', val !== '');
+            });
+
+            $(document).on('change', '.unplanned-input', function() {
+                const modal = $(this).closest('.modal');
+                const val = $(this).val();
+                modal.find('.planned-input').prop('disabled', val !== '');
+            });
+
+            // Select2 untuk modal henkaten
+            $('#machineModalTableManagement').select2({
+                dropdownParent: $('#machineModal')
+            });
+            $('#manModalTableManagement').select2({
+                dropdownParent: $('#manModal')
+            });
+            $('#methodModalTableManagement').select2({
+                dropdownParent: $('#methodModal')
+            });
+            $('#materialModalTableManagement').select2({
+                dropdownParent: $('#materialModal')
+            });
+
+            $('#machineModalCategory').select2({
+                dropdownParent: $('#machineModal')
+            });
+            $('#manModalCategory').select2({
+                dropdownParent: $('#manModal')
+            });
+            $('#methodModalCategory').select2({
+                dropdownParent: $('#methodModal')
+            });
+            $('#materialModalCategory').select2({
+                dropdownParent: $('#materialModal')
+            });
+
+            // open modals
+            $(document).on('click', '.troubleshoot', function() {
+                const historyId = $(this).data('history-id');
+                const $modal = $(`#${historyId}Troubleshoot`);
+                $modal.modal('show');
+
+                $modal.find(`#${historyId}BeforeTreatment`).select2({
+                    dropdownParent: $modal
+                });
+                $modal.find(`#${historyId}AfterTreatment`).select2({
+                    dropdownParent: $modal
+                });
+                $modal.find(`#${historyId}ResultCheck`).select2({
+                    dropdownParent: $modal
+                });
+
+                $modal.find('.employeeReplacement').select2({
+                    dropdownParent: $modal
+                });
+            });
+
+            $(document).on('click', '.approve', function() {
+                const historyId = $(this).data('history-id');
+                $(`#${historyId}Approve`).modal('show');
+            });
+
+            $(document).on('click', '.detail', function() {
+                const historyId = $(this).data('history-id');
+                $(`#${historyId}Detail`).modal('show');
+            });
+
+            // ===== FIX: set origin per-form (anti ID dobel)
+            function fillOriginInForm($form) {
+                const origin = localStorage.getItem('origin_id');
+                $form.find('input[name="origin"]').val(origin);
+            }
+
+            $('.henkatenForm').on('submit', function() {
+                const submitButton = $(this).find('.henkatenSubmitButton');
+                const spinner = submitButton.find('.spinner-border');
+                const buttonText = submitButton.find('.button-text');
+
+                submitButton.prop('disabled', true);
+                spinner.removeClass('d-none');
+                buttonText.text('Loading...');
+
+                fillOriginInForm($(this));
+                return true;
+            });
+
+            $('.henkatenTroubleshoot').on('submit', function() {
+                const submitButton = $(this).find('.troubleshootSubmitButton');
+                const spinner = submitButton.find('.spinner-border');
+                const buttonText = submitButton.find('.button-text');
+
+                submitButton.prop('disabled', true);
+                spinner.removeClass('d-none');
+                buttonText.text('Loading...');
+
+                fillOriginInForm($(this));
+                return true;
+            });
+
+            $('.henkatenApproval').on('submit', function() {
+                const submitButton = $(this).find('.approveSubmitButton');
+                const spinner = submitButton.find('.spinner-border');
+                const buttonText = submitButton.find('.button-text');
+
+                submitButton.prop('disabled', true);
+                spinner.removeClass('d-none');
+                buttonText.text('Loading...');
+
+                fillOriginInForm($(this));
+                return true;
+            });
+
+            // delete confirm
+            let deleteForm;
+            $('.delete').on('click', function(event) {
+                event.preventDefault();
+                deleteForm = $(this).closest('form');
+                $('#confirmationModal').modal('show');
+            });
+
+            $('#confirmDelete').on('click', function() {
+                if (deleteForm) deleteForm.submit();
+            });
         });
     </script>
 @endpush
