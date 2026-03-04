@@ -1513,50 +1513,27 @@
         }
 
         $(document).ready(function() {
-            const lineName = @json($line->name);
-            const totalEmp = @json($line->total_emp);
 
-            if (Number(totalEmp) > 2) {
-                $('.temp-row').children().unwrap();
-                $('.owl-carousel').owlCarousel({
-                    margin: 25,
-                    autoplay: true,
-                    loop: true,
-                    autoWidth: false,
-                    items: 2
-                });
-            } else {
-                $('#carousel').removeClass('owl-carousel owl-theme');
-            }
-
-            // set shift to local storage (kalau elemen #shift ada)
-            if ($('#shift').length) {
-                localStorage.setItem('shift', $('#shift').html());
-            }
-
-            // ===== FIX: session + validation errors safe
+            // ===== SAFE TOASTR
             const sessionError = @json(session('error'));
             const sessionSuccess = @json(session('success'));
             const firstError = @json($errors->first());
+            if (firstError) notif('error', firstError);
+            else if (sessionError) notif('error', sessionError);
+            else if (sessionSuccess) notif('success', sessionSuccess);
 
-            if (firstError) {
-                notif('error', firstError);
-            } else if (sessionError) {
-                notif('error', sessionError);
-            } else if (sessionSuccess) {
-                notif('success', sessionSuccess);
+            // ===== DataTable guard (biar ga error kalau plugin gak ada)
+            if ($.fn.DataTable) {
+                $('#henkatenHistory').DataTable({
+                    scrollX: true,
+                    columnDefs: [{
+                        orderable: false,
+                        targets: 6
+                    }]
+                });
             }
 
-            // ===== init datatable (tanpa trailing comma)
-            $('#henkatenHistory').DataTable({
-                scrollX: true,
-                columnDefs: [{
-                    orderable: false,
-                    targets: 6
-                }]
-            });
-
-            // planned/unplanned disable per modal (class-based)
+            // ===== planned/unplanned disable per modal
             $(document).on('change', '.planned-input', function() {
                 const modal = $(this).closest('.modal');
                 const val = $(this).val();
@@ -1569,120 +1546,119 @@
                 modal.find('.planned-input').prop('disabled', val !== '');
             });
 
-            // Select2 untuk modal henkaten
-            $('#machineModalTableManagement').select2({
+            // ===== Select2 GUARD (jangan sampai error kalau select2 belum ada)
+            function safeSelect2($el, options) {
+                if (!$.fn.select2) return; // select2 belum loaded -> skip, jangan error
+                if (!$el.length) return;
+                $el.select2(options);
+            }
+
+            // init select2 di modal henkaten
+            safeSelect2($('#machineModalTableManagement'), {
                 dropdownParent: $('#machineModal')
             });
-            $('#manModalTableManagement').select2({
+            safeSelect2($('#manModalTableManagement'), {
                 dropdownParent: $('#manModal')
             });
-            $('#methodModalTableManagement').select2({
+            safeSelect2($('#methodModalTableManagement'), {
                 dropdownParent: $('#methodModal')
             });
-            $('#materialModalTableManagement').select2({
+            safeSelect2($('#materialModalTableManagement'), {
                 dropdownParent: $('#materialModal')
             });
 
-            $('#machineModalCategory').select2({
+            safeSelect2($('#machineModalCategory'), {
                 dropdownParent: $('#machineModal')
             });
-            $('#manModalCategory').select2({
+            safeSelect2($('#manModalCategory'), {
                 dropdownParent: $('#manModal')
             });
-            $('#methodModalCategory').select2({
+            safeSelect2($('#methodModalCategory'), {
                 dropdownParent: $('#methodModal')
             });
-            $('#materialModalCategory').select2({
+            safeSelect2($('#materialModalCategory'), {
                 dropdownParent: $('#materialModal')
             });
 
-            // open modals
+            // ===== Bootstrap 5 modal OPEN (tanpa jQuery plugin)
+            function openBsModal(modalId) {
+                const el = document.getElementById(modalId);
+                if (!el) return;
+                const instance = bootstrap.Modal.getOrCreateInstance(el);
+                instance.show();
+            }
+
+            // open troubleshoot modal
             $(document).on('click', '.troubleshoot', function() {
                 const historyId = $(this).data('history-id');
+                openBsModal(`${historyId}Troubleshoot`);
+
                 const $modal = $(`#${historyId}Troubleshoot`);
-                $modal.modal('show');
 
-                $modal.find(`#${historyId}BeforeTreatment`).select2({
+                // select2 inside troubleshoot modal (scoped)
+                safeSelect2($modal.find(`#${historyId}BeforeTreatment`), {
                     dropdownParent: $modal
                 });
-                $modal.find(`#${historyId}AfterTreatment`).select2({
+                safeSelect2($modal.find(`#${historyId}AfterTreatment`), {
                     dropdownParent: $modal
                 });
-                $modal.find(`#${historyId}ResultCheck`).select2({
+                safeSelect2($modal.find(`#${historyId}ResultCheck`), {
                     dropdownParent: $modal
                 });
-
-                $modal.find('.employeeReplacement').select2({
+                safeSelect2($modal.find('.employeeReplacement'), {
                     dropdownParent: $modal
                 });
             });
 
+            // open approve modal
             $(document).on('click', '.approve', function() {
                 const historyId = $(this).data('history-id');
-                $(`#${historyId}Approve`).modal('show');
+                openBsModal(`${historyId}Approve`);
             });
 
+            // open detail modal
             $(document).on('click', '.detail', function() {
                 const historyId = $(this).data('history-id');
-                $(`#${historyId}Detail`).modal('show');
+                openBsModal(`${historyId}Detail`);
             });
 
-            // ===== FIX: set origin per-form (anti ID dobel)
+            // ===== set origin per-form
             function fillOriginInForm($form) {
                 const origin = localStorage.getItem('origin_id');
                 $form.find('input[name="origin"]').val(origin);
             }
 
             $('.henkatenForm').on('submit', function() {
-                const submitButton = $(this).find('.henkatenSubmitButton');
-                const spinner = submitButton.find('.spinner-border');
-                const buttonText = submitButton.find('.button-text');
-
-                submitButton.prop('disabled', true);
-                spinner.removeClass('d-none');
-                buttonText.text('Loading...');
-
                 fillOriginInForm($(this));
                 return true;
             });
 
             $('.henkatenTroubleshoot').on('submit', function() {
-                const submitButton = $(this).find('.troubleshootSubmitButton');
-                const spinner = submitButton.find('.spinner-border');
-                const buttonText = submitButton.find('.button-text');
-
-                submitButton.prop('disabled', true);
-                spinner.removeClass('d-none');
-                buttonText.text('Loading...');
-
                 fillOriginInForm($(this));
                 return true;
             });
 
             $('.henkatenApproval').on('submit', function() {
-                const submitButton = $(this).find('.approveSubmitButton');
-                const spinner = submitButton.find('.spinner-border');
-                const buttonText = submitButton.find('.button-text');
-
-                submitButton.prop('disabled', true);
-                spinner.removeClass('d-none');
-                buttonText.text('Loading...');
-
                 fillOriginInForm($(this));
                 return true;
             });
 
             // delete confirm
             let deleteForm;
+            $(document).on('click', 'form.delete button.delete, form.delete', function(event) {
+                // biar ga salah tangkap klik form, lebih aman tangkap button saja:
+            });
+
             $('.delete').on('click', function(event) {
                 event.preventDefault();
                 deleteForm = $(this).closest('form');
-                $('#confirmationModal').modal('show');
+                openBsModal('confirmationModal');
             });
 
             $('#confirmDelete').on('click', function() {
                 if (deleteForm) deleteForm.submit();
             });
+
         });
     </script>
 @endpush
