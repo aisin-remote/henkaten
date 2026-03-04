@@ -948,6 +948,9 @@
                         @method('POST')
 
                         <div class="modal-body">
+                            @php
+                                dd($hid);
+                            @endphp
                             <input type="hidden" name="origin" id="{{ $originId }}">
                             <input type="hidden" name="henkaten_id" value="{{ $hid }}">
                             <input type="hidden" name="4M" value="{{ $history->henkaten->{"4M"} }}">
