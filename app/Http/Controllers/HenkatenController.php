@@ -383,351 +383,392 @@ class HenkatenController extends Controller
 
     public function troubleshootHenkaten(Request $request)
     {
-        // get origin id
-        if (json_decode(auth()->user()->origin_id)) {
-            if (count(json_decode(auth()->user()->origin_id)) == 1) {
-                $empOrigin = json_decode(auth()->user()->origin_id)[0];
-            } else {
-                $empOrigin = $request->origin;
+        /**
+         * =========================
+         * 1) Tentukan Origin
+         * =========================
+         */
+        $userOrigin = auth()->user()->origin_id;
+
+        // origin_id user bisa json array atau string biasa
+        $decoded = null;
+        if ($userOrigin) {
+            $decoded = json_decode($userOrigin, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $decoded = null;
             }
-        } else {
-            $empOrigin = $request->origin ? $request->origin : auth()->user()->origin_id;
         }
 
-        $docName = null;
+        if (is_array($decoded)) {
+            // kalau user punya banyak origin, ambil dari form hidden origin
+            $empOrigin = (count($decoded) === 1) ? $decoded[0] : $request->input('origin');
+        } else {
+            // origin single
+            $empOrigin = $request->input('origin') ?: $userOrigin;
+        }
 
-        $originToGroupIdMap = [
-            env('ORIGIN_MA')      => env('GROUP_ID_MA') . '@g.us',
-            env('ORIGIN_DC')      => env('GROUP_ID_DC') . '@g.us',
-            env('ORIGIN_ELC')     => env('GROUP_ID_ELC') . '@g.us',
-            env('ORIGIN_SEAT')    => env('GROUP_ID_BODY') . '@g.us',
-            env('ORIGIN_HANDLE')  => env('GROUP_ID_BODY') . '@g.us',
-        ];
-
-        // Use the origin to get the group ID directly from the map, if available
-        $groupId = $originToGroupIdMap[$empOrigin] ?? null;
-
-        // get henkaten info
+        /**
+         * =========================
+         * 2) Ambil data Henkaten
+         * =========================
+         */
         $henkatenInfo = Henkaten::with(['shift', 'line', 'henkatenManagement'])
-            ->where('id', $request->henkaten_id)
+            ->where('id', $request->input('henkaten_id'))
             ->first();
 
-        // get first pic
-        $firstPic = Pivot::with('firstPic')
-            ->where('active_date', Carbon::parse($henkatenInfo->date)->format('Y-m-d'))
+        if (!$henkatenInfo) {
+            return redirect()->back()->with('error', 'Data henkaten tidak ditemukan.');
+        }
+
+        /**
+         * =========================
+         * 3) Mapping Group WA
+         * =========================
+         */
+        $originToGroupIdMap = [
+            env('ORIGIN_MA')     => env('GROUP_ID_MA') . '@g.us',
+            env('ORIGIN_DC')     => env('GROUP_ID_DC') . '@g.us',
+            env('ORIGIN_ELC')    => env('GROUP_ID_ELC') . '@g.us',
+            env('ORIGIN_SEAT')   => env('GROUP_ID_BODY') . '@g.us',
+            env('ORIGIN_HANDLE') => env('GROUP_ID_BODY') . '@g.us',
+        ];
+        $groupId = $originToGroupIdMap[$empOrigin] ?? null;
+
+        /**
+         * =========================
+         * 4) First PIC
+         * =========================
+         */
+        $firstPicPivot = Pivot::with('firstPic')
+            ->where('active_date', \Carbon\Carbon::parse($henkatenInfo->date)->format('Y-m-d'))
             ->where('origin_id', $empOrigin)
             ->first();
 
-        $firstPic = $firstPic && $firstPic->firstPic ? $firstPic->firstPic->name : 'unknown';
+        $firstPic = ($firstPicPivot && $firstPicPivot->firstPic)
+            ? $firstPicPivot->firstPic->name
+            : 'unknown';
 
-        $statusMappings = [
-            'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
-            'stop'     => ['priority' => 2, 'overall' => 'stop'],
+        /**
+         * =========================
+         * 5) VALIDATION (SERVER SIDE)
+         * =========================
+         * Catatan penting:
+         * - doneBy di Blade adalah input text, jadi validasi harus required|string (bukan compare '0')
+         * - inspection/picQuality/picSafety juga sebaiknya required
+         */
+        $rules = [
+            'henkaten_id'      => 'required|integer',
+            '4M'               => 'required|string|in:man,machine,method,material',
+            'status'           => 'required|string|in:henkaten,stop,running,off',
+            'line'             => 'required|integer',
+            'part'             => 'required|string|max:255',
+            'beforeTreatment'  => 'required|string|in:ok,ng',
+            'afterTreatment'   => 'required|string|in:ok,ng',
+            'resultCheck'      => 'required|string|in:ok,ng',
+            'inspection'       => 'required|string|in:need,no need',
+            'picQuality'       => 'required|string|max:255',
+            'picSafety'        => 'required|string|max:255',
+            'doneBy'           => 'required|string|max:255',
+            // troubleshoot textarea paduka display:none tapi tetap required di HTML, jadi wajib divalidasi juga:
+            'troubleshoot'     => 'required|string',
+            'photo'            => 'nullable|file|max:5120', // 5MB
         ];
 
-        // basic validation manual
-        if (!$request->part) {
-            return redirect()
-                ->back()
-                ->with('error', 'Belum mengisi kolom part!');
+        // tambahan khusus 4M=man
+        if ($request->input('4M') === 'man') {
+            $rules['before']   = 'nullable|array';
+            $rules['after']    = 'nullable|array';
+            $rules['before.*'] = 'nullable|integer';
+            $rules['after.*']  = 'nullable|integer';
+            $rules['picBefore']= 'nullable|integer';
+            $rules['picAfter'] = 'nullable|integer';
         }
 
-        if ($request->beforeTreatment === '0') {
-            return redirect()
-                ->back()
-                ->with('error', 'Belum memilih status before treatment!');
+        $messages = [
+            'part.required'            => 'Belum mengisi kolom Part!',
+            'beforeTreatment.in'       => 'Belum memilih status Before Treatment!',
+            'afterTreatment.in'        => 'Belum memilih status After Treatment!',
+            'resultCheck.in'           => 'Belum memilih status Result Check!',
+            'inspection.required'      => 'Belum memilih Inspection Report!',
+            'picQuality.required'      => 'Belum mengisi PIC Quality!',
+            'picSafety.required'       => 'Belum mengisi PIC Safety!',
+            'doneBy.required'          => 'Belum mengisi Done By!',
+            'troubleshoot.required'    => 'Kolom Troubleshoot wajib diisi!',
+            'photo.max'                => 'Ukuran file maksimal 5MB.',
+        ];
+
+        $validated = \Validator::make($request->all(), $rules, $messages)->validate();
+
+        /**
+         * =========================
+         * 6) Safety check untuk MAN: anti duplikat replacement
+         * =========================
+         */
+        $employeeBefore = (array) $request->input('before', []);
+        $employeeAfter  = (array) $request->input('after', []);
+
+        if ($request->input('4M') === 'man') {
+            $filteredAfter = array_values(array_filter($employeeAfter, function ($v) {
+                return $v !== '0' && $v !== 0 && $v !== null && $v !== '';
+            }));
+
+            if (!empty($filteredAfter)) {
+                $counts = array_count_values($filteredAfter);
+                foreach ($counts as $val => $count) {
+                    if ($count > 1) {
+                        return redirect()->back()->withInput()->with('error', 'Employee cant be same!');
+                    }
+                }
+            }
         }
 
-        if ($request->afterTreatment === '0') {
-            return redirect()
-                ->back()
-                ->with('error', 'Belum memilih status after treatment!');
-        }
-
-        if ($request->resultCheck === '0') {
-            return redirect()
-                ->back()
-                ->with('error', 'Belum memilih status result check!');
-        }
-
-        if ($request->doneBy === '0') {
-            return redirect()
-                ->back()
-                ->with('error', 'Belum memilih PIC penanganan!');
-        }
-
-        // AMAN-kan variabel yang bisa null
-        $employeeAfter = (array) $request->after;   // <- selalu array meskipun kosong
-        $employeeBefore = (array) $request->before; // <- sama
-        $picAfter  = $request->picAfter;
-        $picBefore = $request->picBefore;
-
+        /**
+         * =========================
+         * 7) Simpan (Transaction rapih)
+         * =========================
+         */
         try {
-            DB::beginTransaction();
+            $docName = null;
 
-            // Check if a record already exists
-            $existingRecord = Troubleshoot::where('henkaten_id', $request->henkaten_id)->first();
-
-            // storing image
+            // upload file dulu (di luar transaction juga boleh, tapi ini aman)
             if ($request->hasFile('photo')) {
                 $doc = $request->file('photo');
                 $docName = time() . '-' . $doc->getClientOriginalName();
                 $doc->move(public_path('uploads/ts_henkaten'), $docName);
             }
 
-            if ($request->{"4M"} == 'man') {
+            DB::beginTransaction();
 
-                /**
-                 * ===========================
-                 *  CEK DUPLIKAT EMPLOYEE
-                 * ===========================
-                 */
+            $existingRecord = Troubleshoot::where('henkaten_id', $request->input('henkaten_id'))->first();
 
-                // filter dulu yang bukan 0 / kosong
-                $filteredAfter = array_filter($employeeAfter, function ($v) {
-                    return $v !== '0' && $v !== 0 && $v !== null && $v !== '';
-                });
+            // payload utama (dipakai untuk create/update)
+            $baseData = [
+                'henkaten_id'       => $request->input('henkaten_id'),
+                'troubleshoot'      => $request->input('troubleshoot'),
+                'result_check'      => $request->input('resultCheck'),
+                'pic_safety'        => $request->input('picSafety'),
+                'inspection_report' => $request->input('inspection'),
+                'part'              => $request->input('part'),
+                'before_treatment'  => $request->input('beforeTreatment'),
+                'after_treatment'   => $request->input('afterTreatment'),
+                'pic_quality'       => $request->input('picQuality'),
+                'done_by'           => $request->input('doneBy'),
+            ];
 
-                if (!empty($filteredAfter)) {
-                    $nameCounts = array_count_values($filteredAfter);
+            // hanya set photo kalau ada upload baru (biar update ga meng-null photo lama)
+            if ($docName !== null) {
+                $baseData['photo'] = $docName;
+            }
 
-                    // Check for duplicates
-                    $duplicates = [];
-                    foreach ($nameCounts as $value => $count) {
-                        if ($count > 1) {
-                            $duplicates[] = $value;
-                        }
-                    }
-
-                    if (!empty($duplicates)) {
-                        return redirect()
-                            ->back()
-                            ->with('error', 'Employee cant be same!');
-                    }
-                }
-
+            /**
+             * =========================
+             * 7A) 4M != man -> 1 record saja (create/update)
+             * =========================
+             */
+            if ($request->input('4M') !== 'man') {
                 if (!$existingRecord) {
-                    $troubleshootData = [
-                        'henkaten_id'       => $request->henkaten_id,
-                        'troubleshoot'      => $request->troubleshoot,
-                        'result_check'      => $request->resultCheck,
-                        'pic_safety'        => $request->picSafety,
-                        'inspection_report' => $request->inspection,
-                        'part'              => $request->part,
-                        'before_treatment'  => $request->beforeTreatment,
-                        'after_treatment'   => $request->afterTreatment,
-                        'pic_quality'       => $request->picQuality,
-                        'done_by'           => $request->doneBy,
-                        'photo'             => $docName,
-                    ];
-
-                    // loop mapping before-after
-                    foreach ($employeeAfter as $idx => $afterId) {
-                        if ($afterId !== '0' && $afterId !== 0 && $afterId !== null && $afterId !== '') {
-                            if ($picAfter !== '0') {
-                                $troubleshootData['pic_before_id'] = $picBefore;
-                                $troubleshootData['pic_after_id']  = $picAfter;
-                            }
-
-                            $troubleshootData['employee_before_id'] = $employeeBefore[$idx] ?? null;
-                            $troubleshootData['employee_after_id']  = $afterId;
-
-                            Troubleshoot::create($troubleshootData);
-                        }
-                    }
-
-                    // Insert Troubleshoot records dengan PIC saja (tanpa employee_before/after) jika perlu
-                    if ($picAfter !== '0') {
-                        $troubleshootData['pic_before_id']      = $picBefore;
-                        $troubleshootData['pic_after_id']       = $picAfter;
-                        $troubleshootData['employee_before_id'] = null;
-                        $troubleshootData['employee_after_id']  = null;
-
-                        Troubleshoot::create($troubleshootData);
-                    }
-
-                    // NOTE: di kode lama ada Troubleshoot::create($troubleshootData) lagi di bawah,
-                    // itu bikin duplikat record; kalau masih mau dipertahankan, tinggal aktifkan baris ini:
-                    // Troubleshoot::create($troubleshootData);
-
+                    Troubleshoot::create($baseData);
                 } else {
-                    $troubleshootData = [
-                        'troubleshoot'      => $request->troubleshoot,
-                        'result_check'      => $request->resultCheck,
-                        'pic_safety'        => $request->picSafety,
-                        'inspection_report' => $request->inspection,
-                        'part'              => $request->part,
-                        'before_treatment'  => $request->beforeTreatment,
-                        'after_treatment'   => $request->afterTreatment,
-                        'pic_quality'       => $request->picQuality,
-                        'done_by'           => $request->doneBy,
-                        'photo'             => $docName,
-                    ];
-
-                    foreach ($employeeAfter as $idx => $afterId) {
-                        if ($afterId !== '0' && $afterId !== 0 && $afterId !== null && $afterId !== '') {
-                            if ($picAfter !== '0') {
-                                $troubleshootData['pic_before_id'] = $picBefore;
-                                $troubleshootData['pic_after_id']  = $picAfter;
-                            }
-
-                            $troubleshootData['employee_before_id'] = $employeeBefore[$idx] ?? null;
-                            $troubleshootData['employee_after_id']  = $afterId;
-
-                            Troubleshoot::where('henkaten_id', $request->henkaten_id)->update($troubleshootData);
-                        }
-                    }
-
-                    if ($picAfter !== '0') {
-                        $troubleshootData['pic_before_id']      = $picBefore;
-                        $troubleshootData['pic_after_id']       = $picAfter;
-                        $troubleshootData['employee_before_id'] = null;
-                        $troubleshootData['employee_after_id']  = null;
-
-                        Troubleshoot::where('henkaten_id', $request->henkaten_id)->update($troubleshootData);
-                    }
+                    Troubleshoot::where('henkaten_id', $request->input('henkaten_id'))->update($baseData);
                 }
 
                 DB::commit();
             } else {
+                /**
+                 * =========================
+                 * 7B) 4M == man
+                 * Fix celah utama:
+                 * - Kalau semua after[] = 0 dan picAfter=0, sebelumnya TIDAK ADA row tersimpan,
+                 *   tapi tetap success. Sekarang: selalu minimal 1 record tersimpan.
+                 */
 
-                if (!$existingRecord) {
-                    // Insert troubleshoot untuk non-'man'
-                    Troubleshoot::create([
-                        'henkaten_id'       => $request->henkaten_id,
-                        'troubleshoot'      => $request->troubleshoot,
-                        'result_check'      => $request->resultCheck,
-                        'pic_safety'        => $request->picSafety,
-                        'inspection_report' => $request->inspection,
-                        'part'              => $request->part,
-                        'before_treatment'  => $request->beforeTreatment,
-                        'after_treatment'   => $request->afterTreatment,
-                        'pic_quality'       => $request->picQuality,
-                        'photo'             => $docName,
-                        'done_by'           => $request->doneBy,
+                $picAfter  = $request->input('picAfter', '0');
+                $picBefore = $request->input('picBefore', null);
+
+                // 1) Siapkan list pairing employee before/after yang valid
+                $pairs = [];
+                foreach ($employeeAfter as $idx => $afterId) {
+                    if ($afterId !== '0' && $afterId !== 0 && $afterId !== null && $afterId !== '') {
+                        $pairs[] = [
+                            'employee_before_id' => $employeeBefore[$idx] ?? null,
+                            'employee_after_id'  => (int) $afterId,
+                        ];
+                    }
+                }
+
+                // 2) Kalau ada PIC replacement, treat sebagai "pair" khusus
+                $hasPicReplacement = ($picAfter !== '0' && $picAfter !== 0 && $picAfter !== null && $picAfter !== '');
+                $picPair = null;
+                if ($hasPicReplacement) {
+                    $picPair = [
+                        'pic_before_id' => $picBefore ? (int) $picBefore : null,
+                        'pic_after_id'  => (int) $picAfter,
+                    ];
+                }
+
+                /**
+                 * STRATEGY:
+                 * - Sistem paduka sekarang menyimpan mapping replacement di tabel Troubleshoot yang sama.
+                 * - Biar tidak success palsu, kita pastikan minimal 1 row tersimpan:
+                 *   a) kalau ada $pairs => simpan semua pairs (create beberapa row kalau memang design-nya begitu)
+                 *   b) kalau tidak ada pairs tapi ada picPair => simpan 1 row untuk picPair
+                 *   c) kalau tidak ada keduanya => simpan 1 row base (tanpa mapping) -> ini menutup celah
+                 */
+
+                // kalau sudah ada existing, lebih aman: hapus dulu row mapping lama (supaya update tidak bikin data “nyangkut”)
+                // OPTIONAL: kalau memang 1 henkaten_id boleh banyak row, ini penting agar update tidak ketuker.
+                Troubleshoot::where('henkaten_id', $request->input('henkaten_id'))->delete();
+
+                $createdAny = false;
+
+                // a) simpan employee pairs
+                if (!empty($pairs)) {
+                    foreach ($pairs as $p) {
+                        $payload = array_merge($baseData, $p);
+
+                        if ($hasPicReplacement) {
+                            $payload['pic_before_id'] = $picPair['pic_before_id'];
+                            $payload['pic_after_id']  = $picPair['pic_after_id'];
+                        }
+
+                        Troubleshoot::create($payload);
+                        $createdAny = true;
+                    }
+                }
+
+                // b) simpan PIC pair saja jika tidak ada employee pairs
+                if (!$createdAny && $hasPicReplacement) {
+                    $payload = array_merge($baseData, [
+                        'employee_before_id' => null,
+                        'employee_after_id'  => null,
+                        'pic_before_id'      => $picPair['pic_before_id'],
+                        'pic_after_id'       => $picPair['pic_after_id'],
                     ]);
-                } else {
-                    Troubleshoot::where('henkaten_id', $request->henkaten_id)->update([
-                        'troubleshoot'      => $request->troubleshoot,
-                        'result_check'      => $request->resultCheck,
-                        'pic_safety'        => $request->picSafety,
-                        'inspection_report' => $request->inspection,
-                        'part'              => $request->part,
-                        'before_treatment'  => $request->beforeTreatment,
-                        'after_treatment'   => $request->afterTreatment,
-                        'pic_quality'       => $request->picQuality,
-                        'photo'             => $docName,
-                        'done_by'           => $request->doneBy,
+
+                    Troubleshoot::create($payload);
+                    $createdAny = true;
+                }
+
+                // c) simpan base row kalau bener-bener ga ada mapping apapun
+                if (!$createdAny) {
+                    $payload = array_merge($baseData, [
+                        'employee_before_id' => null,
+                        'employee_after_id'  => null,
+                        'pic_before_id'      => null,
+                        'pic_after_id'       => null,
                     ]);
+
+                    Troubleshoot::create($payload);
                 }
 
                 DB::commit();
             }
 
-            // ========== Setelah simpan, lanjut kirim notif WA / update status ==========
+            /**
+             * =========================
+             * 8) Setelah simpan -> update status line / notif WA (logika lama paduka)
+             * (di sini minimal troubleshoot SUDAH PASTI ada, jadi tidak ada success palsu)
+             * =========================
+             */
 
-            // get all troubleshoot value
+            $statusMappings = [
+                'henkaten' => ['priority' => 1, 'overall' => 'henkaten'],
+                'stop'     => ['priority' => 2, 'overall' => 'stop'],
+            ];
+
+            // ambil data untuk message
             $lineName         = $henkatenInfo->line->name;
             $status           = $henkatenInfo->status;
             $type             = $henkatenInfo->{'4M'};
             $category         = $henkatenInfo->category;
             $abnormality      = $henkatenInfo->abnormality;
-            $time             = Carbon::parse($henkatenInfo->date)->format('j F Y, g:i A');
-            $troubleshoot     = $request->troubleshoot;
-            $resultCheck      = $request->resultCheck;
-            $inspectionCheck  = $request->inspection;
-            $part             = $request->part;
-            $beforeTreatment  = $request->beforeTreatment;
-            $afterTreatment   = $request->afterTreatment;
-            $doneBy           = $request->doneBy;
-            $troubleshootTime = Carbon::now()->format('j F Y, g:i A');
+            $time             = \Carbon\Carbon::parse($henkatenInfo->date)->format('j F Y, g:i A');
+            $troubleshoot     = $request->input('troubleshoot');
+            $resultCheck      = $request->input('resultCheck');
+            $inspectionCheck  = $request->input('inspection');
+            $part             = $request->input('part');
+            $beforeTreatment  = $request->input('beforeTreatment');
+            $afterTreatment   = $request->input('afterTreatment');
+            $doneBy           = $request->input('doneBy');
+            $troubleshootTime = \Carbon\Carbon::now()->format('j F Y, g:i A');
 
-            if ($request->status === 'stop') {
-                // Check if there is any problem not solved yet (stop content only)
+            // kalau status henkaten ini STOP, update line status berdasarkan item lain yg belum solved
+            if ($request->input('status') === 'stop') {
                 $otherStats = Henkaten::doesntHave('troubleshoot')
                     ->select('status')
                     ->where('is_done', '0')
-                    ->where('line_id', $request->line)
-                    ->where('4M', $request->{"4M"})
+                    ->where('line_id', $request->input('line'))
+                    ->where('4M', $request->input('4M'))
                     ->get();
 
                 if ($otherStats->isEmpty()) {
-                    return redirect()
-                        ->back()
-                        ->with('success', 'Data berhasil disimpan!');
+                    return redirect()->back()->with('success', 'Data berhasil disimpan!');
                 }
 
-                // Leveling priority
                 foreach ($otherStats as $otherStat) {
                     if (isset($statusMappings[$otherStat->status])) {
                         $priority = $statusMappings[$otherStat->status]['priority'];
 
-                        // If the priority is 2 (which is the biggest priority) we can immediately break the loop
+                        // jika masih ada STOP yg belum beres, set status line ke STOP (paling tinggi)
                         if ($priority === 2) {
-                            // Insert into line table
-                            Line::where('id', $request->line)->update([
-                                'status_' . $request->{"4M"} => $otherStat->status,
+                            Line::where('id', $request->input('line'))->update([
+                                'status_' . $request->input('4M') => $otherStat->status,
                             ]);
 
-                            $token   = '793D30579A77D4A0E12648872BFBB085';
-                            $phone   = $groupId;
-                            $message = "```------ ``` *AIIA HENKATEN ALERT* ``` ------\n"
-                                . "LINE          : ``` *$lineName* ```\n"
-                                . "LINE STATUS   : ``` *$status* ```\n"
-                                . "4M            : $type\n"
-                                . "Category      : $category\n"
-                                . "ABNORMALITY   : $abnormality\n"
-                                . "TIME          : $time\n"
-                                . "PIC           : $firstPic\n"
-                                . "\n"
-                                . "```*TROUBLESHOOT*```\n"
-                                . "\n"
-                                . "TROUBLESHOOT       : $troubleshoot\n"
-                                . "TIME               : $troubleshootTime\n"
-                                . "RESULT CHECK       : $resultCheck\n"
-                                . "INSPECTION REPORT  : $inspectionCheck\n"
-                                . "PART               : $part\n"
-                                . "BEFORE TREATMENT   : $beforeTreatment\n"
-                                . "AFTER TREATMENT    : $afterTreatment\n"
-                                . "DONE BY            : $doneBy\n"
-                                . "\n"
-                                . "------ BY AISIN BISA ------```";
+                            // notif WA (jika groupId ada)
+                            if ($groupId) {
+                                $token   = '793D30579A77D4A0E12648872BFBB085';
+                                $phone   = $groupId;
 
-                            $curl = curl_init();
-                            curl_setopt_array($curl, [
-                                CURLOPT_URL            => 'https://app.ruangwa.id/api/send_message',
-                                CURLOPT_RETURNTRANSFER => true,
-                                CURLOPT_ENCODING       => '',
-                                CURLOPT_MAXREDIRS      => 10,
-                                CURLOPT_TIMEOUT        => 0,
-                                CURLOPT_FOLLOWLOCATION => true,
-                                CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-                                CURLOPT_CUSTOMREQUEST  => 'POST',
-                                CURLOPT_POSTFIELDS     => 'api_key=' . $token . '&phone=' . $phone . '&message=' . $message,
-                            ]);
+                                $message = "```------ ``` *AIIA HENKATEN ALERT* ``` ------\n"
+                                    . "LINE          : ``` *$lineName* ```\n"
+                                    . "LINE STATUS   : ``` *$status* ```\n"
+                                    . "4M            : $type\n"
+                                    . "Category      : $category\n"
+                                    . "ABNORMALITY   : $abnormality\n"
+                                    . "TIME          : $time\n"
+                                    . "PIC           : $firstPic\n"
+                                    . "\n"
+                                    . "```*TROUBLESHOOT*```\n"
+                                    . "\n"
+                                    . "TROUBLESHOOT       : $troubleshoot\n"
+                                    . "TIME               : $troubleshootTime\n"
+                                    . "RESULT CHECK       : $resultCheck\n"
+                                    . "INSPECTION REPORT  : $inspectionCheck\n"
+                                    . "PART               : $part\n"
+                                    . "BEFORE TREATMENT   : $beforeTreatment\n"
+                                    . "AFTER TREATMENT    : $afterTreatment\n"
+                                    . "DONE BY            : $doneBy\n"
+                                    . "\n"
+                                    . "------ BY AISIN BISA ------```";
 
-                            $response = curl_exec($curl);
-                            curl_close($curl);
+                                $curl = curl_init();
+                                curl_setopt_array($curl, [
+                                    CURLOPT_URL            => 'https://app.ruangwa.id/api/send_message',
+                                    CURLOPT_RETURNTRANSFER => true,
+                                    CURLOPT_ENCODING       => '',
+                                    CURLOPT_MAXREDIRS      => 10,
+                                    CURLOPT_TIMEOUT        => 0,
+                                    CURLOPT_FOLLOWLOCATION => true,
+                                    CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+                                    CURLOPT_CUSTOMREQUEST  => 'POST',
+                                    CURLOPT_POSTFIELDS     => 'api_key=' . $token . '&phone=' . $phone . '&message=' . $message,
+                                ]);
 
-                            DB::commit();
-                            return redirect()
-                                ->back()
-                                ->with('success', 'Data berhasil disimpan!');
+                                curl_exec($curl);
+                                curl_close($curl);
+                            }
+
+                            return redirect()->back()->with('success', 'Data berhasil disimpan!');
                         }
                     }
                 }
             }
 
-            DB::commit();
-
-            return redirect()
-                ->back()
-                ->with('success', 'Data berhasil disimpan!');
+            return redirect()->back()->with('success', 'Data berhasil disimpan!');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()
-                ->back()
-                ->with('error', $th->getMessage());
+            return redirect()->back()->withInput()->with('error', $th->getMessage());
         }
     }
 
