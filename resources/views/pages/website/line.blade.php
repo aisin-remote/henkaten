@@ -909,8 +909,6 @@
     @foreach ($histories as $history)
         @php
             $hid = $history->henkaten->id;
-            dd($hid);
-
             $accordionId = "accordion-$hid";
             $collapseOneId = "collapseOne-$hid";
             $collapseTwoId = "collapseTwo-$hid";
