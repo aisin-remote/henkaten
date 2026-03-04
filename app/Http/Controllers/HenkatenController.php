@@ -460,7 +460,7 @@ class HenkatenController extends Controller
             'henkaten_id'      => 'required',
             '4M'               => 'required|string|in:man,machine,method,material',
             'status'           => 'required|string|in:henkaten,stop,running,off',
-            'line'             => 'required|integer',
+            'line'             => 'required',
             'part'             => 'required|string|max:255',
             'beforeTreatment'  => 'required|string|in:ok,ng',
             'afterTreatment'   => 'required|string|in:ok,ng',
