@@ -1468,197 +1468,195 @@
     {{-- end of modal --}}
 @endsection
 
-@push('scripts')
-    <script src="{{ asset('js/jquery-3.6.3.min.js') }}" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
-        crossorigin="anonymous"></script>
+<script src="{{ asset('js/jquery-3.6.3.min.js') }}" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+    crossorigin="anonymous"></script>
 
-    <script>
-        function submitLineForm() {
-            const offSwitchChecked = $("#OffSwitch").is(':checked');
-            const runningSwitchChecked = $("#RunningSwitch").is(':checked');
-            const myid = @json(['id' => $line->id]);
+<script>
+    function submitLineForm() {
+        const offSwitchChecked = $("#OffSwitch").is(':checked');
+        const runningSwitchChecked = $("#RunningSwitch").is(':checked');
+        const myid = @json(['id' => $line->id]);
 
-            if (offSwitchChecked || runningSwitchChecked) {
-                const formDataVal = offSwitchChecked ? $("#OffSwitch").val() : $("#RunningSwitch").val();
+        if (offSwitchChecked || runningSwitchChecked) {
+            const formDataVal = offSwitchChecked ? $("#OffSwitch").val() : $("#RunningSwitch").val();
 
-                $.ajax({
-                    type: 'GET',
-                    url: "{{ url('dashboard/updateStatus') }}" + "/" + myid.id,
-                    data: {
-                        onOffSwitch: formDataVal
-                    },
-                    success: function() {
-                        window.location.reload();
-                    },
-                    error: function(error) {
-                        console.error('Gagal:', error);
-                    }
-                });
-            } else {
-                alert("Please select an option");
-            }
+            $.ajax({
+                type: 'GET',
+                url: "{{ url('dashboard/updateStatus') }}" + "/" + myid.id,
+                data: {
+                    onOffSwitch: formDataVal
+                },
+                success: function() {
+                    window.location.reload();
+                },
+                error: function(error) {
+                    console.error('Gagal:', error);
+                }
+            });
+        } else {
+            alert("Please select an option");
+        }
+    }
+
+    function notif(status, message) {
+        if (!message) return;
+        if (status === 'success') {
+            toastr.success(message, "Success!", {
+                progressBar: true
+            });
+        } else {
+            toastr.error(message, "Error!", {
+                progressBar: true
+            });
+        }
+    }
+
+    $(document).ready(function() {
+
+        // ===== SAFE TOASTR
+        const sessionError = @json(session('error'));
+        const sessionSuccess = @json(session('success'));
+        const firstError = @json($errors->first());
+        if (firstError) notif('error', firstError);
+        else if (sessionError) notif('error', sessionError);
+        else if (sessionSuccess) notif('success', sessionSuccess);
+
+        // ===== DataTable guard (biar ga error kalau plugin gak ada)
+        if ($.fn.DataTable) {
+            $('#henkatenHistory').DataTable({
+                scrollX: true,
+                columnDefs: [{
+                    orderable: false,
+                    targets: 6
+                }]
+            });
         }
 
-        function notif(status, message) {
-            if (!message) return;
-            if (status === 'success') {
-                toastr.success(message, "Success!", {
-                    progressBar: true
-                });
-            } else {
-                toastr.error(message, "Error!", {
-                    progressBar: true
-                });
-            }
-        }
-
-        $(document).ready(function() {
-
-            // ===== SAFE TOASTR
-            const sessionError = @json(session('error'));
-            const sessionSuccess = @json(session('success'));
-            const firstError = @json($errors->first());
-            if (firstError) notif('error', firstError);
-            else if (sessionError) notif('error', sessionError);
-            else if (sessionSuccess) notif('success', sessionSuccess);
-
-            // ===== DataTable guard (biar ga error kalau plugin gak ada)
-            if ($.fn.DataTable) {
-                $('#henkatenHistory').DataTable({
-                    scrollX: true,
-                    columnDefs: [{
-                        orderable: false,
-                        targets: 6
-                    }]
-                });
-            }
-
-            // ===== planned/unplanned disable per modal
-            $(document).on('change', '.planned-input', function() {
-                const modal = $(this).closest('.modal');
-                const val = $(this).val();
-                modal.find('.unplanned-input').prop('disabled', val !== '');
-            });
-
-            $(document).on('change', '.unplanned-input', function() {
-                const modal = $(this).closest('.modal');
-                const val = $(this).val();
-                modal.find('.planned-input').prop('disabled', val !== '');
-            });
-
-            // ===== Select2 GUARD (jangan sampai error kalau select2 belum ada)
-            function safeSelect2($el, options) {
-                if (!$.fn.select2) return; // select2 belum loaded -> skip, jangan error
-                if (!$el.length) return;
-                $el.select2(options);
-            }
-
-            // init select2 di modal henkaten
-            safeSelect2($('#machineModalTableManagement'), {
-                dropdownParent: $('#machineModal')
-            });
-            safeSelect2($('#manModalTableManagement'), {
-                dropdownParent: $('#manModal')
-            });
-            safeSelect2($('#methodModalTableManagement'), {
-                dropdownParent: $('#methodModal')
-            });
-            safeSelect2($('#materialModalTableManagement'), {
-                dropdownParent: $('#materialModal')
-            });
-
-            safeSelect2($('#machineModalCategory'), {
-                dropdownParent: $('#machineModal')
-            });
-            safeSelect2($('#manModalCategory'), {
-                dropdownParent: $('#manModal')
-            });
-            safeSelect2($('#methodModalCategory'), {
-                dropdownParent: $('#methodModal')
-            });
-            safeSelect2($('#materialModalCategory'), {
-                dropdownParent: $('#materialModal')
-            });
-
-            // ===== Bootstrap 5 modal OPEN (tanpa jQuery plugin)
-            function openBsModal(modalId) {
-                const el = document.getElementById(modalId);
-                if (!el) return;
-                const instance = bootstrap.Modal.getOrCreateInstance(el);
-                instance.show();
-            }
-
-            // open troubleshoot modal
-            $(document).on('click', '.troubleshoot', function() {
-                const historyId = $(this).data('history-id');
-                openBsModal(`${historyId}Troubleshoot`);
-
-                const $modal = $(`#${historyId}Troubleshoot`);
-
-                // select2 inside troubleshoot modal (scoped)
-                safeSelect2($modal.find(`#${historyId}BeforeTreatment`), {
-                    dropdownParent: $modal
-                });
-                safeSelect2($modal.find(`#${historyId}AfterTreatment`), {
-                    dropdownParent: $modal
-                });
-                safeSelect2($modal.find(`#${historyId}ResultCheck`), {
-                    dropdownParent: $modal
-                });
-                safeSelect2($modal.find('.employeeReplacement'), {
-                    dropdownParent: $modal
-                });
-            });
-
-            // open approve modal
-            $(document).on('click', '.approve', function() {
-                const historyId = $(this).data('history-id');
-                openBsModal(`${historyId}Approve`);
-            });
-
-            // open detail modal
-            $(document).on('click', '.detail', function() {
-                const historyId = $(this).data('history-id');
-                openBsModal(`${historyId}Detail`);
-            });
-
-            // ===== set origin per-form
-            function fillOriginInForm($form) {
-                const origin = localStorage.getItem('origin_id');
-                $form.find('input[name="origin"]').val(origin);
-            }
-
-            $('.henkatenForm').on('submit', function() {
-                fillOriginInForm($(this));
-                return true;
-            });
-
-            $('.henkatenTroubleshoot').on('submit', function() {
-                fillOriginInForm($(this));
-                return true;
-            });
-
-            $('.henkatenApproval').on('submit', function() {
-                fillOriginInForm($(this));
-                return true;
-            });
-
-            // delete confirm
-            let deleteForm;
-            $(document).on('click', 'form.delete button.delete, form.delete', function(event) {
-                // biar ga salah tangkap klik form, lebih aman tangkap button saja:
-            });
-
-            $('.delete').on('click', function(event) {
-                event.preventDefault();
-                deleteForm = $(this).closest('form');
-                openBsModal('confirmationModal');
-            });
-
-            $('#confirmDelete').on('click', function() {
-                if (deleteForm) deleteForm.submit();
-            });
-
+        // ===== planned/unplanned disable per modal
+        $(document).on('change', '.planned-input', function() {
+            const modal = $(this).closest('.modal');
+            const val = $(this).val();
+            modal.find('.unplanned-input').prop('disabled', val !== '');
         });
-    </script>
-@endpush
+
+        $(document).on('change', '.unplanned-input', function() {
+            const modal = $(this).closest('.modal');
+            const val = $(this).val();
+            modal.find('.planned-input').prop('disabled', val !== '');
+        });
+
+        // ===== Select2 GUARD (jangan sampai error kalau select2 belum ada)
+        function safeSelect2($el, options) {
+            if (!$.fn.select2) return; // select2 belum loaded -> skip, jangan error
+            if (!$el.length) return;
+            $el.select2(options);
+        }
+
+        // init select2 di modal henkaten
+        safeSelect2($('#machineModalTableManagement'), {
+            dropdownParent: $('#machineModal')
+        });
+        safeSelect2($('#manModalTableManagement'), {
+            dropdownParent: $('#manModal')
+        });
+        safeSelect2($('#methodModalTableManagement'), {
+            dropdownParent: $('#methodModal')
+        });
+        safeSelect2($('#materialModalTableManagement'), {
+            dropdownParent: $('#materialModal')
+        });
+
+        safeSelect2($('#machineModalCategory'), {
+            dropdownParent: $('#machineModal')
+        });
+        safeSelect2($('#manModalCategory'), {
+            dropdownParent: $('#manModal')
+        });
+        safeSelect2($('#methodModalCategory'), {
+            dropdownParent: $('#methodModal')
+        });
+        safeSelect2($('#materialModalCategory'), {
+            dropdownParent: $('#materialModal')
+        });
+
+        // ===== Bootstrap 5 modal OPEN (tanpa jQuery plugin)
+        function openBsModal(modalId) {
+            const el = document.getElementById(modalId);
+            if (!el) return;
+            const instance = bootstrap.Modal.getOrCreateInstance(el);
+            instance.show();
+        }
+
+        // open troubleshoot modal
+        $(document).on('click', '.troubleshoot', function() {
+            const historyId = $(this).data('history-id');
+            openBsModal(`${historyId}Troubleshoot`);
+
+            const $modal = $(`#${historyId}Troubleshoot`);
+
+            // select2 inside troubleshoot modal (scoped)
+            safeSelect2($modal.find(`#${historyId}BeforeTreatment`), {
+                dropdownParent: $modal
+            });
+            safeSelect2($modal.find(`#${historyId}AfterTreatment`), {
+                dropdownParent: $modal
+            });
+            safeSelect2($modal.find(`#${historyId}ResultCheck`), {
+                dropdownParent: $modal
+            });
+            safeSelect2($modal.find('.employeeReplacement'), {
+                dropdownParent: $modal
+            });
+        });
+
+        // open approve modal
+        $(document).on('click', '.approve', function() {
+            const historyId = $(this).data('history-id');
+            openBsModal(`${historyId}Approve`);
+        });
+
+        // open detail modal
+        $(document).on('click', '.detail', function() {
+            const historyId = $(this).data('history-id');
+            openBsModal(`${historyId}Detail`);
+        });
+
+        // ===== set origin per-form
+        function fillOriginInForm($form) {
+            const origin = localStorage.getItem('origin_id');
+            $form.find('input[name="origin"]').val(origin);
+        }
+
+        $('.henkatenForm').on('submit', function() {
+            fillOriginInForm($(this));
+            return true;
+        });
+
+        $('.henkatenTroubleshoot').on('submit', function() {
+            fillOriginInForm($(this));
+            return true;
+        });
+
+        $('.henkatenApproval').on('submit', function() {
+            fillOriginInForm($(this));
+            return true;
+        });
+
+        // delete confirm
+        let deleteForm;
+        $(document).on('click', 'form.delete button.delete, form.delete', function(event) {
+            // biar ga salah tangkap klik form, lebih aman tangkap button saja:
+        });
+
+        $('.delete').on('click', function(event) {
+            event.preventDefault();
+            deleteForm = $(this).closest('form');
+            openBsModal('confirmationModal');
+        });
+
+        $('#confirmDelete').on('click', function() {
+            if (deleteForm) deleteForm.submit();
+        });
+
+    });
+</script>
