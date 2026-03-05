@@ -452,18 +452,16 @@
                                     foreach ($manHenkaten as $man) {
                                         if ($man->henkaten->is_done === '1') {
                                             $henkatenEmployeeId = $man->employee_before_id;
-                                            $empMasterId = $emp->employee->id; // penting: pakai employee master id
+                                            $activeEmployeeId = $emp->employee_id;
 
-                                            if ($empMasterId == $henkatenEmployeeId) {
-                                                $photo = optional($man->manAfter)->photo ?? $photo;
-                                                $role = optional($man->manAfter)->role ?? $role;
-                                                $name = optional($man->manAfter)->name ?? $name;
-                                                $npk = optional($man->manAfter)->npk ?? $npk;
+                                            if ($activeEmployeeId == $henkatenEmployeeId) {
+                                                $photo = $man->manAfter->photo;
+                                                $role = $man->manAfter->role;
+                                                $name = $man->manAfter->name;
+                                                $npk = $man->manAfter->npk;
                                             }
                                         }
                                     }
-
-                                    $photoFile = $photo ?: 'default.jpg'; // pastikan ada default
 
                                     if (!function_exists('mapRoleToColor')) {
                                         function mapRoleToColor($role)
@@ -501,27 +499,30 @@
                                     }
                                 @endphp
 
-                                <div class="item">
-                                    <div class="card text-center">
-                                        <div class="card-body">
-                                            <img src="{{ asset('uploads/doc/' . $photoFile) }}" class="rounded-1 center"
-                                                height="100"
-                                                style="width: 100px !important; margin-left: auto;margin-right: auto;"
-                                                loading="lazy">
-
-                                            <div class="mt-n2">
-                                                <span
-                                                    class="badge bg-{{ mapRoleToColor($role) }}">{{ strtoupper($role) }}</span>
-                                                <h3 class="card-title mt-3">{{ ucwords($name) }}</h3>
-                                                <h6 class="card-subtitle">{{ $npk }}</h6>
-                                            </div>
-
-                                            <div class="row mt-4">
-                                                <div class="col-12">
-                                                    <button class="btn btn-light-danger text-danger"
-                                                        style="width: 100% !important">
-                                                        POS {{ strtoupper($emp->pos->pos) }}
-                                                    </button>
+                                <div class="col-lg-{{ $col }} col-md-12">
+                                    <div class="item">
+                                        <div class="card text-center">
+                                            <div class="card-body">
+                                                <img src="{{ asset('uploads/doc/' . $photo) }}" class="rounded-1 center"
+                                                    height="100"
+                                                    style="width: 100px !important; margin-left: auto;margin-right: auto;"
+                                                    loading="lazy">
+                                                <div class="mt-n2">
+                                                    <span
+                                                        class="badge bg-{{ $color }}">{{ strtoupper($role) }}</span>
+                                                    <h3 class="card-title mt-3">{{ ucwords($name) }}</h3>
+                                                    <h6 class="card-subtitle">{{ $npk }}</h6>
+                                                </div>
+                                                <div class="row mt-4">
+                                                    <div class="col-12">
+                                                        <button class="btn btn-light-danger text-danger"
+                                                            style="width: 100% !important">
+                                                            {{ $pos_name }}
+                                                            @if ($pos_number)
+                                                                {{ strtoupper($emp->pos->pos) }}
+                                                            @endif
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
