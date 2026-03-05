@@ -1657,5 +1657,34 @@
             if (deleteForm) deleteForm.submit();
         });
 
+        // ===== OWL CAROUSEL FIX
+        (function initManPowerCarousel() {
+            const $carousel = $('#carousel');
+            if (!$carousel.length) return;
+
+            // kalau plugin owl belum ada, jangan biarin class owl-carousel (karena bisa display:none)
+            if (!$.fn.owlCarousel) {
+                $carousel.removeClass('owl-carousel owl-theme');
+                console.warn('OwlCarousel plugin not loaded -> carousel shown as normal list');
+                return;
+            }
+
+            // kalau sudah pernah init, destroy dulu biar aman
+            if ($carousel.hasClass('owl-loaded')) {
+                $carousel.trigger('destroy.owl.carousel');
+                $carousel.removeClass('owl-loaded owl-hidden');
+                $carousel.find('.owl-stage-outer').children().unwrap();
+            }
+
+            // INIT (silakan sesuaikan items)
+            $carousel.owlCarousel({
+                margin: 25,
+                autoplay: true,
+                loop: true,
+                autoWidth: false,
+                items: 2
+            });
+        })();
+
     });
 </script>
