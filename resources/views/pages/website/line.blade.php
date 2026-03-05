@@ -1657,33 +1657,60 @@
             if (deleteForm) deleteForm.submit();
         });
 
-        function initManPowerCarousel() {
+        function initManPowerCarouselFixed() {
             const $carousel = $('#carousel');
             if (!$carousel.length) return;
 
-            // kalau plugin belum ada, tampilkan sebagai list biasa
+            // kalau owl tidak ada, jangan biarin class owl-carousel (bisa display:none)
             if (!$.fn.owlCarousel) {
                 $carousel.removeClass('owl-carousel owl-theme');
                 return;
             }
 
-            // kalau sudah ter-init, jangan init lagi
+            // kalau sudah pernah init, STOP (biar ga dobel)
             if ($carousel.hasClass('owl-loaded')) return;
 
+            // =========================
+            // 1) Rapihin struktur DOM:
+            //    Pindahkan semua `.item` jadi anak langsung dari #carousel
+            // =========================
+            const $row = $carousel.find('> .temp-row, > .row.temp-row').first();
+
+            if ($row.length) {
+                // ambil item dari dalam col/row (item ada di dalam .col-*)
+                const $items = $row.find('> [class*="col-"] .item');
+
+                // kalau struktur beda, fallback: cari semua .item di dalam row
+                const $finalItems = $items.length ? $items : $row.find('.item');
+
+                // pindahkan item ke #carousel (jadi direct children)
+                $finalItems.each(function() {
+                    $carousel.append($(this));
+                });
+
+                // hapus wrapper row + col kosong biar bersih
+                $row.remove();
+            }
+
+            // pastikan hanya direct children .item yang dihitung
             const itemsCount = $carousel.find('> .item').length;
 
-            // kalau cuma 0/1 item, ga usah carousel
+            // kalau item <= 1, ga usah carousel
             if (itemsCount <= 1) {
                 $carousel.removeClass('owl-carousel owl-theme');
                 return;
             }
 
+            // =========================
+            // 2) Init owl (sekali)
+            // =========================
             $carousel.owlCarousel({
                 margin: 25,
                 autoplay: true,
-                loop: itemsCount > 2, // loop hanya kalau banyak
                 autoWidth: false,
                 items: 2,
+                loop: itemsCount > 2, // loop cuma kalau banyak (biar ga clone aneh)
+                rewind: itemsCount <= 2, // kalau cuma 2 item, mending rewind
                 responsive: {
                     0: {
                         items: 1
@@ -1696,7 +1723,7 @@
         }
 
         $(document).ready(function() {
-            initManPowerCarousel();
+            initManPowerCarouselFixed();
         });
 
     });
