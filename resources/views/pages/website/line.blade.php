@@ -452,16 +452,18 @@
                                     foreach ($manHenkaten as $man) {
                                         if ($man->henkaten->is_done === '1') {
                                             $henkatenEmployeeId = $man->employee_before_id;
-                                            $activeEmployeeId = $emp->employee_id;
+                                            $empMasterId = $emp->employee->id; // penting: pakai employee master id
 
-                                            if ($activeEmployeeId == $henkatenEmployeeId) {
-                                                $photo = $man->manAfter->photo;
-                                                $role = $man->manAfter->role;
-                                                $name = $man->manAfter->name;
-                                                $npk = $man->manAfter->npk;
+                                            if ($empMasterId == $henkatenEmployeeId) {
+                                                $photo = optional($man->manAfter)->photo ?? $photo;
+                                                $role = optional($man->manAfter)->role ?? $role;
+                                                $name = optional($man->manAfter)->name ?? $name;
+                                                $npk = optional($man->manAfter)->npk ?? $npk;
                                             }
                                         }
                                     }
+
+                                    $photoFile = $photo ?: 'default.jpg'; // pastikan ada default
 
                                     if (!function_exists('mapRoleToColor')) {
                                         function mapRoleToColor($role)
@@ -499,30 +501,27 @@
                                     }
                                 @endphp
 
-                                <div class="col-lg-{{ $col }} col-md-12">
-                                    <div class="item">
-                                        <div class="card text-center">
-                                            <div class="card-body">
-                                                <img src="{{ asset('uploads/doc/' . $photo) }}" class="rounded-1 center"
-                                                    height="100"
-                                                    style="width: 100px !important; margin-left: auto;margin-right: auto;"
-                                                    loading="lazy">
-                                                <div class="mt-n2">
-                                                    <span
-                                                        class="badge bg-{{ $color }}">{{ strtoupper($role) }}</span>
-                                                    <h3 class="card-title mt-3">{{ ucwords($name) }}</h3>
-                                                    <h6 class="card-subtitle">{{ $npk }}</h6>
-                                                </div>
-                                                <div class="row mt-4">
-                                                    <div class="col-12">
-                                                        <button class="btn btn-light-danger text-danger"
-                                                            style="width: 100% !important">
-                                                            {{ $pos_name }}
-                                                            @if ($pos_number)
-                                                                {{ strtoupper($emp->pos->pos) }}
-                                                            @endif
-                                                        </button>
-                                                    </div>
+                                <div class="item">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <img src="{{ asset('uploads/doc/' . $photoFile) }}" class="rounded-1 center"
+                                                height="100"
+                                                style="width: 100px !important; margin-left: auto;margin-right: auto;"
+                                                loading="lazy">
+
+                                            <div class="mt-n2">
+                                                <span
+                                                    class="badge bg-{{ mapRoleToColor($role) }}">{{ strtoupper($role) }}</span>
+                                                <h3 class="card-title mt-3">{{ ucwords($name) }}</h3>
+                                                <h6 class="card-subtitle">{{ $npk }}</h6>
+                                            </div>
+
+                                            <div class="row mt-4">
+                                                <div class="col-12">
+                                                    <button class="btn btn-light-danger text-danger"
+                                                        style="width: 100% !important">
+                                                        POS {{ strtoupper($emp->pos->pos) }}
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -1657,34 +1656,47 @@
             if (deleteForm) deleteForm.submit();
         });
 
-        // ===== OWL CAROUSEL FIX
-        (function initManPowerCarousel() {
+        function initManPowerCarousel() {
             const $carousel = $('#carousel');
             if (!$carousel.length) return;
 
-            // kalau plugin owl belum ada, jangan biarin class owl-carousel (karena bisa display:none)
+            // kalau plugin belum ada, tampilkan sebagai list biasa
             if (!$.fn.owlCarousel) {
                 $carousel.removeClass('owl-carousel owl-theme');
-                console.warn('OwlCarousel plugin not loaded -> carousel shown as normal list');
                 return;
             }
 
-            // kalau sudah pernah init, destroy dulu biar aman
-            if ($carousel.hasClass('owl-loaded')) {
-                $carousel.trigger('destroy.owl.carousel');
-                $carousel.removeClass('owl-loaded owl-hidden');
-                $carousel.find('.owl-stage-outer').children().unwrap();
+            // kalau sudah ter-init, jangan init lagi
+            if ($carousel.hasClass('owl-loaded')) return;
+
+            const itemsCount = $carousel.find('> .item').length;
+
+            // kalau cuma 0/1 item, ga usah carousel
+            if (itemsCount <= 1) {
+                $carousel.removeClass('owl-carousel owl-theme');
+                return;
             }
 
-            // INIT (silakan sesuaikan items)
             $carousel.owlCarousel({
                 margin: 25,
                 autoplay: true,
-                loop: true,
+                loop: itemsCount > 2, // loop hanya kalau banyak
                 autoWidth: false,
-                items: 2
+                items: 2,
+                responsive: {
+                    0: {
+                        items: 1
+                    },
+                    992: {
+                        items: 2
+                    }
+                }
             });
-        })();
+        }
+
+        $(document).ready(function() {
+            initManPowerCarousel();
+        });
 
     });
 </script>
