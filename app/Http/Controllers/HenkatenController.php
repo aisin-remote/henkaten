@@ -478,10 +478,10 @@ class HenkatenController extends Controller
         if ($request->input('4M') === 'man') {
             $rules['before']   = 'nullable|array';
             $rules['after']    = 'nullable|array';
-            $rules['before.*'] = 'nullable|integer';
-            $rules['after.*']  = 'nullable|integer';
-            $rules['picBefore']= 'nullable|integer';
-            $rules['picAfter'] = 'nullable|integer';
+            $rules['before.*'] = 'nullable';
+            $rules['after.*']  = 'nullable';
+            $rules['picBefore']= 'nullable';
+            $rules['picAfter'] = 'nullable';
         }
 
         $messages = [
