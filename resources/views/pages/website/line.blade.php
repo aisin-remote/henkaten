@@ -1333,10 +1333,11 @@
     @endforeach
     {{-- end of modal approve --}}
 
-    {{-- modal detail (biarkan seperti punya paduka) --}}
+    {{-- modal detail (lengkap seperti sebelumnya) --}}
     @foreach ($histories as $history)
         @php
             $hid = $history->henkaten->id;
+
             if ($history->henkaten->status === 'henkaten') {
                 $color = 'warning';
                 $shape = 'henkaten.svg';
@@ -1351,7 +1352,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header d-flex align-items-center">
-                        <h4 class="modal-title">Detail</h4>
+                        <h4 class="modal-title" id="myLargeModalLabel">Detail</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
@@ -1360,16 +1361,216 @@
                             <div class="card bg-{{ $color }}">
                                 <div class="card-body text-center text-white">
                                     <div class="pt-2">
-                                        <h4 class="fw-bolder text-white">{{ strtoupper($history->henkaten->status) }}
+                                        <h4 class="fw-bolder text-white">
+                                            {{ strtoupper($history->henkaten->status) }}
                                         </h4>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- (isi detail tetap sama seperti paduka; tidak aku ubah) --}}
-                        {{-- ... --}}
-                    </div>
+                        <div class="card-body">
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-pills nav-fill mt-4" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#{{ $hid }}Abnormal"
+                                        role="tab" aria-selected="true">
+                                        <span>Abnormality</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#{{ $hid }}Trouble"
+                                        role="tab" aria-selected="false" tabindex="-1">
+                                        <span>Troubleshoot</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <!-- Tab panes -->
+                            <div class="tab-content border mt-2">
+                                {{-- TAB: Abnormality --}}
+                                <div class="tab-pane p-3 active" id="{{ $hid }}Abnormal" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control fw-bolder"
+                                                    id="tb-4m-{{ $hid }}"
+                                                    value="{{ strtoupper($history->henkaten->{'4M'}) }}" disabled>
+                                                <label for="tb-4m-{{ $hid }}">4M</label>
+                                            </div>
+
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control fw-bolder"
+                                                    id="tb-cat-{{ $hid }}"
+                                                    value="{{ strtoupper($history->henkaten->category) }}" disabled>
+                                                <label for="tb-cat-{{ $hid }}">Category</label>
+                                            </div>
+
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control fw-bolder"
+                                                    id="tb-table-{{ $hid }}"
+                                                    value="{{ $history->henkaten->henkatenManagement->henkaten_item }} [Table no: {{ $history->henkaten->henkatenManagement->table_no }}]"
+                                                    disabled>
+                                                <label for="tb-table-{{ $hid }}">Hankaten Table No.</label>
+                                            </div>
+
+                                            <div class="form-floating mb-3">
+                                                <textarea class="form-control fw-bolder" id="tb-abn-{{ $hid }}" disabled style="height: 120px;">{{ strtoupper($history->henkaten->abnormality) }}</textarea>
+                                                <label for="tb-abn-{{ $hid }}">Abnormality Content</label>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="text" class="form-control fw-bolder"
+                                                            id="tb-time-{{ $hid }}"
+                                                            value="{{ \Carbon\Carbon::parse($history->henkaten->date)->format('j F Y,  H:i:s') }}"
+                                                            disabled>
+                                                        <label for="tb-time-{{ $hid }}">Time</label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-6">
+                                                    @php
+                                                        $docDisabled = $history->henkaten->photo ? '' : 'disabled';
+                                                    @endphp
+                                                    <button class="btn btn-lg btn-success py-3 px-4" {{ $docDisabled }}>
+                                                        <i class="ti ti-eye fs-4 pe-2"></i>
+                                                        <a href="{{ asset('uploads/ts_henkaten/' . $history->henkaten->photo) }}"
+                                                            target="_blank" style="color: white">
+                                                            See Document
+                                                        </a>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- TAB: Troubleshoot --}}
+                                <div class="tab-pane p-3" id="{{ $hid }}Trouble" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-12 text-center">
+                                            @if ($history->henkaten->troubleshoot === null)
+                                                <span class="badge bg-danger">Belum dilakukan penanganan</span>
+                                            @else
+                                                <div class="form-floating mb-3">
+                                                    <textarea class="form-control fw-bolder" id="tb-ts-{{ $hid }}" disabled style="height: 120px;">{{ strtoupper($history->henkaten->troubleshoot->troubleshoot) }}</textarea>
+                                                    <label for="tb-ts-{{ $hid }}">Troubleshoot</label>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control fw-bolder"
+                                                                id="tb-rc-{{ $hid }}"
+                                                                value="{{ strtoupper($history->henkaten->troubleshoot->result_check) }}"
+                                                                disabled>
+                                                            <label for="tb-rc-{{ $hid }}">Result Check</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control fw-bolder"
+                                                                id="tb-pics-{{ $hid }}"
+                                                                value="{{ strtoupper($history->henkaten->troubleshoot->pic_safety) }}"
+                                                                disabled>
+                                                            <label for="tb-pics-{{ $hid }}">PIC Safety</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control fw-bolder"
+                                                        id="tb-insp-{{ $hid }}"
+                                                        value="{{ strtoupper($history->henkaten->troubleshoot->inspection_report) }}"
+                                                        disabled>
+                                                    <label for="tb-insp-{{ $hid }}">Inspection Report</label>
+                                                </div>
+
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control fw-bolder"
+                                                        id="tb-part-{{ $hid }}"
+                                                        value="{{ strtoupper($history->henkaten->troubleshoot->part) }}"
+                                                        disabled>
+                                                    <label for="tb-part-{{ $hid }}">Part</label>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control fw-bolder"
+                                                                id="tb-bt-{{ $hid }}"
+                                                                value="{{ strtoupper($history->henkaten->troubleshoot->before_treatment) }}"
+                                                                disabled>
+                                                            <label for="tb-bt-{{ $hid }}">Before
+                                                                Treatment</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control fw-bolder"
+                                                                id="tb-at-{{ $hid }}"
+                                                                value="{{ strtoupper($history->henkaten->troubleshoot->after_treatment) }}"
+                                                                disabled>
+                                                            <label for="tb-at-{{ $hid }}">After
+                                                                Treatment</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {{-- PIC Quality (aku betulin supaya bener) --}}
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control fw-bolder"
+                                                        id="tb-picq-{{ $hid }}"
+                                                        value="{{ strtoupper($history->henkaten->troubleshoot->pic_quality) }}"
+                                                        disabled>
+                                                    <label for="tb-picq-{{ $hid }}">PIC Quality</label>
+                                                </div>
+
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control fw-bolder"
+                                                        id="tb-doneby-{{ $hid }}"
+                                                        value="{{ strtoupper($history->henkaten->troubleshoot->done_by) }}"
+                                                        disabled>
+                                                    <label for="tb-doneby-{{ $hid }}">Done By</label>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control fw-bolder"
+                                                                id="tb-ts-time-{{ $hid }}"
+                                                                value="{{ \Carbon\Carbon::parse($history->henkaten->troubleshoot->created_at)->format('j F Y,  H:i:s') }}"
+                                                                disabled>
+                                                            <label for="tb-ts-time-{{ $hid }}">Time</label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-6">
+                                                        @php
+                                                            $tsDocDisabled = $history->henkaten->troubleshoot->photo
+                                                                ? ''
+                                                                : 'disabled';
+                                                        @endphp
+                                                        <button class="btn btn-lg btn-success py-3 px-4"
+                                                            {{ $tsDocDisabled }}>
+                                                            <i class="ti ti-eye fs-4 pe-2"></i>
+                                                            <a href="{{ asset('uploads/ts_henkaten/' . $history->henkaten->troubleshoot->photo) }}"
+                                                                target="_blank" style="color: white">
+                                                                See Document
+                                                            </a>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> {{-- end tab-content --}}
+                        </div> {{-- end card-body --}}
+                    </div> {{-- end modal-body --}}
 
                     <div class="modal-footer">
                         <button type="button"
