@@ -62,7 +62,7 @@
                                 </div>
 
                                 <input type="hidden" name="origin_id"
-                                    value="{{ $henkatenHistory->first()->line->origin_id }}">
+                                    value="{{ optional(optional($henkatenHistory->first())->line)->origin_id }}">
 
                                 <div class="col-md-4">
                                     <button type="submit" class="btn btn-info w-100">
