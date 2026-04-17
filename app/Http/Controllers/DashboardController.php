@@ -11,6 +11,7 @@ use App\Models\Shift;
 use App\Models\Theme;
 use App\Models\Origin;
 use App\Models\Approval;
+use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\Henkaten;
 use App\Models\MhActive;
@@ -454,6 +455,7 @@ class DashboardController extends Controller
             'activeMh' => $activeMh,
             'histories' => $histories,
             'manHenkaten' => $manHenkaten,
+            'attendance' => $attendance,
             'henkatenManagements' => HenkatenManagement::all(),
         ]);
     }
